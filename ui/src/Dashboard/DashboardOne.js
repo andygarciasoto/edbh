@@ -1,7 +1,7 @@
 import React from 'react';
 import './dashboard.scss';
 import Header from '../Layout/Header';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Form } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
@@ -70,7 +70,7 @@ class DashboardOne extends React.Component {
             Header: 'Comments And Actions Taken',
             accessor: 'actions_comments',
             width: 180,
-            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="plus"/></span>
+            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
           }, {
             Header: 'Operator Id',
             accessor: 'oper_id'
@@ -152,7 +152,9 @@ class DashboardOne extends React.Component {
                  onRequestClose={this.closeModal}
                  style={this.state.modalStyle}
                  contentLabel="Example Modal">
-                   Modal Test
+                   <span className="dashboard-modal-field-group"><p>Current Value:</p><Form.Control style={{paddingTop: '5px'}} type="number"></Form.Control></span>
+                   <br />
+                   <span className="dashboard-modal-field-group"><p>New Value:</p><Form.Control style={{paddingTop: '5px'}} type="number"></Form.Control></span>
                   </Modal>
             </React.Fragment>
         );
