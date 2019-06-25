@@ -1,0 +1,17 @@
+.navbar {
+    height: 10vh; 
+    background-color: rgb(53, 53, 53);
+    .links {
+        padding-bottom: 10px !important;
+    }
+    .App-logo {
+        height: 90%;
+         width: auto; 
+        }
+
+    // .col {border: solid red;}
+    .row {width: 100%}
+
+    a {display: inline-block; padding: 10px 10px 10px 10px; color: rgb(255, 185, 29)}
+    #log-out {float: right;}
+}
