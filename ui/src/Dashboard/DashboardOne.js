@@ -3,21 +3,44 @@ import './dashboard.scss';
 import Header from '../Layout/Header';
 import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import 'react-table/react-table.css'
+import 'react-table/react-table.css';
+import moment from 'moment';
+import Modal from 'react-modal';
+import FontAwesome from 'react-fontawesome';
 
 class DashboardOne extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
             data: [],
-            columns : []
+            columns : [],
+            machine: 1232,
+            modalStyle: {},
+            modalIsOpen: false
         } 
+        this.openModal = this.openModal.bind(this);
+        // this.afterOpenModal = this.afterOpenModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+    }
+
+    openModal() {
+      this.setState({modalIsOpen: true});
+    }
+  
+    // afterOpenModal() {
+    //   // references are now sync'd and can be accessed.
+    //   this.subtitle.style.color = '#f00';
+    // }
+  
+    closeModal() {
+      this.setState({modalIsOpen: false});
     }
 
     componentDidMount() {
         const columns = [{
             Header: 'Shift Number',
-            accessor: 'shift'
+            accessor: 'shift',
+            width: 180
           }, {
             Header: 'Order Number',
             accessor: 'order_number',
@@ -26,7 +49,8 @@ class DashboardOne extends React.Component {
             accessor: 'part_number'
           }, {
             Header: 'Ideal',
-            accessor: 'ideal'
+            accessor: 'ideal',
+            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
           }, {
             Header: 'Target Pcs.',
             accessor: 'target_pcs'
@@ -44,7 +68,9 @@ class DashboardOne extends React.Component {
             accessor: 'downtime_reason_code'
           },{
             Header: 'Comments And Actions Taken',
-            accessor: 'actions_comments'
+            accessor: 'actions_comments',
+            width: 180,
+            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="plus"/></span>
           }, {
             Header: 'Operator Id',
             accessor: 'oper_id'
@@ -55,6 +81,7 @@ class DashboardOne extends React.Component {
         ];
 
           const data = [{
+           Expander: true,
            shift: '11:00 pm - 12:00 am',
            order_number: '0000001',
            part_number: '1111111',
@@ -81,27 +108,52 @@ class DashboardOne extends React.Component {
             oper_id: '031',
             superv_id: 'AF 000',
           }]
-          this.setState({columns, data})
+
+          const modalStyle = {
+            content : {
+              top                   : '50%',
+              left                  : '50%',
+              right                 : 'auto',
+              bottom                : 'auto',
+              marginRight           : '-50%',
+              transform             : 'translate(-50%, -50%)',
+            },
+            overlay : {
+              backgroundColor: 'rgba(0,0,0, 0.6)'
+            }
+          };
+
+          this.setState({columns, data, modalStyle})
     }
      
     render() {
         const data = this.state.data;
         const columns = this.state.columns;
+        const machine = this.state.machine;
         return (
             <React.Fragment>
                 <Header className="app-header"/>
                 <div className="wrapper-main">
                     <Row>
-                        <Col md={12} lg={12}>
-                            <p>Day by Hour Tracking</p>
+                        <Col md={12} lg={12} id="dashboardOne-table">
+                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>Machine/Cell:{machine}</p></Col><Col md={4}><p>Day by Hour Tracking</p></Col><Col md={4}><p>{moment().format("LLLL")}</p></Col></Row>
                             <ReactTable
                                 data={data}
                                 columns={columns}
                                 defaultPageSize={10}
+                                headerStyle={{fontSize: '0.5em'}}
                             />
                         </Col>
                     </Row>
                 </div>
+                <Modal
+                 isOpen={this.state.modalIsOpen}
+                //  onAfterOpen={this.afterOpenModal}
+                 onRequestClose={this.closeModal}
+                 style={this.state.modalStyle}
+                 contentLabel="Example Modal">
+                   Modal Test
+                  </Modal>
             </React.Fragment>
         );
     }
