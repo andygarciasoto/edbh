@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import BarcodeReader from 'react-barcode-reader'
 import { Form } from  'react-bootstrap';
+import './BarcodeScanner.scss';
 
 class BarcodeScanner extends Component {
   constructor(props){
@@ -24,13 +25,14 @@ class BarcodeScanner extends Component {
 
   render(){
     return(
-      <div>
+      <div id="barcodeScanner">
         <BarcodeReader
           onError={this.handleError}
           onScan={this.handleScan}
-          />
-        <span style={{paddingRight: '15px', fontSize: '0.8em'}}>User Id:</span><Form.Control style={{paddingTop: '5px'}}type="password" disabled={true}></Form.Control>
-        <p>{this.state.result}</p>
+        />
+        <span className={'signin-code-field'} style={{paddingRight: '15px', fontSize: '0.8em'}}>User Id:</span>
+        <Form.Control className={'signin-code-field'} type="password" disabled={true}></Form.Control>
+        <p className="signin-result">{this.state.result}</p>
       </div>
     )
   }

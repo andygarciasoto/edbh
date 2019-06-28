@@ -1,9 +1,11 @@
 .signIn {
-    margin-top: 10%;
+    margin-top: 30vh;
+    height: 90vh;
     min-height: 75vh;
     text-align: right;
-    margin-left: 5%;
-    margin-right: 15%;
+    margin-left: 10%;
+    margin-right: 10%;
     font-size: calc(10px + 2vmin);
     color: white;
+    overflow-y: hidden !important;
   }

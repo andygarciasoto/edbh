@@ -7,6 +7,8 @@ import 'react-table/react-table.css';
 import moment from 'moment';
 import Modal from 'react-modal';
 import FontAwesome from 'react-fontawesome';
+import CommentsModal from  '../Layout/commentModal';
+import ValueModal from  '../Layout/valueModal'
 
 class DashboardOne extends React.Component {
     constructor(props) {
@@ -16,15 +18,31 @@ class DashboardOne extends React.Component {
             columns : [],
             machine: 1232,
             modalStyle: {},
-            modalIsOpen: false
+            modal_values_IsOpen: false,
+            modal_authorize_IsOpen: false,
+            modal_comments_IsOpen: false,
+            valid_barcode: false,
+            barcode: 1001,
+            modalStyle: {}
         } 
         this.openModal = this.openModal.bind(this);
         // this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
     }
 
-    openModal() {
-      this.setState({modalIsOpen: true});
+    openModal(type) {
+      if (type === 'values') {
+        this.setState({
+          modal_values_IsOpen: true,
+          modal_comments_IsOpen: false
+        })
+      }
+      if (type === 'comments') {
+        this.setState({
+          modal_values_IsOpen: false,
+          modal_comments_IsOpen: true
+        })
+      }
     }
   
     // afterOpenModal() {
@@ -33,7 +51,7 @@ class DashboardOne extends React.Component {
     // }
   
     closeModal() {
-      this.setState({modalIsOpen: false});
+      this.setState({modal_authorize_IsOpen: false, modal_comments_IsOpen: false, modal_values_IsOpen: false});
     }
 
     componentDidMount() {
@@ -42,15 +60,12 @@ class DashboardOne extends React.Component {
             accessor: 'shift',
             width: 180
           }, {
-            Header: 'Order Number',
-            accessor: 'order_number',
-          }, {
             Header: 'Part Number',
             accessor: 'part_number'
           }, {
             Header: 'Ideal',
             accessor: 'ideal',
-            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
+            Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
           }, {
             Header: 'Target Pcs.',
             accessor: 'target_pcs'
@@ -70,12 +85,12 @@ class DashboardOne extends React.Component {
             Header: 'Comments And Actions Taken',
             accessor: 'actions_comments',
             width: 180,
-            Cell: props => <span className='ideal-click' onClick={this.openModal}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
+            Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
           }, {
-            Header: 'Operator Id',
+            Header: 'Operator',
             accessor: 'oper_id'
           }, {
-            Header: 'Supervisor Id',
+            Header: 'Supervisor',
             accessor: 'superv_id'
           }
         ];
@@ -83,7 +98,6 @@ class DashboardOne extends React.Component {
           const data = [{
            Expander: true,
            shift: '11:00 pm - 12:00 am',
-           order_number: '0000001',
            part_number: '1111111',
            ideal: '100',
            target_pcs: '75',
@@ -92,11 +106,10 @@ class DashboardOne extends React.Component {
            downtime: '10',
            downtime_reason_code: '124',
            actions_comments: 'Something Happened Here',
-           oper_id: '030',
-           superv_id: 'AF 031',
+           oper_id: 'SW',
+           superv_id: 'DS',
           },{
             shift: '12:00 am - 01:00 am',
-            order_number: '0000002',
             part_number: '1111112',
             ideal: '100',
             target_pcs: '73',
@@ -105,8 +118,8 @@ class DashboardOne extends React.Component {
             downtime: '08',
             downtime_reason_code: '124',
             actions_comments: 'Woops Something Broke',
-            oper_id: '031',
-            superv_id: 'AF 000',
+            oper_id: 'RF',
+            superv_id: 'DF',
           }]
 
           const modalStyle = {
@@ -136,7 +149,9 @@ class DashboardOne extends React.Component {
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
-                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>Machine/Cell:{machine}</p></Col><Col md={4}><p>Day by Hour Tracking</p></Col><Col md={4}><p>{moment().format("LLLL")}</p></Col></Row>
+                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>Machine/Cell:{machine}</p>
+                              </Col><Col md={4}><p>Day by Hour Tracking</p></Col><Col md={4}><p>{moment().format("LLLL")}</p></Col>
+                            </Row>
                             <ReactTable
                                 data={data}
                                 columns={columns}
@@ -146,16 +161,22 @@ class DashboardOne extends React.Component {
                         </Col>
                     </Row>
                 </div>
-                <Modal
-                 isOpen={this.state.modalIsOpen}
+                <ValueModal
+                 isOpen={this.state.modal_values_IsOpen}
                 //  onAfterOpen={this.afterOpenModal}
                  onRequestClose={this.closeModal}
                  style={this.state.modalStyle}
-                 contentLabel="Example Modal">
-                   <span className="dashboard-modal-field-group"><p>Current Value:</p><Form.Control style={{paddingTop: '5px'}} type="number"></Form.Control></span>
-                   <br />
-                   <span className="dashboard-modal-field-group"><p>New Value:</p><Form.Control style={{paddingTop: '5px'}} type="number"></Form.Control></span>
-                  </Modal>
+                 contentLabel="Example Modal"
+                 currentVal={100}
+                 // also send the entire row -- get order number and change value on database, then refresh table
+                 />
+
+                <CommentsModal
+                 isOpen={this.state.modal_comments_IsOpen}
+                //  onAfterOpen={this.afterOpenModal}
+                 onRequestClose={this.closeModal}
+                 style={this.state.modalStyle}
+                 contentLabel="Example Modal"/>
             </React.Fragment>
         );
     }
