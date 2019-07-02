@@ -1,0 +1,39 @@
+
+import React from 'react';
+import DatePicker from  'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './DatePicker.scss';
+
+class DatePickerCustom extends React.Component {
+    constructor(props) {
+		super(props);
+		this.state = {
+            startDate: new Date(),
+        } 
+        this.handleChange = this.handleChange.bind(this);
+    }  
+
+    componentDidMount() {
+    }
+
+    handleChange(date) {
+        this.setState({
+          startDate: date
+        });
+      }
+
+    render() {
+        return (
+            <DatePicker
+                fixedHeight
+                className={'date-picker-field'}
+                selected={this.state.startDate}
+                onChange={this.handleChange}
+            />
+        );
+    }
+};
+
+export default DatePickerCustom;
+
+

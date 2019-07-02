@@ -1,8 +1,6 @@
 import React from  'react';
 import Modal from 'react-modal';
-import { Button } from 'react-bootstrap';
 import './ErrorModal.scss';
-import FontAwesome from 'react-fontawesome';
 import BlinkDots from  './BlinkDots';
 import Spinner from './Spinner';
 import * as _ from 'lodash';

@@ -1,14 +1,13 @@
 import React from 'react';
 import './dashboard.scss';
 import Header from '../Layout/Header';
-import { Row, Col, Form } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
-import Modal from 'react-modal';
 import FontAwesome from 'react-fontawesome';
 import CommentsModal from  '../Layout/commentModal';
-import ValueModal from  '../Layout/valueModal';
+import ValueModal from  '../Layout/ValueModal';
 import Spinner from '../Layout/Spinner';
 
 class DashboardOne extends React.Component {

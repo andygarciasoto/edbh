@@ -1,0 +1,16 @@
+.machine-picker-button {
+    .dropdown-toggle::after {
+        margin-left: 6%;
+        float: right;
+        margin-top: 6%;
+    }
+}
+
+.dropdown-toggle, .btn-primary {
+    border: solid 1px lightgrey;
+    width: 35%;
+    background-color: white;
+    color: black;
+    text-align: left;
+}
+

@@ -3,7 +3,10 @@ import './Header.scss';
 import logo from '../Parker_Hannifin.svg';
 import { Row, Col } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
-import MegaMenu from  './MegaMenu';
+import MegaMenu from './MegaMenu';
+import DatePickerCustom from './DatePicker';
+import ShiftPickerCustom from './ShiftPicker';
+import MachinePickerCustom from './MachinePicker';
 
 class Header extends React.Component {
     constructor(props) {
@@ -28,10 +31,15 @@ class Header extends React.Component {
                         <Col className={'col'} md={9} lg={9}> 
                             <div className="links header-side">
                                 {/* <a href="/html/">Another Dashboard</a> */}
-                                <a className="header-item" href="#" id="log-out">Log Out <FontAwesome name="sign-out"/></a>
-                                <a className="header-item" onClick={(e)=>this.openMenu(e)} href="#" id="mega-menu">Menu <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
-                                <MegaMenu toggle={this.state.megaMenuToggle} />
-                                </a>
+                                <span className="header-item header-elem" href="#" id="log-out">Log Out <FontAwesome name="sign-out"/></span>
+                                <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>Menu </span>
+                                <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
+                                <MegaMenu toggle={this.state.megaMenuToggle}>
+                                    <MachinePickerCustom />
+                                    <DatePickerCustom />
+                                    <ShiftPickerCustom />
+                                </MegaMenu>
+                                </span>
                             </div>
                         </Col>
                     </Row>
