@@ -23,7 +23,6 @@ class DashboardOne extends React.Component {
             modal_comments_IsOpen: false,
             valid_barcode: false,
             barcode: 1001,
-            modalStyle: {}
         } 
         this.openModal = this.openModal.bind(this);
         // this.afterOpenModal = this.afterOpenModal.bind(this);

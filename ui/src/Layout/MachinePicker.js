@@ -18,6 +18,7 @@ class MachinePickerCustom extends React.Component {
 
     onSelect(e) {
         this.setState({ value: e });
+        this.props.collectInput(e, 'machine');
       }
 
     render() {

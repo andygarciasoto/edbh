@@ -1,6 +1,5 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import './Header.scss';
 import './MegaMenu.scss'
 class MegaMenu extends React.Component {
     constructor(props) {
@@ -12,14 +11,14 @@ class MegaMenu extends React.Component {
 
     render() {
         const children = React.Children.toArray(this.props.children);
-        const titles = ['Machine Selector', 'Date Selector', 'Shift Selector']
+        const titles = ['Machine Selector', 'Date Selector', 'Shift Selector', 'Submit']
         return (
           <div className={this.props.toggle + ' mega-menu-wrapper'}>
             <Row>
                 
                 {children.map((item, key) => {
                     return (
-                        <Col sm={4} md={4} key={key}>
+                        <Col sm={3} md={3} key={key} className="mega-menu-children">
                             <p>{titles[key]}</p>
                             {item}
                         </Col>
