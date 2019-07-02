@@ -7,6 +7,7 @@ import MegaMenu from './MegaMenu';
 import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
 import MachinePickerCustom from './MachinePicker';
+import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
 import moment from 'moment';
 
@@ -56,6 +57,7 @@ class Header extends React.Component {
                                     <MachinePickerCustom collectInput={this.collectInputs}/>
                                     <DatePickerCustom collectInput={this.collectInputs}/>
                                     <ShiftPickerCustom collectInput={this.collectInputs}/>
+                                    <LanguagePickerCustom />
                                     <QueryButton 
                                         machine={this.state.machineValue}
                                         date={this.state.dateValue}

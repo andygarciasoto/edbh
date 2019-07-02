@@ -8,8 +8,8 @@ import './Layout/Spinner.scss';
 function App() {
   return (
     <div>
-      {/* <SignIn /> */}
-      <DashboardOne/>
+      <SignIn />
+      {/* <DashboardOne/> */}
       {/* <Spinner /> */}
     </div>
   );

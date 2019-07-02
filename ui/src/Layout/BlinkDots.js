@@ -10,7 +10,7 @@ class BlinkDots extends Component {
 
   render(){
     return(
-        <span className="saving"><span>.</span><span>.</span><span>.</span></span>
+        <span className="saving drop-shadow"><span>.</span><span>.</span><span>.</span></span>
     )
   }
 }

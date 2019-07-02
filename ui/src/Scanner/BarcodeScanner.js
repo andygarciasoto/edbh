@@ -65,11 +65,8 @@ class BarcodeScanner extends Component {
           onError={this.handleError}
           onScan={this.handleScan}
         />
-        {/* <span className={'signin-code-field'} style={{paddingRight: '15px', fontSize: '0.8em'}}>User Id:</span> */}
         <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={true}></Form.Control>
-        <p style={{display: 'inline'}} className="signin-result">{this.state.result}</p>&nbsp;<BlinkDots/>
-        {/* <p onClick={this.handleError} style={{cursor: 'pointer'}}>Error</p>
-        <p onClick={this.handleWarning} style={{cursor: 'pointer'}}>Loading</p> */}
+        <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>
         
         <ErrorModal
             isOpen={this.state.modal_error_IsOpen}
