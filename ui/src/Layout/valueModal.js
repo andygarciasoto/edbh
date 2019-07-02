@@ -1,6 +1,7 @@
 import React from  'react';
 import Modal from 'react-modal';
 import { Form, Button } from 'react-bootstrap';
+import './CommentsModal.scss';
 
 
 class ValueModal extends React.Component {

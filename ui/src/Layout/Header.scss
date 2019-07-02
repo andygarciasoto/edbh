@@ -12,6 +12,15 @@
     // .col {border: solid red;}
     .row {width: 100%}
 
-    a {display: inline-block; padding: 10px 10px 10px 10px; color: rgb(255, 185, 29)}
-    #log-out {float: right;}
+    a, #mega-menu {
+        display: inline-block; 
+        padding: 10px 10px 10px 10px;
+         color: rgb(255, 185, 29); 
+         float: right !important;
+        }
+
+    .header-item:hover {
+        background-color: rgb(81, 81, 81);
+        text-decoration: none;
+    }
 }

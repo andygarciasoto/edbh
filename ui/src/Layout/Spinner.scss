@@ -1,0 +1,51 @@
+@import "../sass/colors";
+
+.spinner {
+  margin: auto;
+  width: 100%;
+  margin-top: 5%;
+  padding: 10px;
+  text-align: center;
+
+  div {
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .rect1 {
+    width: 20px;
+    animation: reappear 1.1s linear infinite;
+  }
+
+  .rect2 {
+    width: 20px;
+    animation: reappear 1.2s linear infinite;
+  }
+
+  .rect3 {
+    width: 20px;
+    animation: reappear 1.4s linear infinite;
+  }
+
+  .rect4 {
+    width: 20px;
+    animation: reappear 1.6s linear infinite;
+  }
+}
+
+  .fontAwesome {
+    color: $color-orange;
+  }
+
+  @keyframes reappear {
+    0% {
+        opacity: 0;
+    }
+    50%{
+      opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

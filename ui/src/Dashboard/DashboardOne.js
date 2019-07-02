@@ -8,7 +8,8 @@ import moment from 'moment';
 import Modal from 'react-modal';
 import FontAwesome from 'react-fontawesome';
 import CommentsModal from  '../Layout/commentModal';
-import ValueModal from  '../Layout/valueModal'
+import ValueModal from  '../Layout/valueModal';
+import Spinner from '../Layout/Spinner';
 
 class DashboardOne extends React.Component {
     constructor(props) {
@@ -140,9 +141,15 @@ class DashboardOne extends React.Component {
     }
      
     render() {
-        const data = this.state.data;
+        // const data = this.state.data;
         const columns = this.state.columns;
         const machine = this.state.machine;
+        const data = this.state.data;
+        // @DEV: *****************************
+        // Always assign data to variable then 
+        // ternary between data and spinner
+        // ***********************************
+
         return (
             <React.Fragment>
                 <Header className="app-header"/>
@@ -152,12 +159,13 @@ class DashboardOne extends React.Component {
                             <Row style={{paddingLeft: '10%'}}><Col md={4}><p>Machine/Cell:{machine}</p>
                               </Col><Col md={4}><p>Day by Hour Tracking</p></Col><Col md={4}><p>{moment().format("LLLL")}</p></Col>
                             </Row>
-                            <ReactTable
+                            {data ? <ReactTable
                                 data={data}
                                 columns={columns}
                                 defaultPageSize={10}
                                 headerStyle={{fontSize: '0.5em'}}
-                            />
+                            /> : <Spinner/>}
+                            
                         </Col>
                     </Row>
                 </div>

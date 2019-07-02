@@ -30,7 +30,6 @@ class CommentsModal extends React.Component {
         if (!_.isEmpty(styles)) {
             styles.content.width = '60%';
         }
-        console.log(styles)
         return (
             <Modal
                 isOpen={this.props.isOpen}

@@ -1,7 +1,8 @@
 import React from  'react';
 import Modal from 'react-modal';
-import { Form, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import './ErrorModal.scss';
+import FontAwesome from 'react-fontawesome';
 
 
 class ErrorModal extends React.Component {
@@ -34,10 +35,11 @@ class ErrorModal extends React.Component {
                 style={this.props.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <span className="dashboard-modal-field-group"><p>Scan Barcode:</p>
-                    <Form.Control style={{paddingTop: '5px'}} type="number" value={this.state.value} onChange={this.onChange}></Form.Control>
-                </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.validateBarcode}>Validate</Button>
+                <div><p className="dashboard-modal-error-field-head">Sign on Error</p>
+                <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
+                <p className="warning-message">Sign on Attempt was Unsuccesful</p></div>
+                </div>
+                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
             </Modal>
         )
     }
