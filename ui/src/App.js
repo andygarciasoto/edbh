@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import './sass/App.scss';
+import Spinner from  './Spinner';
 import SignIn from './SignIn';
 import DashboardOne from './Dashboard/DashboardOne';
-import Spinner from  './Layout/Spinner';
-import './Layout/Spinner.scss';
+import { useTranslation } from 'react-i18next';
 
 function App() {
+  const { t } = useTranslation();
   return (
-    <div>
-      <SignIn />
-      {/* <DashboardOne/> */}
+    <Suspense fallback={<Spinner />}>
+      {/* <SignIn t={t}/> */}
+      <DashboardOne t={t}/>
       {/* <Spinner /> */}
-    </div>
+    </Suspense>
   );
 }
 

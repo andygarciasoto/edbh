@@ -2,7 +2,7 @@ import React from  'react';
 import Modal from 'react-modal';
 import './ErrorModal.scss';
 import BlinkDots from  './BlinkDots';
-import Spinner from './Spinner';
+import Spinner from '../Spinner';
 import * as _ from 'lodash';
 
 

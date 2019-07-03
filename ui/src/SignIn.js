@@ -25,8 +25,8 @@ class SignIn extends React.Component {
             <div id="main" style={this.state.style}>
                 <div id="signIn">
                     <img src={logo} className="App-logo" alt="logo" />  
-                    <p style={{fontSize: '0.6em', paddingTop: '5px'}} className='drop-shadow'>Parker Hannifin Day by Hour Application</p>
-                    <BarcodeScanner/>
+                    <p style={{fontSize: '0.6em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</p>
+                    <BarcodeScanner t={this.props.t}/>
                 </div>
             </div>
         );

@@ -10,7 +10,7 @@ class BarcodeScanner extends Component {
   constructor(props){
     super(props)
     this.state = {
-      result: 'Please scan a clock number barcode to begin',
+      result: this.props.t('Please scan a clock number barcode to begin'),
       modal_error_IsOpen: false,
       modal_load_IsOpen: false
     }

@@ -11,6 +11,7 @@ import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
 import moment from 'moment';
 
+
 class Header extends React.Component {
     constructor(props) {
 		super(props);
@@ -22,6 +23,7 @@ class Header extends React.Component {
         } 
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
+        this.returnToParent = this.returnToParent.bind(this);
     }
 
     collectInputs(value, type) {
@@ -42,16 +44,24 @@ class Header extends React.Component {
         this.setState({megaMenuToggle: 'dropdown-content opened'});
     }
 
+    returnToParent(data) {
+        this.props.toParent(data);
+    }
+
+    componentDidMount() {
+        // i18next.changeLanguage('es', ()=>console.log('changed the language')) // -> returns a Promise
+    }
+
     render() {
+        const t = this.props.t;
         return (
             <nav className="navbar">
                     <Row className={'row'}>
                         <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo"/></Col>
                         <Col className={'col'} md={9} lg={9}> 
                             <div className="links header-side">
-                                {/* <a href="/html/">Another Dashboard</a> */}
-                                <span className="header-item header-elem" href="#" id="log-out">Log Out <FontAwesome name="sign-out"/></span>
-                                <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>Menu </span>
+                                <span className="header-item header-elem" href="#" id="log-out">{t('Log Out')} <FontAwesome name="sign-out"/></span>
+                                <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
                                 <MegaMenu toggle={this.state.megaMenuToggle}>
                                     <MachinePickerCustom collectInput={this.collectInputs}/>
@@ -62,6 +72,7 @@ class Header extends React.Component {
                                         machine={this.state.machineValue}
                                         date={this.state.dateValue}
                                         shift={this.state.shiftValue}
+                                        toParent={this.returnToParent}
                                     />
                                 </MegaMenu>
                                 </span>

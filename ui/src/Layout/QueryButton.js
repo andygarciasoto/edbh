@@ -7,16 +7,18 @@ class QueryButton extends React.Component {
 		super(props);
 		this.state = {
         } 
-        this.submit = this.submit.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }  
 
-    submit() {
-        console.log(this.props)
+    onSubmit() {
+        const {machine, date, shift} = this.props;
+        const values = [machine, date, shift];
+        this.props.toParent(values);
     }
 
     render() {
         return (
-            <Button variant="outline-primary" className="query-button" onClick={this.submit()}>Submit</Button>
+            <Button variant="outline-primary" className="query-button" onClick={this.onSubmit}>Submit</Button>
         );
     }
 };

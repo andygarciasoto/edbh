@@ -8,7 +8,8 @@ import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
 import CommentsModal from  '../Layout/commentModal';
 import ValueModal from  '../Layout/ValueModal';
-import Spinner from '../Layout/Spinner';
+import Spinner from '../Spinner';
+import { getRequestData } from '../Utils/Requests';
 
 class DashboardOne extends React.Component {
     constructor(props) {
@@ -23,10 +24,12 @@ class DashboardOne extends React.Component {
             modal_comments_IsOpen: false,
             valid_barcode: false,
             barcode: 1001,
+            dataCall: {},
         } 
         this.openModal = this.openModal.bind(this);
         // this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.fetchData = this.fetchData.bind(this);
     }
 
     openModal(type) {
@@ -137,6 +140,10 @@ class DashboardOne extends React.Component {
 
           this.setState({columns, data, modalStyle})
     }
+
+    fetchData(data) {
+      getRequestData('/data', data);
+    }
      
     render() {
         // const data = this.state.data;
@@ -150,7 +157,7 @@ class DashboardOne extends React.Component {
 
         return (
             <React.Fragment>
-                <Header className="app-header"/>
+                <Header className="app-header" toParent={this.fetchData} t={this.props.t}/>
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">

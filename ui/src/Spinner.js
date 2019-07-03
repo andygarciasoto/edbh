@@ -1,5 +1,5 @@
 import React from 'react';
-import './Spinner.scss';
+import './sass/Spinner.scss';
 import FontAwesome from  'react-fontawesome';
 
 class Spinner extends React.Component {

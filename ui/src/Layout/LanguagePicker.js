@@ -2,6 +2,7 @@
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import './LanguagePicker.scss';
+import i18next from 'i18next';
 
 class LanguagePickerCustom extends React.Component {
     constructor(props) {
@@ -18,7 +19,9 @@ class LanguagePickerCustom extends React.Component {
     
 
     onSelect(e) {
-        this.setState({value: e})
+        e = e.toLowerCase();
+        e = e.replace('-', '_')
+        i18next.changeLanguage(e, ()=>console.log('Changed the language to ' + e)) // -> returns a Promise
       }
 
     render() {
