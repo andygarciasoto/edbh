@@ -14,6 +14,7 @@ class QueryButton extends React.Component {
         const {machine, date, shift} = this.props;
         const values = [machine, date, shift];
         this.props.toParent(values);
+        this.props.openMenu();
     }
 
     render() {

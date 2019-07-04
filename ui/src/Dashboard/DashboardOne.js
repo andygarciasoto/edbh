@@ -6,10 +6,11 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
-import CommentsModal from  '../Layout/commentModal';
+import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import Spinner from '../Spinner';
 import { getRequestData } from '../Utils/Requests';
+import('moment/locale/es');
 
 class DashboardOne extends React.Component {
     constructor(props) {
@@ -17,7 +18,6 @@ class DashboardOne extends React.Component {
 		this.state = {
             data: [],
             columns : [],
-            machine: 1232,
             modalStyle: {},
             modal_values_IsOpen: false,
             modal_authorize_IsOpen: false,
@@ -25,11 +25,18 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
+            selectedDate: undefined,
+            selectedDateParsed: '',
+            selectedMachine: 12532,
+            currentLanguage: 'en'
         } 
         this.openModal = this.openModal.bind(this);
         // this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.fetchData = this.fetchData.bind(this);
+        this.changeDate = this.changeDate.bind(this);
+        this.changeMachine = this.changeMachine.bind(this);
+        this.changeLanguage = this.changeLanguage.bind(this);
     }
 
     openModal(type) {
@@ -137,32 +144,61 @@ class DashboardOne extends React.Component {
               backgroundColor: 'rgba(0,0,0, 0.6)'
             }
           };
-
           this.setState({columns, data, modalStyle})
+          const date = new Date();
+          const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
+          console.log(x)
+          this.setState({selectedDate: date, selectedDateParsed: x})
     }
 
     fetchData(data) {
       getRequestData('/data', data);
     }
+
+    changeDate(e) {
+      const date = e;
+      this.setState({selectedDate: date})
+      const parsedDate = moment(date).locale(this.state.currentLanguage).format('LLLL');
+      this.setState({selectedDateParsed: parsedDate})
+    }
+
+    changeMachine(e) {
+      this.setState({selectedMachine: e})
+    }
+
+    changeLanguage(e) {
+      e = e.split('_')[0]
+      console.log(e)
+      const date = this.state.selectedDate ? this.state.selectedDate : new Date();
+      const parsedDate = moment(date).locale(e).format('LLLL');
+      this.setState({selectedDateParsed: parsedDate})
+    }
      
     render() {
         // const data = this.state.data;
         const columns = this.state.columns;
-        const machine = this.state.machine;
+        const machine = this.state.selectedMachine;
+        const date = this.state.selectedDateParsed;
         const data = this.state.data;
         // @DEV: *****************************
         // Always assign data to variable then 
         // ternary between data and spinner
         // ***********************************
-
+        const t=this.props.t;
         return (
             <React.Fragment>
-                <Header className="app-header" toParent={this.fetchData} t={this.props.t}/>
+                <Header className="app-header" 
+                  toParent={this.fetchData} 
+                  t={t}
+                  changeMachine={this.changeMachine}
+                  changeDate={this.changeDate}
+                  changeDateLanguage={this.changeLanguage}
+                />
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
-                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>Machine/Cell:{machine}</p>
-                              </Col><Col md={4}><p>Day by Hour Tracking</p></Col><Col md={4}><p>{moment().format("LLLL")}</p></Col>
+                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>{t('Machine/Cell')}: {machine}</p>
+                              </Col><Col md={4}><p>{t('Day by Hour Tracking')}</p></Col><Col md={4}><p>{date}</p></Col>
                             </Row>
                             {data ? <ReactTable
                                 data={data}
