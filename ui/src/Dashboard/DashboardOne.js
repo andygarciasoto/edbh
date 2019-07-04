@@ -6,7 +6,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
-import CommentsModal from  '../Layout/commentModal';
+import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import Spinner from '../Spinner';
 import { getRequestData } from '../Utils/Requests';
