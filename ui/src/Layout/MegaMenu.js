@@ -9,8 +9,9 @@ class MegaMenu extends React.Component {
     }  
 
     render() {
+        const t = this.props.t;
         const children = React.Children.toArray(this.props.children);
-        const titles = ['Machine Selector', 'Date Selector', 'Shift Selector', 'Language Selector', 'Submit']
+        const titles = [t('Machine Selector'), t('Date Selector'), t('Shift Selector'), t('Language Selector'), t('Submit')]
         return (
           <div className={this.props.toggle + ' mega-menu-wrapper'}>
             <Row>

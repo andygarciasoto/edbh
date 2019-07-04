@@ -1,5 +1,6 @@
 import React from 'react';
 import './dashboard.scss';
+import '../sass/tooltip.scss'
 import Header from '../Layout/Header';
 import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
@@ -10,6 +11,7 @@ import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import Spinner from '../Spinner';
 import { getRequestData } from '../Utils/Requests';
+import ReactTooltip from 'react-tooltip';
 import('moment/locale/es');
 
 class DashboardOne extends React.Component {
@@ -64,95 +66,106 @@ class DashboardOne extends React.Component {
     }
 
     componentDidMount() {
-        const columns = [{
-            Header: 'Shift Number',
-            accessor: 'shift',
-            width: 180
-          }, {
-            Header: 'Part Number',
-            accessor: 'part_number'
-          }, {
-            Header: 'Ideal',
-            accessor: 'ideal',
-            Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
-          }, {
-            Header: 'Target Pcs.',
-            accessor: 'target_pcs'
-          }, {
-            Header: 'Actual Pcs.',
-            accessor: 'actual_pcs'
-          }, {
-            Header: 'Cumulative Actual Pcs.',
-            accessor: 'cumulative_pcs'
-          }, {
-            Header: 'Downtime (minutes)',
-            accessor: 'downtime'
-          }, {
-            Header: 'Downtime Reason Code',
-            accessor: 'downtime_reason_code'
-          },{
-            Header: 'Comments And Actions Taken',
-            accessor: 'actions_comments',
-            width: 180,
-            Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
-          }, {
-            Header: 'Operator',
-            accessor: 'oper_id'
-          }, {
-            Header: 'Supervisor',
-            accessor: 'superv_id'
+        const modalStyle = {
+          content : {
+            top                   : '50%',
+            left                  : '50%',
+            right                 : 'auto',
+            bottom                : 'auto',
+            marginRight           : '-50%',
+            transform             : 'translate(-50%, -50%)',
+          },
+          overlay : {
+            backgroundColor: 'rgba(0,0,0, 0.6)'
           }
-        ];
+        };
+        
+        this.setState({modalStyle})
+        const date = new Date();
+        const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
+        console.log(x)
+        this.setState({selectedDate: date, selectedDateParsed: x})
+        this.fetchData();
+    }
 
-          const data = [{
-           Expander: true,
-           shift: '11:00 pm - 12:00 am',
-           part_number: '1111111',
-           ideal: '100',
-           target_pcs: '75',
-           actual_pcs: '77',
-           cumulative_pcs: '77',
-           downtime: '10',
-           downtime_reason_code: '124',
-           actions_comments: 'Something Happened Here',
-           oper_id: 'SW',
-           superv_id: 'DS',
-          },{
-            shift: '12:00 am - 01:00 am',
-            part_number: '1111112',
-            ideal: '100',
-            target_pcs: '73',
-            actual_pcs: '71',
-            cumulative_pcs: '74',
-            downtime: '08',
-            downtime_reason_code: '124',
-            actions_comments: 'Woops Something Broke',
-            oper_id: 'RF',
-            superv_id: 'DF',
-          }]
-
-          const modalStyle = {
-            content : {
-              top                   : '50%',
-              left                  : '50%',
-              right                 : 'auto',
-              bottom                : 'auto',
-              marginRight           : '-50%',
-              transform             : 'translate(-50%, -50%)',
-            },
-            overlay : {
-              backgroundColor: 'rgba(0,0,0, 0.6)'
-            }
-          };
-          this.setState({columns, data, modalStyle})
-          const date = new Date();
-          const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
-          console.log(x)
-          this.setState({selectedDate: date, selectedDateParsed: x})
+    componentDidUpdate(nextProps) {
+      console.log(nextProps);
     }
 
     fetchData(data) {
-      getRequestData('/data', data);
+      if (data) {
+        getRequestData('/data', data);
+      }
+      const t = this.props.t;
+
+      const response = [{
+        Expander: true,
+        shift: '11:00 pm - 12:00 am',
+        part_number: '1111111',
+        ideal: '100',
+        target_pcs: '75',
+        actual_pcs: '77',
+        cumulative_pcs: '77',
+        downtime: '10',
+        downtime_reason_code: '124',
+        actions_comments: 'Something Happened Here',
+        oper_id: 'SW',
+        superv_id: 'DS',
+       },{
+         shift: '12:00 am - 01:00 am',
+         part_number: '1111112',
+         ideal: '100',
+         target_pcs: '73',
+         actual_pcs: '71',
+         cumulative_pcs: '74',
+         downtime: '08',
+         downtime_reason_code: '124',
+         actions_comments: 'Woops Something Broke',
+         oper_id: 'RF',
+         superv_id: 'DF',
+       }]
+
+        const columns = [{
+          Header: () => <span data-tip={t('Shift Number')}>{t('Shift Number')}<ReactTooltip/></span>,
+          accessor: 'shift',
+          width: 180
+        }, {
+          Header: () => <span data-tip={t('Part Number')}>{t('Part Number')}<ReactTooltip/></span>,
+          accessor: 'part_number'
+        }, {
+          Header: () => <span data-tip={t('Ideal')}>{t('Ideal')}<ReactTooltip/></span>,
+          accessor: 'ideal',
+          Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
+        }, {
+          Header: () => <span data-tip={t('Target Pcs.')}>{t('Target Pcs.')}<ReactTooltip/></span>,
+          accessor: 'target_pcs'
+        }, {
+          Header: () => <span data-tip={t('Actual Pcs.')}>{t('Actual Pcs.')}<ReactTooltip/></span>,
+          accessor: 'actual_pcs'
+        }, {
+          Header: () => <span data-tip={t('Cumulative Actual Pcs.')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
+          accessor: 'cumulative_pcs'
+        }, {
+          Header: () => <span data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}<ReactTooltip/></span>,
+          accessor: 'downtime'
+        }, {
+          Header: () => <span data-tip={t('Downtime Reason Code')}>{t('Downtime Reason Code')}<ReactTooltip/></span>,
+          accessor: 'downtime_reason_code'
+        },{
+          Header: () => <span data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}<ReactTooltip/></span>,
+          accessor: 'actions_comments',
+          width: 180,
+          Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
+        }, {
+          Header: () => <span data-tip={t('Operator')}>{t('Operator')}<ReactTooltip/></span>,
+          accessor: 'oper_id'
+        }, {
+          Header: () => <span data-tip={t('Supervisor')}>{t('Supervisor')}<ReactTooltip/></span>,
+          accessor: 'superv_id'
+        }
+      ];
+
+      this.setState({data: response, columns})
     }
 
     changeDate(e) {
@@ -172,6 +185,7 @@ class DashboardOne extends React.Component {
       const date = this.state.selectedDate ? this.state.selectedDate : new Date();
       const parsedDate = moment(date).locale(e).format('LLLL');
       this.setState({selectedDateParsed: parsedDate})
+      this.fetchData();
     }
      
     render() {
@@ -206,7 +220,6 @@ class DashboardOne extends React.Component {
                                 defaultPageSize={10}
                                 headerStyle={{fontSize: '0.5em'}}
                             /> : <Spinner/>}
-                            
                         </Col>
                     </Row>
                 </div>

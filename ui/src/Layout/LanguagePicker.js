@@ -9,7 +9,7 @@ class LanguagePickerCustom extends React.Component {
 		super(props);
 		this.state = {
             startDate: new Date(),
-            value: 'Select Language'
+            value: this.props.value
         } 
         this.onSelect = this.onSelect.bind(this);
     }  
@@ -23,6 +23,11 @@ class LanguagePickerCustom extends React.Component {
         e = e.replace('-', '_')
         i18next.changeLanguage(e, ()=>console.log('Changed the language to ' + e)) // -> returns a Promise
         this.props.changeDateLanguage(e);
+        // this.props.openMenu();
+      }
+
+      componentWillReceiveProps(nextProps) {
+        this.setState({value: nextProps.value})
       }
 
     render() {
