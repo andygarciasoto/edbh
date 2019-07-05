@@ -8,14 +8,14 @@ class ShiftPickerCustom extends React.Component {
 		super(props);
 		this.state = {
             startDate: new Date(),
-            value: 'Select Shift'
+            value: this.props.value
         } 
         this.onSelect = this.onSelect.bind(this);
     }  
 
-    componentDidMount() {
+    componentWillReceiveProps(nextProps) {
+        this.setState({value: nextProps.value})
     }
-    
 
     onSelect(e) {
         this.setState({value: e})

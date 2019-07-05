@@ -3,6 +3,27 @@
     "Please scan a clock number barcode to begin" : "Por favor escanee un código de barras para comenzar",
     "Parker Hannifin Day by Hour Application" : "Aplicación de Día a Día de Parker Hannifin",
     "Menu" : "Menú",
-    "Log Out" : "Salir"
+    "Log Out" : "Salir",
+    "Machine/Cell" : "Máquina/Celda", 
+    "Day by Hour Tracking" : "Seguimiento de Día por Hora",
+    "Shift Number" : "Número de Turno",
+    "Part Number" : "Número de Parte",
+    "Ideal" : "Esperado",
+    "Target Pcs." : "Objetivo en Piezas",
+    "Actual Pcs." : "Actual en Piezas",
+    "Cumulative Actual Pcs." : "Acumulativo Actual en Piezas",
+    "Downtime (minutes)" : "Tiempo de Falla (Minutos)",
+    "Downtime Reason Code" : "Código de Razón de Tiempo de Falla",
+    "Comments And Actions Taken" : "Comentarios y Acciones Tomadas",
+    "Operator" : "Operador",
+    "Supervisor" : "Supervisor",
+    "Machine Selector" : "Selector de Máquina",
+    "Date Selector" : "Selector de Fecha",
+    "Shift Selector" : "Selector de Turno",
+    "Language Selector" : "Selector de Lenguaje",
+    "Submit" : "Enviar",
+    "Select Language" : "Seleccionar Lenguaje",
+    "Select Machine" : "Seleccionar Máquina",
+    "Select Shift" : "Seleccionar Turno"
 }
 

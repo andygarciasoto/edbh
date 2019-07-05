@@ -7,19 +7,20 @@ class MachinePickerCustom extends React.Component {
 		super(props);
 		this.state = {
             machines: [12395, 23421, 23425, 63433],
-            value: 'Select Machine'
+            value: this.props.value
         } 
         this.onSelect = this.onSelect.bind(this);
     }  
 
-    componentDidMount() {
-    }
-    
-
     onSelect(e) {
         this.setState({ value: e });
+        this.props.changeMachine(e);
         this.props.collectInput(e, 'machine');
       }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({value: nextProps.value})
+    }
 
     render() {
         const machines = this.state.machines;

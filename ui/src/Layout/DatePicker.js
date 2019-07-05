@@ -13,13 +13,11 @@ class DatePickerCustom extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }  
 
-    componentDidMount() {
-    }
-
     handleChange(date) {
         this.setState({
           startDate: date
         });
+        this.props.changeDate(date);
         this.props.collectInput(date, 'date');
       }
 

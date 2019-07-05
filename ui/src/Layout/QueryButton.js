@@ -14,11 +14,12 @@ class QueryButton extends React.Component {
         const {machine, date, shift} = this.props;
         const values = [machine, date, shift];
         this.props.toParent(values);
+        this.props.openMenu();
     }
 
     render() {
         return (
-            <Button variant="outline-primary" className="query-button" onClick={this.onSubmit}>Submit</Button>
+            <Button variant="outline-primary" className="query-button" onClick={this.onSubmit}>{this.props.t('Submit')}</Button>
         );
     }
 };
