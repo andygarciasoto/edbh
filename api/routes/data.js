@@ -118,7 +118,7 @@ module.exports = router;
 // machines
 // http://localhost:3001/?machine=23123&date=12/12/12&sf=1
 // comments receives: order number - returns: comments from that order
-// observations: receives machine number + shift + date - returns: comments
+// observations: receives machine number + shift + date - returns: commnpents
 // ideal: receives: order number and ideal number - updates: ideal number
 
 
