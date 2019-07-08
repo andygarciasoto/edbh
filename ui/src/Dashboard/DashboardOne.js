@@ -10,6 +10,7 @@ import FontAwesome from 'react-fontawesome';
 import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import Spinner from '../Spinner';
+import Comments from './Comments';
 import { getRequestData } from '../Utils/Requests';
 import ReactTooltip from 'react-tooltip';
 import('moment/locale/es');
@@ -83,13 +84,8 @@ class DashboardOne extends React.Component {
         this.setState({modalStyle})
         const date = new Date();
         const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
-        console.log(x)
         this.setState({selectedDate: date, selectedDateParsed: x})
         this.fetchData();
-    }
-
-    componentDidUpdate(nextProps) {
-      console.log(nextProps);
     }
 
     fetchData(data) {
@@ -105,6 +101,7 @@ class DashboardOne extends React.Component {
         ideal: '100',
         target_pcs: '75',
         actual_pcs: '77',
+        cumulative_target_pcs: '120',
         cumulative_pcs: '77',
         downtime: '10',
         downtime_reason_code: '124',
@@ -117,6 +114,7 @@ class DashboardOne extends React.Component {
          ideal: '100',
          target_pcs: '73',
          actual_pcs: '71',
+         cumulative_target_pcs: '110',
          cumulative_pcs: '74',
          downtime: '08',
          downtime_reason_code: '124',
@@ -135,15 +133,18 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span data-tip={t('Ideal')}>{t('Ideal')}<ReactTooltip/></span>,
           accessor: 'ideal',
-          Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text">{props.value}</span><FontAwesome name="pencil"/></span>
+          Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text table-click">{props.value}</span><FontAwesome name="pencil"/></span>
         }, {
-          Header: () => <span data-tip={t('Target Pcs.')}>{t('Target Pcs.')}<ReactTooltip/></span>,
+          Header: () => <span data-tip={t('Target')}>{t('Target')}<ReactTooltip/></span>,
           accessor: 'target_pcs'
         }, {
-          Header: () => <span data-tip={t('Actual Pcs.')}>{t('Actual Pcs.')}<ReactTooltip/></span>,
+          Header: () => <span data-tip={t('Actual')}>{t('Actual')}<ReactTooltip/></span>,
           accessor: 'actual_pcs'
         }, {
-          Header: () => <span data-tip={t('Cumulative Actual Pcs.')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
+          Header: () => <span data-tip={t('Cumulative Target')}>{t('Cumulative Target')}<ReactTooltip/></span>,
+          accessor: 'cumulative_target_pcs'
+        },  {
+          Header: () => <span data-tip={t('Cumulative Actual')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
           accessor: 'cumulative_pcs'
         }, {
           Header: () => <span data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}<ReactTooltip/></span>,
@@ -154,8 +155,8 @@ class DashboardOne extends React.Component {
         },{
           Header: () => <span data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}<ReactTooltip/></span>,
           accessor: 'actions_comments',
-          width: 180,
-          Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text comments">{props.value}</span><FontAwesome name="search-plus"/></span>
+          width: 200,
+          Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text table-click comments">{props.value}</span><FontAwesome name="search-plus"/></span>
         }, {
           Header: () => <span data-tip={t('Operator')}>{t('Operator')}<ReactTooltip/></span>,
           accessor: 'oper_id'
@@ -176,12 +177,12 @@ class DashboardOne extends React.Component {
     }
 
     changeMachine(e) {
+      console.log(e);
       this.setState({selectedMachine: e})
     }
 
     changeLanguage(e) {
       e = e.split('_')[0]
-      console.log(e)
       const date = this.state.selectedDate ? this.state.selectedDate : new Date();
       const parsedDate = moment(date).locale(e).format('LLLL');
       this.setState({selectedDateParsed: parsedDate})
@@ -189,6 +190,7 @@ class DashboardOne extends React.Component {
     }
      
     render() {
+        console.log(this.state)
         // const data = this.state.data;
         const columns = this.state.columns;
         const machine = this.state.selectedMachine;
@@ -199,6 +201,12 @@ class DashboardOne extends React.Component {
         // ternary between data and spinner
         // ***********************************
         const t=this.props.t;
+        const back = t('Back');
+        const next = t('Next');
+        const page = t('Page');
+        const off = t('Of');
+        const rows = t('Rows');
+
         return (
             <React.Fragment>
                 <Header className="app-header" 
@@ -211,17 +219,26 @@ class DashboardOne extends React.Component {
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
-                            <Row style={{paddingLeft: '10%'}}><Col md={4}><p>{t('Machine/Cell')}: {machine}</p>
-                              </Col><Col md={4}><p>{t('Day by Hour Tracking')}</p></Col><Col md={4}><p>{date}</p></Col>
+                            <Row style={{paddingLeft: '10%'}}><Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5>
+                              </Col><Col md={4}><h5>{t('Day by Hour Tracking')}</h5></Col><Col md={4}><h5>{date}</h5></Col>
                             </Row>
                             {data ? <ReactTable
                                 data={data}
                                 columns={columns}
-                                defaultPageSize={10}
+                                showPaginationBottom={true}
+                                defaultPageSize={8}
                                 headerStyle={{fontSize: '0.5em'}}
+                                previousText={back}
+                                nextText={next} 
+                                pageText={page}
+                                ofText={off}
+                                rowsText={rows} 
+                                pageSizeOptions={[8, 16, 24]}
+                                style={{whiteSpace: 'unset'}}
                             /> : <Spinner/>}
                         </Col>
                     </Row>
+                    <Comments />
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
@@ -239,6 +256,7 @@ class DashboardOne extends React.Component {
                  onRequestClose={this.closeModal}
                  style={this.state.modalStyle}
                  contentLabel="Example Modal"/>
+                 
             </React.Fragment>
         );
     }

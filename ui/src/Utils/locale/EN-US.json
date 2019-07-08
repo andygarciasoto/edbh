@@ -12,6 +12,8 @@
     "Target Pcs." : "Target Pcs.",
     "Actual Pcs." : "Actual Pcs.",
     "Cumulative Actual Pcs." : "Cumulative Actual Pcs.",
+    "Cumulative Actual" : "Cumulative Actual",
+    "Cumulative Target" : "Cumulative Target",
     "Downtime (minutes)" : "Downtime (minutes)",
     "Downtime Reason Code" : "Downtime Reason Code",
     "Comments And Actions Taken" : "Comments And Actions Taken",
@@ -24,6 +26,16 @@
     "Submit" : "Submit",
     "Select Language" : "Select Language", 
     "Select Machine" : "Select Machine",
-    "Select Shift" : "Select Shift"
+    "Select Shift" : "Select Shift",
+    "Back" : "Back",
+    "Next" : "Next",
+    "Page" : "Page",
+    "Of" : "Of",
+    "Rows" : "Rows",
+    "Shift 1" : "Shift 1",
+    "Shift 2" : "Shift 2",
+    "Shift 3" : "Shift 3",
+    "All Shifts" : "All Shifts",
+    "Target" : "Target"
 }
 

@@ -16,7 +16,7 @@ class BarcodeScanner extends Component {
     }
     this.handleScan = this.handleScan.bind(this);
     this.handleError = this.handleError.bind(this);
-    this.handleWarning = this.handleWarning.bind(this);
+    this.handleLoad = this.handleLoad.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
 
@@ -54,7 +54,7 @@ class BarcodeScanner extends Component {
     console.error(err)
   }
 
-  handleWarning(err){
+  handleLoad(err){
     this.setState({modal_load_IsOpen: true});
   }
 
@@ -83,6 +83,7 @@ class BarcodeScanner extends Component {
             style={this.state.modalStyle}
             contentLabel="Example Modal"
           />
+          <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p>
       </div>
     )
   }

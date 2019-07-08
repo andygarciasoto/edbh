@@ -23,7 +23,7 @@ class LanguagePickerCustom extends React.Component {
         e = e.replace('-', '_')
         i18next.changeLanguage(e, ()=>console.log('Changed the language to ' + e)) // -> returns a Promise
         this.props.changeDateLanguage(e);
-        // this.props.openMenu();
+        this.props.openMenu();
       }
 
       componentWillReceiveProps(nextProps) {

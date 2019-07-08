@@ -64,7 +64,7 @@ class Header extends React.Component {
                                 <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
-                                    <MachinePickerCustom collectInput={this.collectInputs} changeMachine={this.props.changeMachine}value={t('Select Machine')}/>
+                                    <MachinePickerCustom collectInput={this.collectInputs} changeMachine={this.props.changeMachine} t={t} value={t('Select Machine')}/>
                                     <DatePickerCustom collectInput={this.collectInputs} changeDate={this.props.changeDate}/>
                                     <ShiftPickerCustom collectInput={this.collectInputs} t={t} value={t('Select Shift')}/>
                                     <LanguagePickerCustom changeDateLanguage={this.props.changeDateLanguage} openMenu={this.openMenu} value={t('Select Language')}/>

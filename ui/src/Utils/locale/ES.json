@@ -12,6 +12,8 @@
     "Target Pcs." : "Objetivo en Piezas",
     "Actual Pcs." : "Actual en Piezas",
     "Cumulative Actual Pcs." : "Acumulativo Actual en Piezas",
+    "Cumulative Actual" : "Acumulatido Actual",
+    "Cumulative Target" : "Acumulativo Meta",
     "Downtime (minutes)" : "Tiempo de Falla (Minutos)",
     "Downtime Reason Code" : "Código de Razón de Tiempo de Falla",
     "Comments And Actions Taken" : "Comentarios y Acciones Tomadas",
@@ -24,6 +26,16 @@
     "Submit" : "Enviar",
     "Select Language" : "Seleccionar Lenguaje",
     "Select Machine" : "Seleccionar Máquina",
-    "Select Shift" : "Seleccionar Turno"
+    "Select Shift" : "Seleccionar Turno",
+    "Back" : "Atrás",
+    "Next" : "Siguiente",
+    "Page" : "Página",
+    "Of" : "De",
+    "Rows" : "Líneas",
+    "Shift 1" : "Turno 1",
+    "Shift 2" : "Turno 2",
+    "Shift 3" : "Turno 3",
+    "All Shifts" : "Todos los Turnos",
+    "Target" : "Meta"
 }
 
