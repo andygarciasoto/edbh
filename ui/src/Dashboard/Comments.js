@@ -14,9 +14,6 @@ class Comments extends React.Component {
         this.closeModal = this.closeModal.bind(this);
     }  
 
-    componentDidMount() {
-    }
-
     enterCommunication(comm) {
         console.log(comm);
     }
@@ -30,30 +27,32 @@ class Comments extends React.Component {
     }
 
     render() {
+        const t = this.props.t;
         return (
             <div className={'intershift-communication-comments'}>
-                <h5>Intershift Communication</h5>
+                <h5>{t('Intershift Communication')}</h5>
                 <div id="intershift-table">
                 <Table striped bordered hover className="intershift-communication-table">
                     <thead>
                         <tr>
-                        <th>User</th>
-                        <th>Comment</th>
+                        <th>{t('User')}</th>
+                        <th>{t('Comment')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><span>Jim - Operator</span><div className={'intershift-comment-date'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment"}><div>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>
+                            <td className={"intershift-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>
                             <span className="intershift-read-more" onClick={this.openModal}>Open Thread >></span></td>
                         </tr>
                     </tbody>
                 </Table>
                 </div>
-                <span className="dashboard-modal-field-group"><p>Enter new communication:</p>
+                <span className="dashboard-modal-field-group"><p>{t('Enter new communication:')}</p>
                     <Form.Control style={{paddingTop: '5px'}} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.enterCommunication}>Submit</Button>
+                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.enterCommunication}>{t('Submit')}</Button>
                 <ThreadModal
                     isOpen={this.state.modal_thread_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}

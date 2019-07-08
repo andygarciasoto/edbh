@@ -8,7 +8,7 @@ class DatePickerCustom extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
-            startDate: new Date(),
+            startDate: this.props.date,
         } 
         this.handleChange = this.handleChange.bind(this);
     }  

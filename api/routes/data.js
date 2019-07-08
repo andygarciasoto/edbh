@@ -1,10 +1,19 @@
 var express = require('express');
 var router = express.Router();
+var cors = require('cors');
 
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+  }
 /* GET users listing. */
-router.get('/data/:id', function (req, res) {
-    const id = parseInt(req.params.id);
-    if (id == 1232) {
+
+router.get('/'), function(req, res) {
+    res.send({response: 'Welcome to the Parker Hannifin DBH API'});
+}
+router.get('/data', cors(corsOptions), function (req, res) {
+    const id = parseInt(req.query.mc);
+    if (id == 12532) {
         const data = [{
             Expander: true,
             shift: '11:00 pm - 12:00 am',

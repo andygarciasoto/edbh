@@ -2,7 +2,7 @@ import React from 'react';
 import './dashboard.scss';
 import '../sass/tooltip.scss'
 import Header from '../Layout/Header';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
@@ -13,6 +13,8 @@ import Spinner from '../Spinner';
 import Comments from './Comments';
 import { getRequestData } from '../Utils/Requests';
 import ReactTooltip from 'react-tooltip';
+import LoadingModal from '../Layout/LoadingModal';
+import * as _ from 'lodash';
 import('moment/locale/es');
 
 class DashboardOne extends React.Component {
@@ -66,7 +68,7 @@ class DashboardOne extends React.Component {
       this.setState({modal_authorize_IsOpen: false, modal_comments_IsOpen: false, modal_values_IsOpen: false});
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         const modalStyle = {
           content : {
             top                   : '50%',
@@ -88,41 +90,9 @@ class DashboardOne extends React.Component {
         this.fetchData();
     }
 
-    fetchData(data) {
-      if (data) {
-        getRequestData('/data', data);
-      }
+    async fetchData(data) {
       const t = this.props.t;
-
-      const response = [{
-        Expander: true,
-        shift: '11:00 pm - 12:00 am',
-        part_number: '1111111',
-        ideal: '100',
-        target_pcs: '75',
-        actual_pcs: '77',
-        cumulative_target_pcs: '120',
-        cumulative_pcs: '77',
-        downtime: '10',
-        downtime_reason_code: '124',
-        actions_comments: 'Something Happened Here',
-        oper_id: 'SW',
-        superv_id: 'DS',
-       },{
-         shift: '12:00 am - 01:00 am',
-         part_number: '1111112',
-         ideal: '100',
-         target_pcs: '73',
-         actual_pcs: '71',
-         cumulative_target_pcs: '110',
-         cumulative_pcs: '74',
-         downtime: '08',
-         downtime_reason_code: '124',
-         actions_comments: 'Woops Something Broke',
-         oper_id: 'RF',
-         superv_id: 'DF',
-       }]
-
+      
         const columns = [{
           Header: () => <span data-tip={t('Shift Number')}>{t('Shift Number')}<ReactTooltip/></span>,
           accessor: 'shift',
@@ -165,8 +135,11 @@ class DashboardOne extends React.Component {
           accessor: 'superv_id'
         }
       ];
-
-      this.setState({data: response, columns})
+      let response = {};
+      if (data) {
+        response = await getRequestData(`/data`, data);
+      }
+       this.setState({data: response, columns})
     }
 
     changeDate(e) {
@@ -190,7 +163,6 @@ class DashboardOne extends React.Component {
     }
      
     render() {
-        console.log(this.state)
         // const data = this.state.data;
         const columns = this.state.columns;
         const machine = this.state.selectedMachine;
@@ -216,13 +188,26 @@ class DashboardOne extends React.Component {
                   changeDate={this.changeDate}
                   changeDateLanguage={this.changeLanguage}
                 />
+                <div id="semi-button-deck">
+                  <span className="semi-button-shift-change-left">
+                    <FontAwesome name="angle-double-left" className="icon-arrow"/> 
+                    <FontAwesome name="angle-left" className="icon-arrow"/>
+                      <span id="previous-shift">Previous Shift</span>
+                  </span>
+                  <span className="semi-button-shift-change-right">
+                    <span id="current-shift">Back to Current Shift</span>
+                    <FontAwesome name="angle-right" className="icon-arrow"/>
+                  </span>
+                </div>
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
-                            <Row style={{paddingLeft: '10%'}}><Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5>
-                              </Col><Col md={4}><h5>{t('Day by Hour Tracking')}</h5></Col><Col md={4}><h5>{date}</h5></Col>
+                            <Row style={{paddingLeft: '5%'}}>
+                                <Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
+                                <Col md={4}><h5>{t('Day by Hour Tracking')}</h5></Col>
+                                <Col md={4}><h5>{date}</h5></Col>
                             </Row>
-                            {data ? <ReactTable
+                            {!_.isEmpty(data) ? <ReactTable
                                 data={data}
                                 columns={columns}
                                 showPaginationBottom={true}
@@ -238,25 +223,24 @@ class DashboardOne extends React.Component {
                             /> : <Spinner/>}
                         </Col>
                     </Row>
-                    <Comments />
+                    <Comments t={this.props.t} />
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
-                //  onAfterOpen={this.afterOpenModal}
+                 //  onAfterOpen={this.afterOpenModal}
                  onRequestClose={this.closeModal}
                  style={this.state.modalStyle}
                  contentLabel="Example Modal"
                  currentVal={100}
-                 // also send the entire row -- get order number and change value on database, then refresh table
-                 />
+                />
 
                 <CommentsModal
-                 isOpen={this.state.modal_comments_IsOpen}
-                //  onAfterOpen={this.afterOpenModal}
-                 onRequestClose={this.closeModal}
-                 style={this.state.modalStyle}
-                 contentLabel="Example Modal"/>
-                 
+                  isOpen={this.state.modal_comments_IsOpen}
+                  //  onAfterOpen={this.afterOpenModal}
+                  onRequestClose={this.closeModal}
+                  style={this.state.modalStyle}
+                  contentLabel="Example Modal"
+                />
             </React.Fragment>
         );
     }

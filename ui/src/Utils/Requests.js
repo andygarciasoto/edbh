@@ -1,8 +1,9 @@
 import { API } from './Constants';
+import { resolve } from 'url';
 const axios = require('axios');
 
-function getRequestData(url, data) {
-    console.log(url, data, 1)
+async function getRequestData(url, data) {
+  let res = {};
     const parameters = { 
         params: {
             mc: data[0],
@@ -10,20 +11,20 @@ function getRequestData(url, data) {
             sf: data[2],
         }
     }
-    console.log(parameters);
-
-    axios.get(`${API}/data`, parameters)
+    // console.log(parameters);
+    res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
-      console.log(response);
+      return response;
     })
     .catch(function (error) {
       // handle error
       console.log(error);
     })
     .finally(function () {
-      // always executed
+      // nothing
     });
+    return res.data;
 }
 
 export { getRequestData }

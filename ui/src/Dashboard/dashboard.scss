@@ -25,3 +25,34 @@
         cursor: pointer;
         color: $color-link;
     }
+    
+    .icon-arrow {
+        font-weight: 400;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .shift-arrow-text {
+        text-decoration: underline;
+        // padding-bottom: 20px;
+    }
+
+    .shift-buttons {
+        margin-bottom: 10px;
+    }
+
+    #previous-shift:hover, #current-shift:hover, .icon-arrow:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .semi-button-shift-change-right {
+        float: right;
+    }
+
+    #semi-button-deck {
+        background-color: rgb(82, 82, 82);
+        color: $color-orange;
+        padding-left: 3%;
+        padding-right: 3%;
+    }
