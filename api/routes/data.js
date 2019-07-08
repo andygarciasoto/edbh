@@ -55,7 +55,7 @@ router.get('/data/:id', function (req, res) {
             oper_id: 'GA',
             superv_id: 'AV',
         }, {
-            shift: '03:00 am - 04:00 am',
+            shift: '02:00 am - 03:00 am',
             part_number: '1111114',
             ideal: '100',
             target_pcs: '79',
