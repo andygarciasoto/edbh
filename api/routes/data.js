@@ -12,7 +12,6 @@ router.get('/'), function(req, res) {
 }
 router.get('/data', cors(corsOptions), function (req, res) {
     const mc = parseInt(req.query.mc);
-    console.log(req.query.mc);
     if (mc == 12532) {
         const data = [{
             Expander: true,

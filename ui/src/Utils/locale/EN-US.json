@@ -36,6 +36,11 @@
     "Shift 2" : "Shift 2",
     "Shift 3" : "Shift 3",
     "All Shifts" : "All Shifts",
-    "Target" : "Target"
+    "Target" : "Target",
+    "Enter new communication" : "Enter new communication", 
+    "Read More" : "Read More",
+    "Intershift Communication" : "Intershift Communication",
+    "User" : "User", 
+    "Comment" : "Comment"
 }
 

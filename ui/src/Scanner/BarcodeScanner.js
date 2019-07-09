@@ -12,7 +12,8 @@ class BarcodeScanner extends Component {
     this.state = {
       result: this.props.t('Please scan a clock number barcode to begin'),
       modal_error_IsOpen: false,
-      modal_load_IsOpen: false
+      modal_load_IsOpen: false,
+      login: false
     }
     this.handleScan = this.handleScan.bind(this);
     this.handleError = this.handleError.bind(this);
@@ -39,23 +40,35 @@ class BarcodeScanner extends Component {
   }
 
   closeModal() {
-    this.setState({modal_error_IsOpen: false, modal_load_IsOpen: false});
+    // this.setState({modal_error_IsOpen: false, modal_load_IsOpen: false});
   }
 
   handleScan(data){
     this.setState({
-      result: 'Scanning...',
+      result: 'Scanning',
+      code: data,
     })
-    console.log(data);
+    this.authorize(this.state.code); 
   }
 
-  handleError(err){
+  authorize(code) {
+    if (code === '0010018322') {
+      console.log('success!')
+      this.handleLoad();
+    } else {
+      console.log('fail!')
+      this.setState({result: 'Error'});
+      this.handleError();
+    }
+  }
+
+  handleError(err) {
     this.setState({modal_error_IsOpen: true});
     console.error(err)
   }
 
   handleLoad(err){
-    this.setState({modal_load_IsOpen: true});
+    this.setState({modal_load_IsOpen: true, login: true});
   }
 
   render(){
@@ -65,7 +78,7 @@ class BarcodeScanner extends Component {
           onError={this.handleError}
           onScan={this.handleScan}
         />
-        <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={true}></Form.Control>
+        {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
         <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>
         
         <ErrorModal
@@ -74,6 +87,7 @@ class BarcodeScanner extends Component {
             onRequestClose={this.closeModal}
             style={this.state.modalStyle}
             contentLabel="Example Modal"
+            shouldCloseOnOverlayClick={false}
           />
 
           <LoadingModal
@@ -82,6 +96,9 @@ class BarcodeScanner extends Component {
             onRequestClose={this.closeModal}
             style={this.state.modalStyle}
             contentLabel="Example Modal"
+            login={this.state.login}
+            t={this.props.t}
+            shouldCloseOnOverlayClick={false}
           />
           {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
       </div>

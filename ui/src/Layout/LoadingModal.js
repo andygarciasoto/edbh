@@ -4,6 +4,7 @@ import './ErrorModal.scss';
 import BlinkDots from  './BlinkDots';
 import Spinner from '../Spinner';
 import * as _ from 'lodash';
+import { withRouter } from 'react-router-dom'
 
 
 class LoadingModal extends React.Component {
@@ -11,10 +12,17 @@ class LoadingModal extends React.Component {
 		super(props);
 		this.state = {
             value : '',
+            loadingMessage: this.props.t('Logging you in'),
+            headerMessage: this.props.t('Please Wait')
         } 
     }
 
-    componentDidMount() {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.login === true) {
+            setTimeout(function(){
+                nextProps.history.push('/dashboard')},
+            3000);
+        }
     }
 
     render() {
@@ -30,8 +38,8 @@ class LoadingModal extends React.Component {
                 style={styles}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-error-field-head">Please Wait</p>
-                <p className="warning-message">Loading </p><BlinkDots />
+                <div><p className="dashboard-modal-error-field-head">{this.state.headerMessage}</p>
+                <p className="warning-message">{this.state.loadingMessage}</p><BlinkDots />
                 <Spinner/>
                 </div>
             </Modal>
@@ -40,4 +48,4 @@ class LoadingModal extends React.Component {
 }
 
 Modal.setAppElement('#root');
-export default LoadingModal;
+export default withRouter(LoadingModal);

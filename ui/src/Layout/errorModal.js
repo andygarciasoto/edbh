@@ -4,7 +4,6 @@ import { Button } from 'react-bootstrap';
 import './ErrorModal.scss';
 import FontAwesome from 'react-fontawesome';
 
-
 class ErrorModal extends React.Component {
     constructor(props) {
 		super(props);
@@ -13,6 +12,7 @@ class ErrorModal extends React.Component {
         } 
         this.validateBarcode = this.validateBarcode.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.reloadPage = this.reloadPage.bind(this);
     }
 
     validateBarcode(e) {
@@ -23,7 +23,8 @@ class ErrorModal extends React.Component {
         this.setState({value: e.target.value});
     }
 
-    componentDidMount() {
+    reloadPage() {
+        window.location.reload();
     }
 
     render() {
@@ -39,7 +40,7 @@ class ErrorModal extends React.Component {
                 <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
                 <p className="warning-message">Sign on Attempt was Unsuccesful</p></div>
                 </div>
-                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
+                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.reloadPage}>Close</Button>
             </Modal>
         )
     }

@@ -45,12 +45,13 @@ class Comments extends React.Component {
                             <td><span>Jim - Operator</span><div className={'intershift-comment-date'}>19/07/2019 - 14:23</div></td>
                             <td className={"intershift-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
                                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>
-                            <span className="intershift-read-more" onClick={this.openModal}>Read More<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
+                            <span className="intershift-read-more" onClick={this.openModal}>{t('Read More')}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
                     </tbody>
                 </Table>
                 </div>
-                <span className="dashboard-modal-field-group"><p>{t('Enter new communication:')}</p>
+                <span className="dashboard-modal-field-group">
+                    <p>{t('Enter new communication')}:</p>
                     <Form.Control style={{paddingTop: '5px'}} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
                 <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.enterCommunication}>{t('Submit')}</Button>
