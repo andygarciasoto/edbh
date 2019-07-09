@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import './MegaMenu.scss'
+import './MegaMenu.scss';
 class MegaMenu extends React.Component {
     constructor(props) {
 		super(props);

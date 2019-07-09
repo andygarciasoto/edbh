@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, Table, Form } from 'react-bootstrap';
 import './Comments.scss';
 import ThreadModal from '../Layout/ThreadModal';
+import FontAwesome from  'react-fontawesome';
 
 class Comments extends React.Component {
     constructor(props) {
@@ -44,7 +45,7 @@ class Comments extends React.Component {
                             <td><span>Jim - Operator</span><div className={'intershift-comment-date'}>19/07/2019 - 14:23</div></td>
                             <td className={"intershift-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
                                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>
-                            <span className="intershift-read-more" onClick={this.openModal}>Open Thread >></span></td>
+                            <span className="intershift-read-more" onClick={this.openModal}>Read More<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
                     </tbody>
                 </Table>

@@ -24,6 +24,7 @@ class Header extends React.Component {
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
         this.returnToParent = this.returnToParent.bind(this);
+        this.onScroll = this.onScroll.bind(this);
     }
 
     collectInputs(value, type) {
@@ -47,6 +48,15 @@ class Header extends React.Component {
     returnToParent(data) {
         this.props.toParent(data);
     }
+
+    componentDidMount() {
+        window.addEventListener('scroll', this.onScroll)
+    }
+
+    onScroll() {
+        this.setState({megaMenuToggle: 'dropdown-content'});
+    }
+
 
     render() {
         const t = this.props.t;

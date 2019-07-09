@@ -83,7 +83,7 @@ class BarcodeScanner extends Component {
             style={this.state.modalStyle}
             contentLabel="Example Modal"
           />
-          <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p>
+          {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
       </div>
     )
   }

@@ -32,7 +32,7 @@ class ThreadModal extends React.Component {
               bottom                : 'auto',
               marginRight           : '-50%',
               transform             : 'translate(-50%, -50%)',
-              height: '60%',
+              maxHeight: '60%',
               overflowY: 'scroll'
             },
             overlay : {

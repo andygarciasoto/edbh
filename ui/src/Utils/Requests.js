@@ -2,7 +2,7 @@ import { API } from './Constants';
 import { resolve } from 'url';
 const axios = require('axios');
 
-async function getRequestData(url, data) {
+async function getRequestData(data) {
   let res = {};
     const parameters = { 
         params: {

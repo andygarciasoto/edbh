@@ -56,3 +56,18 @@
         padding-left: 3%;
         padding-right: 3%;
     }
+
+    .wordwrap {
+        white-space: pre-line !important;
+        word-wrap: break-word;
+      }
+
+    .editable:hover {color: $color-orange; cursor: pointer;}
+
+    .editable {
+        cursor: pointer;
+        background-color: rgb(246, 246, 246);
+        padding: 100%;
+        overflow: scroll;
+        color: red;
+    }

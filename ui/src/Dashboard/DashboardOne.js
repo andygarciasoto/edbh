@@ -33,6 +33,7 @@ class DashboardOne extends React.Component {
             selectedDate: undefined,
             selectedDateParsed: '',
             selectedMachine: 12532,
+            selectedShift: 'Shift 1',
             currentLanguage: 'en'
         } 
         this.openModal = this.openModal.bind(this);
@@ -87,60 +88,67 @@ class DashboardOne extends React.Component {
         const date = new Date();
         const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
         this.setState({selectedDate: date, selectedDateParsed: x})
-        this.fetchData();
+        this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
 
     async fetchData(data) {
       const t = this.props.t;
-      
         const columns = [{
-          Header: () => <span data-tip={t('Shift Number')}>{t('Shift Number')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Shift Number')}>{t('Shift Number')}<ReactTooltip/></span>,
           accessor: 'shift',
           width: 180
         }, {
-          Header: () => <span data-tip={t('Part Number')}>{t('Part Number')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}<ReactTooltip/></span>,
           accessor: 'part_number'
         }, {
-          Header: () => <span data-tip={t('Ideal')}>{t('Ideal')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}<ReactTooltip/></span>,
           accessor: 'ideal',
-          Cell: props => <span className='ideal-click' onClick={() => this.openModal('values')}><span className="react-table-click-text table-click">{props.value}</span><FontAwesome name="pencil"/></span>
+          Cell: props => <span className='ideal-click wordwrap' onClick={() => this.openModal('values')}><span className="react-table-click-text table-click">{props.value}</span></span>
         }, {
-          Header: () => <span data-tip={t('Target')}>{t('Target')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}<ReactTooltip/></span>,
           accessor: 'target_pcs'
         }, {
-          Header: () => <span data-tip={t('Actual')}>{t('Actual')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}<ReactTooltip/></span>,
           accessor: 'actual_pcs'
         }, {
-          Header: () => <span data-tip={t('Cumulative Target')}>{t('Cumulative Target')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}<ReactTooltip/></span>,
           accessor: 'cumulative_target_pcs'
         },  {
-          Header: () => <span data-tip={t('Cumulative Actual')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
           accessor: 'cumulative_pcs'
         }, {
-          Header: () => <span data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}<ReactTooltip/></span>,
           accessor: 'downtime'
         }, {
-          Header: () => <span data-tip={t('Downtime Reason Code')}>{t('Downtime Reason Code')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Downtime Reason Code')}>{t('Downtime Reason Code')}<ReactTooltip/></span>,
           accessor: 'downtime_reason_code'
         },{
-          Header: () => <span data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}<ReactTooltip/></span>,
           accessor: 'actions_comments',
           width: 200,
-          Cell: props => <span className='ideal-click' onClick={() => this.openModal('comments')}><span className="react-table-click-text table-click comments">{props.value}</span><FontAwesome name="search-plus"/></span>
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span className='ideal-click wordwrap' onClick={() => this.openModal('comments')}><span className="react-table-click-text table-click comments">{props.value}</span></span>
         }, {
-          Header: () => <span data-tip={t('Operator')}>{t('Operator')}<ReactTooltip/></span>,
-          accessor: 'oper_id'
+          Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}<ReactTooltip/></span>,
+          accessor: 'oper_id',
+          width: 90,
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span>{props.value}</span>
         }, {
-          Header: () => <span data-tip={t('Supervisor')}>{t('Supervisor')}<ReactTooltip/></span>,
-          accessor: 'superv_id'
+          Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}<ReactTooltip/></span>,
+          accessor: 'superv_id',
+          width: 90,
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span>{props.value}</span>
         }
       ];
       let response = {};
       if (data) {
-        response = await getRequestData(`/data`, data);
+        response = await getRequestData(data);
       }
+      if (response instanceof Object) {
        this.setState({data: response, columns})
-    }
+      } else {
+        console.log('Data could not be retrieved from the endpoint');
+      }
+      } 
 
     changeDate(e) {
       const date = e;
@@ -217,9 +225,9 @@ class DashboardOne extends React.Component {
                                 nextText={next} 
                                 pageText={page}
                                 ofText={off}
+                                headerClassName={"wordwrap"}
                                 rowsText={rows} 
                                 pageSizeOptions={[8, 16, 24]}
-                                style={{whiteSpace: 'unset'}}
                             /> : <Spinner/>}
                         </Col>
                     </Row>
