@@ -6,14 +6,14 @@ var corsOptions = {
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200 
   }
-/* GET users listing. */
 
 router.get('/'), function(req, res) {
     res.send({response: 'Welcome to the Parker Hannifin DBH API'});
 }
 router.get('/data', cors(corsOptions), function (req, res) {
-    const id = parseInt(req.query.mc);
-    if (id == 12532) {
+    const mc = parseInt(req.query.mc);
+    console.log(req.query.mc);
+    if (mc == 12532) {
         const data = [{
             Expander: true,
             shift: '11:00 pm - 12:00 am',
@@ -21,6 +21,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             ideal: '100',
             target_pcs: '75',
             actual_pcs: '77',
+            cumulative_target_pcs: '46',
             cumulative_pcs: '77',
             downtime: '10',
             downtime_reason_code: '124',
@@ -34,6 +35,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             ideal: '100',
             target_pcs: '73',
             actual_pcs: '71',
+            cumulative_target_pcs: '47',
             cumulative_pcs: '74',
             downtime: '08',
             downtime_reason_code: '124',
@@ -47,6 +49,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             ideal: '100',
             target_pcs: '74',
             actual_pcs: '72',
+            cumulative_target_pcs: '48',
             cumulative_pcs: '75',
             downtime: '',
             downtime_reason_code: '124',
@@ -59,6 +62,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             ideal: '100',
             target_pcs: '72',
             actual_pcs: '70',
+            cumulative_target_pcs: '49',
             cumulative_pcs: '73',
             downtime: '',
             downtime_reason_code: '124',
@@ -72,6 +76,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             ideal: '100',
             target_pcs: '79',
             actual_pcs: '70',
+            cumulative_target_pcs: '50',
             cumulative_pcs: '72',
             downtime: '02',
             downtime_reason_code: '124',
@@ -81,7 +86,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
         }];
         res.json(data);
     } else {
-        res.send('Machine number is not valid');
+        res.send('Invalid \'mc\' parameter');
     }
 });
 
@@ -124,6 +129,94 @@ router.get('/shifts', function (req, res) {
     }];
     res.json(shifts);
 });
+
+router.get('/intershift_communication', cors(corsOptions), function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+
+    if (mc == 12532 & sf == 1) {
+        const data = [{
+            user: 'Ryan',
+            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+            role: 'Supervisor',
+            timestamp: '19/07/2019 - 14:23'
+        },
+        {
+            user: 'John',
+            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+            role: 'Operator',
+            timestamp: '20/07/2019 - 14:29'
+        },
+        {
+            user: 'Susan',
+            comment: 'Lorem ipsum dolor sit amet.',
+            role: 'Operator',
+            timestamp: '16/07/2019 - 11:56'
+        }
+    ];
+        res.json(data);
+    }else if (mc == 12532 & sf == 2){
+        const data = [{
+            user: 'Mark',
+            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+            role: 'Supervisor',
+            timestamp: '19/07/2019 - 10:29'
+        },
+        {
+            user: 'Matt',
+            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+            role: 'Operator',
+            timestamp: '20/07/2019 - 22:00'
+        },
+        {
+            user: 'Shawn',
+            comment: 'Lorem ipsum dolor sit amet.',
+            role: 'Operator',
+            timestamp: '16/07/2019 - 17:06'
+        }
+    ];
+    res.json(data);
+}else if (mc == 12532 & sf == 3){
+    const data = [{
+        user: 'James',
+        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+        role: 'Supervisor',
+        timestamp: '19/07/2019 - 15:26'
+    },
+    {
+        user: 'Ana',
+        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+        role: 'Operator',
+        timestamp: '20/07/2019 - 04:21'
+    }
+];
+res.json(data);
+}else if (mc == 12395 & sf == 1){
+    const data = [{
+        user: 'Lorena',
+        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+        role: 'Supervisor',
+        timestamp: '19/07/2019 - 07:04'
+    },
+    {
+        user: 'Andrew',
+        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
+        role: 'Operator',
+        timestamp: '20/07/2019 - 21:56'
+    },
+    {
+        user: 'Josh',
+        comment: 'Lorem ipsum dolor sit amet.',
+        role: 'Operator',
+        timestamp: '16/07/2019 - 10:20'
+    }
+];
+res.json(data);
+} else{
+    res.send('Invalid parameters');
+}
+
+});
 module.exports = router;
 
 // data
@@ -140,4 +233,6 @@ router.get('/data', function(req, res, next) {
   const params = req.params;
   const data = [];
   // have two repeated shift hours
+
+  s
 }); */
