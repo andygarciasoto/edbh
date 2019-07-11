@@ -25,27 +25,50 @@ class ValueModal extends React.Component {
         this.setState({newValue: e.target.value});
     }
 
-    componentDidMount() {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.currentVal !== '') {
+            this.setState({value: nextProps.currentVal, valueType: true}) 
+        } else {
+            this.setState({value: nextProps.currentVal, valueType: false}) 
+        }
     }
 
     render() {
-        return (
-              <Modal
-                 isOpen={this.props.isOpen}
-                 onRequestClose={this.props.onRequestClose}
-                 style={this.props.style}
-                 contentLabel="Example Modal">
-                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                    <span className="dashboard-modal-field-group"><p>Current Value:</p>
-                      <Form.Control style={{paddingTop: '5px'}} type="number" disabled={true} value={this.state.value}></Form.Control>
-                    </span>
-                   <br />
-                   <span className="dashboard-modal-field-group"><p>New Value:</p>
-                      <Form.Control style={{paddingTop: '5px'}} type="number" value={this.state.newValue} onChange={this.onChange}></Form.Control>
-                    </span>
-                    <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.editNumber}>Submit</Button>
-                </Modal>
-        )
+        const t = this.props.t;
+        if (this.state.valueType === true) {
+            return (
+                <Modal
+                   isOpen={this.props.isOpen}
+                   onRequestClose={this.props.onRequestClose}
+                   style={this.props.style}
+                   contentLabel="Example Modal">
+                      <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                      <span className="dashboard-modal-field-group"><p>{t('Current Value')}:</p>
+                        <Form.Control style={{paddingTop: '5px'}} type={this.props.formType} disabled={true} value={this.state.value}></Form.Control>
+                      </span>
+                     <br />
+                     <span className="dashboard-modal-field-group"><p>{t('New Value')}:</p>
+                        <Form.Control style={{paddingTop: '5px'}} type={this.props.formType} onChange={(val) => this.onChange(val)}></Form.Control>
+                      </span>
+                      <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.editNumber}>{t('Submit')}</Button>
+                  </Modal>
+            )
+        } else {
+            return (
+                <Modal
+                isOpen={this.props.isOpen}
+                onRequestClose={this.props.onRequestClose}
+                style={this.props.style}
+                contentLabel="Example Modal">
+                   <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                  <span className="dashboard-modal-field-group"><p>{t('New Value')}:</p>
+                     <Form.Control style={{paddingTop: '5px'}} type={this.props.formType} onChange={(val) => this.onChange(val)}></Form.Control>
+                   </span>
+                   <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.editNumber}>{t('Submit')}</Button>
+               </Modal>
+            )
+        }
+       
     }
 }
 

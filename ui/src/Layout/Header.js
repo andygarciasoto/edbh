@@ -10,6 +10,7 @@ import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 
 class Header extends React.Component {
@@ -66,7 +67,7 @@ class Header extends React.Component {
                         <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo"/></Col>
                         <Col className={'col'} md={9} lg={9}> 
                             <div className="links header-side">
-                                <span className="header-item header-elem" href="#" id="log-out">{t('Log Out')} <FontAwesome name="sign-out"/></span>
+                                <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out"/></Link></span>
                                 <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>

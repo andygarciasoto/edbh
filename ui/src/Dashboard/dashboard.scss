@@ -7,15 +7,14 @@
 };
 
 .ideal-click {
-    color: grey; 
+    color: rgb(88, 88, 88); 
     cursor: pointer; 
+    text-overflow: scroll;
     
     .react-table-click-text {
-        text-decoration: underline; 
+        // text-decoration: underline; 
         padding-right: 5px;
     } 
-    
-    .comments {font-size: 0.8em;}
 }
 
     .fa-search-plus {float: right;}
@@ -30,11 +29,11 @@
         font-weight: 400;
         padding: 10px;
         cursor: pointer;
+        font-size: 1.4em;
     }
 
     .shift-arrow-text {
         text-decoration: underline;
-        // padding-bottom: 20px;
     }
 
     .shift-buttons {
@@ -51,10 +50,11 @@
     }
 
     #semi-button-deck {
-        background-color: rgb(82, 82, 82);
+        background-color: rgb(61, 61, 61);
         color: $color-orange;
         padding-left: 3%;
         padding-right: 3%;
+        padding-bottom: 5px;
     }
 
     .wordwrap {
@@ -71,3 +71,7 @@
         overflow: scroll;
         color: red;
     }
+
+    .comments {font-size: 0.8em;}
+#previous-shift, #current-shift {text-decoration: underline; padding: 8px 8px 8px 5px; margin-bottom: 5px !important;}
+#previous-shift:hover, #current-shift:hover {background-color: rgb(85, 85, 85);}

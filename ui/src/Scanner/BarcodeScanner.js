@@ -6,7 +6,7 @@ import BlinkDots from '../Layout/BlinkDots';
 import ErrorModal from  '../Layout/ErrorModal';
 import LoadingModal from  '../Layout/LoadingModal';
 
-class BarcodeScanner extends Component {
+class  BarcodeScanner extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -52,7 +52,7 @@ class BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    if (code === '0010018322') {
+    if (code === '7441003518483') {
       console.log('success!')
       this.handleLoad();
     } else {

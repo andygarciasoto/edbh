@@ -10,7 +10,6 @@ class QueryButton extends React.Component {
         this.onSubmit = this.onSubmit.bind(this);
     }  
     componentDidMount() {
-        console.log(this.props)
     }
     
     onSubmit() {

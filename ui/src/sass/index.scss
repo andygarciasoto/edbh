@@ -1,3 +1,5 @@
+@import './colors';
+
 body {
   background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -20,3 +22,6 @@ code {
 .drop-shadow {
   text-shadow: 1px 2px 3px #000000;
   }
+
+  a {color: $color-orange}
+  a:hover {color: $color-orange; text-decoration: none;}

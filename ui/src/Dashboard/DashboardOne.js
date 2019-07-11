@@ -2,7 +2,7 @@ import React from 'react';
 import './dashboard.scss';
 import '../sass/tooltip.scss'
 import Header from '../Layout/Header';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
@@ -34,7 +34,9 @@ class DashboardOne extends React.Component {
             selectedDateParsed: '',
             selectedMachine: 12532,
             selectedShift: 'Shift 1',
-            currentLanguage: 'en'
+            currentLanguage: 'en',
+            valueToEdit: '',
+            modalType: ''
         } 
         this.openModal = this.openModal.bind(this);
         // this.afterOpenModal = this.afterOpenModal.bind(this);
@@ -45,14 +47,37 @@ class DashboardOne extends React.Component {
         this.changeLanguage = this.changeLanguage.bind(this);
     }
 
-    openModal(type) {
+    openModal(type, val) {
+      let value = ''
+      let modalType = ''
+
       if (type === 'values') {
+        if (val.props) {
+          if (isNaN(val.props.value)) {
+            value = val.props.value;
+            modalType = 'text'
+          } else {
+            value = parseInt(val.props.value)
+            modalType = 'number'
+          }
+        }
         this.setState({
           modal_values_IsOpen: true,
-          modal_comments_IsOpen: false
+          modal_comments_IsOpen: false,
+          valueToEdit: value,
+          modalType
         })
       }
       if (type === 'comments') {
+        if (val) {
+          if (isNaN(val.props.value)) {
+            value = val.props.value;
+            modalType = 'text'
+          } else {
+            value = parseInt(val.props.value)
+            modalType = 'number'
+          }
+        }
         this.setState({
           modal_values_IsOpen: false,
           modal_comments_IsOpen: true
@@ -91,52 +116,97 @@ class DashboardOne extends React.Component {
         this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
 
+    componentWillReceiveProps(nextProps) {
+      this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+    }
+
     async fetchData(data) {
       const t = this.props.t;
         const columns = [{
-          Header: () => <span className={'wordwrap'} data-tip={t('Shift Number')}>{t('Shift Number')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Shift Number')}>{t('Shift Number')}</span>,
           accessor: 'shift',
-          width: 180
+          width: 180,
+          style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}<ReactTooltip/></span>,
-          accessor: 'part_number'
+          Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}</span>,
+          accessor: 'part_number',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}}  className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
           accessor: 'ideal',
-          Cell: props => <span className='ideal-click wordwrap' onClick={() => this.openModal('values')}><span className="react-table-click-text table-click">{props.value}</span></span>
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}<ReactTooltip/></span>,
-          accessor: 'target_pcs'
+          Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
+          accessor: 'target_pcs',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'}></span> : 
+          <span className='empty'>
+          <span>{props.value}</span></span>,
+          style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center'},
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}<ReactTooltip/></span>,
-          accessor: 'actual_pcs'
+          Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}</span>,
+          accessor: 'actual_pcs',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}<ReactTooltip/></span>,
-          accessor: 'cumulative_target_pcs'
+          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}</span>,
+          accessor: 'cumulative_target_pcs',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'}></span> : 
+          <span className='empty'>
+          <span>{props.value}</span></span>,
+          style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center'},
         },  {
-          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual Pcs.')}<ReactTooltip/></span>,
-          accessor: 'cumulative_pcs'
+          Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual')}</span>,
+          accessor: 'cumulative_pcs',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'}></span> : 
+          <span className='empty'>
+          <span>{props.value}</span></span>,
+          style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center'},
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}<ReactTooltip/></span>,
-          accessor: 'downtime'
+          Header: () => <span className={'wordwrap'} data-tip={t('Downtime (minutes)')}>{t('Downtime (minutes)')}</span>,
+          accessor: 'downtime',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 100, cursor: 'pointer'}} className={'empty-field'} onClick={props => this.openModal('values', props)}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Downtime Reason Code')}>{t('Downtime Reason Code')}<ReactTooltip/></span>,
-          accessor: 'downtime_reason_code'
+          Header: () => <span className={'wordwrap'} data-tip={t('Downtime Reason Code')}>{t('Downtime Reason Code')}</span>,
+          accessor: 'downtime_reason_code',
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
+          
         },{
-          Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
           accessor: 'actions_comments',
           width: 200,
-          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span className='ideal-click wordwrap' onClick={() => this.openModal('comments')}><span className="react-table-click-text table-click comments">{props.value}</span></span>
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('comments')}></span> : 
+            <span className='ideal-click' onClick={() => this.openModal('comments')}>
+            <span className="react-table-click-text table-click comments">{props.value}</span></span>
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
           accessor: 'oper_id',
           width: 90,
-          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span>{props.value}</span>
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}<ReactTooltip/></span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
           accessor: 'superv_id',
           width: 90,
-          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} onClick={() => this.openModal('comments')}></span> : <span>{props.value}</span>
+          Cell: props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          style: {textAlign: 'center'}
         }
       ];
       let response = {};
@@ -169,7 +239,7 @@ class DashboardOne extends React.Component {
       this.setState({selectedDateParsed: parsedDate})
       this.fetchData();
     }
-     
+
     render() {
         // const data = this.state.data;
         const columns = this.state.columns;
@@ -199,12 +269,12 @@ class DashboardOne extends React.Component {
                 <div id="semi-button-deck">
                   <span className="semi-button-shift-change-left">
                     <FontAwesome name="angle-double-left" className="icon-arrow"/> 
-                    <FontAwesome name="angle-left" className="icon-arrow"/>
+                    <FontAwesome name="caret-left fa-2" className="icon-arrow"/>
                       <span id="previous-shift">Previous Shift</span>
                   </span>
                   <span className="semi-button-shift-change-right">
                     <span id="current-shift">Back to Current Shift</span>
-                    <FontAwesome name="angle-right" className="icon-arrow"/>
+                    <FontAwesome name="caret-right fa-2" className="icon-arrow"/>
                   </span>
                 </div>
                 <div className="wrapper-main">
@@ -218,7 +288,7 @@ class DashboardOne extends React.Component {
                             {!_.isEmpty(data) ? <ReactTable
                                 data={data}
                                 columns={columns}
-                                showPaginationBottom={true}
+                                showPaginationBottom={false}
                                 defaultPageSize={8}
                                 headerStyle={{fontSize: '0.5em'}}
                                 previousText={back}
@@ -239,7 +309,9 @@ class DashboardOne extends React.Component {
                  onRequestClose={this.closeModal}
                  style={this.state.modalStyle}
                  contentLabel="Example Modal"
-                 currentVal={100}
+                 currentVal={this.state.valueToEdit}
+                 formType={this.state.modalType}
+                 t={this.props.t}
                 />
 
                 <CommentsModal
@@ -248,6 +320,7 @@ class DashboardOne extends React.Component {
                   onRequestClose={this.closeModal}
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
+                  t={this.props.t}
                 />
             </React.Fragment>
         );

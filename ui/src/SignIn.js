@@ -14,7 +14,7 @@ class SignIn extends React.Component {
 
     componentDidMount() {
         this.setState({style: {
-            backgroundImage: `linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3) ), url(${Background})`,
+            backgroundImage: `linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8) ), url(${Background})`,
             height: '100vh',
             backgroundSize: '150%, 150%',
         }})
@@ -25,9 +25,10 @@ class SignIn extends React.Component {
             <div id="main" style={this.state.style}>
                 <div id="signIn">
                     <img src={logo} className="App-logo" alt="logo" />  
-                    <p style={{fontSize: '0.6em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</p>
+                    <h3 style={{fontSize: '0.9em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <BarcodeScanner t={this.props.t}/>
                 </div>
+                <div className="app-info"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></div>
             </div>
         );
     }
