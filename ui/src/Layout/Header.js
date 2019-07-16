@@ -20,7 +20,7 @@ class Header extends React.Component {
             megaMenuToggle: 'dropdown-content',
             machineValue: 12532,
             dateValue: new Date(),
-            shiftValue: this.props.t('Shift 1'),
+            shiftValue: 'Select Shift',
         } 
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
@@ -36,7 +36,8 @@ class Header extends React.Component {
             this.setState({dateValue: moment(value).format('L')})
         }
         if (type === 'shift') {
-            this.setState({shiftValue: value})
+            // this.setState({shiftValue: value})
+            this.props.sendToMain(value);
         }
     }
 
@@ -52,6 +53,10 @@ class Header extends React.Component {
 
     componentDidMount() {
         window.addEventListener('scroll', this.onScroll)
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({shiftValue: nextProps.t(nextProps.selectedShift)})
     }
 
     onScroll() {
@@ -73,7 +78,7 @@ class Header extends React.Component {
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
                                     <MachinePickerCustom collectInput={this.collectInputs} changeMachine={this.props.changeMachine} t={t} value={t('Select Machine')}/>
                                     <DatePickerCustom collectInput={this.collectInputs} changeDate={this.props.changeDate} date={this.state.dateValue}/>
-                                    <ShiftPickerCustom collectInput={this.collectInputs} t={t} value={t('Select Shift')} currentShift={this.state.shiftValue}/>
+                                    <ShiftPickerCustom collectInput={this.collectInputs} t={t} value={t('Select Shift')} currentShift={this.state.shiftValue} />
                                     <LanguagePickerCustom changeDateLanguage={this.props.changeDateLanguage} openMenu={this.openMenu} value={t('Select Language')}/>
                                     <QueryButton 
                                         machine={this.state.machineValue}

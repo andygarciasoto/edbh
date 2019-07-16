@@ -4,12 +4,15 @@ import { Button, Table, Form } from 'react-bootstrap';
 import './Comments.scss';
 import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from  'react-fontawesome';
+import Spinner from '../Spinner';
 
 class Comments extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
             modal_thread_IsOpen: false,
+            commentLen: 0,
+            lastComment: {}
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -27,8 +30,18 @@ class Comments extends React.Component {
         this.setState({modal_thread_IsOpen: true});
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.comments) {
+            this.setState({
+                lastComment: nextProps.comments[0],
+                commentLen: nextProps.comments.length
+            }) 
+        }
+    }
+
     render() {
         const t = this.props.t;
+        const lastComment = this.state.lastComment;
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>
@@ -41,12 +54,13 @@ class Comments extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
+                    {Object.values(lastComment).length > 0 ? <React.Fragment>
                         <tr>
-                            <td><span>Jim - Operator</span><div className={'intershift-comment-date'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>
-                            <span className="intershift-read-more" onClick={this.openModal}>{t('Read More')}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
+                            <td><span>{`${lastComment.user} - ${lastComment.role}`}</span><div className={'intershift-comment-date'}>{lastComment.timestamp}</div></td>
+                            <td className={"intershift-comment"}><div>{lastComment.comment}</div>
+                            <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
+                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr>}
                     </tbody>
                 </Table>
                 </div>
@@ -60,7 +74,10 @@ class Comments extends React.Component {
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     style={this.state.modalStyle}
-                    contentLabel="Example Modal"/>
+                    contentLabel="Example Modal"
+                    comments={this.props.comments}
+                    t={this.props.t}
+                />
             </div>
         )
     }
