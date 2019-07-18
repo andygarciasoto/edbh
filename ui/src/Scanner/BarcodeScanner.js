@@ -52,7 +52,7 @@ class  BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    if (code === '7441003518483') {
+    if (code === '201710281758') {
       console.log('success!')
       this.handleLoad();
     } else {

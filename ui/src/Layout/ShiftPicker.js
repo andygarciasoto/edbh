@@ -8,15 +8,19 @@ class ShiftPickerCustom extends React.Component {
 		super(props);
 		this.state = {
             startDate: new Date(),
-            value: this.props.t(this.props.value)
+            value: 'Select Shift'
         } 
         this.onSelect = this.onSelect.bind(this);
     }  
 
     onSelect(e) {
-        this.setState({value: e})
         this.props.collectInput(e, 'shift');
       }
+
+    componentWillReceiveProps(nextProps) {
+      this.setState({value: nextProps.currentShift})
+    }
+
 
     render() {
       const t = this.props.t
@@ -27,9 +31,9 @@ class ShiftPickerCustom extends React.Component {
             id="dropdown-menu-align-right"
             className="shift-picker-button"
           >
-          <Dropdown.Item eventKey="Shift 1" onSelect={(e)=>this.onSelect(e)}>{t('Shift 1')}</Dropdown.Item>
-          <Dropdown.Item eventKey="Shift 2" onSelect={(e)=>this.onSelect(e)}>{t('Shift 2')}</Dropdown.Item>
-          <Dropdown.Item eventKey="Shift 3" onSelect={(e)=>this.onSelect(e)}>{t('Shift 3')}</Dropdown.Item>
+          <Dropdown.Item eventKey="First Shift" onSelect={(e)=>this.onSelect(e)}>{t('First Shift')}</Dropdown.Item>
+          <Dropdown.Item eventKey="Second Shift" onSelect={(e)=>this.onSelect(e)}>{t('Second Shift')}</Dropdown.Item>
+          <Dropdown.Item eventKey="Third Shift" onSelect={(e)=>this.onSelect(e)}>{t('Third Shift')}</Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item eventKey="All Shifts" onSelect={(e)=>this.onSelect(e)}>{t('All Shifts')}</Dropdown.Item>
         </DropdownButton>

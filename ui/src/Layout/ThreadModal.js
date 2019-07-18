@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { Table } from 'react-bootstrap';
 import './ThreadModal.scss';
 import * as _ from 'lodash';
+import Spinner from '../Spinner';
 
 class ThreadModal extends React.Component {
     constructor(props) {
@@ -56,6 +57,7 @@ class ThreadModal extends React.Component {
                 onRequestClose={this.props.onRequestClose}
                 style={styles}
                 contentLabel="Example Modal">
+                {(this.props.comments && this.props.comments.length > 0) ? <React.Fragment>
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <Table striped bordered hover>
                 <thead>
@@ -65,35 +67,18 @@ class ThreadModal extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td className={"intershift-info"}><span>Jim - Operator</span><div className={'intershift-date-modal'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment-modal"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
+                        {this.props.comments.map((item, key) => {
+                            return (
+                            <tr>
+                            <td className={"intershift-info"}><span>{item.user} - {item.role}</span><div className={'intershift-date-modal'}>{item.timestamp}</div></td>
+                            <td className={"intershift-comment-modal"}><div>{item.comment}</div></td>
                         </tr>
-                        <tr>
-                            <td className={"intershift-info"}><span>Jim - Operator</span><div className={'intershift-date-modal'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment-modal"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
-                        <tr>
-                            <td className={"intershift-info"}><span>Jim - Operator</span><div className={'intershift-date-modal'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment-modal"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
-                        <tr>
-                            <td className={"intershift-info"}><span>Jim - Operator</span><div className={'intershift-date-modal'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment-modal"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
-                        <tr>
-                            <td className={"intershift-info"}><span>Jim - Operator</span><div className={'intershift-date-modal'}>19/07/2019 - 14:23</div></td>
-                            <td className={"intershift-comment-modal"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
+                            )
+                        })}
                     </tbody>
-                </Table>
+                </Table></React.Fragment> : <Spinner />}
             </Modal>
-        )
+            )
     }
 }
 

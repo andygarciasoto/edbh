@@ -50,8 +50,8 @@
     }
 
     #semi-button-deck {
-        background-color: rgb(61, 61, 61);
-        color: $color-orange;
+        background-color: $color-orange;
+        color: rgb(61, 61, 61);
         padding-left: 3%;
         padding-right: 3%;
         padding-bottom: 5px;
@@ -74,4 +74,4 @@
 
     .comments {font-size: 0.8em;}
 #previous-shift, #current-shift {text-decoration: underline; padding: 8px 8px 8px 5px; margin-bottom: 5px !important;}
-#previous-shift:hover, #current-shift:hover {background-color: rgb(85, 85, 85);}
+#previous-shift:hover, #current-shift:hover {background-color: rgb(207, 153, 3);}

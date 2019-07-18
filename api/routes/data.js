@@ -22,8 +22,8 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actual_pcs: '77',
             cumulative_target_pcs: '46',
             cumulative_pcs: '77',
-            downtime: '10',
-            downtime_reason_code: '124',
+            timelost: '10',
+            timelost_reason_code: '124',
             cumulative_target_pcs: '32',
             actions_comments: 'Something Happened Here',
             oper_id: 'SW',
@@ -36,8 +36,8 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actual_pcs: '71',
             cumulative_target_pcs: '47',
             cumulative_pcs: '74',
-            downtime: '08',
-            downtime_reason_code: '124',
+            timelost: '08',
+            timelost_reason_code: '124',
             cumulative_target_pcs: '22',
             actions_comments: 'Woops Something Broke',
             oper_id: 'RF',
@@ -50,8 +50,8 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actual_pcs: '72',
             cumulative_target_pcs: '48',
             cumulative_pcs: '75',
-            downtime: '',
-            downtime_reason_code: '124',
+            timelost: '',
+            timelost_reason_code: '124',
             actions_comments: '',
             oper_id: 'JS',
             superv_id: 'AV',
@@ -63,10 +63,10 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actual_pcs: '70',
             cumulative_target_pcs: '49',
             cumulative_pcs: '73',
-            downtime: '',
-            downtime_reason_code: '124',
+            timelost: '',
+            timelost_reason_code: '124',
             cumulative_target_pcs: '11',
-            actions_comments: 'It Seems We Are Under A Situation',
+            actions_comments: 'It seems we have a situation over here',
             oper_id: 'GA',
             superv_id: 'AV',
         }, {
@@ -77,8 +77,8 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actual_pcs: '70',
             cumulative_target_pcs: '50',
             cumulative_pcs: '72',
-            downtime: '02',
-            downtime_reason_code: '124',
+            timelost: '02',
+            timelost_reason_code: '124',
             actions_comments: '',
             oper_id: 'BM',
             superv_id: 'AV',
@@ -113,13 +113,13 @@ router.get('/shifts', function (req, res) {
     const shifts = [{
         "shifts": [
             {
-                "value": "Shift 1"
+                "value": "First Shift"
             },
             {
-                "value": "Shift 2"
+                "value": "Second Shift"
             },
             {
-                "value": "Shift 3"
+                "value": "Third Shift"
             },
             {
                 "value": "All Shifts"

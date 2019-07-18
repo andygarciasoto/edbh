@@ -19,6 +19,10 @@ class ValueModal extends React.Component {
         const newVal = this.state.newValue;
         this.setState({value: newVal});
         this.props.onRequestClose();
+        if (this.props.openDropdownAfter) {
+            this.props.openAfter(newVal);
+        }
+
     }
 
     onChange(e) {
