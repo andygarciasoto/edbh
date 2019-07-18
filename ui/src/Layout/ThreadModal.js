@@ -67,9 +67,9 @@ class ThreadModal extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.comments.map((item, key) => {
+                        {this.props.comments.map((item, index) => {
                             return (
-                            <tr>
+                            <tr key={index}>
                             <td className={"intershift-info"}><span>{item.user} - {item.role}</span><div className={'intershift-date-modal'}>{item.timestamp}</div></td>
                             <td className={"intershift-comment-modal"}><div>{item.comment}</div></td>
                         </tr>
