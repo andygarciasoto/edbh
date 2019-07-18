@@ -1,0 +1,4 @@
+curl --request POST 
+  --url 'https://phc-fcgfotf01-dev-iothub.azure-devices.net.azure-devices.net/devices/IVJ1WOKM/messages/events?api-version=2018-06-30' 
+  --header 'authorization: SharedAccessSignature sr=phc-fcgfotf01-dev-iothub.azure-devices.net%2Fdevices%2FIVJ1WOKM&sig=Xw4CwSYBIiU1lm4zYvYEzKVMn6CAToyWx8Vp%2FPccDbM%3D&se=1563466497' 
+  --data 'Hello IoT Hub!
