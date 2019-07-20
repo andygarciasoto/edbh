@@ -19,7 +19,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             part_number: '2hj11111893k234',
             ideal: '100',
             target_pcs: '75',
-            actual_pcs: '72',
+            actual_pcs: '66',
             cumulative_target_pcs: '75',
             cumulative_pcs: '77',
             timelost: '10',
@@ -27,6 +27,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'I found a defect, have to speak to a supervisor before proceeding',
             oper_id: 'SW',
             superv_id: 'DS',
+            color: 'pattern-red',
         }, {
             Expander: true,
             shift: '10:00 pm - 11:00 am',
@@ -41,13 +42,14 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'I found a defect, have to speak to a supervisor before proceeding',
             oper_id: 'SW',
             superv_id: 'DS',
+            color: 'pattern-red',
         }, {
             Expander: true,
             shift: '11:00 pm - 12:00 am',
             part_number: '2hj4idh5893k234',
             ideal: '100',
             target_pcs: '75',
-            actual_pcs: '77',
+            actual_pcs: '55',
             cumulative_target_pcs: '75',
             cumulative_pcs: '77',
             timelost: '10',
@@ -55,6 +57,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'Something Happened Here',
             oper_id: 'SW',
             superv_id: 'DS',
+            color: 'pattern-red',
         }, {
             shift: '12:00 am - 01:00 pm',
             part_number: '49242j438f2413k',
@@ -68,12 +71,13 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'Woops Something Broke',
             oper_id: 'RF',
             superv_id: 'DF',
+            color: 'pattern-red',
         }, {
             shift: '11:00 pm - 12:00 am',
             part_number: '0493847jkd38frj2',
             ideal: '100',
             target_pcs: '74',
-            actual_pcs: '72',
+            actual_pcs: '45',
             cumulative_target_pcs: '222',
             cumulative_pcs: '220',
             timelost: '',
@@ -81,6 +85,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: '',
             oper_id: 'JS',
             superv_id: 'AV',
+            color: 'pattern-red',
         }, {
             shift: '01:00 am - 02:00 pm',
             part_number: '294jdl4855349dd',
@@ -94,6 +99,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'It seems we have a situation over here',
             oper_id: 'GA',
             superv_id: 'AV',
+            color: 'pattern-red',
         }, {
             shift: '02:00 am - 03:00 pm',
             part_number: 'al3924850284234',
@@ -107,6 +113,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: '',
             oper_id: 'BM',
             superv_id: 'AV',
+            color: 'pattern-red',
         }, {
             shift: '02:00 am - 03:00 pm',
             part_number: 'al39233333334234',
@@ -120,6 +127,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: '',
             oper_id: 'BM',
             superv_id: 'AV',
+            color: 'pattern-green',
         }, {
             shift: '02:00 am - 03:00 pm',
             part_number: 'al39555555584234',
@@ -133,6 +141,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'There is a raccoon stuck in the fan',
             oper_id: 'BM',
             superv_id: 'AV',
+            color: 'pattern-red',
         }, {
             shift: '03:00 am - 04:00 pm',
             part_number: 'al3924850111211',
@@ -146,12 +155,14 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: '',
             oper_id: 'BM',
             superv_id: 'AV',
+            color: 'pattern-red',
+
         }, {
             shift: '04:00 am - 05:00 pm',
             part_number: 'al3924850111211',
-            ideal: '100',
+            ideal: '101',
             target_pcs: '75',
-            actual_pcs: '',
+            actual_pcs: '87',
             cumulative_target_pcs: '439',
             cumulative_pcs: '430',
             timelost: '02',
@@ -159,6 +170,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: '',
             oper_id: 'BM',
             superv_id: 'AV',
+            color: 'pattern-red',
         }];
         res.json(data);
     } else {

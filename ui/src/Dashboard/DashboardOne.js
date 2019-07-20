@@ -203,8 +203,8 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
           accessor: 'target_pcs',
           width: 100,
-          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
-          <span className='empty'>
+          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={`empty-field`}></span> : 
+          <span>
           <span>{props.value}</span></span>,
           style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', 
           textAlign: 'center'},
@@ -217,20 +217,16 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}</span>,
           accessor: 'actual_pcs',
           width: 100,
-          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={`empty-field`} 
+          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}}
           onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className={`ideal-click`} onClick={() => this.openModal('values', {props})}>
+          <span className="react-table-click-text table-click" style={{color: 'white'}} >{props.value}</span></span>,
           style: {textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)`},
-          // className: 'pattern-red',
-          // className: props =>  Number(props.row.actual_pcs) > Number(this.props.row.target_pcs) ? 'green-pattern' : 'red-pattern',
-          className: props => props.row,
-          // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
           Aggregated: props => {
             return props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-            <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>
+            <span className='ideal-click'onClick={() => this.openModal('values', {props})}>
+            <span style={{color: 'white'}} className="react-table-click-text table-click">{props.value}</span></span>
           }
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}</span>,
@@ -344,6 +340,18 @@ class DashboardOne extends React.Component {
 
       } 
 
+    getTdProps(state, rowInfo, instance) {
+      if (rowInfo && instance.id === 'actual_pcs') {
+        console.log(instance.id)
+        return {
+          style: {
+            backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'red' : 'green',
+          }
+        }
+      }
+      return {}
+    }
+
     changeDate(e) {
       const date = e;
       this.setState({selectedDate: date})
@@ -445,6 +453,7 @@ class DashboardOne extends React.Component {
                                 pivotBy={["shift"]}
                                 onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
                                 expanded={this.state.expanded}
+                                // getTdProps={this.getTdProps}
                             /> : <Spinner/>}
                         </Col>
                     </Row>
