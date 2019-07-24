@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
+var conn = require('../objects/simpleConnection');
+import initq from '../objects/mssqlConnection';
 
 var corsOptions = {
     origin: 'http://localhost:3000',
@@ -11,6 +13,9 @@ router.get('/'), function(req, res) {
     res.send({response: 'Welcome to the Parker Hannifin DBH API'});
 }
 router.get('/data', cors(corsOptions), function (req, res) {
+    var simple = conn;
+    simple;
+    
     const mc = parseInt(req.query.mc);
     if (mc == 12532) {
         const data = [{
@@ -27,7 +32,7 @@ router.get('/data', cors(corsOptions), function (req, res) {
             actions_comments: 'I found a defect, have to speak to a supervisor before proceeding',
             oper_id: 'SW',
             superv_id: 'DS',
-            color: 'pattern-red',
+            order_id: '1312fgdfe325342'
         }, {
             Expander: true,
             shift: '10:00 pm - 11:00 am',
