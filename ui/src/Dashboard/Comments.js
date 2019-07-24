@@ -19,7 +19,6 @@ class Comments extends React.Component {
     }  
 
     enterCommunication(comm) {
-        console.log(comm);
     }
 
     closeModal() {

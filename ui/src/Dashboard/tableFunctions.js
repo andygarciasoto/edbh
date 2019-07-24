@@ -10,6 +10,14 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
           }
         }
       }
+      if (rowInfo && column.id === 'cumulative_pcs') {
+        return {
+          style: {
+            backgroundColor: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? '#b80600' : 'green',
+            backgroundImage: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 'url("https://www.transparenttextures.com/patterns/arabesque.png"',
+          }
+        }
+      }
       // this deletes the first repeated row in children section
       rowInfo.subRows && rowInfo.subRows.length > 1 ? delete rowInfo.subRows[0]: void(0);
       // end of fix
