@@ -1,8 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
-var conn = require('../objects/simpleConnection');
-import initq from '../objects/mssqlConnection';
+var sqlQuery = require('../objects/sqlConnection');
 
 var corsOptions = {
     origin: 'http://localhost:3000',
@@ -13,9 +12,7 @@ router.get('/'), function(req, res) {
     res.send({response: 'Welcome to the Parker Hannifin DBH API'});
 }
 router.get('/data', cors(corsOptions), function (req, res) {
-    var simple = conn;
-    simple;
-    
+    sqlQuery('SELECT * FROM Shift;')
     const mc = parseInt(req.query.mc);
     if (mc == 12532) {
         const data = [{
