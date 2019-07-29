@@ -1,5 +1,3 @@
-import { Row } from "react-bootstrap";
-
 export function handleTableCellClick(state, rowInfo, column, instance, ...rest) {
     if (typeof rowInfo !== "undefined") {
       if (rowInfo && column.id === 'actual_pcs') {
@@ -18,10 +16,33 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
           }
         }
       }
+      if (rowInfo && column.id === 'actions_comments') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.actions_comments = '';
+            return void(0);
+          })
+        }
+      }
+      if (rowInfo && column.id === 'timelost') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.timelost = '';
+            return void(0);
+          })
+        }
+      }
+      if (rowInfo && column.id === 'timelost_reason_code') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.timelost_reason_code = '';
+            return void(0);
+          })
+        }
+      }
       // this deletes the first repeated row in children section
-      rowInfo.subRows && rowInfo.subRows.length > 1 ? delete rowInfo.subRows[0]: void(0);
+      // rowInfo.subRows && rowInfo.subRows.length > 1 ? delete rowInfo.subRows[0]: void(0);
       // end of fix
-      // console.log(rowInfo)
       const needsExpander = rowInfo.subRows && rowInfo.subRows.length > 1 ? true : false;
       const expanderEnabled = !column.disableExpander;
       const expandedRows = Object.keys(this.state.expanded).filter(expandedIndex => {
