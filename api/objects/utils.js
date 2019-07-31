@@ -21,7 +21,6 @@ function restructureSQLObject(obj, format) {
 }
 
 function restructureSQLObjectByContent(obj) {
-    console.log(obj)
     var newArray = [];
     obj.map((item, key) => {
         if (item.production !== null && item.production) {
