@@ -163,7 +163,7 @@ class DashboardOne extends React.Component {
         { pivot: true },
         {
           Header: () => <span className={'wordwrap'} data-tip={t(this.state.selectedShift)}>{this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
-          accessor: 'shift',
+          accessor: 'hour_interval',
           width: 180,
           style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           Pivot: row => {
@@ -171,13 +171,13 @@ class DashboardOne extends React.Component {
           },
           disableExpander: false,
           filterMethod: (filter, rows) =>
-            matchSorter(rows, filter.value, { keys: ["shift"] }),
+            matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
             filterAll: true
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}</span>,
           width: 200,
           accessor: 'part_number',
-          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}}  className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
           <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
@@ -196,7 +196,7 @@ class DashboardOne extends React.Component {
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => rows.length > 1 ? '' : values[0],
+          aggregate: (values, rows) => rows[0]._original.summary_ideal,
           Aggregated: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal-click'>
           <span className="react-table-click-text table-click">{props.value}</span></span>
@@ -210,7 +210,7 @@ class DashboardOne extends React.Component {
           style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', 
           textAlign: 'center'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => rows.length > 1 ? '' : values[0],
+          aggregate: (values, rows) => rows[0]._original.summary_target,
           Aggregated: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{props.value}</span></span>
@@ -223,7 +223,9 @@ class DashboardOne extends React.Component {
           <span className={`ideal-click`} onClick={() => this.openModal('values', {props})}>
           <span className="react-table-click-text table-click" style={{color: 'white'}} >{props.value}</span></span>,
           style: {textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)`},
-          aggregate: (values, rows) => rows.length > 1 ? '' : values[0],
+          // aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
+          aggregate: (values, rows) => rows[0]._original.summary_actual,
+          // aggregate: (values, rows) => console.log(rows),
           Aggregated: props => {
             return props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
             <span className='ideal-click'onClick={() => this.openModal('values', {props})}>
@@ -239,7 +241,7 @@ class DashboardOne extends React.Component {
           style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', 
           textAlign: 'center'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
+          aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs,
           Aggregated:props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{props.value}</span></span>,
@@ -249,20 +251,20 @@ class DashboardOne extends React.Component {
           width: 150,
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='empty'>
-          <span>{props.value}</span></span>,
+          <span>{''}</span></span>,
           style: {borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center', color: 'white'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
+          aggregate: (values, rows) => rows[0]._original.cumulative_pcs,
           Aggregated: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{props.value}</span></span>
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (minutes)')}</span>,
-          accessor: 'timelost',
+          accessor: 'timelost_summary',
           width: 110,
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal-click'>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className="react-table-click-text table-click">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
@@ -272,11 +274,11 @@ class DashboardOne extends React.Component {
           // Aggregated: props => console.log(props)
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Time Lost Reason Code')}>{t('Time Lost Reason Code')}</span>,
-          accessor: 'timelost_reason_code',
+          accessor: 'latest_timelost_code',
           width: 150,
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal-click'>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className="react-table-click-text table-click">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
@@ -285,16 +287,17 @@ class DashboardOne extends React.Component {
           <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
-          accessor: 'actions_comments',
+          accessor: 'latest_comment',
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
             <span className='ideal-click'>
-            <span className="react-table-click-text table-click comments">{props.value}</span></span>,
+            <span className="react-table-click-text table-click comments">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('comments')}></span> : 
+          Aggregated: props => props.value === null ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('comments')}></span> : 
           <span className='ideal-click' onClick={() => this.openModal('comments')}>
           <span className="react-table-click-text table-click comments">{props.value}</span></span>,
+          // Aggregated: props => console.log(props.value)
         },{ 
           Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
           accessor: 'oper_id',
@@ -454,7 +457,7 @@ class DashboardOne extends React.Component {
                                 headerClassName={"wordwrap"}
                                 rowsText={rows} 
                                 pageSizeOptions={[8, 16, 24]}
-                                pivotBy={["shift"]}
+                                pivotBy={["hour_interval"]}
                                 onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
                                 expanded={this.state.expanded}
                                 // getTdProps={this.getTdProps}

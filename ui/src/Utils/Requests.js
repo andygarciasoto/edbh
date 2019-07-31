@@ -25,6 +25,7 @@ async function getRequestData(data) {
       // nothing
     });
     if (res) {
+      console.log(res.data, '!')
       return res.data;
     }
 }
