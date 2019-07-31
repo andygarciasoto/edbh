@@ -1,20 +1,53 @@
-export function handleTableCellClick(
-    state,
-    rowInfo,
-    column,
-    instance,
-    ...rest
-  ) {
+export function handleTableCellClick(state, rowInfo, column, instance, ...rest) {
     if (typeof rowInfo !== "undefined") {
-      const needsExpander =
-        rowInfo.subRows && rowInfo.subRows.length > 1 ? true : false;
+      if (rowInfo && column.id === 'actual_pcs') {
+        return {
+          style: {
+            backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? '#b80600' : 'green',
+            backgroundImage: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 'url("https://www.transparenttextures.com/patterns/arabesque.png"',
+          }
+        }
+      }
+      if (rowInfo && column.id === 'cumulative_pcs') {
+        return {
+          style: {
+            backgroundColor: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? '#b80600' : 'green',
+            backgroundImage: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 'url("https://www.transparenttextures.com/patterns/arabesque.png"',
+          }
+        }
+      }
+      if (rowInfo && column.id === 'actions_comments') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.actions_comments = '';
+            return void(0);
+          })
+        }
+      }
+      if (rowInfo && column.id === 'timelost') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.timelost = '';
+            return void(0);
+          })
+        }
+      }
+      if (rowInfo && column.id === 'timelost_reason_code') {
+        if (rowInfo.subRows) {
+          rowInfo.subRows.map((item, key) => {
+            item.timelost_reason_code = '';
+            return void(0);
+          })
+        }
+      }
+      // this deletes the first repeated row in children section
+      // rowInfo.subRows && rowInfo.subRows.length > 1 ? delete rowInfo.subRows[0]: void(0);
+      // end of fix
+      const needsExpander = rowInfo.subRows && rowInfo.subRows.length > 1 ? true : false;
       const expanderEnabled = !column.disableExpander;
-      const expandedRows = Object.keys(this.state.expanded)
-        .filter(expandedIndex => {
+      const expandedRows = Object.keys(this.state.expanded).filter(expandedIndex => {
           return this.state.expanded[expandedIndex] !== false;
-        })
-        .map(Number);
-  
+      }).map(Number);
       const rowIsExpanded =
         expandedRows.includes(rowInfo.nestingPath[0]) && needsExpander
           ? true
@@ -30,7 +63,6 @@ export function handleTableCellClick(
             ...this.state.expanded,
             [rowInfo.nestingPath[0]]: {}
           };
-  
       return {
         style:
           needsExpander && expanderEnabled
