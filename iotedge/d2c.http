@@ -1,4 +1,22 @@
 curl --request POST 
-  --url 'https://phc-fcgfotf01-dev-iothub.azure-devices.net.azure-devices.net/devices/IVJ1WOKM/messages/events?api-version=2018-06-30' 
-  --header 'authorization: SharedAccessSignature sr=phc-fcgfotf01-dev-iothub.azure-devices.net%2Fdevices%2FIVJ1WOKM&sig=Xw4CwSYBIiU1lm4zYvYEzKVMn6CAToyWx8Vp%2FPccDbM%3D&se=1563466497' 
-  --data 'Hello IoT Hub!
+  --url 'https://phc-fcgfotf01-dev-iothub.azure-devices.net/devices/IVJ1WOKM/messages/events?api-version=2018-06-30' 
+  --header 'authorization: SharedAccessSignature sr=phc-fcgfotf01-dev-iothub.azure-devices.net%2Fdevices%2FIVJ1WOKM&sig=%2F6EI3B3Kt7I2jbBfJypB7N8UReMQUXiVxEvF0wAkQhY%3D&se=1564619082' 
+  --data '{
+  "deviceId": "IVJ1WOKM",
+  "productFilter": "fcgFotf",
+  "data": {
+    "product_code": "TEST2",
+    "product_name": "Product11",
+    "product_description": "This is a product",
+    "product_family": "TAVOS FAMILY",
+    "grouping1": "Group1",
+    "grouping2": "Group2",
+    "grouping3": "Group3",
+    "grouping4": "Group4",
+    "grouping5": "Group5",
+    "status": "Active",
+    "timestamp": "2019-07-12T12:03:35.540Z",
+    "messageType": "reading"
+  }
+}
+'
