@@ -13,45 +13,15 @@ var connectionConfig = {
     password: config['password'],
     server: config['server'],
     options: {
-      database: config['database']
+      database: config['database'],
+      encrypt: true,
+      rowCollectionOnDone: true, // Only get row set instead of row by row
+      useColumnNames: true // For easier JSON formatting
     }
 };
-
 //create the pool
-function sqlQuery(statement) {
 var pool = new ConnectionPool(poolConfig, connectionConfig);
-  async function PerformQuery(query, callback, connection) {
-
-    var request = new Request(
-    query,
-    function(err, rowCount) {
-    if (err) {
-        callback(err);
-    } else {
-        console.log(rowCount + ' row(s) were changed or read.');
-        callback(null);
-    }
-    });
-
-    var result = "";
-    try {
-    await request.on('row', function(columns) {
-        columns.forEach(function(column) {
-            if (column.value === null) {
-                console.log(column.metadata.colName, 'value is NULL');
-            } else {
-                result += column.value + " ";
-            }
-        });
-        console.log(result);
-        result = "";
-    });
-
-  } catch (e) {console.log(e)}
-
-    await connection.execSql(request);
-  }
-
+async function PerformQuery(statement, callback) {
   pool.on('error', function(err) {
     console.error(err);
   });
@@ -61,10 +31,25 @@ var pool = new ConnectionPool(poolConfig, connectionConfig);
         console.error(err);
         return;
     } else {
-      try {
-        PerformQuery(statement, (a) => console.log('Callback:', a), connection)
-    } catch (e) {console.log(e)}
+      var results = [];
+      var request = new Request(statement, function(error) {
+        if (error) {
+            return callback(error);
+        }
+        //pass the results array on through the callback
+        callback(results);
+    });
+      await  request.on("row", columns => {
+        var _item = {};
+        // Converting the response row to a JSON formatted object: [property]: value
+        for (var name in columns) {
+          _item[name] = columns[name].value;
+        }
+        results.push(_item);
+      });
+      connection.execSql(request);
     }
   });
-}
-module.exports = sqlQuery;
+};
+
+module.exports = PerformQuery;

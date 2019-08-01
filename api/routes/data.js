@@ -2,10 +2,8 @@ var express = require('express');
 var router = express.Router();
 var cors = require('cors');
 var sqlQuery = require('../objects/sqlConnection');
-var oldDummy = require('./oldDummy.json');
-var dummy = require('./dummyPredictions.json')
-var newDummy = require('./newDummy.json');
 var utils = require('../objects/utils');
+import _ from 'lodash';
 
 var corsOptions = {
     origin: 'http://localhost:3000',
@@ -15,20 +13,24 @@ var corsOptions = {
 router.get('/'), function(req, res) {
     res.send({response: 'Welcome to the Parker Hannifin DBH API'});
 }
-router.get('/data', cors(corsOptions), function (req, res) {
-    sqlQuery('SELECT * FROM Shift;');
-    const structuredObject = utils.restructureSQLObject(dummy, 'format2');
-    const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
-    const nameMapping = utils.nameMapping;
-    const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
-    const objectWithLatestComment = utils.createLatestComment(mappedObject);
-    const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-    const mc = parseInt(req.query.mc);
-    if (mc == 12532) {
-        res.json(objectWithTimelossSummary);
-    } else {
-        res.send('Invalid \'mc\' parameter');
+router.get('/data', cors(corsOptions), async function (req, res) {
+    async function structureResponse(query) {
+        const response = JSON.parse(Object.values(query)[0].Shift_Data);
+        const structuredObject = utils.restructureSQLObject(response, 'format2');
+        const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
+        const nameMapping = utils.nameMapping;
+        const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
+        const objectWithLatestComment = utils.createLatestComment(mappedObject);
+        const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
+        console.log(objectWithTimelossSummary);
+        const mc = parseInt(req.query.mc);
+        if (mc == 12532) {
+            res.json(objectWithTimelossSummary);
+        } else {
+            res.send('Invalid \'mc\' parameter');
+        }
     }
+    await sqlQuery("exec spLocal_EY_DxH_Shift_Data '10832','2019-07-25','3';", response => structureResponse(response));
 });
 
 router.get('/machines', function (req, res) {
