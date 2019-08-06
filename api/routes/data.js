@@ -18,7 +18,7 @@ router.get('/data', cors(corsOptions), async function (req, res) {
     const params = req.query;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
-        // console.log(params, query)
+        console.log(params, query)
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
         const structuredObject = utils.restructureSQLObject(response, 'shift');
         const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
@@ -27,11 +27,7 @@ router.get('/data', cors(corsOptions), async function (req, res) {
         const objectWithLatestComment = utils.createLatestComment(mappedObject);
         const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
         const mc = parseInt(req.query.mc);
-        if (mc == 12532) {
-            res.json(objectWithTimelossSummary);
-        } else {
-            res.send('Invalid \'mc\' parameter');
-        }
+        res.json(objectWithTimelossSummary);
     }
     await sqlQuery(`exec spLocal_EY_DxH_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
 });

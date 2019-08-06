@@ -16,8 +16,7 @@ class MachinePickerCustom extends React.Component {
     componentDidMount() {
         const machineArray = [];
         const machines = getMachineData();
-        machines.then((machinesObj => {machinesObj.map((item, index) => machineArray.push(item.asset_code))}))
-        console.log(machineArray);
+        machines.then((machinesObj => { machinesObj ? machinesObj.map((item, index) => machineArray.push(item.asset_code)) : void(0)}))
         this.setState({machines: machineArray})
     }
 

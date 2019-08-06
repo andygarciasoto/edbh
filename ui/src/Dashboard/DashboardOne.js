@@ -331,6 +331,7 @@ class DashboardOne extends React.Component {
       let comments = {};
       if (data) {
         response = await getRequestData(data);
+        console.log(response)
       }
       if (response instanceof Object) {
        this.setState({data: response, columns})
