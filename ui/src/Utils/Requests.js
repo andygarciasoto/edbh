@@ -3,6 +3,7 @@ import { resolve } from 'url';
 const axios = require('axios');
 
 async function getRequestData(data) {
+  console.log(data);
   let res = {};
     const parameters = { 
         params: {

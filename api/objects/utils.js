@@ -3,7 +3,7 @@ import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 
 function restructureSQLObject(obj, format) {
     var newArray = [];
-    if (format === 'format1') {
+    if (format === 'primitive_shif') {
         obj.map((item, key) => {
             let newObj = Object.assign(item.hour);
             newObj.comments = item.comment;
@@ -11,7 +11,12 @@ function restructureSQLObject(obj, format) {
             newObj.timelost = item.timelost;
             newArray.push(newObj);
         })
-    } else if (format === 'format2') {
+    } else if (format === 'shift') {
+        obj.map((item, key) => {
+            item = Object.values(item)[0];
+            newArray.push(item);
+            }) 
+        } else if (format === 'communication') {
         obj.map((item, key) => {
             item = Object.values(item)[0];
             newArray.push(item);

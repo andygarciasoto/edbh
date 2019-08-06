@@ -1,6 +1,6 @@
 export function handleTableCellClick(state, rowInfo, column, instance, ...rest) {
     if (typeof rowInfo !== "undefined") {
-      if (rowInfo && column.id === 'actual_pcs') {
+      if ((rowInfo && column.id === 'actual_pcs') && (rowInfo.row.actual_pcs !== null)) {
         return {
           style: {
             backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? '#b80600' : 'green',
@@ -9,7 +9,7 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
           }
         }
       }
-      if (rowInfo && column.id === 'cumulative_pcs') {
+      if ((rowInfo && column.id === 'cumulative_pcs') && (rowInfo.row.cumulative_pcs !== null)) {
         return {
           style: {
             backgroundColor: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? '#b80600' : 'green',

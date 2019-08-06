@@ -35,7 +35,7 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
-            selectedDate: undefined,
+            selectedDate: moment().format('YYYY-MM-DD'),
             selectedDateParsed: '',
             selectedMachine: 12532,
             currentLanguage: 'en',
@@ -43,7 +43,7 @@ class DashboardOne extends React.Component {
             modalType: '',
             expanded: {},
             openDropdownAfter: false,
-            selectedShift: 'Select Shift'
+            selectedShift: 'First Shift'
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -228,7 +228,7 @@ class DashboardOne extends React.Component {
           // aggregate: (values, rows) => console.log(rows),
           Aggregated: props => {
             return props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-            <span className='ideal-click'onClick={() => this.openModal('values', {props})}>
+            <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
             <span style={{color: 'white'}} className="react-table-click-text table-click">{props.value}</span></span>
           }
         }, {
@@ -326,6 +326,7 @@ class DashboardOne extends React.Component {
           <span className="react-table-click-text table-click">{props.value}</span></span>
         }
       ];
+      // fetch data call
       let response = {};
       let comments = {};
       if (data) {

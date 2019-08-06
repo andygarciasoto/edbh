@@ -14,15 +14,16 @@ router.get('/'), function(req, res) {
     res.send({response: 'Welcome to the Parker Hannifin DBH API'});
 }
 router.get('/data', cors(corsOptions), async function (req, res) {
-    async function structureResponse(query) {
+    const params = req.query;
+    params.dt = params.dt.split("-").join("");
+    async function structureShiftdata(query) {
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
-        const structuredObject = utils.restructureSQLObject(response, 'format2');
+        const structuredObject = utils.restructureSQLObject(response, 'shift');
         const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
         const nameMapping = utils.nameMapping;
         const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
         const objectWithLatestComment = utils.createLatestComment(mappedObject);
         const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-        console.log(objectWithTimelossSummary);
         const mc = parseInt(req.query.mc);
         if (mc == 12532) {
             res.json(objectWithTimelossSummary);
@@ -30,7 +31,7 @@ router.get('/data', cors(corsOptions), async function (req, res) {
             res.send('Invalid \'mc\' parameter');
         }
     }
-    await sqlQuery("exec spLocal_EY_DxH_Shift_Data '10832','2019-07-25','3';", response => structureResponse(response));
+    await sqlQuery(`exec spLocal_EY_DxH_Shift_Data '10832','${params.dt}','3';`, response => structureShiftdata(response));
 });
 
 router.get('/machines', function (req, res) {
@@ -73,91 +74,16 @@ router.get('/shifts', function (req, res) {
     res.json(shifts);
 });
 
-router.get('/intershift_communication', cors(corsOptions), function (req, res) {
+router.get('/intershift_communication', cors(corsOptions), async function (req, res) {
     const mc = parseInt(req.query.mc);
     const sf = parseInt(req.query.sf);
-
-    if (mc == 12532 & sf == 1) {
-        const data = [{
-            user: 'Ryan',
-            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-            role: 'Supervisor',
-            timestamp: '19/07/2019 - 14:23'
-        },
-        {
-            user: 'John',
-            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-            role: 'Operator',
-            timestamp: '20/07/2019 - 14:29'
-        },
-        {
-            user: 'Susan',
-            comment: 'Lorem ipsum dolor sit amet.',
-            role: 'Operator',
-            timestamp: '16/07/2019 - 11:56'
-        }
-    ];
-        res.json(data);
-    }else if (mc == 12532 & sf == 2){
-        const data = [{
-            user: 'Mark',
-            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-            role: 'Supervisor',
-            timestamp: '19/07/2019 - 10:29'
-        },
-        {
-            user: 'Matt',
-            comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-            role: 'Operator',
-            timestamp: '20/07/2019 - 22:00'
-        },
-        {
-            user: 'Shawn',
-            comment: 'Lorem ipsum dolor sit amet.',
-            role: 'Operator',
-            timestamp: '16/07/2019 - 17:06'
-        }
-    ];
-    res.json(data);
-}else if (mc == 12532 & sf == 3){
-    const data = [{
-        user: 'James',
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-        role: 'Supervisor',
-        timestamp: '19/07/2019 - 15:26'
-    },
-    {
-        user: 'Ana',
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-        role: 'Operator',
-        timestamp: '20/07/2019 - 04:21'
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
     }
-];
-res.json(data);
-}else if (mc == 12395 & sf == 1){
-    const data = [{
-        user: 'Lorena',
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-        role: 'Supervisor',
-        timestamp: '19/07/2019 - 07:04'
-    },
-    {
-        user: 'Andrew',
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.',
-        role: 'Operator',
-        timestamp: '20/07/2019 - 21:56'
-    },
-    {
-        user: 'Josh',
-        comment: 'Lorem ipsum dolor sit amet.',
-        role: 'Operator',
-        timestamp: '16/07/2019 - 10:20'
-    }
-];
-res.json(data);
-} else{
-    res.send('Invalid parameters');
-}
+    await sqlQuery("exec spLocal_EY_DxH_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
+    // add validation
 
 });
 module.exports = router;
