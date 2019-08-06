@@ -71,4 +71,23 @@ async function getIntershift(data) {
     }
 }
 
-export { getRequestData, getIntershift }
+async function getMachineData() {
+  let res = {};
+  res = await axios.get(`${API}/machine`)
+  .then(function (response) {
+    // handle success
+    return response;
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+  .finally(function () {
+    // nothing
+  });
+  if (res) {
+    return res.data;
+  }
+}
+
+export { getRequestData, getIntershift, getMachineData }
