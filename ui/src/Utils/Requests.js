@@ -1,18 +1,17 @@
 import { API } from './Constants';
+import moment from 'moment';
 import { resolve } from 'url';
 const axios = require('axios');
 
 async function getRequestData(data) {
-  console.log(data);
   let res = {};
     const parameters = { 
         params: {
             mc: data[0],
             dt: data[1],
-            sf: data[2],
+            sf: mapShift(data[2]),
         }
     }
-    // console.log(parameters);
     res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
@@ -26,28 +25,32 @@ async function getRequestData(data) {
       // nothing
     });
     if (res) {
-      console.log(res.data, '!')
       return res.data;
     }
 }
 
-async function getIntershift(data) {
-  let res = {};
+function mapShift(rawshift) {
   let shift = 0;
-  if (data[2] === 'First Shift' || data[2] === 'Select Shift') {
+  if (rawshift === 'First Shift' || rawshift === 'Select Shift') {
     shift = 1;
   }
-  if (data[2] === 'Second Shift') {
+  if (rawshift === 'Second Shift') {
     shift = 2;
   }
-  if (data[2] === 'Third Shift') {
+  if (rawshift === 'Third Shift') {
     shift = 3;
   }
+  return shift;
+}
+
+async function getIntershift(data) {
+  let res = {};
+
   const parameters = { 
         params: {
             mc: data[0],
             dt: data[1],
-            sf: shift,
+            sf: mapShift(data[2])
         }
     }
     // console.log(parameters);

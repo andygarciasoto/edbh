@@ -35,7 +35,7 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
-            selectedDate: moment().format('YYYY-MM-DD'),
+            selectedDate: moment().format('YYYYMMDD'),
             selectedDateParsed: '',
             selectedMachine: 12532,
             currentLanguage: 'en',
@@ -363,7 +363,7 @@ class DashboardOne extends React.Component {
     changeDate(e) {
       const date = e;
       this.setState({selectedDate: date})
-      const parsedDate = moment(date).locale(this.state.currentLanguage).format('LLLL');
+      const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY-MM-DD');
       this.setState({selectedDateParsed: parsedDate})
     }
 
@@ -375,7 +375,7 @@ class DashboardOne extends React.Component {
     changeLanguage(e) {
       e = e.split('_')[0]
       const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-      const parsedDate = moment(date).locale(e).format('LLLL');
+      let parsedDate = moment(date).locale(e).format('YYYYMMDD');
       this.setState({selectedDateParsed: parsedDate})
       this.fetchData();
     }

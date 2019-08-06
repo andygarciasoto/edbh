@@ -4,6 +4,7 @@ var cors = require('cors');
 var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 import _ from 'lodash';
+import moment from 'moment';
 
 var corsOptions = {
     origin: 'http://localhost:3000',
@@ -15,8 +16,9 @@ router.get('/'), function(req, res) {
 }
 router.get('/data', cors(corsOptions), async function (req, res) {
     const params = req.query;
-    params.dt = params.dt.split("-").join("");
+    params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
+        console.log(params)
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
         const structuredObject = utils.restructureSQLObject(response, 'shift');
         const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
@@ -31,10 +33,13 @@ router.get('/data', cors(corsOptions), async function (req, res) {
             res.send('Invalid \'mc\' parameter');
         }
     }
-    await sqlQuery(`exec spLocal_EY_DxH_Shift_Data '10832','${params.dt}','3';`, response => structureShiftdata(response));
+    await sqlQuery(`exec spLocal_EY_DxH_Shift_Data '10832','${params.dt}',${params.sf};`, response => structureShiftdata(response));
 });
 
-router.get('/machines', function (req, res) {
+router.get('/machines', async function (req, res) {
+    function structureMachines(response) {
+        console.log('machines', response);
+    }
     const machines = [{
         "machines": [
             {
@@ -51,6 +56,7 @@ router.get('/machines', function (req, res) {
             }
         ]
     }];
+    await sqlQuery(`select * from dbo.Assset;','${params.dt}',${params.sf};`, response => structureMachines(response));
     res.json(machines);
 });
 
