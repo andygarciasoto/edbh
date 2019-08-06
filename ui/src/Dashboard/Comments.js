@@ -33,7 +33,7 @@ class Comments extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
             this.setState({
-                lastComment: nextProps.comments[0],
+                lastComment: nextProps.comments[0] || null,
                 commentLen: nextProps.comments.length
             }) 
         }
@@ -42,7 +42,7 @@ class Comments extends React.Component {
     render() {
         const t = this.props.t;
         const lastComment = this.state.lastComment;
-        const lastCommentDate = moment(lastComment.production_day).format('YYYY-MM-DD');
+        const lastCommentDate = lastComment ? moment(lastComment.production_day).format('YYYY-MM-DD') : null;
         // console.log(lastCommentDate)
         return (
             <div className={'intershift-communication-comments'}>
@@ -56,13 +56,13 @@ class Comments extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                    {Object.values(lastComment).length > 0 ? <React.Fragment>
+                    {lastComment ? Object.values(lastComment).length > 0 ? <React.Fragment>
                         <tr>
                             <td style={{width: '20%'}}><span>{`${lastComment.entered_by} - ${lastComment.first_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
                             <td className={"intershift-comment"}><div>{lastComment.comments}</div>
                             <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
-                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr>}
+                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : null}
                     </tbody>
                 </Table>
                 </div>

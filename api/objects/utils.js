@@ -66,7 +66,6 @@ function replaceFieldNames(obj, mapping) {
 
 var nameMapping = {
     hour_interval : "hour_interval",
-    product_code : "part_number",
     ideal : "ideal",
     target : "target_pcs",
     actual : "actual_pcs",
@@ -96,7 +95,7 @@ function createTimelossSummary(obj) {
                 summary = summary + loss.dtminutes;
             })
         }
-        item['timelost_summary'] = summary;
+        item['timelost_summary'] = summary === 0 ? null : summary;
         item['latest_timelost_code'] = item.timelost !== null ? item.timelost[0].dtreason_code : null;
     })
     return obj;
