@@ -1,7 +1,7 @@
 import React from  'react';
 import Modal from 'react-modal';
 import { Button } from 'react-bootstrap';
-import './ErrorModal.scss';
+import './errorModal.scss';
 import FontAwesome from 'react-fontawesome';
 
 class ErrorModal extends React.Component {
