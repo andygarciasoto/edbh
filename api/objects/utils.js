@@ -66,7 +66,6 @@ function replaceFieldNames(obj, mapping) {
 
 var nameMapping = {
     hour_interval : "hour_interval",
-    product_code : "part_number",
     ideal : "ideal",
     target : "target_pcs",
     actual : "actual_pcs",
@@ -96,10 +95,26 @@ function createTimelossSummary(obj) {
                 summary = summary + loss.dtminutes;
             })
         }
-        item['timelost_summary'] = summary;
+        item['timelost_summary'] = summary === 0 ? null : summary;
         item['latest_timelost_code'] = item.timelost !== null ? item.timelost[0].dtreason_code : null;
     })
     return obj;
 }
 
-export {restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary};
+function structureMachines(obj) {
+    const machines = [];
+    obj.map((item, index) => {
+        let machineObj = {};
+        machineObj.asset_id = item.asset_id,
+        machineObj.asset_code = item.asset_code,
+        machineObj.asset_name = item.asset_name,
+        machineObj.asset_description = item.asset_description,
+        machineObj.asset_level = item.asset_level,
+        machineObj.site_code = item.site_code,
+        machineObj.parent_asset_code = item.parent_asset_code
+        machines.push(machineObj);
+    })
+    return machines;
+}
+
+export {restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines};

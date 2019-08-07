@@ -33,7 +33,7 @@ class Header extends React.Component {
             this.setState({machineValue: value})
         }
         if (type === 'date') {
-            this.setState({dateValue: moment(value).format('L')})
+            this.setState({dateValue: moment(value).format('YYYY/MM/DD')})
         }
         if (type === 'shift') {
             // this.setState({shiftValue: value})

@@ -3,6 +3,7 @@ import React from 'react';
 import DatePicker from  'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.scss';
+import moment from 'moment';
 
 class DatePickerCustom extends React.Component {
     constructor(props) {

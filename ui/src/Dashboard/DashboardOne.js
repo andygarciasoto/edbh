@@ -35,7 +35,7 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
-            selectedDate: moment().format('YYYY-MM-DD'),
+            selectedDate: moment().format('YYYYMMDD'),
             selectedDateParsed: '',
             selectedMachine: 12532,
             currentLanguage: 'en',
@@ -176,15 +176,15 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}</span>,
           width: 200,
-          accessor: 'part_number',
-          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          accessor: 'product_code',
+          Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          <span className='ideal-click'>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => rows.length > 1 ? '' : values[0],
+          aggregate: (values, rows) => rows[0]._original.summary_product_code,
           Aggregated:  props => props.value === '' ? <span style={{paddingRight: 185, cursor: 'pointer'}}  className={'empty-field'}></span> : 
-          <span className='ideal-click' onClick={() => this.openModal('values', {props})}>
+          <span className='ideal-click'>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           PivotValue:<span>{''}</span>
         }, {
@@ -331,6 +331,7 @@ class DashboardOne extends React.Component {
       let comments = {};
       if (data) {
         response = await getRequestData(data);
+        console.log(response)
       }
       if (response instanceof Object) {
        this.setState({data: response, columns})
@@ -363,7 +364,7 @@ class DashboardOne extends React.Component {
     changeDate(e) {
       const date = e;
       this.setState({selectedDate: date})
-      const parsedDate = moment(date).locale(this.state.currentLanguage).format('LLLL');
+      const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY-MM-DD');
       this.setState({selectedDateParsed: parsedDate})
     }
 
@@ -375,7 +376,7 @@ class DashboardOne extends React.Component {
     changeLanguage(e) {
       e = e.split('_')[0]
       const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-      const parsedDate = moment(date).locale(e).format('LLLL');
+      let parsedDate = moment(date).locale(e).format('YYYYMMDD');
       this.setState({selectedDateParsed: parsedDate})
       this.fetchData();
     }
@@ -442,7 +443,7 @@ class DashboardOne extends React.Component {
                             <Row style={{paddingLeft: '5%'}}>
                                 <Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                                 <Col md={4}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                                <Col md={4}><h5>{date}</h5></Col>
+                                <Col md={4}><h5>{moment(date).locale('en').format('LLLL')}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable
                                 getTdProps={this.handleTableCellClick}
