@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { Form, Button, Table } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
-import FontAwesome from 'react-fontawesome';
+import moment from 'moment';
 
 class CommentsModal extends React.Component {
     constructor(props) {
@@ -24,6 +24,7 @@ class CommentsModal extends React.Component {
     }
 
     render() {
+        console.log(this.props.comments)
         const styles = _.cloneDeep(this.props.style);
         if (!_.isEmpty(styles)) {
             styles.content.width = '60%';
@@ -45,22 +46,14 @@ class CommentsModal extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td className={"commentsModal-user"}><span>Jim - Operator</span><div className={'commentsModal-date'}>19/07/2019 - 14:23</div></td>
-                            <td className={"commentsModal-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
-                        <tr>
-                            <td className={"commentsModal-user"}><span>Brian - Operator</span><div className={'commentsModal-date'}>19/07/2019 - 14:23</div></td>
-                            <td className={"commentsModal-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud. dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
-                        <tr>
-                            <td className={"commentsModal-user"}><span>Dwight - Operator</span><div className={'commentsModal-date'}>19/07/2019 - 14:23</div></td>
-                            <td className={"commentsModal-comment"}><div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div></td>
-                        </tr>
+                        {this.props.comments ? this.props.comments.map((comment, index) => {
+                            return (
+                                <tr key={index}>
+                                <td className={"commentsModal-user"}><span>{`${comment.first_name} ${comment.last_name}`}</span><div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div></td>
+                                <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
+                            </tr>
+                            )
+                        }) : <tr><td>{'-'}</td><td>{"There are no comments to display."}</td></tr>}
                     </tbody>
                 </Table>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>

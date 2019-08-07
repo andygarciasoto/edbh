@@ -62,7 +62,7 @@ class Comments extends React.Component {
                             <td className={"intershift-comment"}><div>{lastComment.comments}</div>
                             <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
-                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : null}
+                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : <Spinner />}
                     </tbody>
                 </Table>
                 </div>
