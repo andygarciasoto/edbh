@@ -1,6 +1,6 @@
 var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
-import config from '../config.json';
+import config from '../../config.json';
 
 var poolConfig = {
     min: 2,

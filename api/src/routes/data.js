@@ -3,18 +3,33 @@ var router = express.Router();
 var cors = require('cors');
 var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
+var nJwt = require('njwt');
+
 import _ from 'lodash';
 import moment from 'moment';
-import config from '../config.json';
+import config from '../../config.json';
+import { runInNewContext } from 'vm';
 
 var corsOptions = {
     origin: config['cors'],
     optionsSuccessStatus: 200 
   }
 
-router.get('/'), function(req, res) {
-    res.send({response: 'Welcome to the Parker Hannifin DBH API'});
-}
+router.use(function (req, res, next){
+
+    if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
+
+    var token = req.headers['Authorization'];
+
+    nJwt.verify(token,config["signingKey"],function(err){
+        if(err){
+          return res.redirect(401, config['loginURL']);
+        }else{
+          next();
+        }
+      });
+});
+
 router.get('/data', cors(corsOptions), async function (req, res) {
     const params = req.query;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');

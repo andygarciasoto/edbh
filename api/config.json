@@ -3,5 +3,8 @@
     "password": "5sHEMk45PEtPqxjv8uk9w5gS",
     "server": "phc-diviot01-dev-sql.database.windows.net",
     "database": "FCGFOTF",
-    "cors": ["http://localhost:3000"]
+    "cors": ["http://localhost:3000"],
+    "URL": "http://localhost:3000",
+    "signingKey":"JhbGciOiJSUzI1NiJ9",
+    "loginURL": "http://localhost:3000/login"
 }
