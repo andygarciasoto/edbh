@@ -1,20 +1,21 @@
 import { API } from './Constants';
 import moment from 'moment';
-import { resolve } from 'url';
 const axios = require('axios');
 
 async function getRequestData(data) {
+  console.log(data);
   let res = {};
     const parameters = { 
         params: {
             mc: data[0],
             dt: data[1],
-            sf: mapShift(data[2]),
+            sf: data[2],
         }
     }
     res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
+      console.log(response)
       return response;
     })
     .catch(function (error) {
@@ -90,4 +91,8 @@ async function getMachineData() {
   }
 }
 
-export { getRequestData, getIntershift, getMachineData }
+function formatDate(date) {
+  return moment(date).format('YYYY-MM-DD');
+}
+
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate }

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node --exec babel-node ./bin/www",
-    "test": "nodemon --exec babel-node ./bin/www"
+    "server": "nodemon --exec babel-node ./bin/www"
   },
   "dependencies": {
     "async": "^3.1.0",

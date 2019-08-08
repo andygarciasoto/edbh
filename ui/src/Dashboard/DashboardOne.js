@@ -6,15 +6,14 @@ import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
-import FontAwesome from 'react-fontawesome';
 import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import DropdownModal from  '../Layout/DropdownModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
-import { getRequestData, getIntershift } from '../Utils/Requests';
+import Pagination from '../Layout/Pagination';
+import { getRequestData, getIntershift, mapShift } from '../Utils/Requests';
 // import ReactTooltip from 'react-tooltip';
-import LoadingModal from '../Layout/LoadingModal';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -43,7 +42,7 @@ class DashboardOne extends React.Component {
             modalType: '',
             expanded: {},
             openDropdownAfter: false,
-            selectedShift: 'First Shift'
+            selectedShift: 'First Shift',
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -135,11 +134,11 @@ class DashboardOne extends React.Component {
         const date = new Date();
         const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
         this.setState({selectedDate: date, selectedDateParsed: x})
-        this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+        this.fetchData([this.state.selectedMachine, this.state.selectedDate, mapShift(this.state.selectedShift)]);
     }
 
     componentWillReceiveProps(nextProps) {
-      this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+      this.fetchData([this.state.selectedMachine, this.state.selectedDate, mapShift(this.state.selectedShift)]);
     }
 
     async fetchData(data) {
@@ -185,13 +184,13 @@ class DashboardOne extends React.Component {
           accessor: 'product_code',
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className="empty">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => rows[0]._original.summary_product_code,
           Aggregated:  props =>(props.value === '' || props.value === null) ? <span style={{paddingRight: 185, cursor: 'pointer'}}  className={'empty-field'}></span> : 
           <span className='ideal'>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className="empty">{props.value}</span></span>,
           PivotValue:<span>{''}</span>
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
@@ -205,7 +204,7 @@ class DashboardOne extends React.Component {
           aggregate: (values, rows) => rows[0]._original.summary_ideal,
           Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
-          <span className="react-table-click-text table-click">{props.value}</span></span>
+          <span className="empty">{props.value}</span></span>
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
           accessor: 'target_pcs',
@@ -255,13 +254,13 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual')}</span>,
           accessor: 'cumulative_pcs',
           width: 150,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{''}</span></span>,
           style: {borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center', color: 'white'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => rows[0]._original.cumulative_pcs,
-          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{props.value}</span></span>
         }, {
@@ -337,7 +336,6 @@ class DashboardOne extends React.Component {
       let comments = {};
       if (data) {
         response = await getRequestData(data);
-        console.log(response)
       }
       if (response instanceof Object) {
        this.setState({data: response, columns})
@@ -429,17 +427,12 @@ class DashboardOne extends React.Component {
                   sendToMain={this.headerData}
                   selectedShift={this.state.selectedShift}
                 />
-                <div id="semi-button-deck">
-                  <span className="semi-button-shift-change-left">
-                    <FontAwesome name="angle-double-left" className="icon-arrow"/> 
-                    <FontAwesome name="caret-left fa-2" className="icon-arrow"/>
-                      <span id="previous-shift">Previous Shift</span>
-                  </span>
-                  <span className="semi-button-shift-change-right">
-                    <span id="current-shift">Back to Current Shift</span>
-                    <FontAwesome name="caret-right fa-2" className="icon-arrow"/>
-                  </span>
-                </div>
+                <Pagination 
+                  selectedShift={this.state.selectedShift}
+                  selectedDate={this.state.selectedDate}
+                  fetchData={this.fetchData}
+                  selectedMachine={this.state.selectedMachine}
+                />
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">

@@ -24,7 +24,6 @@ class CommentsModal extends React.Component {
     }
 
     render() {
-        console.log(this.props.comments)
         const styles = _.cloneDeep(this.props.style);
         if (!_.isEmpty(styles)) {
             styles.content.width = '60%';
