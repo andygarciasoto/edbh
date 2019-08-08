@@ -136,11 +136,11 @@ class DashboardOne extends React.Component {
         const date = new Date();
         const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
         this.setState({selectedDate: date, selectedDateParsed: x})
-        this.fetchData([this.state.selectedMachine, this.state.selectedDate, mapShift(this.state.selectedShift)]);
+        this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
 
     componentWillReceiveProps(nextProps) {
-      this.fetchData([this.state.selectedMachine, this.state.selectedDate, mapShift(this.state.selectedShift)]);
+      this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
 
     async fetchData(data) {
@@ -429,12 +429,12 @@ class DashboardOne extends React.Component {
                   sendToMain={this.headerData}
                   selectedShift={this.state.selectedShift}
                 />
-                {/* <Pagination 
+                <Pagination 
                   selectedShift={this.state.selectedShift}
                   selectedDate={this.state.selectedDate}
                   fetchData={this.fetchData}
                   selectedMachine={this.state.selectedMachine}
-                /> */}
+                />
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">

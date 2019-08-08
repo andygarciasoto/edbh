@@ -9,7 +9,7 @@ class Pagination extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
-            shift: mapShift(this.props.selectedShift),
+            shift: this.props.selectedShift,
             date: this.props.selectedDate
         } 
         this.onSelect = this.onSelect.bind(this);
@@ -18,12 +18,12 @@ class Pagination extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             date: formatDate(nextProps.selectedDate).split("-").join(""),
-            shift: mapShift(nextProps.selectedShift)
+            shift: nextProps.selectedShift
         })
     }
-    
+
     onSelect(e) {
-        let currentShift = this.state.shift;
+        let currentShift = mapShift(this.state.shift);
         let currentDate = this.state.date;
         let currentYear = currentDate.slice(0, 4);
         let currentMonth = currentDate.slice(4, 6);

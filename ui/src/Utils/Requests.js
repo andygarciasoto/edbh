@@ -6,7 +6,7 @@ async function getRequestData(data) {
   let res = {};
     const parameters = { 
         params: {
-            mc: data[0],
+            mc: Number(data[0]),
             dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2]),
         }
@@ -31,8 +31,12 @@ async function getRequestData(data) {
 }
 
 function mapShift(rawshift) {
-  let shift = 0;
-  if ((rawshift === 'First Shift') || (rawshift = 'Select Shift')) {
+  console.log(rawshift)
+  let shift = 1;
+  if (rawshift === 'Select Shift') {
+    shift = 1;
+  }
+  if (rawshift === 'First Shift') {
     shift = 1;
   }
   if (rawshift === 'Second Shift') {
@@ -49,7 +53,7 @@ async function getIntershift(data) {
 
   const parameters = { 
         params: {
-            mc: data[0],
+            mc: Number(data[0]),
             dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2])
         }
