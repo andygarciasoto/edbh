@@ -18,7 +18,9 @@ import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
+import config from '../config.json';
 import('moment/locale/es');
+
 
 class DashboardOne extends React.Component {
     constructor(props) {
@@ -36,7 +38,7 @@ class DashboardOne extends React.Component {
             dataCall: {},
             selectedDate: moment().format('YYYYMMDD'),
             selectedDateParsed: '',
-            selectedMachine: 12532,
+            selectedMachine: config['machine'],
             currentLanguage: 'en',
             valueToEdit: '',
             modalType: '',
@@ -427,12 +429,12 @@ class DashboardOne extends React.Component {
                   sendToMain={this.headerData}
                   selectedShift={this.state.selectedShift}
                 />
-                <Pagination 
+                {/* <Pagination 
                   selectedShift={this.state.selectedShift}
                   selectedDate={this.state.selectedDate}
                   fetchData={this.fetchData}
                   selectedMachine={this.state.selectedMachine}
-                />
+                /> */}
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">

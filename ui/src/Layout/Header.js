@@ -10,6 +10,7 @@ import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
 import moment from 'moment';
+import config from '../config.json';
 import { Link } from 'react-router-dom';
 
 
@@ -18,7 +19,7 @@ class Header extends React.Component {
 		super(props);
 		this.state = {
             megaMenuToggle: 'dropdown-content',
-            machineValue: 12532,
+            machineValue: config['machine'],
             dateValue: new Date(),
             shiftValue: 'Select Shift',
         } 

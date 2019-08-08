@@ -25,11 +25,9 @@ var nJwt = require('njwt');
 // });
 
 router.get('/data', async function (req, res) {
-    console.log(config['cors']);
     const params = req.query;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
-        console.log(query);
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
         const structuredObject = utils.restructureSQLObject(response, 'shift');
         const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);

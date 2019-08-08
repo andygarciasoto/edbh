@@ -56,7 +56,6 @@ function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        console.log(query);
                         response = JSON.parse(Object.values(query)[0].Shift_Data);
                         structuredObject = utils.restructureSQLObject(response, 'shift');
                         structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
@@ -66,7 +65,7 @@ function () {
                         objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
                         res.json(objectWithTimelossSummary);
 
-                      case 9:
+                      case 8:
                       case "end":
                         return _context.stop();
                     }
@@ -80,15 +79,14 @@ function () {
               return _structureShiftdata.apply(this, arguments);
             };
 
-            console.log(_config["default"]['cors']);
             params = req.query;
             params.dt = (0, _moment["default"])(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-            _context2.next = 7;
+            _context2.next = 6;
             return sqlQuery("exec spLocal_EY_DxH_Shift_Data '".concat(params.mc, "','").concat(params.dt, "',").concat(params.sf, ";"), function (response) {
               return structureShiftdata(response);
             });
 
-          case 7:
+          case 6:
           case "end":
             return _context2.stop();
         }

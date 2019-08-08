@@ -22,7 +22,6 @@ class Pagination extends React.Component {
         })
     }
     
-
     onSelect(e) {
         let currentShift = this.state.shift;
         let currentDate = this.state.date;

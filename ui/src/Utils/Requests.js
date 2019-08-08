@@ -3,15 +3,15 @@ import moment from 'moment';
 const axios = require('axios');
 
 async function getRequestData(data) {
-  console.log(data);
   let res = {};
     const parameters = { 
         params: {
             mc: data[0],
-            dt: data[1],
-            sf: data[2],
+            dt: formatDate(data[1]).split("-").join(""),
+            sf: mapShift(data[2]),
         }
     }
+    console.log(parameters)
     res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
@@ -32,7 +32,7 @@ async function getRequestData(data) {
 
 function mapShift(rawshift) {
   let shift = 0;
-  if (rawshift === 'First Shift' || rawshift === 'Select Shift') {
+  if ((rawshift === 'First Shift') || (rawshift = 'Select Shift')) {
     shift = 1;
   }
   if (rawshift === 'Second Shift') {
@@ -40,7 +40,7 @@ function mapShift(rawshift) {
   }
   if (rawshift === 'Third Shift') {
     shift = 3;
-  }
+  } 
   return shift;
 }
 
@@ -50,7 +50,7 @@ async function getIntershift(data) {
   const parameters = { 
         params: {
             mc: data[0],
-            dt: data[1],
+            dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2])
         }
     }
