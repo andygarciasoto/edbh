@@ -2,10 +2,10 @@ import React from  'react';
 import Modal from 'react-modal';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import * as _ from  'lodash';
-import './DropdownModal.scss';
+import './TimelossModal.scss';
 
 
-class DropdownModal extends React.Component {
+class TimelossModal extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -65,4 +65,4 @@ class DropdownModal extends React.Component {
 }
 
 Modal.setAppElement('#root');
-export default DropdownModal;
+export default TimelossModal;

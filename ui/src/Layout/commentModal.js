@@ -52,7 +52,7 @@ class CommentsModal extends React.Component {
                                 <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
                             </tr>
                             )
-                        }) : <tr><td>{'-'}</td><td>{"There are no comments to display."}</td></tr>}
+                        }) : <tr><td style={{textAlign: 'center'}}>{'-'}</td><td>{"There are no comments to display."}</td></tr>}
                     </tbody>
                 </Table>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>

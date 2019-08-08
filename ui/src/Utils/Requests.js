@@ -6,7 +6,7 @@ async function getRequestData(data) {
   let res = {};
     const parameters = { 
         params: {
-            mc: Number(data[0]),
+            mc: data[0],
             dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2]),
         }
@@ -15,7 +15,6 @@ async function getRequestData(data) {
     res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
-      console.log(response)
       return response;
     })
     .catch(function (error) {
@@ -31,7 +30,6 @@ async function getRequestData(data) {
 }
 
 function mapShift(rawshift) {
-  console.log(rawshift)
   let shift = 1;
   if (rawshift === 'Select Shift') {
     shift = 1;
@@ -53,7 +51,7 @@ async function getIntershift(data) {
 
   const parameters = { 
         params: {
-            mc: Number(data[0]),
+            mc: data[0],
             dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2])
         }

@@ -8,7 +8,7 @@ import 'react-table/react-table.css';
 import moment from 'moment';
 import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
-import DropdownModal from  '../Layout/DropdownModal';
+import TimelossModal from  '../Layout/TimelossModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
@@ -489,7 +489,7 @@ class DashboardOne extends React.Component {
                   comments={this.state.current_display_comments}
                 />
 
-                <DropdownModal
+                <TimelossModal
                   isOpen={this.state.modal_dropdown_IsOpen}
                   //  onAfterOpen={this.afterOpenModal}
                   onRequestClose={this.closeModal}
