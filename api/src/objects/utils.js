@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 
 function restructureSQLObject(obj, format) {
     var newArray = [];

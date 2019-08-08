@@ -1,24 +1,35 @@
-var express = require('express');
-var router = express.Router();
-var cors = require('cors');
-var sqlQuery = require('../objects/sqlConnection');
-var utils = require('../objects/utils');
 import _ from 'lodash';
 import moment from 'moment';
-import config from '../config.json';
+import config from '../../config.json';
+import { runInNewContext } from 'vm';
 
-var corsOptions = {
-    origin: config['cors'],
-    optionsSuccessStatus: 200 
-  }
+var express = require('express');
+var router = express.Router();
+var sqlQuery = require('../objects/sqlConnection');
+var utils = require('../objects/utils');
+var nJwt = require('njwt');
 
-router.get('/'), function(req, res) {
-    res.send({response: 'Welcome to the Parker Hannifin DBH API'});
-}
-router.get('/data', cors(corsOptions), async function (req, res) {
+// router.use(function (req, res, next){
+
+//     if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
+
+//     var token = req.headers['Authorization'];
+
+//     nJwt.verify(token,config["signingKey"],function(err){
+//         if(err){
+//           return res.redirect(401, config['loginURL']);
+//         }else{
+//           next();
+//         }
+//       });
+// });
+
+router.get('/data', async function (req, res) {
+    console.log(config['cors']);
     const params = req.query;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
+        console.log(query);
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
         const structuredObject = utils.restructureSQLObject(response, 'shift');
         const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
@@ -31,7 +42,7 @@ router.get('/data', cors(corsOptions), async function (req, res) {
     await sqlQuery(`exec spLocal_EY_DxH_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
 });
 
-router.get('/machine', cors(corsOptions), async function (req, res) {
+router.get('/machine', async function (req, res) {
     function structureMachines(response) {
         const machines = utils.structureMachines(response);
         res.json(machines);
@@ -59,7 +70,7 @@ router.get('/shifts', function (req, res) {
     res.json(shifts);
 });
 
-router.get('/intershift_communication', cors(corsOptions), async function (req, res) {
+router.get('/intershift_communication', async function (req, res) {
     const mc = parseInt(req.query.mc);
     const sf = parseInt(req.query.sf);
     async function structureCommunication(communication) {

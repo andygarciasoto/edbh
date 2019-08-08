@@ -53,7 +53,6 @@ class Pagination extends React.Component {
         }
         this.setState({shift: currentShift})
         // ---------------------------------
-        // ---------------------------------
         if (currentDay < 1) {
             currentDay = 31
         }
