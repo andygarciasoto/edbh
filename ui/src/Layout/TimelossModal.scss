@@ -11,3 +11,54 @@
     display: inline !important;
     padding: 10px;
 }
+
+.number-field {
+    padding: 5px 0px 5px 0px;
+    p, input {
+        display: inline;
+    }
+    p {
+        padding: 0px 10px 0px 10px;
+    }
+    input {
+        border-radius: 3px;
+        border: 1px solid rgb(185, 185, 185);
+        width: 15%;
+        text-align: center;
+    }
+}
+
+.new-timeloss {
+    border: 1px solid rgb(185, 185, 185);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.new-timeloss-unallocated input {
+    margin-left: 8%;
+}
+
+.new-timeloss-allocate input {
+    margin-left: 4%;
+}
+
+
+.new-timeloss-data {
+    margin: 20px 0px 40px 0px;
+}
+
+.new-timeloss-button {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.new-timeloss-data {
+    padding-bottom: 30px;
+}
+
+.timeloss-top {display: inline;}
+
+.new-timeloss-reasoncode { margin-bottom: 10px;}
+
+.new-timeloss-close {text-align: right;}
+.new-timelost-label {font-size: 0.9em;}

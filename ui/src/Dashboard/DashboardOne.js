@@ -105,11 +105,15 @@ class DashboardOne extends React.Component {
         })
       }
       if (type === 'dropdown') {
-        this.setState({
-          modal_values_IsOpen: false,
-          modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: true,
-        })
+        if (val) {
+            const timeloss = val.row._subRows[0]._original.timeloss;
+            this.setState({
+              modal_values_IsOpen: false,
+              modal_comments_IsOpen: false,
+              modal_dropdown_IsOpen: true,
+              current_display_timeloss: timeloss,
+            })
+        }
       }
     }
   
@@ -182,7 +186,7 @@ class DashboardOne extends React.Component {
             filterAll: true
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}</span>,
-          width: 200,
+          width: 220,
           accessor: 'product_code',
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
@@ -266,32 +270,19 @@ class DashboardOne extends React.Component {
           <span className='empty'>
           <span>{props.value}</span></span>
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (minutes)')}</span>,
+          Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
           accessor: 'timelost_summary',
-          width: 110,
+          width: 140,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="react-table-click-text table-click">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={props => this.openModal('values', props, true)}></span> : 
-          <span className='ideal' onClick={() => this.openModal('values', {props}, true)}>
+          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('dropdown', props)}></span> : 
+          <span className='ideal' onClick={() => this.openModal('dropdown', props)}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           // Aggregated: props => console.log(props)
-        },{
-          Header: () => <span className={'wordwrap'} data-tip={t('Time Lost Reason Code')}>{t('Time Lost Reason Code')}</span>,
-          accessor: 'latest_timelost_code',
-          width: 150,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
-          <span className='ideal'>
-          <span className="react-table-click-text table-click">{''}</span></span>,
-          style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
-          // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => values[0],
-          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('dropdown')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('dropdown', {props})}>
-          <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
           accessor: 'latest_comment',
@@ -496,7 +487,8 @@ class DashboardOne extends React.Component {
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
                   t={this.props.t}
-                  label={t('Enter Reason Code')}
+                  label={t('Select Reason Code')}
+                  timeloss={this.state.current_display_timeloss}
                 />    
             </React.Fragment>
         );
