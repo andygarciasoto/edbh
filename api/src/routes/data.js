@@ -13,11 +13,11 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
 router.use(function (req, res, next){
-    if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
+    if(!req.headers['Authorization']) return res.sendStatus(401);
     var token = req.headers['Authorization'];
     nJwt.verify(token,config["signingKey"],function(err){
         if(err){
-          return res.redirect(401, config['loginURL']);
+          return res.sendStatus(401);
         }else{
           next()
         }
@@ -49,6 +49,11 @@ router.get('/machine', async function (req, res) {
     await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
     // res.json([])
 });
+
+router.get('/me', async function (req, res) {
+    return res.json({name: 'Administator', role: 'admin'});
+});
+
 
 router.get('/shifts', function (req, res) {
     const shifts = [{
