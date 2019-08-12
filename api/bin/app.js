@@ -30,8 +30,8 @@ app.use((0, _cookieParser["default"])());
 app.get('/', function (req, res) {
   res.send('Welcome to the Parker Hannifin DBH API');
 });
-app.use('/api', cors(corsOptions), _data["default"]); // app.use('/login', cors(corsOptions), auth);
-
+app.use('/api', cors(corsOptions), _data["default"]);
+app.use('/login', cors(corsOptions), _auth["default"]);
 var port = process.env.PORT || '3001';
 app.listen(port);
 console.log('Started API on port', port);

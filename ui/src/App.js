@@ -13,9 +13,6 @@ function App() {
       <Suspense fallback={<Spinner />}>
         <Route path="/dashboard" render={()=> <DashboardOne t={t}/>} />
         <Route exact path="/" render={()=> <SignIn t={t}/>}/>
-        {/* <SignIn t={t}/> */}
-        {/* <DashboardOne t={t}/> */}
-        {/* <Spinner /> */}
       </Suspense>
     </Router>
   );

@@ -4,27 +4,25 @@ import { runInNewContext } from 'vm';
 const fs = require('fs')
 import {data as shiftD} from '../objects/dummyPredictions';
 import {communications as communicationsD} from '../objects/dummyCommunications';
+import config from '../../config.json';
 
 var express = require('express');
 var router = express.Router();
-// var sqlQuery = require('../objects/sqlConnection');
+var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
-// router.use(function (req, res, next){
-
-//     if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
-
-//     var token = req.headers['Authorization'];
-
-//     nJwt.verify(token,config["signingKey"],function(err){
-//         if(err){
-//           return res.redirect(401, config['loginURL']);
-//         }else{
-//           next()]\
-//         }
-//       });
-// });
+router.use(function (req, res, next){
+    if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
+    var token = req.headers['Authorization'];
+    nJwt.verify(token,config["signingKey"],function(err){
+        if(err){
+          return res.redirect(401, config['loginURL']);
+        }else{
+          next()
+        }
+      });
+});
 
 router.get('/data', async function (req, res) {
     const params = req.query;
@@ -84,4 +82,21 @@ router.get('/intershift_communication', async function (req, res) {
     // res.json(communicationsD);
 
 });
+
+router.post('/dxh_new_comment', async function (req, res) {
+    const params = req.body;
+    const update = params.comment_id ? params.comment_id : 0;
+    params.clocknumber ?
+    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
+    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', 'Null', '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
+    function respondPost(response) {
+        const res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (res === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
+})
+
 module.exports = router;

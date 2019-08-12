@@ -35,7 +35,6 @@ class TimelossModal extends React.Component {
             styles.content.width = '50%';
         }
         const t = this.props.t;
-        console.log(this.props.timeloss);
             return (
                 <Modal
                    isOpen={this.props.isOpen}
@@ -62,8 +61,8 @@ class TimelossModal extends React.Component {
                             <thead>
                                 <tr>
                                 <th style={{width: '10%'}}>{t('Time)')}</th>
-                                <th style={{width: '10%'}}>{t('Timelost Code')}</th>
-                                <th style={{width: '50%'}}>{t('Description')}</th>
+                                <th style={{width: '20%'}}>{t('Timelost Code')}</th>
+                                <th style={{width: '40%'}}>{t('Description')}</th>
                                 </tr>
                             </thead>
                             <tbody>

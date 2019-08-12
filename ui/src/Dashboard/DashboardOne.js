@@ -95,7 +95,10 @@ class DashboardOne extends React.Component {
           }
           if (val.row._subRows) {
             const comments = val.row._subRows[0]._original.actions_comments;
-            this.setState({current_display_comments: comments})
+            this.setState({
+              current_display_comments: comments,
+              current_row_id: val.row._subRows[0]._original.dxhdata_id
+            })
           }
         }
         this.setState({
@@ -478,6 +481,7 @@ class DashboardOne extends React.Component {
                   contentLabel="Example Modal"
                   t={this.props.t}
                   comments={this.state.current_display_comments}
+                  rowId={this.state.current_row_id}
                 />
 
                 <TimelossModal

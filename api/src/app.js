@@ -5,9 +5,10 @@ import { json, urlencoded } from 'body-parser';
 import data from './routes/data';
 import auth from './routes/auth';
 var cors = require('cors');
+import config from  '../config.json';
 
 var corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: config['cors'],
     optionsSuccessStatus: 200 
   }
 
@@ -23,8 +24,7 @@ app.get('/', function(req, res) {
 });
 
 app.use('/api', cors(corsOptions), data);
-
-// app.use('/login', cors(corsOptions), auth);
+app.use('/login', cors(corsOptions), auth);
 
 var port = process.env.PORT || '3001';
 app.listen(port);

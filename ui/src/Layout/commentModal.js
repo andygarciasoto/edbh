@@ -4,6 +4,8 @@ import { Form, Button, Table } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
 import moment from 'moment';
+import config from '../config.json';
+import { sendPost } from '../Utils/Requests';
 
 class CommentsModal extends React.Component {
     constructor(props) {
@@ -11,12 +13,22 @@ class CommentsModal extends React.Component {
 		this.state = {
             value : '',
         } 
-        this.validateBarcode = this.validateBarcode.bind(this);
+        this.submitComment = this.submitComment.bind(this);
         this.onChange = this.onChange.bind(this);
     }
 
-    validateBarcode(e) {
+    submitComment(e) {
         console.log(this.state.value);
+        console.log(this.props.rowId);
+        console.log(config);
+        const response = sendPost({
+            first_name: config.user.split(" ")[0],
+            last_name: config.user.split(" ")[1],
+            comment: this.state.value,
+            dhx_data_id: this.props.rowId,
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+        })
+        response.then((res) => console.log(res))
     }
 
     onChange(e) {
@@ -37,6 +49,7 @@ class CommentsModal extends React.Component {
                 style={styles}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                <div className={"comments-table"}>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -55,10 +68,11 @@ class CommentsModal extends React.Component {
                         }) : <tr><td style={{textAlign: 'center'}}>{'-'}</td><td>{"There are no comments to display."}</td></tr>}
                     </tbody>
                 </Table>
+                </div>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                     <Form.Control style={{paddingTop: '5px'}} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.validateBarcode}>{t('Submit')}</Button>
+                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submitComment}>{t('Submit')}</Button>
             </Modal>
         )
     }
