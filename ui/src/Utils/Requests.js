@@ -31,7 +31,7 @@ async function getRequestData(data) {
 function login (data) {
   const res = axios.post(`${AUTH}`, data)
   .then(function (response) {
-    console.log(response);
+    window.location.replace(response.headers.location);
   })
   .catch(function (error) {
     console.log(error);

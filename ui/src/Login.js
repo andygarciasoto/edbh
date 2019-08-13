@@ -25,9 +25,10 @@ class Login extends React.Component {
         }})
     }  
 
-    submit(e) {
+    async submit(e) {
         const data = {username: this.state.username, password: this.state.password}
-        login(data);
+        const redirectData = await login(data);
+        console.log(redirectData);
     }
 
     render() {

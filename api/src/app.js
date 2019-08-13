@@ -7,15 +7,32 @@ import auth from './routes/auth';
 var cors = require('cors');
 import config from  '../config.json';
 
+var whitelist = config['cors'];
 var corsOptions = {
-    origin: "http://localhost:3000",
-    optionsSuccessStatus: 200 
-  }
+    origin: function(origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+  optionsSuccessStatus: 200,
+  allowedHeaders: [
+    'Authorization',
+    'Content-Type',
+    'Content-disposition',
+    'X-Requested-With',
+    'X-XSRF-TOKEN',
+  ],
+  exposedHeaders: ['Location', 'Content-Disposition'],
+  credentials: true,
+}
 
 var app = express();
 app.use(express.static(join(__dirname, 'public')));
 
 app.use(json());
+app.options('*', cors())
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
 

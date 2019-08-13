@@ -4,6 +4,8 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _config = _interopRequireDefault(require("../../config.json"));
 
+var _cors = _interopRequireDefault(require("cors"));
+
 var express = require('express');
 
 var router = express.Router();
@@ -24,7 +26,9 @@ router.post("/", function (req, res) {
   if (req.body.username == "Administrator" && req.body.password == "parkerdxh2019") {
     var jwt = nJwt.create(claims, _config["default"]["signingKey"]);
     var token = jwt.compact();
-    res.redirect(_config["default"]['URL'] + "/callback?token=" + token);
+    var url = "".concat(_config["default"]['URL'], "/callback?token=").concat(token);
+    console.log(res);
+    res.redirect(200, url);
     return;
   }
 
