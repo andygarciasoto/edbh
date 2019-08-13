@@ -8,7 +8,7 @@ var cors = require('cors');
 import config from  '../config.json';
 
 var corsOptions = {
-    origin: config['cors'],
+    origin: "http://localhost:3000",
     optionsSuccessStatus: 200 
   }
 
@@ -19,12 +19,12 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
 
-app.get('/', function(req, res) {
-    res.send('Welcome to the Parker Hannifin DBH API');
+app.get('/', cors(corsOptions), function(req, res) {
+  return res.json({name: 'Administator', role: 'admin'});
 });
 
 app.use('/api', cors(corsOptions), data);
-app.use('/login', cors(corsOptions), auth);
+app.use('/auth', cors(corsOptions), auth);
 
 var port = process.env.PORT || '3001';
 app.listen(port);

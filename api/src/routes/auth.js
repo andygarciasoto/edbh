@@ -14,6 +14,7 @@ router.get("/", function(req, res){
 });
 
 router.post("/", function(req, res) {
+    console.log(req.body);
     if(req.body.username == "Administrator" && req.body.password == "parkerdxh2019") {
         var jwt = nJwt.create(claims,config["signingKey"]);
         var token = jwt.compact();

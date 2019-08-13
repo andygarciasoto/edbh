@@ -31,11 +31,11 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
 router.use(function (req, res, next) {
-  if (!req.headers['Authorization']) return res.redirect(401, _config["default"]['loginURL']);
+  if (!req.headers['Authorization']) return res.sendStatus(401);
   var token = req.headers['Authorization'];
   nJwt.verify(token, _config["default"]["signingKey"], function (err) {
     if (err) {
-      return res.redirect(401, _config["default"]['loginURL']);
+      return res.sendStatus(401);
     } else {
       next();
     }
@@ -87,12 +87,10 @@ function () {
 
             params = req.query;
             params.dt = (0, _moment["default"])(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-            _context2.next = 6;
-            return sqlQuery("exec spLocal_EY_DxH_Get_Shift_Data '".concat(params.mc, "','").concat(params.dt, "',").concat(params.sf, ";"), function (response) {
-              return structureShiftdata(response);
-            });
+            // await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
+            res.json(_dummyPredictions.data);
 
-          case 6:
+          case 5:
           case "end":
             return _context2.stop();
         }
@@ -137,6 +135,33 @@ function () {
     return _ref4.apply(this, arguments);
   };
 }());
+router.get('/me',
+/*#__PURE__*/
+function () {
+  var _ref6 = (0, _asyncToGenerator2["default"])(
+  /*#__PURE__*/
+  _regenerator["default"].mark(function _callee4(req, res) {
+    return _regenerator["default"].wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            return _context4.abrupt("return", res.json({
+              name: 'Administator',
+              role: 'admin'
+            }));
+
+          case 1:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function (_x6, _x7) {
+    return _ref6.apply(this, arguments);
+  };
+}());
 router.get('/shifts', function (req, res) {
   var shifts = [{
     "shifts": [{
@@ -154,23 +179,23 @@ router.get('/shifts', function (req, res) {
 router.get('/intershift_communication',
 /*#__PURE__*/
 function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])(
+  var _ref7 = (0, _asyncToGenerator2["default"])(
   /*#__PURE__*/
-  _regenerator["default"].mark(function _callee5(req, res) {
+  _regenerator["default"].mark(function _callee6(req, res) {
     var mc, sf, structureCommunication, _structureCommunication;
 
-    return _regenerator["default"].wrap(function _callee5$(_context5) {
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _structureCommunication = function _ref8() {
+            _structureCommunication = function _ref9() {
               _structureCommunication = (0, _asyncToGenerator2["default"])(
               /*#__PURE__*/
-              _regenerator["default"].mark(function _callee4(communication) {
+              _regenerator["default"].mark(function _callee5(communication) {
                 var response, structuredObject;
-                return _regenerator["default"].wrap(function _callee4$(_context4) {
+                return _regenerator["default"].wrap(function _callee5$(_context5) {
                   while (1) {
-                    switch (_context4.prev = _context4.next) {
+                    switch (_context5.prev = _context5.next) {
                       case 0:
                         response = JSON.parse(Object.values(communication)[0].InterShiftData);
                         structuredObject = utils.restructureSQLObject(response, 'communication');
@@ -178,49 +203,47 @@ function () {
 
                       case 3:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
                   }
-                }, _callee4);
+                }, _callee5);
               }));
               return _structureCommunication.apply(this, arguments);
             };
 
-            structureCommunication = function _ref7(_x8) {
+            structureCommunication = function _ref8(_x10) {
               return _structureCommunication.apply(this, arguments);
             };
 
             mc = parseInt(req.query.mc);
             sf = parseInt(req.query.sf);
-            _context5.next = 6;
-            return sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", function (response) {
-              return structureCommunication(response);
-            });
+            // await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
+            res.json(_dummyCommunications.communications);
 
-          case 6:
+          case 5:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5);
+    }, _callee6);
   }));
 
-  return function (_x6, _x7) {
-    return _ref6.apply(this, arguments);
+  return function (_x8, _x9) {
+    return _ref7.apply(this, arguments);
   };
 }());
 router.post('/dxh_new_comment',
 /*#__PURE__*/
 function () {
-  var _ref9 = (0, _asyncToGenerator2["default"])(
+  var _ref10 = (0, _asyncToGenerator2["default"])(
   /*#__PURE__*/
-  _regenerator["default"].mark(function _callee6(req, res) {
+  _regenerator["default"].mark(function _callee7(req, res) {
     var params, update, respondPost;
-    return _regenerator["default"].wrap(function _callee6$(_context6) {
+    return _regenerator["default"].wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            respondPost = function _ref10(response) {
+            respondPost = function _ref11(response) {
               var res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
 
               if (res === 0) {
@@ -234,35 +257,35 @@ function () {
             update = params.comment_id ? params.comment_id : 0;
 
             if (!params.clocknumber) {
-              _context6.next = 8;
+              _context7.next = 8;
               break;
             }
 
-            _context6.next = 6;
+            _context7.next = 6;
             return sqlQuery("Exec spLocal_EY_DxH_Put_CommentData ".concat(params.dhx_data_id, ", '").concat(params.comment, "', '").concat(params.clocknumber, "', Null, Null, '").concat(params.timestamp, "', ").concat(update), function (response) {
               return respondPost(response);
             });
 
           case 6:
-            _context6.next = 10;
+            _context7.next = 10;
             break;
 
           case 8:
-            _context6.next = 10;
+            _context7.next = 10;
             return sqlQuery("Exec spLocal_EY_DxH_Put_CommentData ".concat(params.dhx_data_id, ", '").concat(params.comment, "', 'Null', '").concat(params.first_name, "', '").concat(params.last_name, "', '").concat(params.timestamp, "', ").concat(update), function (response) {
               return respondPost(response);
             });
 
           case 10:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6);
+    }, _callee7);
   }));
 
-  return function (_x9, _x10) {
-    return _ref9.apply(this, arguments);
+  return function (_x11, _x12) {
+    return _ref10.apply(this, arguments);
   };
 }());
 module.exports = router;

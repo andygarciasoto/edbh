@@ -1,4 +1,4 @@
-import { API } from './Constants';
+import { API, AUTH } from './Constants';
 import moment from 'moment';
 const axios = require('axios');
 
@@ -26,6 +26,22 @@ async function getRequestData(data) {
     if (res) {
       return res.data;
     }
+}
+
+function login (data) {
+  const res = axios.post(`${AUTH}`, data)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(function () {
+    // nothing
+  });
+  if (res) {
+    return res.data;
+  }
 }
 
 function mapShift(rawshift) {
@@ -112,4 +128,4 @@ function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost }
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, login }

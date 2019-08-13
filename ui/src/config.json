@@ -3,5 +3,7 @@
     "user": "Ryan Parker",
     "role": "supervisor",
     "language": "en-us",
-    "clockNumber": 12332009
+    "clockNumber": 12332009,
+    "loginPage": "http://localhost:3000",
+    "api": "http://localhost:3001"
 }
