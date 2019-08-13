@@ -30,8 +30,9 @@ function init () {
             }
             return obj;
         }, {});
-
     // Verify state
+    console.log(urlHashes)
+    alert('look at the console terminal, obj should have token and state');
     const expectedState = sessionStorage.getItem(loginStateStorageKey);
     if (expectedState) {
         sessionStorage.removeItem(loginStateStorageKey);
@@ -43,12 +44,14 @@ function init () {
     }
 
     // Retrieve access token from URL hash
-    if ("token" in urlHashes) {
+    if (urlHashes) {
         // Store access token
-        localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, urlHashes.token);
+        localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, JSON.stringify(urlHashes));
         // Remove hash values from url
         const redirectUrl = window.location.href.split("#")[0];
         window.history.replaceState({}, "", redirectUrl);
+    } else {
+        alert('token not found')
     }
 
     // Setup request interceptor
@@ -63,7 +66,7 @@ axios.interceptors.request.use(function (config) {
         // Ensure credentials are always sent to digital factory API's
         config.withCredentials = true;
         // Send access token in Authorization header if available
-        const accessToken = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+        const accessToken = localStorage.getItem(JSON.parse(ACCESS_TOKEN_STORAGE_KEY));
         if (accessToken) {
             config.headers = Object.assign({
                 Authorization: "Bearer " + accessToken
@@ -86,7 +89,7 @@ axios.interceptors.response.use(function (response) {
             Math.random().toString(36).substring(2, 15);
         sessionStorage.setItem(loginStateStorageKey, state);
         // Build login url
-        const loginUrl = config['loginPage'] + "/login?response_type=token&redirect_uri="
+        const loginUrl = config['root'] + "/dashboard?response_type=token&redirect_uri="
             + encodeURIComponent(window.location.href) +
             "&state=" + encodeURIComponent(state);
         // Redirect to login

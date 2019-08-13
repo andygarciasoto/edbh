@@ -18,16 +18,13 @@ var claims = {
   scope: "admin"
 };
 router.get("/", function (req, res) {
-  res.redirect(_config["default"]['loginURL']);
+  res.redirect(401, _config["default"]['loginURL']);
 });
 router.post("/", function (req, res) {
-  console.log(req.body);
-
   if (req.body.username == "Administrator" && req.body.password == "parkerdxh2019") {
     var jwt = nJwt.create(claims, _config["default"]["signingKey"]);
     var token = jwt.compact();
-    var url = "".concat(_config["default"]['URL'], "/callback?token=").concat(token);
-    console.log(res);
+    var url = "".concat(_config["default"]['URL'], "/dashboard#token=").concat(token);
     res.redirect(200, url);
     return;
   }

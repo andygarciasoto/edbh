@@ -11,14 +11,14 @@ var claims = {
   }
 
 router.get("/", function(req, res){
-    res.redirect(config['loginURL']);
+    res.redirect(401, config['loginURL']);
 });
 
 router.post("/", function(req, res) {
     if(req.body.username == "Administrator" && req.body.password == "parkerdxh2019") {
         var jwt = nJwt.create(claims,config["signingKey"]);
         var token = jwt.compact();
-        const url = `${config['URL']}/callback?token=${token}`;
+        const url = `${config['URL']}/dashboard#token=${token}`;
         res.redirect(200, url);
         return;
     }
