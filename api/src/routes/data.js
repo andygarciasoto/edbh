@@ -20,6 +20,18 @@ router.use(function (err, req, res, next) {
       next(err);
   });
 
+router.use(function(req, res, next) {
+    var allowedOrigins = config['cors']
+    var origin = req.headers.origin;
+    if(allowedOrigins.indexOf(origin) > -1){
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader("Access-Control-Allow-Credentials", "true")
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 router.use(function (err, req, res, next){
     const authorization = req.get('Authorization');
     if(!authorization) return res.sendStatus(401);
@@ -35,13 +47,6 @@ router.use(function (err, req, res, next){
       });
 });
 
-router.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
 router.get('/data', async function (req, res) {
     const params = req.query;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
@@ -55,8 +60,8 @@ router.get('/data', async function (req, res) {
         const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
         res.json(objectWithTimelossSummary);
     }
-    // await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
-    res.json(shiftD);
+    await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
+    // res.json(shiftD);
 });
 
 router.get('/machine', async function (req, res) {
@@ -64,8 +69,8 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.json(machines);
     }
-    // await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
-    res.json([])
+    await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
+    // res.json([])
 });
 
 router.get('/', function (req, res) {
@@ -74,8 +79,7 @@ router.get('/', function (req, res) {
 
 router.get('/me', function (req, res) {
     console.log('got to users/me');
-    // return res.status(200).json({name: 'Administrator', role: 'admin'});
-    res.sendStatus(200);
+    return res.status(200).json({name: 'Administrator', role: 'admin'});
 });
 
 
@@ -107,8 +111,8 @@ router.get('/intershift_communication', async function (req, res) {
         const structuredObject = utils.restructureSQLObject(response, 'communication');
         res.json(structuredObject);
     }
-    // await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
-    res.json(communicationsD);
+    await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
+    // res.json(communicationsD);
 
 });
 

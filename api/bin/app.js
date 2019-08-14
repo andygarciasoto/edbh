@@ -32,14 +32,13 @@ var corsOptions = {
   optionsSuccessStatus: 200,
   allowedHeaders: ['Authorization', 'Content-Type', 'Content-disposition', 'X-Requested-With', 'X-XSRF-TOKEN'],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  preflightContinue: true,
   exposedHeaders: ['Location', 'Content-Disposition'],
   credentials: true
 };
 var app = express();
-app.use(express["static"]((0, _path.join)(__dirname, 'public'))); // app.options('*', cors(corsOptions));
+app.use(express["static"]((0, _path.join)(__dirname, 'public')));
+app.options('*', cors(corsOptions)); // app.use(cors());
 
-app.use(cors());
 app.use((0, _bodyParser.json)());
 app.use((0, _bodyParser.urlencoded)({
   extended: false
