@@ -13,12 +13,15 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
 router.use(function (req, res, next){
-    if(!req.headers['Authorization']) return res.sendStatus(401);
-    var token = req.headers['Authorization'];
+    const authorization = req.get('Authorization');
+    if(!authorization) return res.sendStatus(401);
+    var token = authorization.split(" ")[1];
     nJwt.verify(token,config["signingKey"],function(err){
         if(err){
+          console.log(err);
           return res.sendStatus(401);
         }else{
+            console.log('ACCEPTED TOKEN', token)
           next()
         }
       });
@@ -46,12 +49,18 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.json(machines);
     }
-    await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
-    // res.json([])
+    // await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
+    res.json([])
+});
+
+router.get('/', function (req, res) {
+    res.send('Got to /data')
 });
 
 router.get('/me', async function (req, res) {
-    return res.json({name: 'Administator', role: 'admin'});
+    console.log('got to users/me');
+    // return res.status(200).json({name: 'Administrator', role: 'admin'});
+    res.sendStatus(200);
 });
 
 

@@ -25,7 +25,7 @@ router.post("/", function (req, res) {
     var jwt = nJwt.create(claims, _config["default"]["signingKey"]);
     var token = jwt.compact();
     var url = "".concat(_config["default"]['URL'], "/dashboard#token=").concat(token);
-    res.redirect(200, url);
+    res.redirect(302, url);
     return;
   }
 

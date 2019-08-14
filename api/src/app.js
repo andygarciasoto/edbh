@@ -1,7 +1,7 @@
 var express = require('express');
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
-import { json, urlencoded } from 'body-parser';
+import { json, urlencoded, bodyParser } from 'body-parser';
 import data from './routes/data';
 import auth from './routes/auth';
 var cors = require('cors');
@@ -11,8 +11,10 @@ var whitelist = config['cors'];
 var corsOptions = {
     origin: function(origin, callback) {
       if (whitelist.indexOf(origin) !== -1) {
+        console.log(true)
         callback(null, true)
       } else {
+        console.log(false)
         callback(new Error('Not allowed by CORS'))
       }
     },
@@ -31,17 +33,14 @@ var corsOptions = {
 var app = express();
 app.use(express.static(join(__dirname, 'public')));
 
+app.options('*', cors(corsOptions));
 app.use(json());
-app.options('*', cors())
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
 
-app.get('/', cors(corsOptions), function(req, res) {
-  return res.json({name: 'Administator', role: 'admin'});
-});
 
-app.use('/api', cors(corsOptions), data);
-app.use('/auth', cors(corsOptions), auth);
+app.use('/auth', auth);
+app.use('/api', data);
 
 var port = process.env.PORT || '3001';
 app.listen(port);

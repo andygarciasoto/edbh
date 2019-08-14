@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './i18n';
 import axios from 'axios';
-import config from './config.json';
+import configuration from './config.json';
 
 const loginStateStorageKey = "loginState";
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
@@ -30,23 +30,25 @@ function init () {
             }
             return obj;
         }, {});
+
     // Verify state
-    console.log(urlHashes)
-    alert('look at the console terminal, obj should have token and state');
-    const expectedState = sessionStorage.getItem(loginStateStorageKey);
-    if (expectedState) {
-        sessionStorage.removeItem(loginStateStorageKey);
-        if (!("state" in urlHashes) || urlHashes.state !== expectedState) {
-            console.error("Invalid state");
-            window.location.replace(config['loginPage']);
-            return;
-        }
-    }
+    // const expectedState = sessionStorage.getItem(loginStateStorageKey);
+    // if (expectedState) {
+    //     alert('1. found a state', expectedState);
+    //     sessionStorage.removeItem(loginStateStorageKey);
+    //     if (!("state" in urlHashes) || urlHashes.state !== expectedState) {
+    //         alert('1.1 state not in urlhashes')
+    //         console.error("Invalid state");
+    //         window.location.replace(config['loginPage']);
+    //         return;
+    //     }
+    // }
 
     // Retrieve access token from URL hash
     if (urlHashes) {
+        console.log(urlHashes);
         // Store access token
-        localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, JSON.stringify(urlHashes));
+        localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, urlHashes.token);
         // Remove hash values from url
         const redirectUrl = window.location.href.split("#")[0];
         window.history.replaceState({}, "", redirectUrl);
@@ -58,15 +60,16 @@ function init () {
 axios.interceptors.request.use(function (config) {
     const url = config.url;
     // TODO: Check if the "does not start with http" case is necessary
+    alert('json url', JSON.stringify(config));
     const urlRequiresAuth = url.indexOf("http") !== 0 ||
-        [config['api']].some(function (domain) {
+        [configuration['api']].some(function (domain) {
             return url.indexOf(domain) === 0;
         });
     if (urlRequiresAuth) {
         // Ensure credentials are always sent to digital factory API's
         config.withCredentials = true;
         // Send access token in Authorization header if available
-        const accessToken = localStorage.getItem(JSON.parse(ACCESS_TOKEN_STORAGE_KEY));
+        const accessToken = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
         if (accessToken) {
             config.headers = Object.assign({
                 Authorization: "Bearer " + accessToken
@@ -89,7 +92,7 @@ axios.interceptors.response.use(function (response) {
             Math.random().toString(36).substring(2, 15);
         sessionStorage.setItem(loginStateStorageKey, state);
         // Build login url
-        const loginUrl = config['root'] + "/dashboard?response_type=token&redirect_uri="
+        const loginUrl = configuration['root'] + "/dashboard?response_type=token&redirect_uri="
             + encodeURIComponent(window.location.href) +
             "&state=" + encodeURIComponent(state);
         // Redirect to login
@@ -100,17 +103,17 @@ axios.interceptors.response.use(function (response) {
 });
 
 // Check if user is logged in
-axios.get(`${config['api']}/api/me`)
-    .then(function (response) {
-        console.log(response)
-        ReactDOM.render(
+axios.get(`${configuration['api']}/api/me`)
+    .then(async function (response) {
+        alert(response);
+        await ReactDOM.render(
             <App />
         , document.getElementById('root')
         );
     })
     .catch(function (error) {
         console.error(error);
-        window.location.replace(config['loginPage']);
+        window.location.replace(configuration['loginPage']);
     });
 
 // If you want your app to work offline and load faster, you can change

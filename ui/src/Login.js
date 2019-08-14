@@ -14,7 +14,7 @@ class Login extends React.Component {
             password: '',
             style: {},
         } 
-        this.submit = this.submit.bind(this);
+        // this.submit = this.submit.bind(this);
     }
 
     componentDidMount() {
@@ -25,11 +25,13 @@ class Login extends React.Component {
         }})
     }  
 
-    async submit(e) {
-        const data = {username: this.state.username, password: this.state.password}
-        const redirectData = await login(data);
-        console.log(redirectData);
-    }
+    // async submit(e) {
+    //     const expectedState = sessionStorage.getItem('loginState');
+    //     console.log(expectedState);
+    //     const data = {username: this.state.username, password: this.state.password};
+    //     const redirectData = await login(data);
+    //     console.log(redirectData);
+    // }
 
     render() {
         return (
@@ -37,16 +39,16 @@ class Login extends React.Component {
                 <div id="signIn">
                     <img src={logo} className="App-logo" alt="logo" />  
                     <h3 style={{fontSize: '0.9em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
-                    <Form>
+                    <Form action="http://localhost:3001/auth" method="post">
                     <Form.Group controlId="formGroupEmail" style={{textAlign: 'right'}}>
                         <Form.Label>Username: &nbsp;</Form.Label>
-                        <Form.Control value={this.state.username} type="text" placeholder="Enter username" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({username: e.target.value})}}/>
+                        <Form.Control value={this.state.username} name={'username'} type="text" placeholder="Enter username" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({username: e.target.value})}}/>
                     </Form.Group>
                     <Form.Group controlId="formGroupPassword">
                         <Form.Label>Password: &nbsp;</Form.Label>
-                        <Form.Control value={this.state.password} type="password" placeholder="Password" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({password: e.target.value})}}/>
+                        <Form.Control value={this.state.password} name={'password'} type="password" placeholder="Password" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({password: e.target.value})}}/>
                     </Form.Group>
-                    <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submit}>{'Submit'}</Button>
+                    <Button type="submit" variant="outline-primary" style={{marginTop: '10px'}}>{'Submit'}</Button>
                     </Form>
                 </div>
             </div>

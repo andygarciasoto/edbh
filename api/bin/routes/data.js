@@ -31,12 +31,15 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
 router.use(function (req, res, next) {
-  if (!req.headers['Authorization']) return res.sendStatus(401);
-  var token = req.headers['Authorization'];
+  var authorization = req.get('Authorization');
+  if (!authorization) return res.sendStatus(401);
+  var token = authorization.split(" ")[1];
   nJwt.verify(token, _config["default"]["signingKey"], function (err) {
     if (err) {
+      console.log(err);
       return res.sendStatus(401);
     } else {
+      console.log('ACCEPTED TOKEN', token);
       next();
     }
   });
@@ -118,12 +121,10 @@ function () {
               res.json(machines);
             };
 
-            _context3.next = 3;
-            return sqlQuery("select * from dbo.Asset;", function (response) {
-              return structureMachines(response);
-            });
+            // await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
+            res.json([]);
 
-          case 3:
+          case 2:
           case "end":
             return _context3.stop();
         }
@@ -135,6 +136,9 @@ function () {
     return _ref4.apply(this, arguments);
   };
 }());
+router.get('/', function (req, res) {
+  res.send('Got to /data');
+});
 router.get('/me',
 /*#__PURE__*/
 function () {
@@ -145,12 +149,11 @@ function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            return _context4.abrupt("return", res.json({
-              name: 'Administator',
-              role: 'admin'
-            }));
+            console.log('got to users/me'); // return res.status(200).json({name: 'Administrator', role: 'admin'});
 
-          case 1:
+            res.sendStatus(200);
+
+          case 2:
           case "end":
             return _context4.stop();
         }

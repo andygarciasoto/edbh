@@ -22,8 +22,10 @@ var whitelist = _config["default"]['cors'];
 var corsOptions = {
   origin: function origin(_origin, callback) {
     if (whitelist.indexOf(_origin) !== -1) {
+      console.log(true);
       callback(null, true);
     } else {
+      console.log(false);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -34,20 +36,14 @@ var corsOptions = {
 };
 var app = express();
 app.use(express["static"]((0, _path.join)(__dirname, 'public')));
+app.options('*', cors(corsOptions));
 app.use((0, _bodyParser.json)());
-app.options('*', cors());
 app.use((0, _bodyParser.urlencoded)({
   extended: false
 }));
 app.use((0, _cookieParser["default"])());
-app.get('/', cors(corsOptions), function (req, res) {
-  return res.json({
-    name: 'Administator',
-    role: 'admin'
-  });
-});
-app.use('/api', cors(corsOptions), _data["default"]);
-app.use('/auth', cors(corsOptions), _auth["default"]);
+app.use('/auth', _auth["default"]);
+app.use('/api', _data["default"]);
 var port = process.env.PORT || '3001';
 app.listen(port);
 console.log('Started API on port', port);

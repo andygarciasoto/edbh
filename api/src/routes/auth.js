@@ -19,7 +19,7 @@ router.post("/", function(req, res) {
         var jwt = nJwt.create(claims,config["signingKey"]);
         var token = jwt.compact();
         const url = `${config['URL']}/dashboard#token=${token}`;
-        res.redirect(200, url);
+        res.redirect(302, url);
         return;
     }
     return res.redirect(401, config['loginURL']);
