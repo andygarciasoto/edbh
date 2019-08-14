@@ -1,4 +1,4 @@
-import React from  'react';
+import React from 'react';
 import Modal from 'react-modal';
 import { Form, Button, Table } from 'react-bootstrap';
 import './CommentsModal.scss';
@@ -7,10 +7,10 @@ import moment from 'moment';
 
 class CommentsModal extends React.Component {
     constructor(props) {
-		super(props);
-		this.state = {
-            value : '',
-        } 
+        super(props);
+        this.state = {
+            value: '',
+        }
         this.validateBarcode = this.validateBarcode.bind(this);
         this.onChange = this.onChange.bind(this);
     }
@@ -20,7 +20,7 @@ class CommentsModal extends React.Component {
     }
 
     onChange(e) {
-        this.setState({value: e.target.value});
+        this.setState({ value: e.target.value });
     }
 
     render() {
@@ -40,25 +40,25 @@ class CommentsModal extends React.Component {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                        <th>{t('Date')}</th>
-                        <th>{t('User')}</th>
+                            <th>{t('Date')}</th>
+                            <th>{t('User')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {this.props.comments ? this.props.comments.map((comment, index) => {
                             return (
                                 <tr key={index}>
-                                <td className={"commentsModal-user"}><span>{`${comment.first_name} ${comment.last_name}`}</span><div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div></td>
-                                <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
-                            </tr>
+                                    <td className={"commentsModal-user"}><span>{`${comment.first_name} ${comment.last_name}`}</span><div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div></td>
+                                    <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
+                                </tr>
                             )
-                        }) : <tr><td style={{textAlign: 'center'}}>{'-'}</td><td>{"There are no comments to display."}</td></tr>}
+                        }) : <tr><td style={{ textAlign: 'center' }}>{'-'}</td><td>{t("There are no comments to display")}.</td></tr>}
                     </tbody>
                 </Table>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
-                    <Form.Control style={{paddingTop: '5px'}} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
+                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.validateBarcode}>{t('Submit')}</Button>
+                <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.validateBarcode}>{t('Submit')}</Button>
             </Modal>
         )
     }

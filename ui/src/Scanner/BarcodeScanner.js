@@ -3,7 +3,7 @@ import BarcodeReader from 'react-barcode-reader'
 import { Form } from  'react-bootstrap';
 import './BarcodeScanner.scss';
 import BlinkDots from '../Layout/BlinkDots';
-import ErrorModal from  '../Layout/ErrorModal';
+import ErrorModal from  '../Layout/errorModal';
 import LoadingModal from  '../Layout/LoadingModal';
 
 class  BarcodeScanner extends Component {

@@ -78,7 +78,7 @@ class Comments extends React.Component {
                     style={this.state.modalStyle}
                     contentLabel="Example Modal"
                     comments={this.props.comments}
-                    t={this.props.t}
+                    t={t}
                 />
             </div>
         )

@@ -6,8 +6,8 @@ import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
-import CommentsModal from  '../Layout/CommentModal';
-import ValueModal from  '../Layout/ValueModal';
+import CommentsModal from  '../Layout/commentModal';
+import ValueModal from  '../Layout/valueModal';
 import TimelossModal from  '../Layout/TimelossModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
@@ -425,6 +425,7 @@ class DashboardOne extends React.Component {
                   selectedDate={this.state.selectedDate}
                   fetchData={this.fetchData}
                   selectedMachine={this.state.selectedMachine}
+                  t={t}
                 />
                 <div className="wrapper-main">
                     <Row>
@@ -455,7 +456,7 @@ class DashboardOne extends React.Component {
                             /> : <Spinner/>}
                         </Col>
                     </Row>
-                    <Comments t={this.props.t} comments={this.state.comments}/>
+                    <Comments t={t} comments={this.state.comments}/>
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
@@ -465,7 +466,7 @@ class DashboardOne extends React.Component {
                  contentLabel="Example Modal"
                  currentVal={this.state.valueToEdit}
                  formType={this.state.modalType}
-                 t={this.props.t}
+                 t={t}
                  openDropdownAfter={this.state.openDropdownAfter}
                  openAfter={this.openAfter}
                 />
@@ -476,7 +477,7 @@ class DashboardOne extends React.Component {
                   onRequestClose={this.closeModal}
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
-                  t={this.props.t}
+                  t={t}
                   comments={this.state.current_display_comments}
                 />
 
@@ -486,7 +487,7 @@ class DashboardOne extends React.Component {
                   onRequestClose={this.closeModal}
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
-                  t={this.props.t}
+                  t={t}
                   label={t('Select Reason Code')}
                   timeloss={this.state.current_display_timeloss}
                 />    

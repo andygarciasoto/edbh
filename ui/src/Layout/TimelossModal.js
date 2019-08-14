@@ -43,7 +43,7 @@ class TimelossModal extends React.Component {
                    style={styles}
                    contentLabel="Example Modal">
                         <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                        <span><h4 style={{marginLeft: '10px'}}>{'Timelost (Minutes)'}</h4></span>
+                        <span><h4 style={{marginLeft: '10px'}}>{t('Timelost (Minutes)')}</h4></span>
                         <div className="new-timeloss-data" style={{marginBottom: '20px'}}>
                             <div className="total-timeloss number-field timeloss-top">
                                 <p>{t('Total Timelost')}</p>
@@ -61,7 +61,7 @@ class TimelossModal extends React.Component {
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
-                                <th style={{width: '10%'}}>{t('Time)')}</th>
+                                <th style={{width: '10%'}}>{t('Time')}</th>
                                 <th style={{width: '10%'}}>{t('Timelost Code')}</th>
                                 <th style={{width: '50%'}}>{t('Description')}</th>
                                 </tr>
@@ -79,7 +79,7 @@ class TimelossModal extends React.Component {
                                     </tr>
                             </tbody>
                         </Table>
-                            <span className={"new-timelost-label"}>{'New Timelost Entry'}</span>
+                            <span className={"new-timelost-label"}>{t('New Timelost Entry')}</span>
                             <div className="new-timeloss">
                                 <div className="new-timeloss-unallocated number-field">
                                     <p>{t('Unallocated Timelost')}</p>

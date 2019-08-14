@@ -2,12 +2,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import { runInNewContext } from 'vm';
 const fs = require('fs')
-import {data as shiftD} from '../objects/dummyPredictions';
-import {communications as communicationsD} from '../objects/dummyCommunications';
+import { data as shiftD } from '../objects/dummyPredictions';
+import { communications as communicationsD } from '../objects/dummyCommunications';
 
 var express = require('express');
 var router = express.Router();
-// var sqlQuery = require('../objects/sqlConnection');
+var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 

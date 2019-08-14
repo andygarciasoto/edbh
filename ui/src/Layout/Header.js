@@ -16,13 +16,13 @@ import { Link } from 'react-router-dom';
 
 class Header extends React.Component {
     constructor(props) {
-		super(props);
-		this.state = {
+        super(props);
+        this.state = {
             megaMenuToggle: 'dropdown-content',
             machineValue: config['machine'],
             dateValue: new Date(),
             shiftValue: 'Select Shift',
-        } 
+        }
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
         this.returnToParent = this.returnToParent.bind(this);
@@ -31,10 +31,10 @@ class Header extends React.Component {
 
     collectInputs(value, type) {
         if (type === 'machine') {
-            this.setState({machineValue: value})
+            this.setState({ machineValue: value })
         }
         if (type === 'date') {
-            this.setState({dateValue: moment(value).format('YYYY/MM/DD')})
+            this.setState({ dateValue: moment(value).format('YYYY/MM/DD') })
         }
         if (type === 'shift') {
             // this.setState({shiftValue: value})
@@ -44,8 +44,8 @@ class Header extends React.Component {
 
     openMenu() {
         this.state.megaMenuToggle === 'dropdown-content opened' ?
-        this.setState({megaMenuToggle: 'dropdown-content'}) : 
-        this.setState({megaMenuToggle: 'dropdown-content opened'});
+            this.setState({ megaMenuToggle: 'dropdown-content' }) :
+            this.setState({ megaMenuToggle: 'dropdown-content opened' });
     }
 
     returnToParent(data) {
@@ -57,11 +57,11 @@ class Header extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({shiftValue: nextProps.t(nextProps.selectedShift)})
+        this.setState({ shiftValue: nextProps.t(nextProps.selectedShift) })
     }
 
     onScroll() {
-        this.setState({megaMenuToggle: 'dropdown-content'});
+        this.setState({ megaMenuToggle: 'dropdown-content' });
     }
 
 
@@ -69,19 +69,35 @@ class Header extends React.Component {
         const t = this.props.t;
         return (
             <nav className="navbar">
-                    <Row className={'row'}>
-                        <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo"/></Col>
-                        <Col className={'col'} md={9} lg={9}> 
-                            <div className="links header-side">
-                                <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out"/></Link></span>
-                                <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e)=>this.openMenu(e)}>{t('Menu')}&nbsp;</span>
-                                <FontAwesome onClick={(e)=>this.openMenu(e)}name="bars"/>
+                <Row className={'row'}>
+                    <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo" /></Col>
+                    <Col className={'col'} md={9} lg={9}>
+                        <div className="links header-side">
+                            <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
+                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
+                                <FontAwesome
+                                    onClick={(e) => this.openMenu(e)}
+                                    name="bars" />
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
-                                    <MachinePickerCustom collectInput={this.collectInputs} changeMachine={this.props.changeMachine} t={t} value={t('Select Machine')}/>
-                                    <DatePickerCustom collectInput={this.collectInputs} changeDate={this.props.changeDate} date={this.state.dateValue}/>
-                                    <ShiftPickerCustom collectInput={this.collectInputs} t={t} value={t('Select Shift')} currentShift={this.state.shiftValue} />
-                                    <LanguagePickerCustom changeDateLanguage={this.props.changeDateLanguage} openMenu={this.openMenu} value={t('Select Language')}/>
-                                    <QueryButton 
+                                    <MachinePickerCustom
+                                        collectInput={this.collectInputs}
+                                        changeMachine={this.props.changeMachine}
+                                        t={t}
+                                        value={t('Select Machine')} />
+                                    <DatePickerCustom
+                                        collectInput={this.collectInputs}
+                                        changeDate={this.props.changeDate}
+                                        date={this.state.dateValue} />
+                                    <ShiftPickerCustom
+                                        collectInput={this.collectInputs}
+                                        t={t}
+                                        value={t('Select Shift')}
+                                        currentShift={this.state.shiftValue} />
+                                    <LanguagePickerCustom
+                                        changeDateLanguage={this.props.changeDateLanguage}
+                                        openMenu={this.openMenu}
+                                        value={t('Select Language')} />
+                                    <QueryButton
                                         machine={this.state.machineValue}
                                         date={this.state.dateValue}
                                         shift={this.state.shiftValue}
@@ -90,10 +106,10 @@ class Header extends React.Component {
                                         t={t}
                                     />
                                 </MegaMenu>
-                                </span>
-                            </div>
-                        </Col>
-                    </Row>
+                            </span>
+                        </div>
+                    </Col>
+                </Row>
             </nav>
         );
     }
