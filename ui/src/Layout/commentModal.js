@@ -9,10 +9,10 @@ import { sendPost } from '../Utils/Requests';
 
 class CommentsModal extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            value: '',
-        }
+		super(props);
+		this.state = {
+            value : '',
+        } 
         this.submitComment = this.submitComment.bind(this);
         this.onChange = this.onChange.bind(this);
     }
@@ -69,8 +69,8 @@ class CommentsModal extends React.Component {
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                     <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.submitComment}>{t('Submit')}</Button>
-            </Modal >
+                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submitComment}>{t('Submit')}</Button>
+            </Modal>
         )
     }
 }
