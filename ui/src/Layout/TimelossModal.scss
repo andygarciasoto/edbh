@@ -58,7 +58,14 @@
 
 .timeloss-top {display: inline;}
 
-.new-timeloss-reasoncode { margin-bottom: 10px;}
+.new-timeloss-reasoncode { margin-bottom: 5px;}
 
 .new-timeloss-close {text-align: right;}
 .new-timelost-label {font-size: 0.9em;}
+
+.timelost-field {border: 1px solid rgb(185, 185, 185);
+    border-radius: 3px;
+    padding: 5px;
+    text-align: center;
+    width: 50%;
+    }

@@ -21,7 +21,7 @@ router.post("/", function(req, res) {
         const url = `${config['URL']}/dashboard#token=${token}`;
         res.redirect(302, url);
         return;
-    }console.log('this is bad')
+    }
     return res.redirect(401, config['loginURL']);
 });
 

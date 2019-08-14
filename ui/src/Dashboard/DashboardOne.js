@@ -275,7 +275,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
           accessor: 'timelost_summary',
-          width: 150,
+          width: 120,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="react-table-click-text table-click">{''}</span></span>,
@@ -289,7 +289,6 @@ class DashboardOne extends React.Component {
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
           accessor: 'latest_comment',
-          width: 200,
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
             <span className='ideal-click'>
             <span className="react-table-click-text table-click comments">{''}</span></span>,

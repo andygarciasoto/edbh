@@ -78,7 +78,6 @@ router.get('/', function (req, res) {
 });
 
 router.get('/me', function (req, res) {
-    console.log('got to users/me');
     return res.status(200).json({name: 'Administrator', role: 'admin'});
 });
 

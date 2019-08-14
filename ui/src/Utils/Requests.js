@@ -1,4 +1,4 @@
-import { API, AUTH } from './Constants';
+import { API } from './Constants';
 import moment from 'moment';
 const axios = require('axios');
 
@@ -71,7 +71,6 @@ async function getIntershift(data) {
             sf: mapShift(data[2])
         }
     }
-    console.log(parameters);
     res = await axios.get(`${API}/intershift_communication`, parameters)
     .then(function (response) {
       // handle success

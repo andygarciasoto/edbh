@@ -4,7 +4,7 @@ import logo from './Parker_Hannifin.svg';
 import Background from './backdrop1.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
-import { login } from './Utils/Requests';
+import { AUTH } from './Utils/Constants';
 
 class Login extends React.Component {
     constructor(props) {
@@ -14,7 +14,6 @@ class Login extends React.Component {
             password: '',
             style: {},
         } 
-        // this.submit = this.submit.bind(this);
     }
 
     componentDidMount() {
@@ -25,21 +24,13 @@ class Login extends React.Component {
         }})
     }  
 
-    // async submit(e) {
-    //     const expectedState = sessionStorage.getItem('loginState');
-    //     console.log(expectedState);
-    //     const data = {username: this.state.username, password: this.state.password};
-    //     const redirectData = await login(data);
-    //     console.log(redirectData);
-    // }
-
     render() {
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
                     <img src={logo} className="App-logo" alt="logo" />  
                     <h3 style={{fontSize: '0.9em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
-                    <Form action="http://localhost:3001/auth" method="post">
+                    <Form action={AUTH} method="post">
                     <Form.Group controlId="formGroupEmail" style={{textAlign: 'right'}}>
                         <Form.Label>Username: &nbsp;</Form.Label>
                         <Form.Control value={this.state.username} name={'username'} type="text" placeholder="Enter username" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({username: e.target.value})}}/>

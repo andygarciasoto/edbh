@@ -43,20 +43,20 @@ class TimelossModal extends React.Component {
                    contentLabel="Example Modal">
                         <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                         <span><h4 style={{marginLeft: '10px'}}>{'Timelost (Minutes)'}</h4></span>
-                        <div className="new-timeloss-data" style={{marginBottom: '20px'}}>
-                            <div className="total-timeloss number-field timeloss-top">
+                        <Row className="new-timeloss-data" style={{marginBottom: '5px'}}>
+                            <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                                 <p>{t('Total Timelost')}</p>
                                 <input type="text" disabled={true} value={35}></input>
-                            </div>
-                            <div className="breaktime-timeloss number-field timeloss-top">
+                            </Col>
+                            <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
                                 <p>{t('Lunch/Break Time')}</p>
                                 <input type="text" disabled={true} value={20}></input>
-                            </div>
-                            <div className="setup-timeloss number-field timeloss-top">
+                            </Col>
+                            <Col sm={4} md={4} className="setup-timeloss number-field timeloss-top">
                                 <p>{t('Planned Setup Time')}</p>
                                 <input type="text" disabled={true} value={0}></input>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
@@ -80,18 +80,25 @@ class TimelossModal extends React.Component {
                         </Table>
                             <span className={"new-timelost-label"}>{'New Timelost Entry'}</span>
                             <div className="new-timeloss">
-                                <div className="new-timeloss-unallocated number-field">
-                                    <p>{t('Unallocated Timelost')}</p>
-                                    <input type="text" disabled={true} value={25}></input>
-                                </div>
-                                <div className="new-timeloss-allocate number-field">
-                                    <p>{t('Time to allocate (minutes)')}</p>
-                                    <input type="text" value={0}></input>
-                                </div>
+                                <Row style={{marginBottom: '1px'}}>
+                                    <Col sm={4} md={4}>
+                                        <p style={{marginBottom: '1px'}}>{`${t('Unallocated Timelost')}:`}</p>
+                                        <input className={'timelost-field'} type="text" disabled={true} value={25}></input>
+                                    </Col>
+                                    <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
+                                        <p style={{marginBottom: '5px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
+                                        <input className={'timelost-field'} type="text" value={0} onChange={(e)=>this.setState({new_tl_minutes: e.target.value})}></input>
+                                    </Col>
+                                    <Col sm={4} md={4}></Col>
+                                </Row>
                                 <div className="new-timeloss-reasoncode">
-                                    <p className="dashboard-modal-field-dropdown">{this.props.label ? this.props.label : t('New Value')}:</p>
-                                    <Form.Group as={Col} controlId="formGridState" className="dashboard-modal-field-dropdown">
-                                    <Form.Control as="select" style={{width: '55%', display: 'inline', marginTop: '20px', textOverflow: 'ellipsis'}}>
+                                    <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{this.props.label ? this.props.label : t('New Value')}:</p>
+                                    <Form.Group controlId="formGridState">
+                                    <Form.Control 
+                                        as="select" 
+                                        style={{width: '90%', marginTop: '5px', marginBottom: '5px', textOverflow: 'ellipsis'}} 
+                                        onSelect={(e)=>this.setState({new_tl_reason: e.target.value})}
+                                    >
                                         <option>{'404 - Error Number 404 Description'}</option>
                                         <option>{'405 - Error Number 404 Description'}</option>
                                         <option>{'406 - Error Number 404 Description'}</option>
@@ -102,14 +109,18 @@ class TimelossModal extends React.Component {
                                         <option>{'411 - Error Number 404 Description'}</option>
                                         <option>{'412 - Error Number 404 Description'}</option>
                                     </Form.Control>
+                                    <div style={{marginTop: '10px'}}>
+                                        <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{t('Enter Description')}:</p>
+                                        <Form.Control style={{paddingTop: '5px', width: '90%'}} type="text" value={this.state.description}></Form.Control>
+                                    </div>
                                     </Form.Group>
                                 </div>
                                 <div className={'new-timeloss-button'}>
-                                    <Button variant="outline-primary" style={{marginTop: '20px', marginLeft: '10px'}} onClick={this.editNumber}>{t('Submit')}</Button>
+                                    <Button variant="outline-primary" style={{marginTop: '10px', marginLeft: '10px'}} onClick={this.editNumber}>{t('Submit')}</Button>
                                 </div>
                             </div>
                             <div className={'new-timeloss-close'}>
-                                <Button variant="outline-secondary" style={{marginTop: '20px', marginLeft: '10px'}} onClick={this.editNumber}>{t('Close')}</Button>
+                                <Button variant="outline-secondary" style={{marginTop: '10px', marginLeft: '10px'}} onClick={this.editNumber}>{t('Close')}</Button>
                             </div>
                 </Modal>
             )

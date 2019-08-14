@@ -165,7 +165,6 @@ router.get('/', function (req, res) {
   res.send('Got to /data');
 });
 router.get('/me', function (req, res) {
-  console.log('got to users/me');
   return res.status(200).json({
     name: 'Administrator',
     role: 'admin'

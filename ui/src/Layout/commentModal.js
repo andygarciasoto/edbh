@@ -18,9 +18,6 @@ class CommentsModal extends React.Component {
     }
 
     submitComment(e) {
-        console.log(this.state.value);
-        console.log(this.props.rowId);
-        console.log(config);
         const response = sendPost({
             first_name: config.user.split(" ")[0],
             last_name: config.user.split(" ")[1],

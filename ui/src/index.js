@@ -6,6 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import './i18n';
 import axios from 'axios';
 import configuration from './config.json';
+import { API } from './Utils/Constants';
 
 const loginStateStorageKey = "loginState";
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
@@ -46,7 +47,6 @@ function init () {
 
     // Retrieve access token from URL hash
     if (urlHashes) {
-        console.log(urlHashes);
         // Store access token
         localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, urlHashes.token);
         // Remove hash values from url
@@ -61,7 +61,7 @@ axios.interceptors.request.use(function (config) {
     const url = config.url;
     // TODO: Check if the "does not start with http" case is necessary
     const urlRequiresAuth = url.indexOf("http") !== 0 ||
-        [configuration['api']].some(function (domain) {
+        [API].some(function (domain) {
             return url.indexOf(domain) === 0;
         });
     if (urlRequiresAuth) {
@@ -101,7 +101,7 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-fetch('http://localhost:3001/api/me')
+fetch(`${API}/me`)
   .then(function(response) {
     return response;
   })
