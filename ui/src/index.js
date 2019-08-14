@@ -102,19 +102,30 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+fetch('http://localhost:3001/api/me')
+  .then(function(response) {
+    return response;
+  })
+  .then(function(json) {
+    alert(json)
+    ReactDOM.render(
+      <App />, document.getElementById('root'));
+  }).catch((e)=> console.log(e))
+
 // Check if user is logged in
-axios.get(`${configuration['api']}/api/me`)
-    .then(async function (response) {
-        alert(response);
-        await ReactDOM.render(
-            <App />
-        , document.getElementById('root')
-        );
-    })
-    .catch(function (error) {
-        console.error(error);
-        window.location.replace(configuration['loginPage']);
-    });
+// axios.get(`${configuration['api']}/api/me`)
+//     .then(function (response) {
+//         alert(response);
+//         ReactDOM.render(
+//             <App />
+//         , document.getElementById('root')
+//         );
+//     })
+//     .catch(function (error) {
+//         alert(error)
+//         console.error(error);
+//         window.location.replace(configuration['loginPage']);
+//     });
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

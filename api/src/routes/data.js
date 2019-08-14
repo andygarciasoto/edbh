@@ -12,7 +12,15 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
-router.use(function (req, res, next){
+router.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401);
+      res.json({"message" : err.name + ": " + err.message});
+    } else
+      next(err);
+  });
+
+router.use(function (err, req, res, next){
     const authorization = req.get('Authorization');
     if(!authorization) return res.sendStatus(401);
     var token = authorization.split(" ")[1];
@@ -25,6 +33,13 @@ router.use(function (req, res, next){
           next()
         }
       });
+});
+
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 router.get('/data', async function (req, res) {
@@ -57,7 +72,7 @@ router.get('/', function (req, res) {
     res.send('Got to /data')
 });
 
-router.get('/me', async function (req, res) {
+router.get('/me', function (req, res) {
     console.log('got to users/me');
     // return res.status(200).json({name: 'Administrator', role: 'admin'});
     res.sendStatus(200);

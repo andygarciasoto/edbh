@@ -29,6 +29,7 @@ router.post("/", function (req, res) {
     return;
   }
 
+  console.log('this is bad');
   return res.redirect(401, _config["default"]['loginURL']);
 });
 module.exports = router;

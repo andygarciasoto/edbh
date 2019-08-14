@@ -28,22 +28,6 @@ async function getRequestData(data) {
     }
 }
 
-function login (data) {
-  const res = axios.post(`${AUTH}`, data)
-  .then(function (response) {
-    window.location.replace(response.headers.location);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
-  .finally(function () {
-    // nothing
-  });
-  if (res) {
-    return res.data;
-  }
-}
-
 function mapShift(rawshift) {
   let shift = 1;
   if (rawshift === 'Select Shift') {
@@ -128,4 +112,4 @@ function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, login }
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost }

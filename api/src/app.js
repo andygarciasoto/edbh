@@ -1,7 +1,7 @@
 var express = require('express');
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
-import { json, urlencoded, bodyParser } from 'body-parser';
+import { json, urlencoded } from 'body-parser';
 import data from './routes/data';
 import auth from './routes/auth';
 var cors = require('cors');
@@ -26,6 +26,8 @@ var corsOptions = {
     'X-Requested-With',
     'X-XSRF-TOKEN',
   ],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  preflightContinue: true,
   exposedHeaders: ['Location', 'Content-Disposition'],
   credentials: true,
 }
@@ -33,7 +35,8 @@ var corsOptions = {
 var app = express();
 app.use(express.static(join(__dirname, 'public')));
 
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions));
+app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
