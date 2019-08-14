@@ -111,10 +111,12 @@ function () {
 
             params = req.query;
             params.dt = (0, _moment["default"])(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-            // await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
-            res.json(_dummyPredictions.data);
+            _context2.next = 6;
+            return sqlQuery("exec spLocal_EY_DxH_Get_Shift_Data '".concat(params.mc, "','").concat(params.dt, "',").concat(params.sf, ";"), function (response) {
+              return structureShiftdata(response);
+            });
 
-          case 5:
+          case 6:
           case "end":
             return _context2.stop();
         }
@@ -142,10 +144,12 @@ function () {
               res.json(machines);
             };
 
-            // await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
-            res.json([]);
+            _context3.next = 3;
+            return sqlQuery("select * from dbo.Asset;", function (response) {
+              return structureMachines(response);
+            });
 
-          case 2:
+          case 3:
           case "end":
             return _context3.stop();
         }
@@ -161,9 +165,11 @@ router.get('/', function (req, res) {
   res.send('Got to /data');
 });
 router.get('/me', function (req, res) {
-  console.log('got to users/me'); // return res.status(200).json({name: 'Administrator', role: 'admin'});
-
-  res.sendStatus(200);
+  console.log('got to users/me');
+  return res.status(200).json({
+    name: 'Administrator',
+    role: 'admin'
+  });
 });
 router.get('/shifts', function (req, res) {
   var shifts = [{
@@ -220,10 +226,12 @@ function () {
 
             mc = parseInt(req.query.mc);
             sf = parseInt(req.query.sf);
-            // await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
-            res.json(_dummyCommunications.communications);
+            _context5.next = 6;
+            return sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", function (response) {
+              return structureCommunication(response);
+            });
 
-          case 5:
+          case 6:
           case "end":
             return _context5.stop();
         }

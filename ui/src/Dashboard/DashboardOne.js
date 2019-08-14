@@ -204,7 +204,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
           accessor: 'ideal',
-          width: 150,
+          width: 100,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
           <span className='ideal' onClick={() => this.openModal('values', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
@@ -217,7 +217,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
           accessor: 'target_pcs',
-          width: 150,
+          width: 100,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={`empty-field`}></span> : 
           <span>
           <span>{props.value}</span></span>,
@@ -231,7 +231,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}</span>,
           accessor: 'actual_pcs',
-          width: 150,
+          width: 100,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}}
           onClick={() => this.openModal('values')}></span> : 
           <span className={`ideal`} onClick={() => this.openModal('values', {props})}>
@@ -248,7 +248,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}</span>,
           accessor: 'cumulative_target_pcs',
-          width: 150,
+          width: 100,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{props.value}</span></span>,
@@ -262,7 +262,7 @@ class DashboardOne extends React.Component {
         },  {
           Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual')}</span>,
           accessor: 'cumulative_pcs',
-          width: 150,
+          width: 100,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%'}} className={'empty-field'}></span> : 
           <span className='empty'>
           <span>{''}</span></span>,
@@ -275,7 +275,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
           accessor: 'timelost_summary',
-          width: 140,
+          width: 150,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="react-table-click-text table-click">{''}</span></span>,
@@ -289,6 +289,7 @@ class DashboardOne extends React.Component {
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
           accessor: 'latest_comment',
+          width: 200,
           Cell: props => props.value === '' ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
             <span className='ideal-click'>
             <span className="react-table-click-text table-click comments">{''}</span></span>,
