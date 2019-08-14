@@ -11,7 +11,6 @@ async function getRequestData(data) {
             sf: mapShift(data[2]),
         }
     }
-    console.log(parameters)
     res = await axios.get(`${API}/data`, parameters)
     .then(function (response) {
       // handle success
@@ -46,6 +45,22 @@ function mapShift(rawshift) {
   return shift;
 }
 
+async function sendPost(data) {
+  const res = axios.post(`${API}/dxh_new_comment`, data)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(function () {
+    // nothing
+  });
+  if (res) {
+    return res.data;
+  }
+}
+
 async function getIntershift(data) {
   let res = {};
 
@@ -56,7 +71,6 @@ async function getIntershift(data) {
             sf: mapShift(data[2])
         }
     }
-    console.log(parameters);
     res = await axios.get(`${API}/intershift_communication`, parameters)
     .then(function (response) {
       // handle success
@@ -97,4 +111,4 @@ function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate }
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost }

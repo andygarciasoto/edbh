@@ -2,8 +2,9 @@ import _ from 'lodash';
 import moment from 'moment';
 import { runInNewContext } from 'vm';
 const fs = require('fs')
-import { data as shiftD } from '../objects/dummyPredictions';
-import { communications as communicationsD } from '../objects/dummyCommunications';
+import {data as shiftD} from '../objects/dummyPredictions';
+import {communications as communicationsD} from '../objects/dummyCommunications';
+import config from '../../config.json';
 
 var express = require('express');
 var router = express.Router();
@@ -11,20 +12,40 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
-// router.use(function (req, res, next){
+router.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401);
+      res.json({"message" : err.name + ": " + err.message});
+    } else
+      next(err);
+  });
 
-//     if(!req.headers['Authorization']) return res.redirect(401, config['loginURL']);
+router.use(function(req, res, next) {
+    var allowedOrigins = config['cors']
+    var origin = req.headers.origin;
+    if(allowedOrigins.indexOf(origin) > -1){
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader("Access-Control-Allow-Credentials", "true")
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
-//     var token = req.headers['Authorization'];
-
-//     nJwt.verify(token,config["signingKey"],function(err){
-//         if(err){
-//           return res.redirect(401, config['loginURL']);
-//         }else{
-//           next()]\
-//         }
-//       });
-// });
+router.use(function (err, req, res, next){
+    const authorization = req.get('Authorization');
+    if(!authorization) return res.sendStatus(401);
+    var token = authorization.split(" ")[1];
+    nJwt.verify(token,config["signingKey"],function(err){
+        if(err){
+          console.log(err);
+          return res.sendStatus(401);
+        }else{
+            console.log('ACCEPTED TOKEN', token)
+          next()
+        }
+      });
+});
 
 router.get('/data', async function (req, res) {
     const params = req.query;
@@ -51,6 +72,15 @@ router.get('/machine', async function (req, res) {
     await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
     // res.json([])
 });
+
+router.get('/', function (req, res) {
+    res.send('Got to /data')
+});
+
+router.get('/me', function (req, res) {
+    return res.status(200).json({name: 'Administrator', role: 'admin'});
+});
+
 
 router.get('/shifts', function (req, res) {
     const shifts = [{
@@ -84,4 +114,21 @@ router.get('/intershift_communication', async function (req, res) {
     // res.json(communicationsD);
 
 });
+
+router.post('/dxh_new_comment', async function (req, res) {
+    const params = req.body;
+    const update = params.comment_id ? params.comment_id : 0;
+    params.clocknumber ?
+    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
+    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', 'Null', '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
+    function respondPost(response) {
+        const res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (res === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
+})
+
 module.exports = router;

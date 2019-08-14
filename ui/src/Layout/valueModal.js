@@ -17,6 +17,7 @@ class ValueModal extends React.Component {
 
     editNumber(e) {
         const newVal = this.state.newValue;
+        console.log(newVal)
         this.setState({value: newVal});
         this.props.onRequestClose();
         if (this.props.openDropdownAfter) {
