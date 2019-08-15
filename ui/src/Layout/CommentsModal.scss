@@ -17,6 +17,6 @@
 
 .comments-table {
   display: block; /* important */
-  height: 500px;
+  max-height: 40vh;
   overflow-y: scroll;
 }

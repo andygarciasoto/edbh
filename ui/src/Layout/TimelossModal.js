@@ -86,7 +86,7 @@ class TimelossModal extends React.Component {
                                         <input className={'timelost-field'} type="text" disabled={true} value={25}></input>
                                     </Col>
                                     <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
-                                        <p style={{marginBottom: '5px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
+                                        <p style={{marginBottom: '1px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
                                         <input className={'timelost-field'} type="text" value={0} onChange={(e)=>this.setState({new_tl_minutes: e.target.value})}></input>
                                     </Col>
                                     <Col sm={4} md={4}></Col>

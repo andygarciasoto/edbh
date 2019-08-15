@@ -1,5 +1,4 @@
 import React from 'react';
-import BarcodeScanner from './Scanner/BarcodeScanner';
 import logo from './Parker_Hannifin.svg';
 import Background from './backdrop1.jpg';
 import './sass/SignIn.scss';

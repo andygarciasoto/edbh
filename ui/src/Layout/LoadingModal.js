@@ -1,6 +1,6 @@
 import React from  'react';
 import Modal from 'react-modal';
-import './errorModal.scss';
+import './ErrorModal.scss';
 import BlinkDots from  './BlinkDots';
 import Spinner from '../Spinner';
 import * as _ from 'lodash';
