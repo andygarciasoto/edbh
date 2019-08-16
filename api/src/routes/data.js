@@ -136,4 +136,16 @@ router.post('/dxh_new_comment', async function (req, res) {
     }
 })
 
+router.get('/timeloss_reasons', async function (req, res) {
+    const params = req.params;
+    console.log(params);
+    function returnReasons(data) {
+        const response = JSON.parse(Object.values(data)[0].DTReason);
+        console.log(response)
+        res.json(response);
+    }
+    await sqlQuery("Exec spLocal_EY_DxH_Get_DTReason '10832';", response => returnReasons(response));
+
+})
+
 module.exports = router;
