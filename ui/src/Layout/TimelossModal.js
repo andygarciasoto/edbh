@@ -12,6 +12,8 @@ class TimelossModal extends React.Component {
 		this.state = {
             value : this.props.currentVal,
             newValue: '',
+            break_time: 0,
+            setup_time: 0,
         } 
         this.editNumber = this.editNumber.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -29,7 +31,36 @@ class TimelossModal extends React.Component {
 
     componentWillMount() {
         const reasons = getReasons(this.props.machine);
-        reasons.then((res) => this.setState({reasons: res}))
+        reasons.then((res) => this.setState({
+            reasons: res,
+            timelost: this.props.timelost,
+        }))
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps)
+        const total =  this.calculateTotal(nextProps.hourTime, nextProps);
+        this.setState({
+            timelost: nextProps.timelost,
+            allocated_time: total,
+            unallocated_time: 60 - total,
+        })
+        if (nextProps.hour) {
+            this.setState({
+                setup_time: nextProps.hour.summary_breakandlunch_minutes || 0,
+                break_time: nextProps.hour.summary_breakandlunch_minutes || 0
+            })
+        }
+    }
+
+    calculateTotal(hour, nextProps) {
+        let allocated_time = hour.planned_setup_time + hour.planned_setup_time;
+        if (nextProps.timelost) {
+            for (let i of nextProps.timelost) {
+                allocated_time = allocated_time + i.dtminutes;
+            }
+        }
+        return allocated_time;
     }
 
     render() {
@@ -49,15 +80,15 @@ class TimelossModal extends React.Component {
                         <Row className="new-timeloss-data" style={{marginBottom: '5px'}}>
                             <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                                 <p>{t('Total Timelost')}</p>
-                                <input type="text" disabled={true} value={35}></input>
+                                <input type="text" disabled={true} value={this.state.allocated_time}></input>
                             </Col>
                             <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
                                 <p>{t('Lunch/Break Time')}</p>
-                                <input type="text" disabled={true} value={20}></input>
+                                <input type="text" disabled={true} value={this.state.break_time}></input>
                             </Col>
                             <Col sm={4} md={4} className="setup-timeloss number-field timeloss-top">
                                 <p>{t('Planned Setup Time')}</p>
-                                <input type="text" disabled={true} value={0}></input>
+                                <input type="text" disabled={true} value={this.state.setup_time}></input>
                             </Col>
                         </Row>
                         <Table striped bordered hover>
@@ -65,20 +96,24 @@ class TimelossModal extends React.Component {
                                 <tr>
                                 <th style={{width: '10%'}}>{t('Time')}</th>
                                 <th style={{width: '20%'}}>{t('Timelost Code')}</th>
-                                <th style={{width: '40%'}}>{t('Description')}</th>
+                                <th style={{width: '40%'}}>{t('Reason')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                    <tr>
-                                        <td>{'10'}</td>
-                                        <td>{'401'}</td>
-                                        <td>{'The machine got broken'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{'5'}</td>
-                                        <td>{'404'}</td>
-                                        <td>{'The machine is getting fixed'}</td>
-                                    </tr>
+                            {
+                                this.state.timelost ? this.state.timelost.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{item.dtminutes}</td>
+                                            <td>{item.dtreason_code}</td>
+                                            <td>{item.dtreason_name}</td>
+                                        </tr>) 
+                                }): <tr>
+                                    <td>{'-'}</td>
+                                    <td>{'-'}</td>
+                                    <td>{'No Timelost entries yet.'}</td>
+                                </tr>
+                             }
                             </tbody>
                         </Table>
                             <span className={"new-timelost-label"}>{t('New Timelost Entry')}</span>
@@ -86,7 +121,7 @@ class TimelossModal extends React.Component {
                                 <Row style={{marginBottom: '1px'}}>
                                     <Col sm={4} md={4}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Unallocated Timelost')}:`}</p>
-                                        <input className={'timelost-field'} type="text" disabled={true} value={25}></input>
+                                        <input className={'timelost-field'} type="text" disabled={true} value={this.state.unallocated_time}></input>
                                     </Col>
                                     <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
@@ -110,10 +145,10 @@ class TimelossModal extends React.Component {
                                             })
                                         : null}
                                     </Form.Control>
-                                    <div style={{marginTop: '10px'}}>
+                                    {/* <div style={{marginTop: '10px'}}>
                                         <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{t('Enter Description')}:</p>
                                         <Form.Control style={{paddingTop: '5px', width: '90%'}} type="text" value={this.state.description}></Form.Control>
-                                    </div>
+                                    </div> */}
                                     </Form.Group>
                                 </div>
                                 <div className={'new-timeloss-button'}>
