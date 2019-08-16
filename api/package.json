@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run build && node bin/app.js",
+    "start": "node bin/app.js",
     "test": "nodemon --exec babel-node ./src/app.js",
     "build": "babel src -d bin"
   },

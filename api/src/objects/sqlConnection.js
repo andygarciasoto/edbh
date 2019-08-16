@@ -3,8 +3,6 @@ var Request = require('tedious').Request;
 import config from '../../config.json';
 
 var poolConfig = {
-    min: 2,
-    max: 4,
     log: true
 };
 
@@ -15,12 +13,14 @@ var connectionConfig = {
     options: {
       database: config['database'],
       encrypt: true,
-      rowCollectionOnDone: true, // Only get row set instead of row by row
-      useColumnNames: true // For easier JSON formatting
+      useColumnNames: true, // For easier JSON formatting
+      requestTimeout: 30000,
     }
 };
+
 //create the pool
 var pool = new ConnectionPool(poolConfig, connectionConfig);
+
 async function PerformQuery(statement, callback) {
   pool.on('error', function(err) {
     console.error(err);

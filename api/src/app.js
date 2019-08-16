@@ -33,16 +33,18 @@ var app = express();
 app.use(express.static(join(__dirname, 'public')));
 
 app.options('*', cors(corsOptions));
-// app.use(cors());
+
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
 
-
+app.get("/", function(req, res){
+  res.send("Dxh Service");
+});
 app.use('/auth', auth);
 app.use('/api', data);
 
-var port = process.env.PORT || '3001';
+var port = process.env.PORT || 8080;
 app.listen(port);
 console.log('Started API on port', port);
 

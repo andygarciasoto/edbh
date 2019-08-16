@@ -32,23 +32,32 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.use(function (err, req, res, next){
-    const authorization = req.get('Authorization');
-    if(!authorization) return res.sendStatus(401);
-    var token = authorization.split(" ")[1];
+router.use(function (req, res, next){
+    let token = req.header('Authorization');
+    if (token && token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+    if(token) {
     nJwt.verify(token,config["signingKey"],function(err){
         if(err){
           console.log(err);
           return res.sendStatus(401);
         }else{
-            console.log('ACCEPTED TOKEN', token)
           next()
         }
       });
+    } else {
+        res.status(401);
+        return res.json({
+          success: false,
+          message: 'Auth token is not supplied'
+        });
+    }
 });
 
 router.get('/data', async function (req, res) {
     const params = req.query;
+    if(params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(500).send("Missing parameters");
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
@@ -71,10 +80,6 @@ router.get('/machine', async function (req, res) {
     }
     await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
     // res.json([])
-});
-
-router.get('/', function (req, res) {
-    res.send('Got to /data')
 });
 
 router.get('/me', function (req, res) {
