@@ -67,7 +67,7 @@ router.get('/data', async function (req, res) {
         const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
         const objectWithLatestComment = utils.createLatestComment(mappedObject);
         const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-        res.json(objectWithTimelossSummary);
+        res.status(200).json(objectWithTimelossSummary);
     }
     await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`, response => structureShiftdata(response));
     // res.json(shiftD);
@@ -76,7 +76,7 @@ router.get('/data', async function (req, res) {
 router.get('/machine', async function (req, res) {
     function structureMachines(response) {
         const machines = utils.structureMachines(response);
-        res.json(machines);
+        res.status(200).json(machines);
     }
     await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
     // res.json([])
@@ -92,7 +92,7 @@ router.get('/intershift_communication', async function (req, res) {
     async function structureCommunication(communication) {
         const response = JSON.parse(Object.values(communication)[0].InterShiftData);
         const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
+        res.status(200).json(structuredObject);
     }
     await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
     // res.json(communicationsD);
@@ -119,7 +119,7 @@ router.get('/timelost_reasons', async function (req, res) {
     const machine = req.query.mc;
     function returnReasons(data) {
         const response = JSON.parse(Object.values(data)[0].DTReason);
-        res.json(response);
+        res.status(200).json(response);
     }
     await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => returnReasons(response));
 

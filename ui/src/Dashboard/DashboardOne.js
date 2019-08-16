@@ -45,7 +45,6 @@ class DashboardOne extends React.Component {
             expanded: {},
             openDropdownAfter: false,
             selectedShift: 'First Shift',
-            hourTime: {planned_setup_time: 5, break_time: 10}
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -116,7 +115,7 @@ class DashboardOne extends React.Component {
               modal_comments_IsOpen: false,
               modal_dropdown_IsOpen: true,
               current_display_timelost: timelost,
-              current_row_timelost: val.row._subRows[0]._original
+              current_row_timelost: val.row._subRows[0]._original,
             })
         }
       }
@@ -496,7 +495,6 @@ class DashboardOne extends React.Component {
                   t={t}
                   label={t('Select Reason Code')}
                   timelost={this.state.current_display_timelost}
-                  hourTime={this.state.hourTime}
                   machine={this.state.selectedMachine}
                   hour={this.state.current_row_timelost}
                 />    
