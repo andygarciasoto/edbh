@@ -87,16 +87,19 @@ router.get('/me', function (req, res) {
 });
 
 router.get('/intershift_communication', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.status(200).json(structuredObject);
-    }
-    await sqlQuery("exec spLocal_EY_DxH_Get_InterShiftData '10832', '2019-07-25', '3';", response => structureCommunication(response));
-    // res.json(communicationsD);
+    const asset_code = req.query.asset_code;
+    const production_day = req.query.production_day;
+    const shift_code = req.query.shift_code;
 
+    if (asset_code == undefined || production_day == undefined || shift_code == undefined) return res.status(500).send("Missing parameters");
+
+    function returnInterShift(data) {
+        const response = JSON.parse(Object.values(data)[0].InterShiftData);
+        res.status(200).json(response);
+    }
+    try {
+        await sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`, response => returnInterShift(response));
+    } catch (e) { console.log(e) }
 });
 
 router.post('/dxh_new_comment', async function (req, res) {
