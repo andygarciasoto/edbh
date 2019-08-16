@@ -2,8 +2,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import { runInNewContext } from 'vm';
 const fs = require('fs')
-import {data as shiftD} from '../objects/dummyPredictions';
-import {communications as communicationsD} from '../objects/dummyCommunications';
+import { data as shiftD } from '../objects/dummyPredictions';
+import { communications as communicationsD } from '../objects/dummyCommunications';
 import config from '../../config.json';
 
 var express = require('express');
@@ -57,7 +57,7 @@ router.use(function (req, res, next){
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if(params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(500).send("Missing parameters");
+    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(500).send("Missing parameters");
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     async function structureShiftdata(query) {
         const response = JSON.parse(Object.values(query)[0].Shift_Data);
@@ -83,7 +83,7 @@ router.get('/machine', async function (req, res) {
 });
 
 router.get('/me', function (req, res) {
-    return res.status(200).json({name: 'Administrator', role: 'admin'});
+    return res.status(200).json({ name: 'Administrator', role: 'admin' });
 });
 
 router.get('/intershift_communication', async function (req, res) {
@@ -103,8 +103,8 @@ router.post('/dxh_new_comment', async function (req, res) {
     const params = req.body;
     const update = params.comment_id ? params.comment_id : 0;
     params.clocknumber ?
-    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
-    await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', 'Null', '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', 'Null', '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
     function respondPost(response) {
         const res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (res === 0) {
@@ -115,16 +115,13 @@ router.post('/dxh_new_comment', async function (req, res) {
     }
 });
 
-router.get('/dt_reason', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureDTReason(reason) {
-        const response = JSON.parse(Object.values(reason)[0].DTReason);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
+router.get('/timeloss_reasons', async function (req, res) {
+    const machine = req.query.mc;
+    function returnReasons(data) {
+        const response = JSON.parse(Object.values(data)[0].DTReason);
+        res.json(response);
     }
-    await sqlQuery("exec spLocal_EY_DxH_Get_DTReason '10832';", response => structureDTReason(response));
-    // res.json(communicationsD);
+    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => returnReasons(response));
 
 });
 
@@ -155,16 +152,25 @@ router.put('/dt_data', async function (req, res) {
 });
 
 router.put('/intershift_communication', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
-    }
-    await sqlQuery("exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0;", response => structureCommunication(response));
-    // res.json(communicationsD);
+    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const comment = req.body.comment;
+    const clocknumber = req.body.clocknumber;
+    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const update = req.body.inter_shift_id ? req.body.inter_shift_id : 0;
 
+    if (dhx_data_id == undefined || comment == undefined || clocknumber == undefined) return res.status(500).send("Missing parameters");
+
+    await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPost(response));
+
+    async function respondPost(response) {
+        console.log('Respond function');
+        const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
 });
 
 router.put('/operator_sign_off', async function (req, res) {
@@ -192,15 +198,5 @@ router.put('/supervisor_sign_off', async function (req, res) {
     // res.json(communicationsD);
 
 });
-
-router.get('/timeloss_reasons', async function (req, res) {
-    const machine = req.query.mc;
-    function returnReasons(data) {
-        const response = JSON.parse(Object.values(data)[0].DTReason);
-        res.json(response);
-    }
-    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => returnReasons(response));
-
-})
 
 module.exports = router;
