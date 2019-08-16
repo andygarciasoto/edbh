@@ -86,27 +86,6 @@ router.get('/me', function (req, res) {
     return res.status(200).json({name: 'Administrator', role: 'admin'});
 });
 
-
-router.get('/shifts', function (req, res) {
-    const shifts = [{
-        "shifts": [
-            {
-                "value": "First Shift"
-            },
-            {
-                "value": "Second Shift"
-            },
-            {
-                "value": "Third Shift"
-            },
-            {
-                "value": "All Shifts"
-            }
-        ]
-    }];
-    res.json([]);
-});
-
 router.get('/intershift_communication', async function (req, res) {
     const mc = parseInt(req.query.mc);
     const sf = parseInt(req.query.sf);
@@ -137,14 +116,12 @@ router.post('/dxh_new_comment', async function (req, res) {
 })
 
 router.get('/timeloss_reasons', async function (req, res) {
-    const params = req.params;
-    console.log(params);
+    const machine = req.query.mc;
     function returnReasons(data) {
         const response = JSON.parse(Object.values(data)[0].DTReason);
-        console.log(response)
         res.json(response);
     }
-    await sqlQuery("Exec spLocal_EY_DxH_Get_DTReason '10832';", response => returnReasons(response));
+    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => returnReasons(response));
 
 })
 

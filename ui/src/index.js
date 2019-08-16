@@ -103,7 +103,6 @@ axios.interceptors.response.use(function (response) {
 
 fetch(`${API}/me`,{headers: {Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)}})
   .then(function(response) {
-    return response;
   })
   .then(function(json) {
     ReactDOM.render(

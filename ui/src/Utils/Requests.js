@@ -112,10 +112,10 @@ function formatDate(date) {
 }
 
 async function timelossGetReasons(machine) {
-    const parameters = { 
-      params: {
-          mc: machine,
-      }
+  const parameters = { 
+    params: {
+        mc: machine
+    }
   }
   let res = {};
   res = await axios.get(`${API}/timeloss_reasons`, parameters)
