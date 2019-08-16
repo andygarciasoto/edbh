@@ -126,15 +126,20 @@ router.get('/timelost_reasons', async function (req, res) {
 });
 
 router.get('/dxh_data_id', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
+    const asset_code = parseInt(req.query.asset_code);
+    const timestamp = req.query.timestamp;
+    const require_order_create = req.query.require_order_create ? 1 : 0;
+    if (asset_code == undefined || timestamp == undefined) return res.status(500).send("Missing parameters");
+
+    function returnData(data) {
+        console.log(data);
+        const response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+        res.status(200).json(response);
     }
-    await sqlQuery("exec dbo.spLocal_EY_DxH_Get_DxHDataId '10832', '2019-07-25 02:23', 0;", response => structureCommunication(response));
-    // res.json(communicationsD);
+
+    try {
+        await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${timestamp}', ${require_order_create};`, response => returnData(response));
+    } catch (e) { console.log(e) }
 
 });
 
@@ -162,8 +167,7 @@ router.put('/intershift_communication', async function (req, res) {
 
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
-    async function respondPut(response) {
-        console.log(response);
+    function respondPut(response) {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -171,8 +175,6 @@ router.put('/intershift_communication', async function (req, res) {
             res.status(500).send('Database Connection Error');
         }
     }
-
-    console.log(Timestamp);
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPut(response)) :
@@ -189,8 +191,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
     if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
-    async function respondPut(response) {
-        console.log(response);
+    function respondPut(response) {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -198,8 +199,6 @@ router.put('/operator_sign_off', async function (req, res) {
             res.status(500).send('Database Connection Error');
         }
     }
-
-    console.log(Timestamp);
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
@@ -215,8 +214,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
     if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
-    async function respondPut(response) {
-        console.log(response);
+    function respondPut(response) {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -224,8 +222,6 @@ router.put('/supervisor_sign_off', async function (req, res) {
             res.status(500).send('Database Connection Error');
         }
     }
-
-    console.log(Timestamp);
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
