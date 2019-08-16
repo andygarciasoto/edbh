@@ -134,6 +134,84 @@ router.post('/dxh_new_comment', async function (req, res) {
             res.status(500).send('Database Connection Error');
         }
     }
-})
+});
+
+router.get('/dt_reason', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureDTReason(reason) {
+        const response = JSON.parse(Object.values(reason)[0].DTReason);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec spLocal_EY_DxH_Get_DTReason '10832';", response => structureDTReason(response));
+    // res.json(communicationsD);
+
+});
+
+router.get('/dxh_data_id', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec dbo.spLocal_EY_DxH_Get_DxHDataId '10832', '2019-07-25 02:23', 0;", response => structureCommunication(response));
+    // res.json(communicationsD);
+
+});
+
+router.put('/dt_data', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null;", response => structureCommunication(response));
+    // res.json(communicationsD);
+
+});
+
+router.put('/intershift_communication', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0;", response => structureCommunication(response));
+    // res.json(communicationsD);
+
+});
+
+router.put('/operator_sign_off', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec spLocal_EY_DxH_Put_OperatorSignOff 3, '3276', Null, Null, '2019-08-09 15:08:28.220';", response => structureCommunication(response));
+    // res.json(communicationsD);
+
+});
+
+router.put('/supervisor_sign_off', async function (req, res) {
+    const mc = parseInt(req.query.mc);
+    const sf = parseInt(req.query.sf);
+    async function structureCommunication(communication) {
+        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
+        const structuredObject = utils.restructureSQLObject(response, 'communication');
+        res.json(structuredObject);
+    }
+    await sqlQuery("exec spLocal_EY_DxH_Put_SupervisorSignOff 3, '2477', Null, Null, '2019-08-09 15:08:28.220';", response => structureCommunication(response));
+    // res.json(communicationsD);
+
+});
 
 module.exports = router;
