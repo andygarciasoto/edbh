@@ -39,7 +39,11 @@ class TimelossModal extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         console.log(nextProps)
-        const total =  this.calculateTotal(nextProps.hourTime, nextProps);
+        if (nextProps.hour){
+        const total =  this.calculateTotal(
+            nextProps, 
+            nextProps.hour.summary_setup_minutes, 
+            nextProps.hour.summary_breakandlunch_minutes);
         this.setState({
             timelost: nextProps.timelost,
             allocated_time: total,
@@ -47,14 +51,15 @@ class TimelossModal extends React.Component {
         })
         if (nextProps.hour) {
             this.setState({
-                setup_time: nextProps.hour.summary_breakandlunch_minutes || 0,
+                setup_time: nextProps.hour.summary_setup_minutes || 0,
                 break_time: nextProps.hour.summary_breakandlunch_minutes || 0
             })
         }
+        }
     }
 
-    calculateTotal(hour, nextProps) {
-        let allocated_time = hour.planned_setup_time + hour.planned_setup_time;
+    calculateTotal(nextProps, setupTime, breakTime) {
+        let allocated_time = setupTime + breakTime;
         if (nextProps.timelost) {
             for (let i of nextProps.timelost) {
                 allocated_time = allocated_time + i.dtminutes;
