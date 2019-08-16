@@ -111,4 +111,28 @@ function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost }
+async function timelossGetReasons(machine) {
+  const parameters = { 
+    params: {
+        mc: machine
+    }
+  }
+  let res = {};
+  res = await axios.get(`${API}/timeloss_reasons`, parameters)
+  .then(function (response) {
+    // handle success
+    return response;
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+  .finally(function () {
+    // nothing
+  });
+  if (res) {
+    return res.data;
+  }
+}
+
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, timelossGetReasons }

@@ -494,6 +494,7 @@ class DashboardOne extends React.Component {
                   t={t}
                   label={t('Select Reason Code')}
                   timeloss={this.state.current_display_timeloss}
+                  machine={this.state.selectedMachine}
                 />    
             </React.Fragment>
         );

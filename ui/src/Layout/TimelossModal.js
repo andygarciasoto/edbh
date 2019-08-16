@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { Form, Button, Row, Col, Table } from 'react-bootstrap';
 import * as _ from  'lodash';
 import './TimelossModal.scss';
+import { timelossGetReasons as getReasons } from '../Utils/Requests';
 
 
 class TimelossModal extends React.Component {
@@ -26,7 +27,9 @@ class TimelossModal extends React.Component {
         this.setState({newValue: e.target.value});
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillMount() {
+        const reasons = getReasons(this.props.machine);
+        reasons.then((res) => this.setState({reasons: res}))
     }
 
     render() {
@@ -99,15 +102,13 @@ class TimelossModal extends React.Component {
                                         style={{width: '90%', marginTop: '5px', marginBottom: '5px', textOverflow: 'ellipsis'}} 
                                         onSelect={(e)=>this.setState({new_tl_reason: e.target.value})}
                                     >
-                                        <option>{'404 - Error Number 404 Description'}</option>
-                                        <option>{'405 - Error Number 404 Description'}</option>
-                                        <option>{'406 - Error Number 404 Description'}</option>
-                                        <option>{'407 - Error Number 404 Description'}</option>
-                                        <option>{'408 - Error Number 404 Description'}</option>
-                                        <option>{'409 - Error Number 404 Description'}</option>
-                                        <option>{'410 - Error Number 404 Description'}</option>
-                                        <option>{'411 - Error Number 404 Description'}</option>
-                                        <option>{'412 - Error Number 404 Description'}</option>
+                                            {
+                                            this.state.reasons ? this.state.reasons.map((reason, index) => {
+                                                const item = reason.DTReason;
+                                                return (<option key={index}>{`${item.reason_code} - ${item.dtreason_name}`}</option>)
+
+                                            })
+                                        : null}
                                     </Form.Control>
                                     <div style={{marginTop: '10px'}}>
                                         <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{t('Enter Description')}:</p>

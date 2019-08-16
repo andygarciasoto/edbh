@@ -86,27 +86,6 @@ router.get('/me', function (req, res) {
     return res.status(200).json({name: 'Administrator', role: 'admin'});
 });
 
-
-router.get('/shifts', function (req, res) {
-    const shifts = [{
-        "shifts": [
-            {
-                "value": "First Shift"
-            },
-            {
-                "value": "Second Shift"
-            },
-            {
-                "value": "Third Shift"
-            },
-            {
-                "value": "All Shifts"
-            }
-        ]
-    }];
-    res.json([]);
-});
-
 router.get('/intershift_communication', async function (req, res) {
     const mc = parseInt(req.query.mc);
     const sf = parseInt(req.query.sf);
@@ -213,5 +192,15 @@ router.put('/supervisor_sign_off', async function (req, res) {
     // res.json(communicationsD);
 
 });
+
+router.get('/timeloss_reasons', async function (req, res) {
+    const machine = req.query.mc;
+    function returnReasons(data) {
+        const response = JSON.parse(Object.values(data)[0].DTReason);
+        res.json(response);
+    }
+    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => returnReasons(response));
+
+})
 
 module.exports = router;
