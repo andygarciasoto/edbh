@@ -162,11 +162,7 @@ router.put('/intershift_communication', async function (req, res) {
 
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPost(response)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPost(response));
-
-    async function respondPost(response) {
-        console.log('Respond function');
+    async function respondPut(response) {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -174,19 +170,32 @@ router.put('/intershift_communication', async function (req, res) {
             res.status(500).send('Database Connection Error');
         }
     }
+
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPut(response)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPut(response));
+
 });
 
 router.put('/operator_sign_off', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
-    }
-    await sqlQuery("exec spLocal_EY_DxH_Put_OperatorSignOff 3, '3276', Null, Null, '2019-08-09 15:08:28.220';", response => structureCommunication(response));
-    // res.json(communicationsD);
 
+    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
+
+    async function respondPut(response) {
+        const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
+
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => respondPut(response));
 });
 
 router.put('/supervisor_sign_off', async function (req, res) {
