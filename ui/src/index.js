@@ -46,14 +46,14 @@ function init () {
     // }
 
     // Retrieve access token from URL hash
-    if (urlHashes) {
+    if (urlHashes && urlHashes.token) {
         // Store access token
         localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, urlHashes.token);
         // Remove hash values from url
         const redirectUrl = window.location.href.split("#")[0];
         window.history.replaceState({}, "", redirectUrl);
     } else {
-        alert('token not found')
+        console.log('No new token found. Using existing one or unlogging user.');
     }
 
     // Setup request interceptor
