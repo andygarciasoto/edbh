@@ -101,7 +101,7 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-fetch(`${API}/me`)
+fetch(`${API}/me`,{headers: {Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)}})
   .then(function(response) {
     return response;
   })
