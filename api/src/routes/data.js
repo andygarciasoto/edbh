@@ -115,7 +115,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     }
 });
 
-router.get('/timeloss_reasons', async function (req, res) {
+router.get('/timelost_reasons', async function (req, res) {
     const machine = req.query.mc;
     function returnReasons(data) {
         const response = JSON.parse(Object.values(data)[0].DTReason);

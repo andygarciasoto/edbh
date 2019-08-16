@@ -118,7 +118,7 @@ async function timelossGetReasons(machine) {
     }
   }
   let res = {};
-  res = await axios.get(`${API}/timeloss_reasons`, parameters)
+  res = await axios.get(`${API}/timelost_reasons`, parameters)
   .then(function (response) {
     // handle success
     return response;
