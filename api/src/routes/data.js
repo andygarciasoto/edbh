@@ -144,16 +144,33 @@ router.get('/dxh_data_id', async function (req, res) {
 });
 
 router.put('/dt_data', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
-    }
-    await sqlQuery("exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null;", response => structureCommunication(response));
-    // res.json(communicationsD);
+    const dxh_data_id = parseInt(req.body.dxh_data_id);
+    const dt_reason_id = parseInt(req.body.dt_reason_id);
+    const dt_minutes = parseFloat(req.body.dt_minutes);
+    const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
 
+    if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined) return res.status(500).send("Missing parameters");
+
+    function respondPut(response) {
+        console.log(response);
+        const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
+
+    console.log(Timestamp);
+
+    try {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPut(response)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPut(response))
+    } catch (e) { console.log(e) }
 });
 
 router.put('/intershift_communication', async function (req, res) {
@@ -163,7 +180,7 @@ router.put('/intershift_communication', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
-    const update = req.body.inter_shift_id ? req.body.inter_shift_id : 0;
+    const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
 
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
