@@ -14,16 +14,16 @@ var nJwt = require('njwt');
 
 router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
-      res.status(401);
-      res.json({"message" : err.name + ": " + err.message});
+        res.status(401);
+        res.json({ "message": err.name + ": " + err.message });
     } else
-      next(err);
-  });
+        next(err);
+});
 
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
     var allowedOrigins = config['cors']
     var origin = req.headers.origin;
-    if(allowedOrigins.indexOf(origin) > -1){
+    if (allowedOrigins.indexOf(origin) > -1) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader("Access-Control-Allow-Credentials", "true")
@@ -32,25 +32,25 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.use(function (req, res, next){
+router.use(function (req, res, next) {
     let token = req.header('Authorization');
     if (token && token.startsWith('Bearer ')) {
         token = token.slice(7, token.length).trimLeft();
     }
-    if(token) {
-    nJwt.verify(token,config["signingKey"],function(err){
-        if(err){
-          console.log(err);
-          return res.sendStatus(401);
-        }else{
-          next()
-        }
-      });
+    if (token) {
+        nJwt.verify(token, config["signingKey"], function (err) {
+            if (err) {
+                console.log(err);
+                return res.sendStatus(401);
+            } else {
+                next()
+            }
+        });
     } else {
         res.status(401);
         return res.json({
-          success: false,
-          message: 'Auth token is not supplied'
+            success: false,
+            message: 'Auth token is not supplied'
         });
     }
 });
@@ -155,12 +155,15 @@ router.put('/intershift_communication', async function (req, res) {
     const dhx_data_id = parseInt(req.body.dhx_data_id);
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
     const update = req.body.inter_shift_id ? req.body.inter_shift_id : 0;
 
-    if (dhx_data_id == undefined || comment == undefined || clocknumber == undefined) return res.status(500).send("Missing parameters");
+    if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
-    await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPost(response));
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPost(response)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPost(response));
 
     async function respondPost(response) {
         console.log('Respond function');
