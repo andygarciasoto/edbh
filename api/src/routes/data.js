@@ -12,48 +12,48 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 
-router.use(function (err, req, res, next) {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401);
-        res.json({ "message": err.name + ": " + err.message });
-    } else
-        next(err);
-});
+// router.use(function (err, req, res, next) {
+//     if (err.name === 'UnauthorizedError') {
+//         res.status(401);
+//         res.json({ "message": err.name + ": " + err.message });
+//     } else
+//         next(err);
+// });
 
-router.use(function (req, res, next) {
-    var allowedOrigins = config['cors']
-    var origin = req.headers.origin;
-    if (allowedOrigins.indexOf(origin) > -1) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader("Access-Control-Allow-Credentials", "true")
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// router.use(function (req, res, next) {
+//     var allowedOrigins = config['cors']
+//     var origin = req.headers.origin;
+//     if (allowedOrigins.indexOf(origin) > -1) {
+//         res.setHeader('Access-Control-Allow-Origin', origin);
+//     }
+//     res.setHeader("Access-Control-Allow-Credentials", "true")
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 
-router.use(function (req, res, next) {
-    let token = req.header('Authorization');
-    if (token && token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length).trimLeft();
-    }
-    if (token) {
-        nJwt.verify(token, config["signingKey"], function (err) {
-            if (err) {
-                console.log(err);
-                return res.sendStatus(401);
-            } else {
-                next()
-            }
-        });
-    } else {
-        res.status(401);
-        return res.json({
-            success: false,
-            message: 'Auth token is not supplied'
-        });
-    }
-});
+// router.use(function (req, res, next) {
+//     let token = req.header('Authorization');
+//     if (token && token.startsWith('Bearer ')) {
+//         token = token.slice(7, token.length).trimLeft();
+//     }
+//     if (token) {
+//         nJwt.verify(token, config["signingKey"], function (err) {
+//             if (err) {
+//                 console.log(err);
+//                 return res.sendStatus(401);
+//             } else {
+//                 next()
+//             }
+//         });
+//     } else {
+//         res.status(401);
+//         return res.json({
+//             success: false,
+//             message: 'Auth token is not supplied'
+//         });
+//     }
+// });
 
 router.get('/data', async function (req, res) {
     const params = req.query;
@@ -163,6 +163,7 @@ router.put('/intershift_communication', async function (req, res) {
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
     async function respondPut(response) {
+        console.log(response);
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -171,9 +172,12 @@ router.put('/intershift_communication', async function (req, res) {
         }
     }
 
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPut(response)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPut(response));
+    console.log(Timestamp);
 
+    try {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => respondPut(response)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`, response => respondPut(response));
+    } catch (e) { console.log(e) }
 });
 
 router.put('/operator_sign_off', async function (req, res) {
@@ -186,6 +190,7 @@ router.put('/operator_sign_off', async function (req, res) {
     if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
     async function respondPut(response) {
+        console.log(response);
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -194,21 +199,38 @@ router.put('/operator_sign_off', async function (req, res) {
         }
     }
 
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => respondPut(response));
+    console.log(Timestamp);
+
+    try {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => respondPut(response));
+    } catch (e) { console.log(e) }
 });
 
 router.put('/supervisor_sign_off', async function (req, res) {
-    const mc = parseInt(req.query.mc);
-    const sf = parseInt(req.query.sf);
-    async function structureCommunication(communication) {
-        const response = JSON.parse(Object.values(communication)[0].InterShiftData);
-        const structuredObject = utils.restructureSQLObject(response, 'communication');
-        res.json(structuredObject);
-    }
-    await sqlQuery("exec spLocal_EY_DxH_Put_SupervisorSignOff 3, '2477', Null, Null, '2019-08-09 15:08:28.220';", response => structureCommunication(response));
-    // res.json(communicationsD);
+    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
+    async function respondPut(response) {
+        console.log(response);
+        const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    }
+
+    console.log(Timestamp);
+
+    try {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => respondPut(response)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => respondPut(response));
+    } catch (e) { console.log(e) }
 });
 
 module.exports = router;
