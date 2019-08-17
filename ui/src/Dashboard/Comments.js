@@ -27,7 +27,6 @@ class Comments extends React.Component {
     }  
 
     enterCommunication(e) {
-        console.log(this.props.dhx_data_id)
         const data = {
             dhx_data_id : 1,
             comment : this.state.value,
@@ -37,11 +36,11 @@ class Comments extends React.Component {
             inter_shift_id : 0,
         }
         const response = sendPut(data, '/intershift_communication');
-        console.log(response)
         response.then((res) => {
-            this.setState({request_status: res, modal_confirm_IsOpen: true})
             if (res !== 200) {
                 this.setState({modal_error_IsOpen: true})
+            } else {
+                this.setState({request_status: res, modal_confirm_IsOpen: true})
             }
         })
     }
@@ -61,7 +60,7 @@ class Comments extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
             this.setState({
-                lastComment: nextProps.comments[0] || null,
+                lastComment: nextProps.comments[nextProps.comments.length-1] || null,
                 commentLen: nextProps.comments.length
             }) 
         }
@@ -69,9 +68,8 @@ class Comments extends React.Component {
 
     render() {
         const t = this.props.t;
-        const lastComment = this.state.lastComment;
+        const lastComment = this.state.lastComment.InterShiftData;
         const lastCommentDate = lastComment ? moment(lastComment.production_day).format('YYYY-MM-DD') : null;
-        // console.log(lastCommentDate)
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>
@@ -86,11 +84,13 @@ class Comments extends React.Component {
                     <tbody>
                     {lastComment ? lastComment.intershift_id !== null ? Object.values(lastComment).length > 0 ? <React.Fragment>
                         <tr>
-                            <td style={{width: '20%'}}><span>{`${lastComment.entered_by} - ${lastComment.first_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
-                            <td className={"intershift-comment"}><div>{lastComment.comments}</div>
+                            <td style={{width: '20%'}}><span>{`${lastComment.first_name} - ${lastComment.last_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
+                            <td className={"intershift-comment"}><div>{lastComment.comment}</div>
                             <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
-                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> :<tr><td colSpan={2}>No intershift communications for this shift.</td></tr>: <Spinner />}
+                        </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : 
+                        <tr><td colSpan={2}>{'No intershift communications for this shift.'}</td></tr>: 
+                        <tr><td colSpan={3}><Spinner /></td></tr>}
                     </tbody>
                 </Table>
                 </div>

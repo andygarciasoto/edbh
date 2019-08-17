@@ -17,8 +17,8 @@ class ErrorModal extends React.Component {
     componentDidMount() {
         const modalStyle = {
             content : {
-              top                   : '20%',
-              left                  : '30%',
+              top                   : '50%',
+              left                  : '50%',
               right                 : 'auto',
               bottom                : 'auto',
               marginRight           : '-50%',
@@ -29,7 +29,7 @@ class ErrorModal extends React.Component {
             }
           };
       
-          this.setState({modalStyle})
+          this.setState({style: modalStyle})
     }
 
     validateBarcode(e) {
@@ -46,10 +46,10 @@ class ErrorModal extends React.Component {
                 isOpen={this.props.isOpen}
                 //  onAfterOpen={this.afterOpenModal}
                 onRequestClose={this.props.onRequestClose}
-                style={this.props.style}
+                style={this.state.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-error-field-head">{this.state.title}</p>
+                <div><p className="dashboard-modal-error-field-head">{this.props.title}</p>
                 <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
                 <p className="warning-message">{this.props.message}</p></div>
                 </div>

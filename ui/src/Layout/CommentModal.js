@@ -25,7 +25,14 @@ class CommentsModal extends React.Component {
             dhx_data_id: this.props.rowId,
             timestamp: moment().format('YYYY-MM-DD HH:mm:ss'), 
         }, '/dxh_new_comment')
-        response.then((res) => console.log(res))
+        response.then((res) => {
+            if (res !== 200) {
+                // this.setState({modal_error_IsOpen: true})
+            } else {
+                // this.setState({request_status: res, modal_confirm_IsOpen: true})
+            }
+            this.props.onRequestClose();
+        })
     }
 
     onChange(e) {
@@ -38,6 +45,7 @@ class CommentsModal extends React.Component {
             styles.content.width = '60%';
         }
         const t = this.props.t;
+        const comments = _.sortBy(this.props.comments, 'last_modified_on').reverse();
         return (
             <Modal
                 isOpen={this.props.isOpen}
@@ -55,7 +63,7 @@ class CommentsModal extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.props.comments ? this.props.comments.map((comment, index) => {
+                            {comments ? comments.map((comment, index) => {
                                 return (
                                     <tr key={index}>
                                         <td className={"commentsModal-user"}><span>{`${comment.first_name} ${comment.last_name}`}</span><div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div></td>

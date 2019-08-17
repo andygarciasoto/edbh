@@ -413,7 +413,6 @@ class DashboardOne extends React.Component {
         const page = t('Page');
         const off = t('Of');
         const rows = t('Rows');
-        console.log(this.state.data)
         const dxh_id_parent = !_.isEmpty(data) >= 0 ? data[0] : null
         return (
             <React.Fragment>

@@ -69,7 +69,6 @@ axios.interceptors.request.use(function (config) {
         config.withCredentials = true;
         // Send access token in Authorization header if available
         const accessToken = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
-        console.log(accessToken)
         if (accessToken) {
             config.headers = Object.assign({
                 Authorization: "Bearer " + accessToken

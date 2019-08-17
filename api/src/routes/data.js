@@ -109,11 +109,11 @@ router.post('/dxh_new_comment', async function (req, res) {
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
     function respondPost(response) {
-        const res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        const responseObj = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (res === 0) {
-            res.status(200).send('Message Entered Succesfully');
+            res.status(200).json({message: "Message Entered Succesfully", status: responseObj});
         } else {
-            res.status(500).send('Database Connection Error');
+            res.status(500).json({message: "Database Connection Error", status: responseObj});
         }
     }
 });
