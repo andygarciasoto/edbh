@@ -52,6 +52,7 @@ class ThreadModal extends React.Component {
             styles.content.width = '70%';
         };
         const t = this.props.t;
+        const comments = _.sortBy(this.props.comments, moment('entered_on').format('YYYY-MM-DD'))
         return (
             <Modal
                 isOpen={this.props.isOpen}
@@ -69,11 +70,11 @@ class ThreadModal extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.props.comments.map((item, index) => {
+                            {comments.map((item, index) => {
                                 return (
                                     <tr key={index}>
                                         <td className={"intershift-info"}><span>{item.entered_by} - {item.first_name}</span><div className={'intershift-date-modal'}>{moment(item.entered_on).format('YYYY-MM-DD')}</div></td>
-                                        <td className={"intershift-comment-modal"}><div>{item.comments}</div></td>
+                                        <td className={"intershift-comment-modal"}><div>{item.comment}</div></td>
                                     </tr>
                                 )
                             })}

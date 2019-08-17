@@ -413,6 +413,8 @@ class DashboardOne extends React.Component {
         const page = t('Page');
         const off = t('Of');
         const rows = t('Rows');
+        console.log(this.state.data)
+        const dxh_id_parent = !_.isEmpty(data) >= 0 ? data[0] : null
         return (
             <React.Fragment>
                 <Header className="app-header" 
@@ -460,7 +462,7 @@ class DashboardOne extends React.Component {
                             /> : <Spinner/>}
                         </Col>
                     </Row>
-                    <Comments t={t} comments={this.state.comments}/>
+                    <Comments t={t} user={this.props.user} comments={this.state.comments} dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}/>
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
@@ -484,6 +486,7 @@ class DashboardOne extends React.Component {
                   t={t}
                   comments={this.state.current_display_comments}
                   rowId={this.state.current_row_id}
+                  user={this.props.user}
                 />
 
                 <TimelossModal

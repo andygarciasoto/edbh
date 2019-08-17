@@ -45,20 +45,32 @@ function mapShift(rawshift) {
   return shift;
 }
 
-async function sendPost(data) {
-  const res = axios.post(`${API}/dxh_new_comment`, data)
+async function sendPost(data, route) {
+  const res = await axios.post(`${API}${route}`, data)
   .then(function (response) {
-    console.log(response);
+    console.log(response)
+    return response;
   })
   .catch(function (error) {
     console.log(error);
   })
-  .finally(function () {
-    // nothing
-  });
   if (res) {
-    return res.data;
-  }
+    return res.status;
+  } 
+}
+
+async function sendPut(data, route) {
+  const res = await axios.put(`${API}${route}`, data)
+  .then(function (response) {
+    console.log(response)
+    return response;
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  if (res) {
+    return res.status;
+  } 
 }
 
 async function getIntershift(data) {
@@ -135,4 +147,4 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, timelossGetReasons }
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, timelossGetReasons, sendPut }

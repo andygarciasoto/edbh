@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import './ErrorModal.scss';
 import FontAwesome from 'react-fontawesome';
 
-class ErrorModal extends React.Component {
+class ConfirmModal extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -23,6 +23,7 @@ class ErrorModal extends React.Component {
               bottom                : 'auto',
               marginRight           : '-50%',
               transform             : 'translate(-50%, -50%)',
+              maxHeight: '30%',
             },
             overlay : {
               backgroundColor: 'rgba(0,0,0, 0.6)'
@@ -50,14 +51,14 @@ class ErrorModal extends React.Component {
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <div><p className="dashboard-modal-error-field-head">{this.state.title}</p>
-                <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
+                <div><FontAwesome className="warning-message icon" name="check"/>&nbsp;&nbsp;
                 <p className="warning-message">{this.props.message}</p></div>
                 </div>
-                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.closeModal}>Close</Button>
+                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
             </Modal>
         )
     }
 }
 
 Modal.setAppElement('#root');
-export default ErrorModal;
+export default ConfirmModal;

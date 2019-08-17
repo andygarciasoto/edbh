@@ -38,7 +38,6 @@ class TimelossModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
         if (nextProps.hour){
         const total =  this.calculateTotal(
             nextProps, 
@@ -114,9 +113,7 @@ class TimelossModal extends React.Component {
                                             <td>{item.dtreason_name}</td>
                                         </tr>) 
                                 }): <tr>
-                                    <td>{'-'}</td>
-                                    <td>{'-'}</td>
-                                    <td>{'No Timelost entries yet.'}</td>
+                                    <td colSpan={3}>{'No Timelost entries yet.'}</td>
                                 </tr>
                              }
                             </tbody>
