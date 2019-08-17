@@ -153,7 +153,7 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const Timestamp = moment().format('YYYYMMDD');
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
 
     if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined) return res.status(500).send("Missing parameters");
@@ -182,12 +182,13 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const Timestamp = moment().format('YYYYMMDD');
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
 
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
     function respondPut(response) {
+        console.log(response);
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
@@ -208,7 +209,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const Timestamp = moment().format('YYYYMMDD');
     if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
     function respondPut(response) {
@@ -231,7 +232,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYY-MM-DD HH:MM:SS');
+    const Timestamp = moment().format('YYYYMMDD');
     if (dhx_data_id == undefined) return res.status(500).send("Missing parameters");
 
     function respondPut(response) {
