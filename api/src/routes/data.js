@@ -83,13 +83,13 @@ router.get('/machine', async function (req, res) {
 });
 
 router.get('/me', function (req, res) {
-    return res.status(200).json({ name: 'Administrator', role: 'admin' });
+    return res.status(200).json({ first_name: 'Administrator', last_name: 'Admin', role: 'admin', clock_number: 1321324 });
 });
 
 router.get('/intershift_communication', async function (req, res) {
-    const asset_code = req.query.asset_code;
-    const production_day = req.query.production_day;
-    const shift_code = req.query.shift_code;
+    const asset_code = req.query.mc;
+    const production_day = req.query.dt;
+    const shift_code = req.query.sf;
 
     if (asset_code == undefined || production_day == undefined || shift_code == undefined) return res.status(500).send("Missing parameters");
 
@@ -107,7 +107,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     const update = params.comment_id ? params.comment_id : 0;
     params.clocknumber ?
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
-        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', 'Null', '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
     function respondPost(response) {
         const res = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (res === 0) {
@@ -188,7 +188,6 @@ router.put('/intershift_communication', async function (req, res) {
     if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
 
     function respondPut(response) {
-        console.log(response);
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');

@@ -7,6 +7,7 @@ import './i18n';
 import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
+import { access } from 'fs';
 
 const loginStateStorageKey = "loginState";
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
@@ -31,7 +32,6 @@ function init () {
             }
             return obj;
         }, {});
-
     // Verify state
     // const expectedState = sessionStorage.getItem(loginStateStorageKey);
     // if (expectedState) {
@@ -69,6 +69,7 @@ axios.interceptors.request.use(function (config) {
         config.withCredentials = true;
         // Send access token in Authorization header if available
         const accessToken = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+        console.log(accessToken)
         if (accessToken) {
             config.headers = Object.assign({
                 Authorization: "Bearer " + accessToken
@@ -101,12 +102,13 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-fetch(`${API}/me`,{headers: {Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)}})
+axios(`${API}/me`,{headers: {Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)}})
   .then(function(response) {
+      return response;
   })
   .then(function(json) {
     ReactDOM.render(
-      <App />, document.getElementById('root'));
+      <App user={json.data}/>, document.getElementById('root'));
   }).catch((e)=> console.log(e))
 
 // If you want your app to work offline and load faster, you can change

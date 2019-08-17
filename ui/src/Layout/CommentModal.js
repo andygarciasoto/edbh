@@ -23,8 +23,8 @@ class CommentsModal extends React.Component {
             last_name: config.user.split(" ")[1],
             comment: this.state.value,
             dhx_data_id: this.props.rowId,
-            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-        })
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'), 
+        }, '/dxh_new_comment')
         response.then((res) => console.log(res))
     }
 
