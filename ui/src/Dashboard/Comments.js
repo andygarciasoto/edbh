@@ -68,7 +68,10 @@ class Comments extends React.Component {
 
     render() {
         const t = this.props.t;
-        const lastComment = this.state.lastComment.InterShiftData;
+        let lastComment;
+        if (this.state.lastComment) {
+           lastComment = this.state.lastComment.InterShiftData;
+        }
         const lastCommentDate = lastComment ? moment(lastComment.production_day).format('YYYY-MM-DD') : null;
         return (
             <div className={'intershift-communication-comments'}>

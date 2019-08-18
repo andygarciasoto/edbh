@@ -53,7 +53,7 @@ class ErrorModal extends React.Component {
                 <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
                 <p className="warning-message">{this.props.message}</p></div>
                 </div>
-                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.closeModal}>Close</Button>
+                <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
             </Modal>
         )
     }

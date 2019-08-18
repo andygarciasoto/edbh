@@ -4,7 +4,7 @@ import { Form, Button, Table } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
 import moment from 'moment';
-import config from '../config.json';
+import ConfirmModal from  '../Layout/ConfirmModal';
 import { sendPost } from '../Utils/Requests';
 
 class CommentsModal extends React.Component {
@@ -12,6 +12,7 @@ class CommentsModal extends React.Component {
 		super(props);
 		this.state = {
             value : '',
+            modal_confirm_IsOpen: false,
         } 
         this.submitComment = this.submitComment.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -19,20 +20,27 @@ class CommentsModal extends React.Component {
 
     submitComment(e) {
         const response = sendPost({
-            first_name: config.user.split(" ")[0],
-            last_name: config.user.split(" ")[1],
+            first_name: this.props.user.first_name,
+            last_name: this.props.user.last_name,
             comment: this.state.value,
-            dhx_data_id: this.props.rowId,
-            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'), 
+            dhx_data_id: this.props.rowId, 
         }, '/dxh_new_comment')
         response.then((res) => {
             if (res !== 200) {
-                // this.setState({modal_error_IsOpen: true})
+                this.setState({modal_error_IsOpen: true})
+                this.props.Refresh(this.props.parentData);
             } else {
-                // this.setState({request_status: res, modal_confirm_IsOpen: true})
+                this.setState({request_status: res, modal_confirm_IsOpen: true})
+                window.setTimeout(()=> null
+                , 2000)
+                this.setState({modal_confirm_IsOpen: false})
             }
             this.props.onRequestClose();
         })
+    }
+
+    closeModal() {
+        this.setState({modal_confirm_IsOpen: false});
     }
 
     onChange(e) {
@@ -47,6 +55,7 @@ class CommentsModal extends React.Component {
         const t = this.props.t;
         const comments = _.sortBy(this.props.comments, 'last_modified_on').reverse();
         return (
+            <React.Fragment>
             <Modal
                 isOpen={this.props.isOpen}
                 //  onAfterOpen={this.afterOpenModal}
@@ -66,11 +75,14 @@ class CommentsModal extends React.Component {
                             {comments ? comments.map((comment, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td className={"commentsModal-user"}><span>{`${comment.first_name} ${comment.last_name}`}</span><div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div></td>
+                                        <td className={"commentsModal-user"}>
+                                            <span>{`${comment.first_name} ${comment.last_name}`}</span>
+                                            <div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div>
+                                        </td>
                                         <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
                                     </tr>
                                 )
-                            }) : <tr><td style={{ textAlign: 'center' }}>{'-'}</td><td>{t("There are no comments to display")}.</td></tr>}
+                            }) : <tr><td colSpan={2}>{t("There are no comments to display")}.</td></tr>}
                         </tbody>
                     </Table>
                 </div>
@@ -79,6 +91,16 @@ class CommentsModal extends React.Component {
                 </span>
                 <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submitComment}>{t('Submit')}</Button>
             </Modal>
+            <ConfirmModal
+                isOpen={this.state.modal_confirm_IsOpen}
+                //  onAfterOpen={this.afterOpenModal}
+                onRequestClose={this.closeModal}
+                contentLabel="Example Modal"
+                shouldCloseOnOverlayClick={false}
+                message={'Comment was inserted.'}
+                title={'Request Successful'}
+            />
+            </React.Fragment>
         )
     }
 }

@@ -12,13 +12,14 @@ import TimelossModal from  '../Layout/TimelossModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
-import { getRequestData, getIntershift, mapShift } from '../Utils/Requests';
+import { getRequestData, getIntershift, formatDate } from '../Utils/Requests';
 // import ReactTooltip from 'react-tooltip';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
+import { join } from 'path';
 import('moment/locale/es');
 
 
@@ -332,6 +333,7 @@ class DashboardOne extends React.Component {
       let response = {};
       let comments = {};
       if (data) {
+        console.log('called')
         response = await getRequestData(data);
       }
       if (response instanceof Object) {
@@ -486,6 +488,8 @@ class DashboardOne extends React.Component {
                   comments={this.state.current_display_comments}
                   rowId={this.state.current_row_id}
                   user={this.props.user}
+                  Refresh={this.fetchData}
+                  parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                 />
 
                 <TimelossModal

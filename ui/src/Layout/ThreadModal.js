@@ -5,6 +5,7 @@ import './ThreadModal.scss';
 import * as _ from 'lodash';
 import Spinner from '../Spinner';
 import moment from 'moment';
+import { arrayExpression } from '@babel/types';
 
 class ThreadModal extends React.Component {
     constructor(props) {
@@ -53,7 +54,7 @@ class ThreadModal extends React.Component {
         };
         const t = this.props.t;
         let comments = [];
-        if (this.props.comments) {
+        if (this.props.comments && this.props.comments instanceof Array) {
             for (let comment of this.props.comments) {
                 comments.push(comment.InterShiftData)
             }

@@ -91,7 +91,7 @@ router.get('/intershift_communication', async function (req, res) {
     const production_day = req.query.dt;
     const shift_code = req.query.sf;
 
-    if (asset_code == undefined || production_day == undefined || shift_code == undefined) return res.status(500).send("Missing parameters");
+    if (asset_code == undefined || production_day == undefined || shift_code == undefined) return res.status(400).send("Bad Request - Missing parameters");
 
     function returnInterShift(data) {
         const response = JSON.parse(Object.values(data)[0].InterShiftData);
@@ -104,13 +104,19 @@ router.get('/intershift_communication', async function (req, res) {
 
 router.post('/dxh_new_comment', async function (req, res) {
     const params = req.body;
+    if (!((params.comment && params.dhx_data_id && params.clocknumber) || (params.comment && params.dhx_data_id && params.first_name && params.last_name))) {
+        res.status(400).json({message: "Bad Request - Missing Parameters"});
+        return;
+    }
     const update = params.comment_id ? params.comment_id : 0;
+    const Timestamp = moment().format('YYYYMMDD');
     params.clocknumber ?
-        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${params.timestamp}', ${update}`, response => respondPost(response)) :
-        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${params.timestamp}', ${update}`, response => respondPost(response))
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`, response => respondPost(response)) :
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`, response => respondPost(response))
     function respondPost(response) {
+        console.log(response);
         const responseObj = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
-        if (res === 0) {
+        if (responseObj === 0) {
             res.status(200).json({message: "Message Entered Succesfully", status: responseObj});
         } else {
             res.status(500).json({message: "Database Connection Error", status: responseObj});
@@ -119,6 +125,9 @@ router.post('/dxh_new_comment', async function (req, res) {
 });
 
 router.get('/timelost_reasons', async function (req, res) {
+    if (!req.query.mc) {
+        res.status(400).json({message: "Bad Request - Missing Parameters"});
+    }
     const machine = req.query.mc;
     function returnReasons(data) {
         const response = JSON.parse(Object.values(data)[0].DTReason);
@@ -132,7 +141,7 @@ router.get('/dxh_data_id', async function (req, res) {
     const asset_code = parseInt(req.query.asset_code);
     const timestamp = req.query.timestamp;
     const require_order_create = req.query.require_order_create ? 1 : 0;
-    if (asset_code == undefined || timestamp == undefined) return res.status(500).send("Missing parameters");
+    if (asset_code == undefined || timestamp == undefined) return res.status(400).send("Missing parameters");
 
     function returnData(data) {
         console.log(data);
@@ -142,7 +151,10 @@ router.get('/dxh_data_id', async function (req, res) {
 
     try {
         await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${timestamp}', ${require_order_create};`, response => returnData(response));
-    } catch (e) { console.log(e) }
+    } catch (e) { 
+        console.log(e)
+        res.status(500).send('Database Connection Error');
+     }
 
 });
 
@@ -156,7 +168,7 @@ router.put('/dt_data', async function (req, res) {
     const Timestamp = moment().format('YYYYMMDD');
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
 
-    if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined) return res.status(500).send("Missing parameters");
+    if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined) return res.status(400).send("Missing parameters");
 
     function respondPut(response) {
         console.log(response);
@@ -180,15 +192,17 @@ router.put('/intershift_communication', async function (req, res) {
     const dhx_data_id = parseInt(req.body.dhx_data_id);
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
-    const first_name = req.body.first_name;
+    // const first_name = req.body.first_name;
+    const first_name = 'Ryan';
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYYMMDD');
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
 
-    if (dhx_data_id == undefined || comment == undefined) return res.status(500).send("Missing parameters");
+    if (dhx_data_id == undefined || comment == undefined) return res.status(400).send("Missing parameters");
 
     function respondPut(response) {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        console.log(JSON.parse(Object.values(Object.values(response)[0])[0])[0])
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
         } else {

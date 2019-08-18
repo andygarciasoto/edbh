@@ -3,7 +3,9 @@ import Modal from 'react-modal';
 import { Form, Button, Row, Col, Table } from 'react-bootstrap';
 import * as _ from  'lodash';
 import './TimelossModal.scss';
+import ReactSelect from 'react-select';
 import { timelossGetReasons as getReasons } from '../Utils/Requests';
+
 
 
 class TimelossModal extends React.Component {
@@ -28,6 +30,7 @@ class TimelossModal extends React.Component {
     onChange(e) {
         this.setState({newValue: e.target.value});
     }
+    
 
     componentWillMount() {
         const reasons = getReasons(this.props.machine);
@@ -72,6 +75,8 @@ class TimelossModal extends React.Component {
         if (!_.isEmpty(styles)) {
             styles.content.width = '50%';
         }
+        const reasons = this.state.reasons;
+        console.log(reasons);
         const t = this.props.t;
             return (
                 <Modal
@@ -147,10 +152,6 @@ class TimelossModal extends React.Component {
                                             })
                                         : null}
                                     </Form.Control>
-                                    {/* <div style={{marginTop: '10px'}}>
-                                        <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{t('Enter Description')}:</p>
-                                        <Form.Control style={{paddingTop: '5px', width: '90%'}} type="text" value={this.state.description}></Form.Control>
-                                    </div> */}
                                     </Form.Group>
                                 </div>
                                 <div className={'new-timeloss-button'}>
