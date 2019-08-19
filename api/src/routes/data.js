@@ -56,7 +56,6 @@ router.use(function (req, res, next) {
 });
 
 function responsePostPut(response, req, res) {
-    console.log(response);
     const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
     if (resBD === 0) {
         res.status(200).send('Message Entered Succesfully');
@@ -66,7 +65,6 @@ function responsePostPut(response, req, res) {
 };
 
 function responseGet(data, req, res, listName) {
-    console.log(data);
     const response = JSON.parse(Object.values(data)[0][listName]);
     res.status(200).json(response);
 };
