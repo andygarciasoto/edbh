@@ -83,7 +83,7 @@ router.get('/machine', async function (req, res) {
 });
 
 router.get('/me', function (req, res) {
-    return res.status(200).json({ first_name: 'Administrator', last_name: 'Admin', role: 'admin', clock_number: 1321324 });
+    return res.status(200).json({ first_name: 'Admin', last_name: 'Admin', role: 'admin', clock_number: 1321324 });
 });
 
 router.get('/intershift_communication', async function (req, res) {
@@ -114,6 +114,7 @@ router.post('/dxh_new_comment', async function (req, res) {
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`, response => respondPost(response)) :
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`, response => respondPost(response))
     function respondPost(response) {
+        console.log(response);
         console.log(response);
         const responseObj = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
         if (responseObj === 0) {

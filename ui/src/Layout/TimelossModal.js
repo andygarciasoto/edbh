@@ -75,8 +75,6 @@ class TimelossModal extends React.Component {
         if (!_.isEmpty(styles)) {
             styles.content.width = '50%';
         }
-        const reasons = this.state.reasons;
-        console.log(reasons);
         const t = this.props.t;
             return (
                 <Modal
@@ -85,7 +83,7 @@ class TimelossModal extends React.Component {
                    style={styles}
                    contentLabel="Example Modal">
                         <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                        <span><h4 style={{marginLeft: '10px'}}>{t('Timelost (Minutes)')}</h4></span>
+                        style={{marginTop: '20px', textAlign: 'center'}}
                         <Row className="new-timeloss-data" style={{marginBottom: '5px'}}>
                             <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                                 <p>{t('Total Timelost')}</p>

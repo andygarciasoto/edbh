@@ -9,6 +9,7 @@ import moment from 'moment';
 import CommentsModal from  '../Layout/CommentModal';
 import ValueModal from  '../Layout/ValueModal';
 import TimelossModal from  '../Layout/TimelossModal';
+import SignoffModal from '../Layout/SignoffModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
@@ -34,6 +35,7 @@ class DashboardOne extends React.Component {
             modal_authorize_IsOpen: false,
             modal_comments_IsOpen: false,
             modal_dropdown_IsOpen: false,
+            modal_signoff_IsOpen: false,
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
@@ -120,10 +122,20 @@ class DashboardOne extends React.Component {
             })
         }
       }
+      if (type === 'signoff') {
+        if (val) {console.log(val)
+          if (val.props) {
+            console.log('has a row')
+            this.setState({
+              modal_signoff_IsOpen: true, currentRow: val.props.row._subRows[0]._original
+            }) 
+          }
+        }
+      }
     }
   
     closeModal() {
-      this.setState({modal_authorize_IsOpen: false, modal_comments_IsOpen: false, modal_values_IsOpen: false, modal_dropdown_IsOpen: false});
+      this.setState({modal_authorize_IsOpen: false, modal_comments_IsOpen: false, modal_values_IsOpen: false, modal_dropdown_IsOpen: false, modal_signoff_IsOpen: false});
     }
 
     async componentDidMount() {
@@ -305,27 +317,27 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
           accessor: 'oper_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('values', {props})}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('values', {props})}>
+          Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
           accessor: 'superv_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('values', {props})}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('values', {props})}>
+          Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>
         }
       ];
@@ -504,6 +516,16 @@ class DashboardOne extends React.Component {
                   machine={this.state.selectedMachine}
                   hour={this.state.current_row_timelost}
                 />    
+
+                <SignoffModal
+                  isOpen={this.state.modal_signoff_IsOpen}
+                  //  onAfterOpen={this.afterOpenModal}
+                  onRequestClose={this.closeModal}
+                  contentLabel="Example Modal"
+                  t={this.props.t}
+                  currentRow={this.state.currentRow}
+                  roletype={this.props.user.role}
+              />  
             </React.Fragment>
         );
     }

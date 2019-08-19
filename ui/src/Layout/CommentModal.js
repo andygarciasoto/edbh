@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import ConfirmModal from  '../Layout/ConfirmModal';
 import { sendPost } from '../Utils/Requests';
+import LoadingModal from  '../Layout/LoadingModal';
 
 class CommentsModal extends React.Component {
     constructor(props) {
@@ -13,34 +14,38 @@ class CommentsModal extends React.Component {
 		this.state = {
             value : '',
             modal_confirm_IsOpen: false,
+            modal_loading_IsOpen: false,
         } 
         this.submitComment = this.submitComment.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     }
 
     submitComment(e) {
+      this.setState({modal_loading_IsOpen: true}, () => {
         const response = sendPost({
             first_name: this.props.user.first_name,
             last_name: this.props.user.last_name,
             comment: this.state.value,
-            dhx_data_id: this.props.rowId, 
+            dhx_data_id: this.props.rowId,
         }, '/dxh_new_comment')
         response.then((res) => {
             if (res !== 200) {
                 this.setState({modal_error_IsOpen: true})
                 this.props.Refresh(this.props.parentData);
             } else {
-                this.setState({request_status: res, modal_confirm_IsOpen: true})
+                this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
                 window.setTimeout(()=> null
                 , 2000)
                 this.setState({modal_confirm_IsOpen: false})
             }
             this.props.onRequestClose();
         })
+      })
     }
 
     closeModal() {
-        this.setState({modal_confirm_IsOpen: false});
+        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false});
     }
 
     onChange(e) {
@@ -64,6 +69,7 @@ class CommentsModal extends React.Component {
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <div className={"comments-table"}>
+                <span><h4 style={{marginLeft: '10px'}}>{t('Hour Comments')}</h4></span>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -99,6 +105,13 @@ class CommentsModal extends React.Component {
                 shouldCloseOnOverlayClick={false}
                 message={'Comment was inserted.'}
                 title={'Request Successful'}
+            />
+            <LoadingModal
+                isOpen={this.state.modal_loading_IsOpen}
+                //  onAfterOpen={this.afterOpenModal}
+                onRequestClose={this.closeModal}
+                contentLabel="Example Modal"
+                t={this.props.t}
             />
             </React.Fragment>
         )

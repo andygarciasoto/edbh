@@ -1,19 +1,18 @@
 import React from  'react';
 import Modal from 'react-modal';
 import './ErrorModal.scss';
-import BlinkDots from  './BlinkDots';
-import Spinner from '../Spinner';
+import {Button} from 'react-bootstrap'
 import * as _ from 'lodash';
 import { withRouter } from 'react-router-dom'
 
 
-class LoadingModal extends React.Component {
+class SignoffModal extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
             value : '',
-            loadingMessage: this.props.t(this.props.message) || this.props.t('Loading'),
-            headerMessage: this.props.t('Please Wait'),
+            signoffMessage: this.props.t(this.props.message) || this.props.t('You have signed off for this hour. You are aware that all the values for this hour are correct.'),
+            headerMessage: `${this.props.roletype} ${this.props.t('Sign Off')}`,
             style: {
                 content : {
                     top                   : '50%',
@@ -31,15 +30,13 @@ class LoadingModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-            setTimeout(function(){
-                void(0)},
-            3000);
+        console.log(nextProps)
     }
 
     render() {
         const styles = _.cloneDeep(this.props.style || this.state.style);
         if (!_.isEmpty(styles)) {
-            styles.content.width = '20%';
+            styles.content.width = '50%';
         }
         return (
             <Modal
@@ -49,9 +46,11 @@ class LoadingModal extends React.Component {
                 style={styles}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-loading-field-head">{this.state.headerMessage}</p>
-                <p>{this.state.loadingMessage}</p><BlinkDots />
-                <Spinner/>
+                <div className={"wrap-signoff"}>
+                    <p style={{fontWeight: 'bold'}} className="dashboard-modal-signoff-header">{this.state.headerMessage}</p>
+                    <p style={{textAlign: 'center'}}>{this.state.signoffMessage}</p>
+                    <Button variant="outline-default" style={{marginTop: '20px', textAlign: 'center'}} className="error-button" onClick={this.props.onRequestClose}>
+                    {this.props.t('Accept')}</Button>
                 </div>
             </Modal>
         )
@@ -59,4 +58,4 @@ class LoadingModal extends React.Component {
 }
 
 Modal.setAppElement('#root');
-export default withRouter(LoadingModal);
+export default withRouter(SignoffModal);
