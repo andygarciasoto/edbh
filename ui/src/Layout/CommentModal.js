@@ -69,7 +69,7 @@ class CommentsModal extends React.Component {
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <div className={"comments-table"}>
-                <span><h4 style={{marginLeft: '10px'}}>{t('Hour Comments')}</h4></span>
+                <span><h4 style={{marginLeft: '10px'}}>{t('Comments This Hour')}</h4></span>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
