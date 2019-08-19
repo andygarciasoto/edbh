@@ -48,7 +48,6 @@ function mapShift(rawshift) {
 async function sendPost(data, route) {
   const res = await axios.post(`${API}${route}`, data)
   .then(function (response) {
-    console.log(response)
     return response;
   })
   .catch(function (error) {

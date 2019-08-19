@@ -59,6 +59,7 @@ class DashboardOne extends React.Component {
         this.onExpandedChange = this.onExpandedChange.bind(this);
         this.openAfter = this.openAfter.bind(this);
         this.headerData = this.headerData.bind(this);
+        this.getDashboardData = this.getDashboardData.bind(this);
     }
 
     openModal(type, val, previous) {
@@ -97,7 +98,7 @@ class DashboardOne extends React.Component {
             }
           }
           if (val.row._subRows) {
-            const comments = val.row._subRows[0]._original.actions_comments;
+            const comments = _.sortBy(val.row._subRows[0]._original.actions_comments, 'last_modified_on').reverse();
             this.setState({
               current_display_comments: comments,
               current_row_id: val.row._subRows[0]._original.dxhdata_id
@@ -342,10 +343,13 @@ class DashboardOne extends React.Component {
         }
       ];
       // fetch data call
+      this.getDashboardData(data, columns);
+      } 
+
+    async getDashboardData(data, columns) {
       let response = {};
       let comments = {};
       if (data) {
-        console.log('called')
         response = await getRequestData(data);
       }
       if (response instanceof Object) {
@@ -361,8 +365,7 @@ class DashboardOne extends React.Component {
       } else {
         console.log('Data could not be retrieved from the endpoint /intershift_communication');
       }
-
-      } 
+    }
 
     getTdProps(state, rowInfo, instance) {
       if (rowInfo && instance.id === 'actual_pcs') {
@@ -475,7 +478,15 @@ class DashboardOne extends React.Component {
                             /> : <Spinner/>}
                         </Col>
                     </Row>
-                    <Comments t={t} user={this.props.user} selectedDate={this.state.selected} comments={this.state.comments} dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}/>
+                    <Comments
+                      t={t} 
+                      user={this.props.user} 
+                      selectedDate={this.state.selected} 
+                      comments={this.state.comments} 
+                      dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}
+                      Refresh={this.getDashboardData}
+                      parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+                      />
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
@@ -500,7 +511,7 @@ class DashboardOne extends React.Component {
                   comments={this.state.current_display_comments}
                   rowId={this.state.current_row_id}
                   user={this.props.user}
-                  Refresh={this.fetchData}
+                  Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                   selectedDate={this.state.selected}
                 />

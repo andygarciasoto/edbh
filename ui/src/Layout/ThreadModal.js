@@ -53,13 +53,7 @@ class ThreadModal extends React.Component {
             styles.content.width = '70%';
         };
         const t = this.props.t;
-        let comments = [];
-        if (this.props.comments && this.props.comments instanceof Array) {
-            for (let comment of this.props.comments) {
-                comments.push(comment.InterShiftData)
-            }
-        }
-        comments = _.sortBy(comments, 'production_day').reverse();
+        const comments = this.props.comments
         return (
             <Modal
                 isOpen={this.props.isOpen}

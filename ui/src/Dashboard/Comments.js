@@ -6,6 +6,7 @@ import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
 import moment from 'moment';
+import _ from 'lodash';
 import { sendPut, formatDateWithTime } from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
@@ -46,6 +47,7 @@ class Comments extends React.Component {
                     this.setState({modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true})
                 }
             })
+            this.props.Refresh(this.props.parentData);
         })
     }
 
@@ -64,9 +66,17 @@ class Comments extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
+           let comments = [];
+            if (nextProps.comments && nextProps.comments instanceof Array) {
+                for (let comment of nextProps.comments) {
+                    comments.push(comment.InterShiftData)
+                }
+            }
+            comments = _.sortBy(comments, 'entered_on').reverse();
             this.setState({
-                lastComment: nextProps.comments[nextProps.comments.length-1] || null,
-                commentLen: nextProps.comments.length
+                lastComment: comments[0] || null,
+                commentLen: comments.length,
+                comments: comments
             }) 
         }
     }
@@ -75,9 +85,9 @@ class Comments extends React.Component {
         const t = this.props.t;
         let lastComment;
         if (this.state.lastComment) {
-           lastComment = this.state.lastComment.InterShiftData;
+           lastComment = this.state.lastComment;
         }
-        const lastCommentDate = lastComment ? moment(lastComment.production_day).format('YYYY-MM-DD') : null;
+        const lastCommentDate = lastComment ? moment(lastComment.entered_on).format('YYYY-MM-DD') : null;
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>
@@ -112,7 +122,7 @@ class Comments extends React.Component {
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
-                    comments={this.props.comments}
+                    comments={this.state.comments}
                     t={t}
                 />
                 <ErrorModal

@@ -80,7 +80,7 @@ var nameMapping = {
 function createLatestComment(obj) {
     obj.map((item, index) => {
         if (item.actions_comments) {
-            item['latest_comment'] = item.actions_comments[0].comment;
+            item['latest_comment'] = _.sortBy(item.actions_comments, 'last_modified_on').reverse()[0].comment;
         }
     })
     return obj;

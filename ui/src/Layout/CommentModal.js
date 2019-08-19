@@ -33,13 +33,11 @@ class CommentsModal extends React.Component {
         response.then((res) => {
             if (res !== 200) {
                 this.setState({modal_error_IsOpen: true})
-                this.props.Refresh(this.props.parentData);
             } else {
                 this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                window.setTimeout(()=> null
-                , 2000)
                 this.setState({modal_confirm_IsOpen: false})
             }
+            this.props.Refresh(this.props.parentData);
             this.props.onRequestClose();
         })
       })

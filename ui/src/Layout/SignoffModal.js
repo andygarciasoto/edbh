@@ -30,7 +30,6 @@ class SignoffModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
     }
 
     render() {

@@ -16,9 +16,13 @@ class TimelossModal extends React.Component {
             newValue: '',
             break_time: 0,
             setup_time: 0,
+            validationMessage: '',
+            time_to_allocate: 0,
+            unallocated_time: 0,
         } 
         this.editNumber = this.editNumber.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.allocateTime = this.allocateTime.bind(this);
     }
 
     editNumber(e) {
@@ -70,6 +74,17 @@ class TimelossModal extends React.Component {
         return allocated_time;
     }
 
+    allocateTime(e) {
+        const value = e.target.value;
+        const max = this.state.unallocated_time;
+        if (value > max) {
+            this.setState({validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value})
+        } else {
+            this.setState({time_to_allocate: value})
+        }
+        
+    }
+
     render() {
         const styles = _.cloneDeep(this.props.style);
         if (!_.isEmpty(styles)) {
@@ -83,7 +98,7 @@ class TimelossModal extends React.Component {
                    style={styles}
                    contentLabel="Example Modal">
                         <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                        style={{marginTop: '20px', textAlign: 'center'}}
+                        <span><h4 style={{marginLeft: '10px'}}>{t('Timelost')}</h4></span>
                         <Row className="new-timeloss-data" style={{marginBottom: '5px'}}>
                             <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                                 <p>{t('Total Timelost')}</p>
@@ -130,7 +145,10 @@ class TimelossModal extends React.Component {
                                     </Col>
                                     <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
-                                        <input className={'timelost-field'} type="text" value={0} onChange={(e)=>this.setState({new_tl_minutes: e.target.value})}></input>
+                                        <input className={'timelost-field'} type="text" value={this.state.time_to_allocate} onChange={this.allocateTime}></input>
+                                    </Col>
+                                    <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
+                                        <p style={{marginTop: '5px', color: 'red'}}>{this.state.validationMessage}</p>
                                     </Col>
                                     <Col sm={4} md={4}></Col>
                                 </Row>
