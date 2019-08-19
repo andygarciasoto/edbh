@@ -130,7 +130,7 @@ router.post('/dxh_new_comment', async function (req, res) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
 
     const update = params.comment_id ? params.comment_id : 0;
-    const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
+    const Timestamp = params.timestamp || moment().format('YYYY-MM-DD hh:mm:ss');
 
     if (!params.clocknumber && (!params.first_name || !params.last_name))
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
@@ -204,7 +204,7 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
+    const Timestamp = req.body.timestamp || moment().format('YYYY-MM-DD hh:mm:ss');
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
 
     if (dhx_data_id == undefined || comment == undefined)

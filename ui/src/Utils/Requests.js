@@ -123,6 +123,10 @@ function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }
 
+function formatDateWithTime(date) {
+  return formatDate(date) + ' ' + moment().format('HH:mm:ss');
+}
+
 async function timelossGetReasons(machine) {
   const parameters = { 
     params: {
@@ -147,4 +151,4 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, sendPost, timelossGetReasons, sendPut }
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, formatDateWithTime, sendPost, timelossGetReasons, sendPut }
