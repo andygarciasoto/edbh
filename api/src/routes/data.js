@@ -109,7 +109,7 @@ router.post('/dxh_new_comment', async function (req, res) {
         return;
     }
     const update = params.comment_id ? params.comment_id : 0;
-    const Timestamp = moment().format('YYYYMMDD');
+    const Timestamp = params.timestamp || moment().format('YYYYMMDD');
     params.clocknumber ?
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`, response => respondPost(response)) :
         await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`, response => respondPost(response))
@@ -194,9 +194,9 @@ router.put('/intershift_communication', async function (req, res) {
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
     // const first_name = req.body.first_name;
-    const first_name = 'Ryan';
+    const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const Timestamp = moment().format('YYYYMMDD');
+    const Timestamp = req.body.timestamp || moment().format('YYYYMMDD');
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
 
     if (dhx_data_id == undefined || comment == undefined) return res.status(400).send("Missing parameters");

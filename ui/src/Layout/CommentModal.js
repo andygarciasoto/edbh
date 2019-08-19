@@ -5,7 +5,7 @@ import './CommentsModal.scss';
 import * as _ from 'lodash';
 import moment from 'moment';
 import ConfirmModal from  '../Layout/ConfirmModal';
-import { sendPost } from '../Utils/Requests';
+import { sendPost, formatDateWithTime } from '../Utils/Requests';
 import LoadingModal from  '../Layout/LoadingModal';
 
 class CommentsModal extends React.Component {
@@ -28,6 +28,7 @@ class CommentsModal extends React.Component {
             last_name: this.props.user.last_name,
             comment: this.state.value,
             dhx_data_id: this.props.rowId,
+            timestamp: formatDateWithTime(this.props.selectedDate)
         }, '/dxh_new_comment')
         response.then((res) => {
             if (res !== 200) {

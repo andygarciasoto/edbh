@@ -475,7 +475,7 @@ class DashboardOne extends React.Component {
                             /> : <Spinner/>}
                         </Col>
                     </Row>
-                    <Comments t={t} user={this.props.user} comments={this.state.comments} dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}/>
+                    <Comments t={t} user={this.props.user} selectedDate={this.state.selected} comments={this.state.comments} dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}/>
                 </div>
                 <ValueModal
                  isOpen={this.state.modal_values_IsOpen}
@@ -502,6 +502,7 @@ class DashboardOne extends React.Component {
                   user={this.props.user}
                   Refresh={this.fetchData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+                  selectedDate={this.state.selected}
                 />
 
                 <TimelossModal

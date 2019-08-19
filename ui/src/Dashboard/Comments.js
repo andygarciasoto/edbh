@@ -6,9 +6,10 @@ import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
 import moment from 'moment';
-import { sendPut } from '../Utils/Requests';
+import { sendPut, formatDateWithTime } from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
-import ConfirmModal from '../Layout/ErrorModal';
+import ConfirmModal from '../Layout/ConfirmModal';
+import LoadingModal from '../Layout/LoadingModal';
 
 class Comments extends React.Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class Comments extends React.Component {
             value: '',
             modal_error_IsOpen: false,
             modal_confirm_IsOpen: false,
+            modal_loading_IsOpen: false,
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -27,21 +29,23 @@ class Comments extends React.Component {
     }  
 
     enterCommunication(e) {
-        const data = {
-            dhx_data_id : 1,
-            comment : this.state.value,
-            first_name: this.props.user.first_name,
-            last_name: this.props.user.last_name,
-            clocknumber: this.props.user.clock_number,
-            inter_shift_id : 0,
-        }
-        const response = sendPut(data, '/intershift_communication');
-        response.then((res) => {
-            if (res !== 200) {
-                this.setState({modal_error_IsOpen: true})
-            } else {
-                this.setState({request_status: res, modal_confirm_IsOpen: true})
+        this.setState({modal_loading_IsOpen: true}, () => {
+            const data = {
+                dhx_data_id : 1,
+                comment : this.state.value,
+                first_name: this.props.user.first_name,
+                last_name: this.props.user.last_name,
+                timestamp: formatDateWithTime(this.props.selectedDate),
+                inter_shift_id : 0,
             }
+            const response = sendPut(data, '/intershift_communication');
+            response.then((res) => {
+                if (res !== 200) {
+                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true})
+                } else {
+                    this.setState({modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true})
+                }
+            })
         })
     }
 
@@ -50,6 +54,7 @@ class Comments extends React.Component {
             modal_thread_IsOpen: false,
             modal_error_IsOpen: false,
             modal_confirm_IsOpen: false,
+            modal_loading_IsOpen: false
         });
     }
 
@@ -106,7 +111,6 @@ class Comments extends React.Component {
                     isOpen={this.state.modal_thread_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
-                    style={this.state.modalStyle}
                     contentLabel="Example Modal"
                     comments={this.props.comments}
                     t={t}
@@ -115,9 +119,7 @@ class Comments extends React.Component {
                     isOpen={this.state.modal_error_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
-                    style={this.state.modalStyle}
                     contentLabel="Example Modal"
-                    shouldCloseOnOverlayClick={false}
                     message={'Intershift Communication was not inserted in the database.'}
                     title={'Database Error - Bad Request'}
                 />
@@ -125,11 +127,16 @@ class Comments extends React.Component {
                     isOpen={this.state.modal_confirm_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
-                    style={this.state.modalStyle}
                     contentLabel="Example Modal"
-                    shouldCloseOnOverlayClick={false}
                     message={'Intershift Communication was inserted.'}
                     title={'Request Successful'}
+                />
+                <LoadingModal
+                    isOpen={this.state.modal_loading_IsOpen}
+                    //  onAfterOpen={this.afterOpenModal}
+                    onRequestClose={this.closeModal}
+                    contentLabel="Example Modal"
+                    t={this.props.t}
                 />
             </div>
         )

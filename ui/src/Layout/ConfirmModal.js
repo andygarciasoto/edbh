@@ -49,11 +49,11 @@ class ConfirmModal extends React.Component {
                 style={this.state.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-error-field-head">{this.props.title}</p>
+                <div><p className="dashboard-modal-sucessr-field-head">{this.props.title}</p>
                 <div><FontAwesome className="success-message icon" name="check"/>&nbsp;&nbsp;
                 <p className="success-message">{this.props.message}</p></div>
                 </div>
-                <Button variant="outline-success" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
+                <Button variant="outline-success" style={{marginTop: '20px'}} className="success-button" onClick={this.props.onRequestClose}>Close</Button>
             </Modal>
         )
     }

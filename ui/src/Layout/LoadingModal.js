@@ -1,7 +1,6 @@
 import React from  'react';
 import Modal from 'react-modal';
 import './ErrorModal.scss';
-import BlinkDots from  './BlinkDots';
 import Spinner from '../Spinner';
 import * as _ from 'lodash';
 import { withRouter } from 'react-router-dom'
@@ -50,7 +49,6 @@ class LoadingModal extends React.Component {
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <div><p className="dashboard-modal-loading-field-head">{this.state.headerMessage}</p>
-                <p>{this.state.loadingMessage}</p><BlinkDots />
                 <Spinner/>
                 </div>
             </Modal>
