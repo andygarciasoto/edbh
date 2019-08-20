@@ -124,9 +124,8 @@ class DashboardOne extends React.Component {
         }
       }
       if (type === 'signoff') {
-        if (val) {console.log(val)
+        if (val) {
           if (val.props) {
-            console.log('has a row')
             this.setState({
               modal_signoff_IsOpen: true, currentRow: val.props.row._subRows[0]._original
             }) 
@@ -537,6 +536,9 @@ class DashboardOne extends React.Component {
                   t={this.props.t}
                   currentRow={this.state.currentRow}
                   roletype={this.props.user.role}
+                  user={this.props.user}
+                  Refresh={this.getDashboardData}
+                  parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
               />  
             </React.Fragment>
         );

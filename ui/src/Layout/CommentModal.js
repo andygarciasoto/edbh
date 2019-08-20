@@ -5,8 +5,10 @@ import './CommentsModal.scss';
 import * as _ from 'lodash';
 import moment from 'moment';
 import ConfirmModal from  '../Layout/ConfirmModal';
-import { sendPost, formatDateWithTime } from '../Utils/Requests';
 import LoadingModal from  '../Layout/LoadingModal';
+import ErrorModal from  '../Layout/ErrorModal';
+import { sendPost, formatDateWithTime } from '../Utils/Requests';
+
 
 class CommentsModal extends React.Component {
     constructor(props) {
@@ -15,6 +17,7 @@ class CommentsModal extends React.Component {
             value : '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
+            modal_error_IsOpen: false, 
         } 
         this.submitComment = this.submitComment.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -44,7 +47,7 @@ class CommentsModal extends React.Component {
     }
 
     closeModal() {
-        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false});
+        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
     }
 
     onChange(e) {
@@ -106,6 +109,13 @@ class CommentsModal extends React.Component {
                 title={'Request Successful'}
             />
             <LoadingModal
+                isOpen={this.state.modal_loading_IsOpen}
+                //  onAfterOpen={this.afterOpenModal}
+                onRequestClose={this.closeModal}
+                contentLabel="Example Modal"
+                t={this.props.t}
+            />
+            <ErrorModal
                 isOpen={this.state.modal_loading_IsOpen}
                 //  onAfterOpen={this.afterOpenModal}
                 onRequestClose={this.closeModal}

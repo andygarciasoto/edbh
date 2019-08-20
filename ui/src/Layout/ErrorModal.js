@@ -9,6 +9,8 @@ class ErrorModal extends React.Component {
 		super(props);
 		this.state = {
             value : '',
+            message: 'Operation could not be completed.',
+            title: 'Error'
         } 
         this.validateBarcode = this.validateBarcode.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -49,9 +51,9 @@ class ErrorModal extends React.Component {
                 style={this.state.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-error-field-head">{this.props.title}</p>
+                <div><p className="dashboard-modal-error-field-head">{this.props.title || this.state.title}</p>
                 <div><FontAwesome className="warning-message icon" name="exclamation-triangle"/>&nbsp;&nbsp;
-                <p className="warning-message">{this.props.message}</p></div>
+                <p className="warning-message">{this.props.message || this.state.message}</p></div>
                 </div>
                 <Button variant="outline-danger" style={{marginTop: '20px'}} className="error-button" onClick={this.props.onRequestClose}>Close</Button>
             </Modal>

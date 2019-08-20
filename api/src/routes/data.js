@@ -104,7 +104,7 @@ router.get('/machine', async function (req, res) {
 });
 
 router.get('/me', function (req, res) {
-    return res.status(200).json({ first_name: 'Admin', last_name: 'Admin', role: 'admin', clock_number: 1321324 });
+    return res.status(200).json({ first_name: 'Admin', last_name: 'Admin', role: 'admin', clock_number: 2477 });
 });
 
 router.get('/intershift_communication', async function (req, res) {
@@ -229,13 +229,17 @@ router.put('/operator_sign_off', async function (req, res) {
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
 
-    if (!clocknumber && (!first_name || !last_name))
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
-
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters b" });
+        }
+    }
+   
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => responsePostPut(response, req, res)) :
             await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => responsePostPut(response, req, res));
     } catch (e) {
+        console.log(e);
         res.status(500).send('Database Connection Error');
     }
 });
