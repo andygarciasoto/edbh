@@ -228,10 +228,9 @@ router.put('/operator_sign_off', async function (req, res) {
     const Timestamp = req.body.timestamp ? req.body.timestamp : moment().format('YYYY-MM-DD hh:mm:ss');
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
-
     if (!clocknumber) {
         if (!(first_name || last_name)) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters b" });
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
    
