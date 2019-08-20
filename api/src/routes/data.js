@@ -160,7 +160,7 @@ router.get('/timelost_reasons', async function (req, res) {
 });
 
 router.get('/dxh_data_id', async function (req, res) {
-    const asset_code = parseInt(req.query.asset_code);
+    const asset_code = req.query.asset_code ? parseInt(req.query.asset_code) : undefined;
     const timestamp = req.query.timestamp;
     const require_order_create = req.query.require_order_create ? 1 : 0;
 
@@ -176,16 +176,16 @@ router.get('/dxh_data_id', async function (req, res) {
 });
 
 router.put('/dt_data', async function (req, res) {
-    const dxh_data_id = parseInt(req.body.dxh_data_id);
-    const dt_reason_id = parseInt(req.body.dt_reason_id);
-    const dt_minutes = parseFloat(req.body.dt_minutes);
+    const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
+    const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
 
-    if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined)
+    if (dxh_data_id === undefined || dt_reason_id == undefined || dt_minutes == undefined)
         return res.status(400).send("Missing parameters");
 
     if (!clocknumber) {
@@ -193,6 +193,8 @@ router.put('/dt_data', async function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
+
+    console.log(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`);
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => responsePostPut(response, req, res)) :
@@ -203,7 +205,7 @@ router.put('/dt_data', async function (req, res) {
 });
 
 router.put('/intershift_communication', async function (req, res) {
-    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
@@ -230,7 +232,7 @@ router.put('/intershift_communication', async function (req, res) {
 
 router.put('/operator_sign_off', async function (req, res) {
 
-    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -254,7 +256,7 @@ router.put('/operator_sign_off', async function (req, res) {
 });
 
 router.put('/supervisor_sign_off', async function (req, res) {
-    const dhx_data_id = parseInt(req.body.dhx_data_id);
+    const dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
