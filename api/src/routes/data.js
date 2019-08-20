@@ -130,8 +130,11 @@ router.post('/dxh_new_comment', async function (req, res) {
     const update = params.comment_id ? params.comment_id : 0;
     const Timestamp = params.timestamp || moment().format('YYYY-MM-DD hh:mm:ss');
 
-    if (!params.clocknumber && (!params.first_name || !params.last_name))
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    if (!params.clocknumber) {
+        if (!(params.first_name || params.last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
 
     try {
         params.clocknumber ?
@@ -185,8 +188,11 @@ router.put('/dt_data', async function (req, res) {
     if (dxh_data_id == undefined || dt_reason_id == undefined || dt_minutes == undefined)
         return res.status(400).send("Missing parameters");
 
-    if (!clocknumber && (!first_name || !last_name))
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => responsePostPut(response, req, res)) :
@@ -208,8 +214,11 @@ router.put('/intershift_communication', async function (req, res) {
     if (dhx_data_id == undefined || comment == undefined)
         return res.status(400).send("Missing parameters");
 
-    if (!clocknumber && (!first_name || !last_name))
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`, response => responsePostPut(response, req, res)) :
@@ -228,12 +237,13 @@ router.put('/operator_sign_off', async function (req, res) {
     const Timestamp = req.body.timestamp ? req.body.timestamp : moment().format('YYYY-MM-DD hh:mm:ss');
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
+
     if (!clocknumber) {
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-   
+
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => responsePostPut(response, req, res)) :
             await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`, response => responsePostPut(response, req, res));
@@ -252,8 +262,11 @@ router.put('/supervisor_sign_off', async function (req, res) {
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
 
-    if (!clocknumber && (!first_name || !last_name))
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
 
     try {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`, response => responsePostPut(response, req, res)) :
