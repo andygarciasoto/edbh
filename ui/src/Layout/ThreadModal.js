@@ -63,6 +63,7 @@ class ThreadModal extends React.Component {
                 contentLabel="Example Modal">
                 {(this.props.comments && this.props.comments.length > 0) ? <React.Fragment>
                     <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                    <span><h4 style={{marginLeft: '10px'}}>{t('Intershift Communications')}</h4></span>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -74,7 +75,8 @@ class ThreadModal extends React.Component {
                             {comments.map((item, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td className={"intershift-info"}><span>{item.first_name} - {item.last_name}</span><div className={'intershift-date-modal'}>{moment(item.entered_on).format('YYYY-MM-DD')}</div></td>
+                                        <td className={"intershift-info"}><span>{`${item.first_name} - ${item.last_name}`}</span>
+                                        <div className={'intershift-date-modal'}>{moment(item.entered_on).format('YYYY-MM-DD')}</div></td>
                                         <td className={"intershift-comment-modal"}><div>{item.comment}</div></td>
                                     </tr>
                                 )

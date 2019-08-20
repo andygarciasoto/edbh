@@ -32,7 +32,7 @@ class Comments extends React.Component {
     enterCommunication(e) {
         this.setState({modal_loading_IsOpen: true}, () => {
             const data = {
-                dhx_data_id : 1,
+                dhx_data_id : this.props.dxh_id,
                 comment : this.state.value,
                 first_name: this.props.user.first_name,
                 last_name: this.props.user.last_name,

@@ -429,7 +429,7 @@ class DashboardOne extends React.Component {
         const page = t('Page');
         const off = t('Of');
         const rows = t('Rows');
-        const dxh_id_parent = !_.isEmpty(data) >= 0 ? data[0] : null
+        const dxh_id_parent = !_.isEmpty(data) ? data[0].dxhdata_id : undefined;
         return (
             <React.Fragment>
                 <Header className="app-header" 
@@ -480,9 +480,9 @@ class DashboardOne extends React.Component {
                     <Comments
                       t={t} 
                       user={this.props.user} 
-                      selectedDate={this.state.selected} 
+                      selectedDate={this.state.selectedDate} 
                       comments={this.state.comments} 
-                      dxh_id={dxh_id_parent ? dxh_id_parent.dxh_id : null}
+                      dxh_id={dxh_id_parent ? dxh_id_parent : null}
                       Refresh={this.getDashboardData}
                       parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                       />
@@ -522,10 +522,13 @@ class DashboardOne extends React.Component {
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
                   t={t}
-                  label={t('Select Reason Code')}
+                  label={t('Search/Select Reason Code')}
                   timelost={this.state.current_display_timelost}
                   machine={this.state.selectedMachine}
                   hour={this.state.current_row_timelost}
+                  user={this.props.user}
+                  Refresh={this.getDashboardData}
+                  dxh_id={dxh_id_parent ? dxh_id_parent : null}
                 />    
 
                 <SignoffModal
