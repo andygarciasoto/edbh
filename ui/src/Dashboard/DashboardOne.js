@@ -84,6 +84,7 @@ class DashboardOne extends React.Component {
           valueToEdit: value,
           modalType,
           openDropdownAfter: previous ? true : false,
+          currentRow: val ? val.props  ? val.props.row._subRows[0]._original : undefined : undefined
         })
       }
       if (type === 'comments') {
@@ -127,7 +128,8 @@ class DashboardOne extends React.Component {
         if (val) {
           if (val.props) {
             this.setState({
-              modal_signoff_IsOpen: true, currentRow: val.props.row._subRows[0]._original
+              modal_signoff_IsOpen: true, 
+              currentRow: val.props.row._subRows[0]._original
             }) 
           }
         }
@@ -496,8 +498,12 @@ class DashboardOne extends React.Component {
                  currentVal={this.state.valueToEdit}
                  formType={this.state.modalType}
                  t={t}
-                 openDropdownAfter={this.state.openDropdownAfter}
-                 openAfter={this.openAfter}
+                 user={this.props.user}
+                 dxh_id={dxh_id_parent ? dxh_id_parent : null}
+                 currentRow={this.state.currentRow}
+                 Refresh={this.getDashboardData}
+                 parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+
                 />
 
                 <CommentsModal
@@ -529,6 +535,7 @@ class DashboardOne extends React.Component {
                   user={this.props.user}
                   Refresh={this.getDashboardData}
                   dxh_id={dxh_id_parent ? dxh_id_parent : null}
+                  parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                 />    
 
                 <SignoffModal
