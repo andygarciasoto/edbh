@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import './MachinePicker.scss';
-import { getMachineData } from '../Utils/Requests';
+import { getRequest} from '../Utils/Requests';
 
 class MachinePickerCustom extends React.Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class MachinePickerCustom extends React.Component {
 
     componentDidMount() {
         const machineArray = [];
-        const machines = getMachineData();
+        const machines = getRequest('/machine');
         machines.then((machinesObj => { machinesObj ? machinesObj.map((item, index) => machineArray.push(item.asset_code)) : void(0)}))
         this.setState({machines: machineArray})
     }

@@ -64,7 +64,12 @@ function responsePostPut(response, req, res) {
 };
 
 function responseGet(data, req, res, listName) {
-    const response = JSON.parse(Object.values(data)[0][listName]);
+    let response;
+    if (listName) {
+        response = JSON.parse(Object.values(data)[0][listName]);
+    } else {
+        response = data;
+    }
     res.status(200).json(response);
 };
 
@@ -95,9 +100,9 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-
     try {
-        await sqlQuery(`select * from dbo.Asset;`, response => structureMachines(response));
+        const query = "select asset_code From Asset Where asset_level = 'Cell' And status = 'Active' Order by asset_code";
+        await sqlQuery(query, response => structureMachines(response));
     } catch (e) {
         res.status(500).send('Database Connection Error');
     }
@@ -106,6 +111,16 @@ router.get('/machine', async function (req, res) {
 router.get('/me', function (req, res) {
     return res.status(200).json({ first_name: 'Admin', last_name: 'Admin', role: 'admin', clock_number: 2477 });
 });
+
+router.get('/shifts', async function(req, res) {
+    const query = "select [shift_code], [shift_name] From [dbo].[Shift] Where status = 'Active' order by shift_sequence;"
+    try {
+        await sqlQuery(query,
+            response => responseGet(response, req, res));
+    } catch (e) {
+        res.status(500).send('Database Connection Error');
+    }
+})
 
 router.get('/intershift_communication', async function (req, res) {
     const asset_code = req.query.mc;
@@ -255,7 +270,6 @@ router.put('/operator_sign_off', async function (req, res) {
             await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`,
                 response => responsePostPut(response, req, res));
     } catch (e) {
-        console.log(e);
         res.status(500).send('Database Connection Error');
     }
 });
@@ -294,7 +308,6 @@ router.put('/production_data', async function (req, res) {
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const override = req.body.override ? parseInt(req.body.override) : 0;
-    console.log(req.body);
     if (dxh_data_id === undefined || actual === undefined)
         return res.status(500).send("Missing parameters");
 

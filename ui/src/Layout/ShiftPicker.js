@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { getRequest } from '../Utils/Requests';
 import './ShiftPicker.scss';
 
 class ShiftPickerCustom extends React.Component {
@@ -17,6 +18,11 @@ class ShiftPickerCustom extends React.Component {
         this.props.collectInput(e, 'shift');
       }
 
+      componentDidMount() {
+        const shifts = getRequest('/shifts');
+        shifts.then(shiftObj => {this.setState({shifts: shiftObj})})
+    }
+
     componentWillReceiveProps(nextProps) {
       this.setState({value: nextProps.currentShift})
     }
@@ -31,12 +37,12 @@ class ShiftPickerCustom extends React.Component {
             id="dropdown-menu-align-right"
             className="shift-picker-button"
           >
-          <Dropdown.Item eventKey="First Shift" onSelect={(e)=>this.onSelect(e)}>{t('First Shift')}</Dropdown.Item>
-          <Dropdown.Item eventKey="Second Shift" onSelect={(e)=>this.onSelect(e)}>{t('Second Shift')}</Dropdown.Item>
-          <Dropdown.Item eventKey="Third Shift" onSelect={(e)=>this.onSelect(e)}>{t('Third Shift')}</Dropdown.Item>
-          {/* <Dropdown.Divider />
-          <Dropdown.Item eventKey="All Shifts" onSelect={(e)=>this.onSelect(e)}>{t('All Shifts')}</Dropdown.Item> */}
-        </DropdownButton>
+          {
+            this.state.shifts ? this.state.shifts.map((shift, index) => {
+              return <Dropdown.Item key={shift.shift_code} eventKey={shift.shift_name} onSelect={(e)=>this.onSelect(e)}>{t(shift.shift_name)}</Dropdown.Item>
+            }) : null
+          }
+          </DropdownButton>
         )
     }
 };

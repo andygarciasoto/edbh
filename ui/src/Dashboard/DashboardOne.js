@@ -47,7 +47,7 @@ class DashboardOne extends React.Component {
             modalType: '',
             expanded: {},
             openDropdownAfter: false,
-            selectedShift: 'First Shift',
+            selectedShift: '1st Shift',
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -126,11 +126,14 @@ class DashboardOne extends React.Component {
       }
       if (type === 'signoff') {
         if (val) {
+          console.log(val)
           if (val.props) {
-            this.setState({
-              modal_signoff_IsOpen: true, 
-              currentRow: val.props.row._subRows[0]._original
-            }) 
+            if (val.props._subRows) {
+              this.setState({
+                modal_signoff_IsOpen: true, 
+                currentRow: val.props.row._subRows[0]._original
+              }) 
+            }
           }
         }
       }
@@ -157,7 +160,7 @@ class DashboardOne extends React.Component {
         
         this.setState({modalStyle})
         const date = new Date();
-        const x = moment(date).locale(this.state.currentLanguage).format('LLLL');
+        const x = moment(date).locale(this.state.currentLanguage).format('LL');
         this.setState({selectedDate: date, selectedDateParsed: x})
         this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
@@ -455,8 +458,8 @@ class DashboardOne extends React.Component {
                         <Col md={12} lg={12} id="dashboardOne-table">
                             <Row style={{paddingLeft: '5%'}}>
                                 <Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
-                                <Col md={4}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                                <Col md={4}><h5>{moment(date).locale('en').format('LLLL')}</h5></Col>
+                                <Col md={5}><h5>{t('Day by Hour Tracking')}</h5></Col>
+                                <Col md={3}><h5>{moment(date).locale('en').format('LL')}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable
                                 getTdProps={this.handleTableCellClick}
@@ -490,20 +493,19 @@ class DashboardOne extends React.Component {
                       />
                 </div>
                 <ValueModal
-                 isOpen={this.state.modal_values_IsOpen}
-                 //  onAfterOpen={this.afterOpenModal}
-                 onRequestClose={this.closeModal}
-                 style={this.state.modalStyle}
-                 contentLabel="Example Modal"
-                 currentVal={this.state.valueToEdit}
-                 formType={this.state.modalType}
-                 t={t}
-                 user={this.props.user}
-                 dxh_id={dxh_id_parent ? dxh_id_parent : null}
-                 currentRow={this.state.currentRow}
-                 Refresh={this.getDashboardData}
-                 parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
-
+                  isOpen={this.state.modal_values_IsOpen}
+                  //  onAfterOpen={this.afterOpenModal}
+                  onRequestClose={this.closeModal}
+                  style={this.state.modalStyle}
+                  contentLabel="Example Modal"
+                  currentVal={this.state.valueToEdit}
+                  formType={this.state.modalType}
+                  t={t}
+                  user={this.props.user}
+                  dxh_id={dxh_id_parent ? dxh_id_parent : null}
+                  currentRow={this.state.currentRow}
+                  Refresh={this.getDashboardData}
+                  parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                 />
 
                 <CommentsModal

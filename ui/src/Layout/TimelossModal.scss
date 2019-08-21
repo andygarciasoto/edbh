@@ -56,6 +56,11 @@
     padding-bottom: 30px;
 }
 
+.timeloss-table {
+    max-height: 25vh;
+    overflow-y: scroll;
+}
+
 .timeloss-top {display: inline;}
 .new-timeloss-reasoncode { margin-bottom: 5px;}
 

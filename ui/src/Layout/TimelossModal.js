@@ -23,7 +23,8 @@ class TimelossModal extends React.Component {
             validationMessage: '',
             time_to_allocate: 0,
             unallocated_time: 0,
-            allowSubmit: false,
+            allowSubmit: true,
+            new_tl_reason: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false, 
@@ -31,6 +32,8 @@ class TimelossModal extends React.Component {
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
         this.allocateTime = this.allocateTime.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.validate = this.validate.bind(this);
     }
 
     submit(e) {
@@ -41,6 +44,7 @@ class TimelossModal extends React.Component {
         clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
         first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
         last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+        asset_code: this.props.parentData[0]
         }
         this.setState({modal_loading_IsOpen: true}, () => {
             const response = sendPut(data, '/dt_data');
@@ -79,7 +83,7 @@ class TimelossModal extends React.Component {
         this.setState({
             timelost: nextProps.timelost,
             allocated_time: total,
-            unallocated_time: 60 - total,
+            unallocated_time: 60 - total > 0 ? 60 - total : 0,
         })
         if (nextProps.hour) {
             this.setState({
@@ -101,12 +105,20 @@ class TimelossModal extends React.Component {
     }
 
     allocateTime(e) {
-        const value = e.target.value;
+        const value = parseInt(e.target.value);
         const max = this.state.unallocated_time;
-        if (value > max) {
-            this.setState({validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value, allowSubmit: true})
+        if (value >= max) {
+            this.setState({validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value})
         } else {
-            this.setState({time_to_allocate: value, validationMessage: '', allowSubmit: false})
+            this.setState({time_to_allocate: value, validationMessage: ''}, this.validate());
+        }
+    }
+
+    validate() {
+        const {unallocated_time, time_to_allocate, new_tl_reason, allowSubmit} = this.state;
+        console.log({unallocated_time, time_to_allocate, new_tl_reason, allowSubmit})
+        if (this.state.time_to_allocate < this.state.unallocated_time && this.state.new_tl_reason !== '') {
+            this.setState({allowSubmit: false});
         }
     }
 
@@ -145,10 +157,11 @@ class TimelossModal extends React.Component {
                                 <input type="text" disabled={true} value={this.state.break_time}></input>
                             </Col>
                             <Col sm={4} md={4} className="setup-timeloss number-field timeloss-top">
-                                <p>{t('Planned Setup Time')}</p>
+                                <p>{t('Setup Time')}</p>
                                 <input type="text" disabled={true} value={this.state.setup_time}></input>
                             </Col>
                         </Row>
+                        <div className="timeloss-table">
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
@@ -172,33 +185,33 @@ class TimelossModal extends React.Component {
                              }
                             </tbody>
                         </Table>
+                        </div>
                             <span className={"new-timelost-label"}>{t('New Timelost Entry')}</span>
                             <div className="new-timeloss">
                                 <Row style={{marginBottom: '1px'}}>
-                                    <Col sm={4} md={4}>
+                                    <Col sm={6} md={4}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Unallocated Timelost')}:`}</p>
                                         <input className={'timelost-field'} 
                                         type="text"
                                         disabled={true}
                                         value={this.state.unallocated_time}></input>
                                     </Col>
-                                    <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
+                                    <Col sm={6} md={4}  style={{marginBottom: '5px'}}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
                                         <input className={'timelost-field'} type="text" 
                                         value={this.state.time_to_allocate} 
                                         onChange={this.allocateTime}></input>
                                     </Col>
-                                    <Col sm={4} md={4}  style={{marginBottom: '5px'}}>
+                                    <Col sm={6} md={4}  style={{marginBottom: '5px'}}>
                                         <p style={{marginTop: '5px', color: 'red'}}>{this.state.validationMessage}</p>
                                     </Col>
-                                    <Col sm={4} md={4}></Col>
                                 </Row>
                                 <div className="new-timeloss-reasoncode">
                                     <p style={{paddingBottom: '1px', marginBottom: '5px'}}>{this.props.label ? this.props.label : t('New Value')}:</p>
                                     <Form.Group controlId="formGridState">
                                     <ReactSelect
                                         value={this.state.new_tl_reason}
-                                        onChange={(e)=>this.setState({new_tl_reason: e})}
+                                        onChange={(e)=> this.setState({new_tl_reason: e}, this.validate())}
                                         options={reasons}
                                         className={"react-select-container"}
                                         classNamePrefix={"react_control"}
