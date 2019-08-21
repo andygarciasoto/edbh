@@ -55,22 +55,26 @@ router.use(function (req, res, next) {
 });
 
 function responsePostPut(response, req, res) {
-    const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
-    if (resBD === 0) {
-        res.status(200).send('Message Entered Succesfully');
-    } else {
-        res.status(500).send('Database Connection Error');
-    }
+    try {
+        const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send('Database Connection Error');
+        }
+    } catch (e) { res.status(500).send('Database Connection Error'); }
 };
 
 function responseGet(data, req, res, listName) {
-    let response;
-    if (listName) {
-        response = JSON.parse(Object.values(data)[0][listName]);
-    } else {
-        response = data;
-    }
-    res.status(200).json(response);
+    try {
+        let response;
+        if (listName) {
+            response = JSON.parse(Object.values(data)[0][listName]);
+        } else {
+            response = data;
+        }
+        res.status(200).json(response);
+    } catch (e) { res.status(500).send('Database Connection Error'); }
 };
 
 router.get('/data', async function (req, res) {
@@ -151,15 +155,11 @@ router.post('/dxh_new_comment', async function (req, res) {
         }
     }
 
-    try {
-        params.clocknumber ?
-            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`,
-                response => responsePostPut(response, req, res)) :
-            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`,
-                response => responsePostPut(response, req, res));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+    params.clocknumber ?
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`,
+            response => responsePostPut(response, req, res)) :
+        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`,
+            response => responsePostPut(response, req, res));
 });
 
 router.get('/timelost_reasons', async function (req, res) {
@@ -168,12 +168,7 @@ router.get('/timelost_reasons', async function (req, res) {
     }
     const machine = req.query.mc;
 
-    try {
-        await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => responseGet(response, req, res, 'DTReason'));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
-
+    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => responseGet(response, req, res, 'DTReason'));
 });
 
 router.get('/dxh_data_id', async function (req, res) {
@@ -184,12 +179,9 @@ router.get('/dxh_data_id', async function (req, res) {
     if (asset_code == undefined || timestamp == undefined)
         return res.status(400).send("Missing parameters");
 
-    try {
-        await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${timestamp}', ${require_order_create};`,
-            response => responseGet(response, req, res, 'GetDxHDataId'));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+
+    await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${timestamp}', ${require_order_create};`,
+        response => responseGet(response, req, res, 'GetDxHDataId'));
 
 });
 
@@ -212,14 +204,10 @@ router.put('/dt_data', async function (req, res) {
         }
     }
 
-    try {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
-            response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
-                response => responsePostPut(response, req, res))
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+        response => responsePostPut(response, req, res)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+            response => responsePostPut(response, req, res))
 });
 
 router.put('/intershift_communication', async function (req, res) {
@@ -238,14 +226,10 @@ router.put('/intershift_communication', async function (req, res) {
         }
     }
 
-    try {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
-            response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
-                response => responsePostPut(response, req, res));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+        response => responsePostPut(response, req, res)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+            response => responsePostPut(response, req, res));
 });
 
 router.put('/operator_sign_off', async function (req, res) {
@@ -264,14 +248,10 @@ router.put('/operator_sign_off', async function (req, res) {
         }
     }
 
-    try {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`,
-            response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`,
-                response => responsePostPut(response, req, res));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`,
+        response => responsePostPut(response, req, res)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`,
+            response => responsePostPut(response, req, res));
 });
 
 router.put('/supervisor_sign_off', async function (req, res) {
@@ -290,25 +270,21 @@ router.put('/supervisor_sign_off', async function (req, res) {
         }
     }
 
-    try {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
-            response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
-                responsePostPut(response, req, res));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
+        response => responsePostPut(response, req, res)) :
+        await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
+            responsePostPut(response, req, res));
 });
 
 router.put('/production_data', async function (req, res) {
-    const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const actual = req.body.actual ? parseFloat(req.body.actual) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const override = req.body.override ? parseInt(req.body.override) : 0;
-    const asset_code = req.query.asset_code ? parseInt(req.query.asset_code) : undefined;
+    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
     if (actual === undefined)
         return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
@@ -324,21 +300,22 @@ router.put('/production_data', async function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
             await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${Timestamp}', 0;`,
-                response => {
-                    const response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dxh_data_id = response.dxhdata_id;
-                    console.log(response.dxhdata_id);
+                async (data) => {
+                    try {
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        cflocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
+                            response => responsePostPut(response, req, res)) :
+                            await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
+                                response => responsePostPut(response, req, res));
+                    } catch (e) { res.status(500).send('Database Connection Error'); }
                 });
         }
-    }
-
-    try {
+    } else {
         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
             response => responsePostPut(response, req, res)) :
             await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
                 response => responsePostPut(response, req, res));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
     }
 });
 
