@@ -266,6 +266,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
+    const override = req.body.override ? req.body.override : 0;
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
 
@@ -276,9 +277,9 @@ router.put('/supervisor_sign_off', async function (req, res) {
     }
 
     try {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}';`,
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
             response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}';`,
+            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
                 responsePostPut(response, req, res));
     } catch (e) {
         res.status(500).send('Database Connection Error');
@@ -293,7 +294,7 @@ router.put('/production_data', async function (req, res) {
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const override = req.body.override ? parseInt(req.body.override) : 0;
-
+    console.log(req.body);
     if (dxh_data_id === undefined || actual === undefined)
         return res.status(500).send("Missing parameters");
 
