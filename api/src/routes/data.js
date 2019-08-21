@@ -293,13 +293,27 @@ router.put('/production_data', async function (req, res) {
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const override = req.body.override ? parseInt(req.body.override) : 0;
+    const asset_code = req.query.asset_code ? parseInt(req.query.asset_code) : undefined;
 
-    if (dxh_data_id === undefined || actual === undefined)
-        return res.status(500).send("Missing parameters");
+    if (actual === undefined)
+        return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
 
     if (!clocknumber) {
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
+
+    if (dxh_data_id === undefined) {
+        if (asset_code === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+        } else {
+            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${Timestamp}', 0;`,
+                response => {
+                    const response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                    dxh_data_id = response.dxhdata_id;
+                    console.log(response.dxhdata_id);
+                });
         }
     }
 
