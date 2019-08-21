@@ -116,7 +116,7 @@ class CommentsModal extends React.Component {
                 t={this.props.t}
             />
             <ErrorModal
-                isOpen={this.state.modal_loading_IsOpen}
+                isOpen={this.state.modal_error_IsOpen}
                 //  onAfterOpen={this.afterOpenModal}
                 onRequestClose={this.closeModal}
                 contentLabel="Example Modal"
