@@ -1,0 +1,10 @@
+{
+    "machine": 10832,
+    "user": "Ryan Parker",
+    "role": "supervisor",
+    "language": "en-us",
+    "clockNumber": 12332009,
+    "loginPage": "https://dxhweb.azurewebsites.net/login",
+    "root": "https://dxhweb.azurewebsites.net",
+    "api": "https://dxhapi.azurewebsites.net"
+}

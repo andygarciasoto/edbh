@@ -33,13 +33,13 @@ function mapShift(rawshift) {
   if (rawshift === 'Select Shift') {
     shift = 1;
   }
-  if (rawshift === 'First Shift') {
+  if (rawshift === '1st Shift') {
     shift = 1;
   }
-  if (rawshift === 'Second Shift') {
+  if (rawshift === '2nd Shift') {
     shift = 2;
   }
-  if (rawshift === 'Third Shift') {
+  if (rawshift === '3rd Shift') {
     shift = 3;
   } 
   return shift;
@@ -99,9 +99,8 @@ async function getIntershift(data) {
     }
 }
 
-async function getMachineData() {
-  let res = {};
-  res = await axios.get(`${API}/machine`)
+async function getRequest(route, data) {
+  const res = await axios.get(`${API}${route}`, data)
   .then(function (response) {
     // handle success
     return response;
@@ -150,4 +149,4 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, formatDateWithTime, sendPost, timelossGetReasons, sendPut }
+export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, sendPost, timelossGetReasons, sendPut }

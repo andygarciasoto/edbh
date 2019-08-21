@@ -31,7 +31,8 @@ class CommentsModal extends React.Component {
             last_name: this.props.user.last_name,
             comment: this.state.value,
             dhx_data_id: this.props.rowId,
-            timestamp: formatDateWithTime(this.props.selectedDate)
+            timestamp: formatDateWithTime(this.props.selectedDate),
+            asset_code: this.props.parentData[0]
         }, '/dxh_new_comment')
         response.then((res) => {
             if (res !== 200) {
@@ -116,7 +117,7 @@ class CommentsModal extends React.Component {
                 t={this.props.t}
             />
             <ErrorModal
-                isOpen={this.state.modal_loading_IsOpen}
+                isOpen={this.state.modal_error_IsOpen}
                 //  onAfterOpen={this.afterOpenModal}
                 onRequestClose={this.closeModal}
                 contentLabel="Example Modal"
