@@ -6,15 +6,8 @@
     padding: 2%;
 };
 
-.ideal-click {
-    color: rgb(88, 88, 88); 
-    cursor: pointer; 
-    text-overflow: scroll;
-    
-    .react-table-click-text {
-        // text-decoration: underline; 
-        padding-right: 5px;
-    } 
+.empty-field {
+    padding-right: 24px;
 }
 
     .fa-search-plus {float: right;}

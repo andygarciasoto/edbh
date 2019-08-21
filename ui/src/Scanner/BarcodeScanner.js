@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import BarcodeReader from 'react-barcode-reader'
-import { Form } from  'react-bootstrap';
 import './BarcodeScanner.scss';
 import BlinkDots from '../Layout/BlinkDots';
 import ErrorModal from  '../Layout/errorModal';
@@ -85,9 +84,10 @@ class  BarcodeScanner extends Component {
             isOpen={this.state.modal_error_IsOpen}
             //  onAfterOpen={this.afterOpenModal}
             onRequestClose={this.closeModal}
-            style={this.state.modalStyle}
             contentLabel="Example Modal"
             shouldCloseOnOverlayClick={false}
+            message={'Sign In attempt unsuccessful'}
+            title={'Sign In Error'}
           />
 
           <LoadingModal

@@ -22,15 +22,17 @@
     "react-modal": "^3.8.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.0.1",
+    "react-select": "^3.0.4",
     "react-table": "^6.10.0",
     "react-tooltip": "^3.10.0",
     "webrtc-adapter": "^7.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run sass && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sass": "node-sass src/sass/main.scss public/css/styles.css"
   },
   "eslintConfig": {
     "extends": "react-app"

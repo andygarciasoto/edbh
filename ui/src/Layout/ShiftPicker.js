@@ -20,7 +20,7 @@ class ShiftPickerCustom extends React.Component {
     componentWillReceiveProps(nextProps) {
       this.setState({value: nextProps.currentShift})
     }
-
+ 
 
     render() {
       const t = this.props.t
@@ -34,8 +34,8 @@ class ShiftPickerCustom extends React.Component {
           <Dropdown.Item eventKey="First Shift" onSelect={(e)=>this.onSelect(e)}>{t('First Shift')}</Dropdown.Item>
           <Dropdown.Item eventKey="Second Shift" onSelect={(e)=>this.onSelect(e)}>{t('Second Shift')}</Dropdown.Item>
           <Dropdown.Item eventKey="Third Shift" onSelect={(e)=>this.onSelect(e)}>{t('Third Shift')}</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item eventKey="All Shifts" onSelect={(e)=>this.onSelect(e)}>{t('All Shifts')}</Dropdown.Item>
+          {/* <Dropdown.Divider />
+          <Dropdown.Item eventKey="All Shifts" onSelect={(e)=>this.onSelect(e)}>{t('All Shifts')}</Dropdown.Item> */}
         </DropdownButton>
         )
     }

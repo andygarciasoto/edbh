@@ -1,6 +1,5 @@
 import { API } from './Constants';
 import moment from 'moment';
-import { resolve } from 'url';
 const axios = require('axios');
 
 async function getRequestData(data) {
@@ -8,7 +7,7 @@ async function getRequestData(data) {
     const parameters = { 
         params: {
             mc: data[0],
-            dt: data[1],
+            dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2]),
         }
     }
@@ -30,8 +29,11 @@ async function getRequestData(data) {
 }
 
 function mapShift(rawshift) {
-  let shift = 0;
-  if (rawshift === 'First Shift' || rawshift === 'Select Shift') {
+  let shift = 1;
+  if (rawshift === 'Select Shift') {
+    shift = 1;
+  }
+  if (rawshift === 'First Shift') {
     shift = 1;
   }
   if (rawshift === 'Second Shift') {
@@ -39,8 +41,35 @@ function mapShift(rawshift) {
   }
   if (rawshift === 'Third Shift') {
     shift = 3;
-  }
+  } 
   return shift;
+}
+
+async function sendPost(data, route) {
+  const res = await axios.post(`${API}${route}`, data)
+  .then(function (response) {
+    return response;
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  if (res) {
+    return res.status;
+  } 
+}
+
+async function sendPut(data, route) {
+  const res = await axios.put(`${API}${route}`, data)
+  .then(function (response) {
+    console.log(response)
+    return response;
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  if (res) {
+    return res.status;
+  } 
 }
 
 async function getIntershift(data) {
@@ -49,11 +78,10 @@ async function getIntershift(data) {
   const parameters = { 
         params: {
             mc: data[0],
-            dt: data[1],
+            dt: formatDate(data[1]).split("-").join(""),
             sf: mapShift(data[2])
         }
     }
-    console.log(parameters);
     res = await axios.get(`${API}/intershift_communication`, parameters)
     .then(function (response) {
       // handle success
@@ -90,4 +118,36 @@ async function getMachineData() {
   }
 }
 
-export { getRequestData, getIntershift, getMachineData }
+function formatDate(date) {
+  return moment(date).format('YYYY-MM-DD');
+}
+
+function formatDateWithTime(date) {
+  return formatDate(date) + ' ' + moment().format('HH:mm:ss');
+}
+
+async function timelossGetReasons(machine) {
+  const parameters = { 
+    params: {
+        mc: machine
+    }
+  }
+  let res = {};
+  res = await axios.get(`${API}/timelost_reasons`, parameters)
+  .then(function (response) {
+    // handle success
+    return response;
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+  .finally(function () {
+    // nothing
+  });
+  if (res) {
+    return res.data;
+  }
+}
+
+export { getRequestData, getIntershift, getMachineData, mapShift, formatDate, formatDateWithTime, sendPost, timelossGetReasons, sendPut }

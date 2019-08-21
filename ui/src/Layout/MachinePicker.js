@@ -34,7 +34,7 @@ class MachinePickerCustom extends React.Component {
             alignleft="true"
             title={t(this.state.value)}
             id="dropdown-menu-align-right"
-            className="machine-picker-button"
+            className="machine-picker-button machine-picker"
             >
             {machines.map((machine, index) => {
                 return (

@@ -3,8 +3,8 @@
     "password": "5sHEMk45PEtPqxjv8uk9w5gS",
     "server": "phc-diviot01-dev-sql.database.windows.net",
     "database": "FCGFOTF",
-    "cors": ["http://localhost:3000", "http://localhost:3001"],
-    "URL": "http://localhost:3000",
+    "cors": ["https://dxhapi.azurewebsites.net", "https://dxhweb.azurewebsites.net"],
+    "URL": "https://dxhweb.azurewebsites.net",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
-    "loginURL": "http://localhost:3000/dashboard"
+    "loginURL": "https://dxhweb.azurewebsites.net/dashboard"
 }

@@ -1,7 +1,6 @@
 import React from  'react';
 import Modal from 'react-modal';
-import './errorModal.scss';
-import BlinkDots from  './BlinkDots';
+import './ErrorModal.scss';
 import Spinner from '../Spinner';
 import * as _ from 'lodash';
 import { withRouter } from 'react-router-dom'
@@ -12,21 +11,32 @@ class LoadingModal extends React.Component {
 		super(props);
 		this.state = {
             value : '',
-            loadingMessage: this.props.t('Logging you in'),
-            headerMessage: this.props.t('Please Wait')
+            loadingMessage: this.props.t(this.props.message) || this.props.t('Loading'),
+            headerMessage: this.props.t('Please Wait'),
+            style: {
+                content : {
+                    top                   : '50%',
+                    left                  : '50%',
+                    right                 : 'auto',
+                    bottom                : 'auto',
+                    marginRight           : '-50%',
+                    transform             : 'translate(-50%, -50%)',
+                  },
+                  overlay : {
+                    backgroundColor: 'rgba(0,0,0, 0.6)'
+                }
+            }
         } 
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.login === true) {
             setTimeout(function(){
-                nextProps.history.push('/dashboard')},
+                void(0)},
             3000);
-        }
     }
 
     render() {
-        const styles = _.cloneDeep(this.props.style);
+        const styles = _.cloneDeep(this.props.style || this.state.style);
         if (!_.isEmpty(styles)) {
             styles.content.width = '20%';
         }
@@ -38,8 +48,7 @@ class LoadingModal extends React.Component {
                 style={styles}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-error-field-head">{this.state.headerMessage}</p>
-                <p className="warning-message">{this.state.loadingMessage}</p><BlinkDots />
+                <div><p className="dashboard-modal-loading-field-head">{this.state.headerMessage}</p>
                 <Spinner/>
                 </div>
             </Modal>

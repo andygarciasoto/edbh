@@ -14,3 +14,9 @@
 .commentsModal-date {
     font-size: 0.8em;
 }
+
+.comments-table {
+  display: block; /* important */
+  max-height: 40vh;
+  overflow-y: scroll;
+}
