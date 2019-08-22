@@ -16,8 +16,7 @@ class LanguagePickerCustom extends React.Component {
 
     componentDidMount() {
     }
-    
-
+  
     onSelect(e) {
         e = e.toLowerCase();
         e = e.replace('-', '_')

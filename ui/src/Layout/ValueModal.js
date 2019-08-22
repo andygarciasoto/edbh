@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { sendPut } from '../Utils/Requests';
+import { sendPut, getCurrentTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
@@ -19,6 +19,7 @@ class ValueModal extends React.Component {
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
+            existingValue: false,
         } 
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -33,6 +34,8 @@ class ValueModal extends React.Component {
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             override: this.state.existingValue ? parseInt(this.props.currentRow.production_id) : 0,
+            // timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
+            timestamp: getCurrentTime(),
             asset_code: this.props.parentData[0]
         }
         if (!data.actual) {
@@ -66,10 +69,11 @@ class ValueModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.currentVal !== '') {
-            this.setState({value: nextProps.currentVal, existingValue: true}) 
+        console.log(nextProps)
+        if (nextProps.currentVal === '' || !nextProps.currentVal) {
+            this.setState({existingValue: false}) 
         } else {
-            this.setState({value: nextProps.currentVal, existingValue: false}) 
+            this.setState({value: nextProps.currentVal, existingValue: true}) 
         }
     }
 
@@ -80,7 +84,6 @@ class ValueModal extends React.Component {
     render() {
         const t = this.props.t;
         if (this.state.existingValue === true) {
-            console.log(this.props)
             return (
                 <React.Fragment>
                 <Modal

@@ -23,7 +23,7 @@ class TimelossModal extends React.Component {
             validationMessage: '',
             time_to_allocate: 0,
             unallocated_time: 0,
-            allowSubmit: true,
+            allowSubmit: false,
             new_tl_reason: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
@@ -38,7 +38,7 @@ class TimelossModal extends React.Component {
 
     submit(e) {
         const data = {
-        dxh_data_id: this.props.dxh_id,
+        dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
         dt_reason_id: this.state.new_tl_reason.value,
         dt_minutes: parseInt(this.state.time_to_allocate),
         clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
@@ -74,20 +74,20 @@ class TimelossModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.hour){
+        if (nextProps.currentRow){
         const total =  this.calculateTotal(
             nextProps, 
-            nextProps.hour.summary_setup_minutes, 
-            nextProps.hour.summary_breakandlunch_minutes);
+            nextProps.currentRow.summary_setup_minutes, 
+            nextProps.currentRow.summary_breakandlunch_minutes);
         this.setState({
             timelost: nextProps.timelost,
             allocated_time: total,
             unallocated_time: 60 - total > 0 ? 60 - total : 0,
         })
-        if (nextProps.hour) {
+        if (nextProps.currentRow) {
             this.setState({
-                setup_time: nextProps.hour.summary_setup_minutes || 0,
-                break_time: nextProps.hour.summary_breakandlunch_minutes || 0
+                setup_time: nextProps.currentRow.summary_setup_minutes || 0,
+                break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
         }
         }
