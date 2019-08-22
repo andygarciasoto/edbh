@@ -39,15 +39,15 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
-            selectedDate: moment().format('YYYYMMDD'),
+            selectedDate: localStorage.getItem('date') || moment().format('YYYYMMDD'),
             selectedDateParsed: '',
-            selectedMachine: config['machine'],
+            selectedMachine: localStorage.getItem('machine') || config['machine'],
             currentLanguage: 'en',
             valueToEdit: '',
             modalType: '',
             expanded: {},
             openDropdownAfter: false,
-            selectedShift: '1st Shift',
+            selectedShift: localStorage.getItem('shift') || '1st Shift',
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -70,7 +70,7 @@ class DashboardOne extends React.Component {
           if (val.props) {
             console.log(val.props)
             if (isNaN(val.props.value)) {
-              value = val.props.value;
+              value = val.props.value === null ? undefined : val.props.value;
               modalType = 'text'
             } else {
               value = parseInt(val.props.value)
@@ -83,33 +83,28 @@ class DashboardOne extends React.Component {
           } else {
             currentRow = val.props.row._original;
           }
-          this.setState({
-            modal_values_IsOpen: true,
-            modal_comments_IsOpen: false,
-            modal_dropdown_IsOpen: false,
-            valueToEdit: value,
-            modalType,
-            currentRow: val ? val.props ? currentRow : undefined : undefined
-          })
+          if (!val.props.row._subRows || val.props.row._subRows.length === 1) {
+            this.setState({
+              modal_values_IsOpen: true,
+              modal_comments_IsOpen: false,
+              modal_dropdown_IsOpen: false,
+              valueToEdit: value,
+              modalType,
+              currentRow: val ? val.props ? currentRow : undefined : undefined
+            })
+          }
         } else { 
-          this.setState({
-            modal_values_IsOpen: true,
-            modal_comments_IsOpen: false,
-            modal_dropdown_IsOpen: false,
-          })
+            this.setState({
+              valueToEdit: value,
+              modal_values_IsOpen: true,
+              modal_comments_IsOpen: false,
+              modal_dropdown_IsOpen: false,
+              currentRow: val ? val : undefined
+            })
         }
       }
       if (type === 'comments') {
         if (val) {
-          if (val.props) {
-            if (isNaN(val.props.value)) {
-              value = val.props.value;
-              modalType = 'text'
-            } else {
-              value = parseInt(val.props.value)
-              modalType = 'number'
-            }
-          }
           if (val.row._subRows) {
             const comments = _.sortBy(val.row._subRows[0]._original.actions_comments, 'last_modified_on').reverse();
             this.setState({
@@ -294,7 +289,8 @@ class DashboardOne extends React.Component {
           aggregate: (values, rows) => rows[0]._original.summary_actual,
           // aggregate: (values, rows) => console.log(rows),
           Aggregated: props => {
-            return (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+            return (props.value === '' || props.value === null) ? 
+            <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values', {props})}></span> : 
             <span className='ideal' onClick={() => this.openModal('values', {props})}>
             <span style={{color: 'white'}} className="react-table-click-text table-click">{props.value}</span></span>
           }
@@ -537,7 +533,7 @@ class DashboardOne extends React.Component {
                   onRequestClose={this.closeModal}
                   style={this.state.modalStyle}
                   contentLabel="Example Modal"
-                  currentVal={this.state.valueToEdit}
+                  currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
                   formType={this.state.modalType}
                   t={t}
                   user={this.props.user}
@@ -571,10 +567,9 @@ class DashboardOne extends React.Component {
                   label={t('Search/Select Reason Code')}
                   timelost={this.state.current_display_timelost}
                   machine={this.state.selectedMachine}
-                  hour={this.state.currentRow}
+                  currentRow={this.state.currentRow}
                   user={this.props.user}
                   Refresh={this.getDashboardData}
-                  dxh_id={dxh_id_parent ? dxh_id_parent : null}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                 />    
 

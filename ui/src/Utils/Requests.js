@@ -122,6 +122,11 @@ function formatDate(date) {
 }
 
 function formatDateWithTime(date) {
+  console.log(date, moment(date).format('YYYY-MM-DD HH:mm:ss'))
+  return moment(date).format('YYYY-MM-DD HH:mm:ss');
+}
+
+function formatDateWithCurrentTime(date) {
   return formatDate(date) + ' ' + moment().format('HH:mm:ss');
 }
 
@@ -149,4 +154,4 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, sendPost, timelossGetReasons, sendPut }
+export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, sendPost, timelossGetReasons, sendPut }

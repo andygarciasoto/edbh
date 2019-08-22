@@ -31,7 +31,7 @@ class CommentsModal extends React.Component {
             last_name: this.props.user.last_name,
             comment: this.state.value,
             dhx_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            timestamp: formatDateWithTime(this.props.selectedDate),
+            timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
             asset_code: this.props.parentData[0]
         }, '/dxh_new_comment')
         response.then((res) => {
@@ -91,7 +91,7 @@ class CommentsModal extends React.Component {
                                         <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
                                     </tr>
                                 )
-                            }) : <tr><td colSpan={2}>{t("There are no comments to display")}.</td></tr>}
+                            }) : <tr><td colSpan={2}>{t("There are no comments to display")}</td></tr>}
                         </tbody>
                     </Table>
                 </div>
