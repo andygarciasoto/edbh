@@ -47,8 +47,9 @@ class Comments extends React.Component {
                 } else {
                     this.setState({modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true})
                 }
+                this.setState({value: ''});
+                this.props.Refresh(this.props.parentData);
             })
-            this.props.Refresh(this.props.parentData);
         })
     }
 

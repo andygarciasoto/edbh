@@ -26,7 +26,7 @@ import('moment/locale/es');
 
 class DashboardOne extends React.Component {
     constructor(props) {
-		super(props);
+    super(props);
 		this.state = {
             data: [],
             columns : [],
@@ -68,6 +68,7 @@ class DashboardOne extends React.Component {
       if (type === 'values') {
         if (val) {
           if (val.props) {
+            console.log(val.props)
             if (isNaN(val.props.value)) {
               value = val.props.value;
               modalType = 'text'
@@ -76,16 +77,27 @@ class DashboardOne extends React.Component {
               modalType = 'number'
             }
           }
+          let currentRow = {};
+          if (val.props.row._subRows) {
+            currentRow = val.props.row._subRows[0]._original;
+          } else {
+            currentRow = val.props.row._original;
+          }
+          this.setState({
+            modal_values_IsOpen: true,
+            modal_comments_IsOpen: false,
+            modal_dropdown_IsOpen: false,
+            valueToEdit: value,
+            modalType,
+            currentRow: val ? val.props ? currentRow : undefined : undefined
+          })
+        } else { 
+          this.setState({
+            modal_values_IsOpen: true,
+            modal_comments_IsOpen: false,
+            modal_dropdown_IsOpen: false,
+          })
         }
-        this.setState({
-          modal_values_IsOpen: true,
-          modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: false,
-          valueToEdit: value,
-          modalType,
-          openDropdownAfter: previous ? true : false,
-          currentRow: val ? val.props  ? val.props.row._subRows[0]._original : undefined : undefined
-        })
       }
       if (type === 'comments') {
         if (val) {
@@ -102,7 +114,7 @@ class DashboardOne extends React.Component {
             const comments = _.sortBy(val.row._subRows[0]._original.actions_comments, 'last_modified_on').reverse();
             this.setState({
               current_display_comments: comments,
-              current_row_id: val.row._subRows[0]._original.dxhdata_id
+              currentRow: val.row._subRows[0]._original
             })
           }
         }
@@ -120,21 +132,27 @@ class DashboardOne extends React.Component {
               modal_comments_IsOpen: false,
               modal_dropdown_IsOpen: true,
               current_display_timelost: timelost,
-              current_row_timelost: val.row._subRows[0]._original,
+              currentRow: val.row._subRows[0]._original,
+              
             })
         }
       }
       if (type === 'signoff') {
         if (val) {
-          console.log(val)
           if (val.props) {
-            if (val.props._subRows) {
+            if (val.props.row._subRows) {
               this.setState({
                 modal_signoff_IsOpen: true, 
-                currentRow: val.props.row._subRows[0]._original
+                currentRow: val.props.row._subRows[0]._original,
+                signOffRole: previous ? previous : null,
               }) 
             }
           }
+        } else {
+          this.setState({
+            modal_signoff_IsOpen: true, 
+            signOffRole: previous ? previous : null,
+          }) 
         }
       }
     }
@@ -195,9 +213,12 @@ class DashboardOne extends React.Component {
         },
         { pivot: true },
         {
-          Header: () => <span className={'wordwrap'} data-tip={t(this.state.selectedShift)}>{this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
+          Header: () => <span 
+          className={'wordwrap'} 
+          data-tip={t(this.state.selectedShift)}>
+          {this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
           accessor: 'hour_interval',
-          width: 180,
+          width: 150,
           style: {backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           Pivot: row => {
             return <span>{row.value}</span>;
@@ -207,16 +228,26 @@ class DashboardOne extends React.Component {
             matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
             filterAll: true
         }, {
-          Header: () => <span className={'wordwrap'} data-tip={t('Part Number')}>{t('Part Number')}</span>,
-          width: 220,
+          Header: () => <span className={'wordwrap'} 
+          data-tip={t('Part Number')}>{t('Part Number')}</span>,
+          width: 210,
           accessor: 'product_code',
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          Cell: props => (props.value === '' || props.value === null) ? 
+          <span 
+          style={{paddingRight: '90%', 
+          cursor: 'pointer'}} 
+          className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="empty">{props.value}</span></span>,
-          style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
+          style: {textAlign: 'center', 
+            borderRight: 'solid 1px rgb(219, 219, 219)', 
+            borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => rows[0]._original.summary_product_code,
-          Aggregated:  props =>(props.value === '' || props.value === null) ? <span style={{paddingRight: 185, cursor: 'pointer'}}  className={'empty-field'}></span> : 
+          Aggregated:  props =>(props.value === '' || props.value === null) ? 
+          <span style={{paddingRight: 180,
+             cursor: 'pointer'}}  
+             className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="empty">{props.value}</span></span>,
           PivotValue:<span>{''}</span>
@@ -224,13 +255,16 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
           accessor: 'ideal',
           width: 100,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
+          Cell: props => (props.value === '' || props.value === null) ?
+          <span style={{paddingRight: '90%', cursor: 'pointer'}} 
+          className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
           <span className='ideal' onClick={() => this.openModal('values', {props})}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => rows[0]._original.summary_ideal,
-          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          Aggregated: props => (props.value === '' || props.value === null) ? 
+          <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="empty">{props.value}</span></span>
         }, {
@@ -294,14 +328,15 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
           accessor: 'timelost_summary',
-          width: 120,
+          width: 110,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
           <span className='ideal'>
           <span className="react-table-click-text table-click">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('dropdown', props)}></span> : 
+          Aggregated: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}
+           onClick={() => this.openModal('dropdown', props)}></span> : 
           <span className='ideal' onClick={() => this.openModal('dropdown', props)}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           // Aggregated: props => console.log(props)
@@ -322,27 +357,31 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
           accessor: 'oper_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
+            this.openModal('signoff', null, 'operator')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'operator')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
+          Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
+            this.openModal('signoff', null, 'operator')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'operator')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
           accessor: 'superv_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() =>
+             this.openModal('signoff', null, 'supervisor')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'supervisor')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
-          Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('signoff')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props})}>
+          Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
+            this.openModal('signoff', null, 'supervisor')}></span> : 
+          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'supervisor')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>
         }
       ];
@@ -502,7 +541,6 @@ class DashboardOne extends React.Component {
                   formType={this.state.modalType}
                   t={t}
                   user={this.props.user}
-                  dxh_id={dxh_id_parent ? dxh_id_parent : null}
                   currentRow={this.state.currentRow}
                   Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
@@ -516,7 +554,7 @@ class DashboardOne extends React.Component {
                   contentLabel="Example Modal"
                   t={t}
                   comments={this.state.current_display_comments}
-                  rowId={this.state.current_row_id}
+                  currentRow={this.state.currentRow}
                   user={this.props.user}
                   Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
@@ -533,7 +571,7 @@ class DashboardOne extends React.Component {
                   label={t('Search/Select Reason Code')}
                   timelost={this.state.current_display_timelost}
                   machine={this.state.selectedMachine}
-                  hour={this.state.current_row_timelost}
+                  hour={this.state.currentRow}
                   user={this.props.user}
                   Refresh={this.getDashboardData}
                   dxh_id={dxh_id_parent ? dxh_id_parent : null}
@@ -547,10 +585,10 @@ class DashboardOne extends React.Component {
                   contentLabel="Example Modal"
                   t={this.props.t}
                   currentRow={this.state.currentRow}
-                  roletype={this.props.user.role}
                   user={this.props.user}
                   Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+                  signOffRole={this.state.signOffRole}
               />  
             </React.Fragment>
         );

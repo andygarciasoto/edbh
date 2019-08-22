@@ -15,7 +15,7 @@ class SignoffModal extends React.Component {
 		this.state = {
             value : '',
             signoffMessage: this.props.t(this.props.message) || this.props.t('By clicking \'Accept\' you confirm that all the values for this hour are correct.'),
-            headerMessage: `${this.props.roletype} ${this.props.t('Sign Off')}`,
+            headerMessage: '',
             style: {
                 content : {
                     top                   : '50%',
@@ -31,6 +31,11 @@ class SignoffModal extends React.Component {
             }
         } 
         this.signOff = this.signOff.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+    }
+
+    closeModal() {
+        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
     }
 
     signOff() {
@@ -48,20 +53,25 @@ class SignoffModal extends React.Component {
         this.setState({modal_loading_IsOpen: true}, () => {
             const response = sendPut({
                 ...data
-            }, '/operator_sign_off')
+            }, `/${this.state.signOffRole}_sign_off`)
             response.then((res) => {
-                if (res !== 200) {
+                if (res !== 200 || !res) {
                     this.setState({modal_loading_IsOpen: false, modal_error_IsOpen: true})
                 } else {
-                    this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                    this.setState({modal_confirm_IsOpen: false})
+                    this.setState({request_status: res, modal_loading_IsOpen: false, modal_confirm_IsOpen: true})
                 }
                 this.props.Refresh(this.props.parentData);
                 this.props.onRequestClose();
             })
           })
-        
     }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            signOffRole: nextProps.signOffRole,
+            headerMessage: `${nextProps.signOffRole} ${nextProps.t('Sign Off')} (Logged in as ${nextProps.user.role})`
+        })
+    } 
 
     render() {
         const styles = _.cloneDeep(this.props.style || this.state.style);
@@ -90,7 +100,7 @@ class SignoffModal extends React.Component {
                 onRequestClose={this.closeModal}
                 contentLabel="Example Modal"
                 shouldCloseOnOverlayClick={false}
-                message={'Comment was inserted.'}
+                message={'Signoff was successful.'}
                 title={'Request Successful'}
             />
             <LoadingModal
