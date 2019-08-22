@@ -27,6 +27,15 @@ import('moment/locale/es');
 class DashboardOne extends React.Component {
     constructor(props) {
     super(props);
+    var hour = (new Date().getHours());
+    var shiftByHour;
+    if (hour >= 7 && hour < 15){
+      shiftByHour = '1st Shift';
+    }else if(hour >= 15 && hour < 23){
+      shiftByHour = '2nd Shift';
+    }else{
+      shiftByHour = '3rd Shift';
+    }
 		this.state = {
             data: [],
             columns : [],
@@ -42,7 +51,7 @@ class DashboardOne extends React.Component {
             selectedDate: localStorage.getItem('date') || moment().format('YYYYMMDD'),
             selectedDateParsed: '',
             selectedMachine: localStorage.getItem('machine') || config['machine'],
-            currentLanguage: 'en',
+            currentLanguage: localStorage.getItem('language') || config['language'],
             valueToEdit: '',
             modalType: '',
             expanded: {},
