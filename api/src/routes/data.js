@@ -143,7 +143,9 @@ router.get('/intershift_communication', async function (req, res) {
 
 router.post('/dxh_new_comment', async function (req, res) {
     const params = req.body;
-    if (!(params.comment && params.dhx_data_id))
+    const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
+
+    if (!params.comment)
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
 
     const update = params.comment_id ? params.comment_id : 0;
@@ -155,11 +157,30 @@ router.post('/dxh_new_comment', async function (req, res) {
         }
     }
 
-    params.clocknumber ?
-        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`,
-            response => responsePostPut(response, req, res)) :
-        await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`,
-            response => responsePostPut(response, req, res));
+    if (!params.dhx_data_id) {
+        if (asset_code === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+        } else {
+            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${Timestamp}', 0;`,
+                async (data) => {
+                    try {
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        let dxh_data_id = response[0].dxhdata_id;
+                        params.clocknumber ?
+                            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`,
+                                response => responsePostPut(response, req, res)) :
+                            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`,
+                                response => responsePostPut(response, req, res));
+                    } catch (e) { res.status(500).send('Database Connection Error'); }
+                });
+        }
+    } else {
+        params.clocknumber ?
+            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${Timestamp}', ${update}`,
+                response => responsePostPut(response, req, res)) :
+            await sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${Timestamp}', ${update}`,
+                response => responsePostPut(response, req, res));
+    }
 });
 
 router.get('/timelost_reasons', async function (req, res) {
@@ -186,7 +207,7 @@ router.get('/dxh_data_id', async function (req, res) {
 });
 
 router.put('/dt_data', async function (req, res) {
-    const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
     const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
     const clocknumber = req.body.clocknumber;
@@ -194,8 +215,9 @@ router.put('/dt_data', async function (req, res) {
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
+    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
-    if (dxh_data_id === undefined || dt_reason_id === undefined || dt_minutes === undefined)
+    if (dt_reason_id === undefined || dt_minutes === undefined)
         return res.status(400).send("Missing parameters");
 
     if (!clocknumber) {
@@ -204,32 +226,69 @@ router.put('/dt_data', async function (req, res) {
         }
     }
 
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
-        response => responsePostPut(response, req, res)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
-            response => responsePostPut(response, req, res))
+    if (dxh_data_id === undefined) {
+        if (asset_code === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+        } else {
+            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${Timestamp}', 0;`,
+                async (data) => {
+                    try {
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+                            response => responsePostPut(response, req, res)) :
+                            await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+                                response => responsePostPut(response, req, res));
+                    } catch (e) { res.status(500).send('Database Connection Error'); }
+                });
+        }
+    } else {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+            response => responsePostPut(response, req, res)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+                response => responsePostPut(response, req, res));
+    }
 });
 
 router.put('/intershift_communication', async function (req, res) {
-    const dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    let dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = req.body.timestamp || moment().format('YYYY-MM-DD hh:mm:ss');
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
-    if (dhx_data_id == undefined || comment == undefined)
+    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+
+    if (comment == undefined)
         return res.status(400).send("Missing parameters");
     if (!clocknumber) {
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
-        response => responsePostPut(response, req, res)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
-            response => responsePostPut(response, req, res));
+    if (dhx_data_id == undefined) {
+        if (asset_code === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+        } else {
+            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${Timestamp}', 0;`,
+                async (data) => {
+                    try {
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dhx_data_id = response[0].dxhdata_id;
+                        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+                            response => responsePostPut(response, req, res)) :
+                            await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+                                response => responsePostPut(response, req, res));
+                    } catch (e) { res.status(500).send('Database Connection Error'); }
+                });
+        }
+    } else {
+        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${Timestamp}', ${update};`,
+            response => responsePostPut(response, req, res)) :
+            await sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${Timestamp}', ${update};`,
+                response => responsePostPut(response, req, res));
+    }
 });
 
 router.put('/operator_sign_off', async function (req, res) {
@@ -239,6 +298,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const Timestamp = req.body.timestamp ? req.body.timestamp : moment().format('YYYY-MM-DD hh:mm:ss');
+
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
 
@@ -261,6 +321,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const last_name = req.body.last_name;
     const Timestamp = moment().format('YYYY-MM-DD hh:mm:ss');
     const override = req.body.override ? req.body.override : 0;
+
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
 
@@ -304,7 +365,7 @@ router.put('/production_data', async function (req, res) {
                     try {
                         let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                         dxh_data_id = response[0].dxhdata_id;
-                        cflocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
+                        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${Timestamp}', ${override};`,
                             response => responsePostPut(response, req, res)) :
                             await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${Timestamp}', ${override};`,
                                 response => responsePostPut(response, req, res));
