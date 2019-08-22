@@ -15,6 +15,7 @@ class ShiftPickerCustom extends React.Component {
 
     onSelect(e) {
         this.props.collectInput(e, 'shift');
+        localStorage.setItem('shift', e);
       }
 
     componentWillReceiveProps(nextProps) {
@@ -23,11 +24,12 @@ class ShiftPickerCustom extends React.Component {
  
 
     render() {
+      var shift = window.localStorage.getItem("shift");
       const t = this.props.t
         return (
           <DropdownButton
             alignleft="true"
-            title={t(this.state.value)}
+            title={t(shift != null ? shift :this.state.value)}
             id="dropdown-menu-align-right"
             className="shift-picker-button"
           >

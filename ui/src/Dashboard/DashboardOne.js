@@ -26,7 +26,7 @@ import('moment/locale/es');
 
 class DashboardOne extends React.Component {
     constructor(props) {
-		super(props);
+    super(props);
 		this.state = {
             data: [],
             columns : [],

@@ -24,15 +24,17 @@ class MachinePickerCustom extends React.Component {
         this.setState({ value: e });
         this.props.changeMachine(e);
         this.props.collectInput(e, 'machine');
+        localStorage.setItem('machine', e);
       }
 
     render() {
+        var machine = window.localStorage.getItem("machine");
         const t = this.props.t;
         const machines = this.state.machines;
         return (
           <DropdownButton
             alignleft="true"
-            title={t(this.state.value)}
+            title={t(machine != null ? machine : this.state.value)}
             id="dropdown-menu-align-right"
             className="machine-picker-button machine-picker"
             >

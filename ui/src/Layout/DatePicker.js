@@ -7,11 +7,11 @@ import moment from 'moment';
 
 class DatePickerCustom extends React.Component {
     constructor(props) {
-		super(props);
+        super(props);
 		this.state = {
             startDate: this.props.date,
         } 
-        this.handleChange = this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this); 
     }  
 
     handleChange(date) {
@@ -20,14 +20,19 @@ class DatePickerCustom extends React.Component {
         });
         this.props.changeDate(date);
         this.props.collectInput(date, 'date');
+        localStorage.setItem('date', date);
       }
 
     render() {
+        var date = window.localStorage.getItem("date");
+        if (date !== null){
+            date = new Date(date);
+        }
         return (
             <DatePicker
                 fixedHeight
                 className={'date-picker-field'}
-                selected={this.state.startDate}
+                selected={date != null ? date : this.state.startDate }
                 onChange={this.handleChange}
             />
         );
