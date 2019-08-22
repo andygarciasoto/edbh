@@ -7,7 +7,7 @@ import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
 import moment from 'moment';
 import _ from 'lodash';
-import { sendPut, formatDateWithCurrentTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime } from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -36,7 +36,7 @@ class Comments extends React.Component {
                 comment : this.state.value,
                 first_name: this.props.user.first_name,
                 last_name: this.props.user.last_name,
-                timestamp: formatDateWithCurrentTime(this.props.selectedDate),
+                timestamp: getCurrentTime(),
                 inter_shift_id : 0,
                 asset_code: this.props.parentData[0]
             }

@@ -584,7 +584,7 @@ class DashboardOne extends React.Component {
                   Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                   signOffRole={this.state.signOffRole}
-              />  
+                />  
             </React.Fragment>
         );
     }

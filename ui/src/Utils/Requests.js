@@ -130,6 +130,10 @@ function formatDateWithCurrentTime(date) {
   return formatDate(date) + ' ' + moment().format('HH:mm:ss');
 }
 
+function getCurrentTime() {
+  return moment().format('YYYY-MM-DD HH:mm:ss');
+}
+
 async function timelossGetReasons(machine) {
   const parameters = { 
     params: {
@@ -154,4 +158,4 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, sendPost, timelossGetReasons, sendPut }
+export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut }
