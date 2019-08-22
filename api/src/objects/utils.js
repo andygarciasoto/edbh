@@ -30,6 +30,7 @@ function restructureSQLObjectByContent(obj) {
         if (item.production !== null && item.production) {
             item.production.map((prod, index) => {
                 const newItem = _.cloneDeep(item);
+                newItem['production_id'] = prod.productiondata_id;
                 newItem['product_code'] = prod.product_code;
                 newItem['ideal'] = prod.ideal;
                 newItem['target'] = prod.target;

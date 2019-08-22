@@ -26,14 +26,14 @@ class ValueModal extends React.Component {
     }
 
     submit(e) {
-        console.log(this.state.existingValue);
         const data = {
-            dxh_data_id: this.props.dxh_id,
+            dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             actual: this.state.newValue ? parseInt(this.state.newValue) : null,
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-            override: this.state.existingValue ? parseInt(this.props.currentRow.order_number) : 0,
+            override: this.state.existingValue ? parseInt(this.props.currentRow.production_id) : 0,
+            asset_code: this.props.parentData[0]
         }
         if (!data.actual) {
             this.setState({modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value'})
@@ -47,19 +47,17 @@ class ValueModal extends React.Component {
                         this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
                     } else {
                         this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                        this.setState({modal_confirm_IsOpen: false})
                     }
                     this.props.Refresh(this.props.parentData);
+                    this.setState({actual: ''})
                     this.props.onRequestClose();
                 })
               })
         }
         this.setState({newValue: ''})
-        console.log(data)
     }
 
     onChange(e) {
-        console.log(e.target.value)
         if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
                 this.setState({newValue: e.target.value});
         } else {
@@ -80,9 +78,9 @@ class ValueModal extends React.Component {
     }
 
     render() {
-        console.log(this.state.newValue, 'new value')
         const t = this.props.t;
         if (this.state.existingValue === true) {
+            console.log(this.props)
             return (
                 <React.Fragment>
                 <Modal

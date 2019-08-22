@@ -38,6 +38,7 @@ class Comments extends React.Component {
                 last_name: this.props.user.last_name,
                 timestamp: formatDateWithTime(this.props.selectedDate),
                 inter_shift_id : 0,
+                asset_code: this.props.parentData[0]
             }
             const response = sendPut(data, '/intershift_communication');
             response.then((res) => {
@@ -46,8 +47,9 @@ class Comments extends React.Component {
                 } else {
                     this.setState({modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true})
                 }
+                this.setState({value: ''});
+                this.props.Refresh(this.props.parentData);
             })
-            this.props.Refresh(this.props.parentData);
         })
     }
 
