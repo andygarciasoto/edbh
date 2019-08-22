@@ -27,7 +27,7 @@ class ValueModal extends React.Component {
 
     submit(e) {
         const data = {
-            dxh_data_id: this.props.dxh_id,
+            dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             actual: this.state.newValue ? parseInt(this.state.newValue) : null,
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
@@ -47,9 +47,9 @@ class ValueModal extends React.Component {
                         this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
                     } else {
                         this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                        this.setState({modal_confirm_IsOpen: false})
                     }
                     this.props.Refresh(this.props.parentData);
+                    this.setState({actual: ''})
                     this.props.onRequestClose();
                 })
               })
@@ -80,6 +80,7 @@ class ValueModal extends React.Component {
     render() {
         const t = this.props.t;
         if (this.state.existingValue === true) {
+            console.log(this.props)
             return (
                 <React.Fragment>
                 <Modal

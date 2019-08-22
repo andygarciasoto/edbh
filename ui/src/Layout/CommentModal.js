@@ -30,18 +30,18 @@ class CommentsModal extends React.Component {
             first_name: this.props.user.first_name,
             last_name: this.props.user.last_name,
             comment: this.state.value,
-            dhx_data_id: this.props.rowId,
+            dhx_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             timestamp: formatDateWithTime(this.props.selectedDate),
             asset_code: this.props.parentData[0]
         }, '/dxh_new_comment')
         response.then((res) => {
-            if (res !== 200) {
+            if (res !== 200 || !res) {
                 this.setState({modal_error_IsOpen: true})
             } else {
                 this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                this.setState({modal_confirm_IsOpen: false})
             }
             this.props.Refresh(this.props.parentData);
+            this.setState({value: ''})
             this.props.onRequestClose();
         })
       })
@@ -81,7 +81,7 @@ class CommentsModal extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {comments ? comments.map((comment, index) => {
+                            {(comments && comments.length > 0) ? comments.map((comment, index) => {
                                 return (
                                     <tr key={index}>
                                         <td className={"commentsModal-user"}>

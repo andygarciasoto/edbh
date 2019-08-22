@@ -53,7 +53,6 @@ class TimelossModal extends React.Component {
                     this.setState({modal_error_IsOpen: true})
                 } else {
                     this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
-                    this.setState({modal_confirm_IsOpen: false})
                 }
                 this.props.Refresh(this.props.parentData);
                 this.props.onRequestClose();
@@ -110,11 +109,11 @@ class TimelossModal extends React.Component {
         if (value >= max) {
             this.setState({validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value})
         } else {
-            this.setState({time_to_allocate: value, validationMessage: ''}, this.validate());
+            this.setState({time_to_allocate: value, validationMessage: ''});
         }
     }
 
-    validate() {
+    validate(unallocated, allocate, reason) {
         const {unallocated_time, time_to_allocate, new_tl_reason, allowSubmit} = this.state;
         console.log({unallocated_time, time_to_allocate, new_tl_reason, allowSubmit})
         if (this.state.time_to_allocate < this.state.unallocated_time && this.state.new_tl_reason !== '') {
@@ -196,13 +195,13 @@ class TimelossModal extends React.Component {
                                         disabled={true}
                                         value={this.state.unallocated_time}></input>
                                     </Col>
-                                    <Col sm={6} md={4}  style={{marginBottom: '5px'}}>
+                                    <Col sm={6} md={5}  style={{marginBottom: '5px'}}>
                                         <p style={{marginBottom: '1px'}}>{`${t('Time to allocate (minutes)')}:`}</p>
-                                        <input className={'timelost-field'} type="text" 
+                                        <input className={'timelost-field'} type="number" 
                                         value={this.state.time_to_allocate} 
                                         onChange={this.allocateTime}></input>
                                     </Col>
-                                    <Col sm={6} md={4}  style={{marginBottom: '5px'}}>
+                                    <Col sm={6} md={3}  style={{marginBottom: '5px'}}>
                                         <p style={{marginTop: '5px', color: 'red'}}>{this.state.validationMessage}</p>
                                     </Col>
                                 </Row>
@@ -211,7 +210,7 @@ class TimelossModal extends React.Component {
                                     <Form.Group controlId="formGridState">
                                     <ReactSelect
                                         value={this.state.new_tl_reason}
-                                        onChange={(e)=> this.setState({new_tl_reason: e}, this.validate())}
+                                        onChange={(e)=> this.setState({new_tl_reason: e})}
                                         options={reasons}
                                         className={"react-select-container"}
                                         classNamePrefix={"react_control"}
@@ -220,7 +219,7 @@ class TimelossModal extends React.Component {
                                 </div>
                                 <div className={'new-timeloss-button'}>
                                     <Button variant="outline-primary" 
-                                    style={{marginTop: '60px', marginLeft: '10px'}} 
+                                    style={{marginTop: '30px', marginLeft: '10px'}} 
                                     disabled={this.state.allowSubmit} 
                                     onClick={this.submit}>{t('Submit')}</Button>
                                 </div>

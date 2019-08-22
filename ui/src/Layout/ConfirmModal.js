@@ -53,7 +53,9 @@ class ConfirmModal extends React.Component {
                 <div><FontAwesome className="success-message icon" name="check"/>&nbsp;&nbsp;
                 <p className="success-message">{this.props.message}</p></div>
                 </div>
-                <Button variant="outline-success" style={{marginTop: '20px'}} className="success-button" onClick={this.props.onRequestClose}>Close</Button>
+                <div style={{textAlign: 'center'}}>
+                    <Button variant="outline-success" style={{marginTop: '20px'}} className="success-button" onClick={this.props.onRequestClose}>Close</Button>
+                </div>
             </Modal>
         )
     }
