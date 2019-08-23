@@ -140,7 +140,7 @@ router.get('/me', async function (req, res) {
         if (payload && payload.body.sub) {
             switch (payload.body.sub) {
                 case 'users/Administrator':
-                    user = { first_name: 'Adam', last_name: 'Hall', role: 'admin', clock_number: 2477 };
+                    user = { first_name: 'Adam', last_name: 'Hall', role: 'administrator', clock_number: 2477 };
                     break;
                 case 'users/Operator':
                     user = { first_name: 'Allen', last_name: 'Tabor', role: 'operator', clock_number: 1560 };
