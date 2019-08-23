@@ -478,7 +478,7 @@ class DashboardOne extends React.Component {
         const page = t('Page');
         const off = t('Of');
         const rows = t('Rows');
-        const dxh_id_parent = !_.isEmpty(data) ? data[0].dxhdata_id : undefined;
+        const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
         return (
             <React.Fragment>
                 <Header className="app-header" 
@@ -531,7 +531,7 @@ class DashboardOne extends React.Component {
                       user={this.props.user} 
                       selectedDate={this.state.selectedDate} 
                       comments={this.state.comments} 
-                      dxh_id={dxh_id_parent ? dxh_id_parent : null}
+                      dxh_parent={dxh_parent ? dxh_parent : null}
                       Refresh={this.getDashboardData}
                       parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                       />
