@@ -157,7 +157,7 @@ async function timelossGetReasons(machine) {
   }
 }
 
-function isComponentValid(name, role) {
+function isComponentValid(role, name) {
   const componentStructure = {
     administrator: [
       'megamenu',
@@ -190,14 +190,16 @@ function isComponentValid(name, role) {
     ]
   }
 
-  if (!['Administrator', 'Supervisor', 'Operator'].includes(role)) {
+  if (!['administrator', 'supervisor', 'operator'].includes(role)) {
+    console.log(role)
     return false;
   }
-  if (!componentStructure.Administrator.includes(name)) {
+  if (!componentStructure.administrator.includes(name)) {
     return false;
   }
   let match = undefined;
   for (let i of componentStructure[role]) {
+    console.log(i)
     if (name === i) {
       match = i;
     }
@@ -207,4 +209,12 @@ function isComponentValid(name, role) {
   } else {return true}
 } 
 
-export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut, isComponentValid }
+function isFieldAllowed(role, row) {
+  // get current day
+  // get current time
+  // if its not current day return false
+  // if its not the previous or current hour return false
+  // if role is admin return always true
+}
+
+export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut, isComponentValid, isFieldAllowed }
