@@ -4,8 +4,7 @@ import { Table } from 'react-bootstrap';
 import './ThreadModal.scss';
 import * as _ from 'lodash';
 import Spinner from '../Spinner';
-import moment from 'moment';
-import { arrayExpression } from '@babel/types';
+import { formatDateWithTime } from '../Utils/Requests';
 
 class ThreadModal extends React.Component {
     constructor(props) {
@@ -76,7 +75,7 @@ class ThreadModal extends React.Component {
                                 return (
                                     <tr key={index}>
                                         <td className={"intershift-info"}><span>{`${item.first_name} - ${item.last_name}`}</span>
-                                        <div className={'intershift-date-modal'}>{moment(item.entered_on).format('YYYY-MM-DD')}</div></td>
+                                        <div className={'intershift-date-modal'}>{formatDateWithTime(item.entered_on)}</div></td>
                                         <td className={"intershift-comment-modal"}><div>{item.comment}</div></td>
                                     </tr>
                                 )

@@ -122,7 +122,6 @@ function formatDate(date) {
 }
 
 function formatDateWithTime(date) {
-  console.log(date, moment(date).format('YYYY-MM-DD HH:mm:ss'))
   return moment(date).format('YYYY-MM-DD HH:mm:ss');
 }
 
@@ -158,4 +157,63 @@ async function timelossGetReasons(machine) {
   }
 }
 
-export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut }
+function isComponentValid(role, name) {
+  const componentStructure = {
+    administrator: [
+      'megamenu',
+      'actual',
+      'partnumber',
+      'timelost',
+      'ideal', 
+      'target', 
+      'comments', 
+      'operator_signoff', 
+      'supervisor_signoff',
+      'intershifts', 
+      'pagination',
+    ],
+    supervisor: [
+      'megamenu',
+      'actual',
+      'timelost', 
+      'comments',  
+      'supervisor_signoff',
+      'intershifts', 
+      'pagination',
+    ],
+    operator: [
+      'actual',
+      'timelost', 
+      'comments', 
+      'operator_signoff', 
+      'intershifts', 
+    ]
+  }
+
+  if (!['administrator', 'supervisor', 'operator'].includes(role)) {
+    console.log(role)
+    return false;
+  }
+  if (!componentStructure.administrator.includes(name)) {
+    return false;
+  }
+  let match = undefined;
+  for (let i of componentStructure[role]) {
+    if (name === i) {
+      match = i;
+    }
+  }
+  if (match === undefined) {
+    return false;
+  } else {return true}
+} 
+
+function isFieldAllowed(role, row) {
+  // get current day
+  // get current time
+  // if its not current day return false
+  // if its not the previous or current hour return false
+  // if role is admin return always true
+}
+
+export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut, isComponentValid, isFieldAllowed }
