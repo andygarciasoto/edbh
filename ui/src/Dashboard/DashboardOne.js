@@ -48,15 +48,15 @@ class DashboardOne extends React.Component {
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
-            selectedDate: localStorage.getItem('date') || moment().format('YYYYMMDD'),
+            selectedDate: sessionStorage.getItem('date') || moment().format('YYYYMMDD'),
             selectedDateParsed: '',
-            selectedMachine: localStorage.getItem('machine') || config['machine'],
-            currentLanguage: localStorage.getItem('language') || config['language'],
+            selectedMachine: sessionStorage.getItem('machine') || config['machine'],
+            currentLanguage: sessionStorage.getItem('language') || config['language'],
             valueToEdit: '',
             modalType: '',
             expanded: {},
             openDropdownAfter: false,
-            selectedShift: localStorage.getItem('shift') || '1st Shift',
+            selectedShift: sessionStorage.getItem('shift') || '1st Shift',
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
