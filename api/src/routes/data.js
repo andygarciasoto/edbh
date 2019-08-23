@@ -378,7 +378,6 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const override = req.body.override ? req.body.override : 0;
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -389,9 +388,9 @@ router.put('/supervisor_sign_off', async function (req, res) {
         }
     }
 
-    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+    clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
         response => responsePostPut(response, req, res)) :
-        await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+        await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
             responsePostPut(response, req, res));
 });
 
