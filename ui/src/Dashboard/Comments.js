@@ -5,9 +5,8 @@ import './Comments.scss';
 import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
-import moment from 'moment';
 import _ from 'lodash';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime} from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -99,7 +98,7 @@ class Comments extends React.Component {
         if (this.state.lastComment) {
            lastComment = this.state.lastComment;
         }
-        const lastCommentDate = lastComment ? moment(lastComment.entered_on).format('YYYY-MM-DD') : null;
+        const lastCommentDate = lastComment ? formatDateWithTime(lastComment.entered_on) : null;
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>

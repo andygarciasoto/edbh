@@ -13,14 +13,13 @@ import SignoffModal from '../Layout/SignoffModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
-import { getRequestData, getIntershift, formatDate } from '../Utils/Requests';
+import { getRequestData, getIntershift, formatDate, isComponentValid } from '../Utils/Requests';
 // import ReactTooltip from 'react-tooltip';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
-import { join } from 'path';
 import('moment/locale/es');
 
 
@@ -464,6 +463,7 @@ class DashboardOne extends React.Component {
     }
 
     render() {
+      console.log(this.props.user)
         const columns = this.state.columns;
         const machine = this.state.selectedMachine;
         const date = this.state.selectedDateParsed;
@@ -490,13 +490,13 @@ class DashboardOne extends React.Component {
                   sendToMain={this.headerData}
                   selectedShift={this.state.selectedShift}
                 />
-                <Pagination 
+                {isComponentValid(this.props.user.role, 'pagination') ? <Pagination 
                   selectedShift={this.state.selectedShift}
                   selectedDate={this.state.selectedDate}
                   fetchData={this.fetchData}
                   selectedMachine={this.state.selectedMachine}
                   t={t}
-                />
+                /> : null}
                 <div className="wrapper-main">
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">

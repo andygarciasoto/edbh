@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import { Form, Button, Table } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
-import moment from 'moment';
 import ConfirmModal from  '../Layout/ConfirmModal';
 import LoadingModal from  '../Layout/LoadingModal';
 import ErrorModal from  '../Layout/ErrorModal';
@@ -87,7 +86,7 @@ class CommentsModal extends React.Component {
                                     <tr key={index}>
                                         <td className={"commentsModal-user"}>
                                             <span>{`${comment.first_name} ${comment.last_name}`}</span>
-                                            <div className={'commentsModal-date'}>{moment(comment.last_modified_on).format('YYYY-MM-DD')}</div>
+                                            <div className={'commentsModal-date'}>{formatDateWithTime(comment.last_modified_on)}</div>
                                         </td>
                                         <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
                                     </tr>
