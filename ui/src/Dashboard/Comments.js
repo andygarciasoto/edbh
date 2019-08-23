@@ -94,7 +94,6 @@ class Comments extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         const t = this.props.t;
         let lastComment;
         if (this.state.lastComment) {
@@ -116,7 +115,7 @@ class Comments extends React.Component {
                     {lastComment ? lastComment.intershift_id !== null ? Object.values(lastComment).length > 0 ? <React.Fragment>
                         <tr>
                             <td style={{width: '20%'}}><span>{`${lastComment.first_name} - ${lastComment.last_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
-                            <td className={"intershift-comment"}><div>{lastComment.comment}</div>
+                            <td style={{width: '80%'}} className={"intershift-comment"}><div>{lastComment.comment}</div>
                             <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
                         </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : 

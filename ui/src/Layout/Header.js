@@ -107,6 +107,10 @@ class Header extends React.Component {
                                     />
                                 </MegaMenu>
                             </span>
+                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => console.log(e)}>{t('New Order')}&nbsp;</span>
+                                <FontAwesome
+                                    onClick={(e) => console.log(e)}
+                                    name="file-text" /></span>
                         </div>
                     </Col>
                 </Row>
