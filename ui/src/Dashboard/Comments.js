@@ -7,7 +7,7 @@ import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
 import moment from 'moment';
 import _ from 'lodash';
-import { sendPut, getCurrentTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -23,6 +23,7 @@ class Comments extends React.Component {
             modal_error_IsOpen: false,
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
+            row: this.props.dxh_parent || {}
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -30,15 +31,19 @@ class Comments extends React.Component {
     }  
 
     enterCommunication(e) {
+        let data = {};
         this.setState({modal_loading_IsOpen: true}, () => {
-            const data = {
-                dhx_data_id : this.props.dxh_id,
-                comment : this.state.value,
-                first_name: this.props.user.first_name,
-                last_name: this.props.user.last_name,
-                timestamp: getCurrentTime(),
-                inter_shift_id : 0,
-                asset_code: this.props.parentData[0]
+            if (!_.isEmpty(this.state.row)) {
+                data = {
+                    dhx_data_id : this.state.row.dxhdata_id,
+                    comment : this.state.value,
+                    first_name: this.props.user.first_name,
+                    last_name: this.props.user.last_name,
+                    timestamp: getCurrentTime(),
+                    row_timestamp: formatDateWithTime(this.state.row.hour_interval_start),
+                    inter_shift_id : 0,
+                    asset_code: this.props.parentData[0]
+                }
             }
             const response = sendPut(data, '/intershift_communication');
             response.then((res) => {
@@ -66,6 +71,10 @@ class Comments extends React.Component {
         this.setState({modal_thread_IsOpen: true});
     }
 
+    componentWillMount(){
+        this.setState({row: this.props.dxh_parent})
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
            let comments = [];
@@ -78,12 +87,14 @@ class Comments extends React.Component {
             this.setState({
                 lastComment: comments[0] || null,
                 commentLen: comments.length,
-                comments: comments
+                comments: comments, 
+                row: nextProps.dxh_parent
             }) 
         }
     }
 
     render() {
+        console.log(this.state)
         const t = this.props.t;
         let lastComment;
         if (this.state.lastComment) {
