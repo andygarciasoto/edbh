@@ -77,6 +77,15 @@ function responseGet(data, req, res, listName) {
     } catch (e) { res.status(500).send('Database Connection Error'); }
 };
 
+function proccessToken(token) {
+    return new Promise((resolve, reject) => {
+        nJwt.verify(token, config['signingKey'], function (err, decoded) {
+            if (err) return reject(err);
+            resolve(decoded);
+        })
+    });
+}
+
 router.get('/data', async function (req, res) {
     const params = req.query;
     if (params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(500).send("Missing parameters");
@@ -112,8 +121,57 @@ router.get('/machine', async function (req, res) {
     }
 });
 
-router.get('/me', function (req, res) {
-    return res.status(200).json({ first_name: 'Admin', last_name: 'Admin', role: 'admin', clock_number: 2477 });
+router.get('/me', async function (req, res) {
+    let token = req.header('Authorization');
+    let user = {};
+    if (token && token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    }
+    if (token) {
+        let payload = {};
+        try {
+            payload = await proccessToken(token);
+        } catch (e) {
+            res.status(401);
+            return res.json({
+                success: false,
+                message: e
+            });
+        }
+        if (payload && payload.body.sub) {
+            switch (payload.body.sub) {
+                case 'users/Administrator':
+                    user = { first_name: 'Adam', last_name: 'Hall', role: 'admin', clock_number: 2477 };
+                    break;
+                case 'users/Operator':
+                    user = { first_name: 'Allen', last_name: 'Tabor', role: 'operator', clock_number: 1560 };
+                    break;
+                case 'users/Supervisor':
+                    user = { first_name: 'Shawn', last_name: 'Mariani', role: 'supervisor', clock_number: 47132 };
+                    break;
+                default:
+                    res.status(401);
+                    return res.json({
+                        success: false,
+                        message: 'User sub is invalid'
+                    });
+            }
+        } else {
+            res.status(401);
+            return res.json({
+                success: false,
+                message: 'Auth token is invalid'
+            });
+        }
+        console.log(payload);
+    } else {
+        res.status(401);
+        return res.json({
+            success: false,
+            message: 'Auth token is not supplied'
+        });
+    }
+    return res.status(200).json(user);
 });
 
 router.get('/shifts', async function (req, res) {
@@ -150,6 +208,7 @@ router.post('/dxh_new_comment', async function (req, res) {
 
     const update = params.comment_id ? params.comment_id : 0;
     const Timestamp = params.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
+    const row_timestamp = parms.row_timestamp;
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {
