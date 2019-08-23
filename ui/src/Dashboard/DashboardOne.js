@@ -503,8 +503,9 @@ class DashboardOne extends React.Component {
                             <Row style={{paddingLeft: '5%'}}>
                                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                                <Col md={3}><h5>{moment(date).locale('en').format('LL')}</h5></Col>
-                                <Col md={3}><h5 style={{textTransform: 'Capitalize'}}>{`Signed in as ${this.props.user.role}`}</h5></Col>
+                                <Col md={2}><h5>{moment(date).locale('en').format('LL')}</h5></Col>
+                                <Col md={4}><h5 style={{textTransform: 'Capitalize'}}>{this.props.user.first_name ? 
+                                  `Hello ${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void(0)}{`Signed in as ${this.props.user.role}`}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable
                                 getTdProps={this.handleTableCellClick}
@@ -519,7 +520,6 @@ class DashboardOne extends React.Component {
                                 ofText={off}
                                 headerClassName={"wordwrap"}
                                 rowsText={rows} 
-                                sortable={false}
                                 pageSizeOptions={[8, 16, 24]}
                                 pivotBy={["hour_interval"]}
                                 onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
