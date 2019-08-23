@@ -78,6 +78,7 @@ class Pagination extends React.Component {
                 <span className="semi-button-shift-change-right" onClick={() => this.onSelect('next')}>
                     <span id="current-shift">{t('Next Shift')}</span>
                     <FontAwesome name="caret-right fa-2" className="icon-arrow" />
+                    <FontAwesome name="angle-double-right fa-2" className="icon-arrow" />
                 </span>
             </div>
         )

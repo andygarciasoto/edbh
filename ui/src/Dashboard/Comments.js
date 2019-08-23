@@ -94,7 +94,6 @@ class Comments extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         const t = this.props.t;
         let lastComment;
         if (this.state.lastComment) {

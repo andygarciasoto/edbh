@@ -258,7 +258,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
           accessor: 'ideal',
-          width: 100,
+          width: 90,
           Cell: props => (props.value === '' || props.value === null) ?
           <span style={{paddingRight: '90%', cursor: 'pointer'}} 
           className={'empty-field'} onClick={() => this.openModal('values')}></span> : 
@@ -274,7 +274,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
           accessor: 'target_pcs',
-          width: 100,
+          width: 90,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={`empty-field`}></span> : 
           <span>
           <span>{props.value}</span></span>,
@@ -288,7 +288,7 @@ class DashboardOne extends React.Component {
         }, {
           Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}</span>,
           accessor: 'actual_pcs',
-          width: 100,
+          width: 90,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}}
           onClick={() => this.openModal('values')}></span> : 
           <span className={`ideal`} onClick={() => this.openModal('values', {props})}>
@@ -501,9 +501,10 @@ class DashboardOne extends React.Component {
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
                             <Row style={{paddingLeft: '5%'}}>
-                                <Col md={4}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
-                                <Col md={5}><h5>{t('Day by Hour Tracking')}</h5></Col>
+                                <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
+                                <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
                                 <Col md={3}><h5>{moment(date).locale('en').format('LL')}</h5></Col>
+                                <Col md={3}><h5 style={{textTransform: 'Capitalize'}}>{`Signed in as ${this.props.user.role}`}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable
                                 getTdProps={this.handleTableCellClick}
@@ -518,6 +519,7 @@ class DashboardOne extends React.Component {
                                 ofText={off}
                                 headerClassName={"wordwrap"}
                                 rowsText={rows} 
+                                sortable={false}
                                 pageSizeOptions={[8, 16, 24]}
                                 pivotBy={["hour_interval"]}
                                 onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
