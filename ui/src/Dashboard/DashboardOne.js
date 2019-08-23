@@ -14,7 +14,6 @@ import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
 import { getRequestData, getIntershift, formatDate, isComponentValid } from '../Utils/Requests';
-// import ReactTooltip from 'react-tooltip';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -369,7 +368,7 @@ class DashboardOne extends React.Component {
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
           Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
-            this.openModal('signoff', null, 'operator')}></span> : 
+            this.openModal('signoff', {props}, 'operator')}></span> : 
           <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'operator')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
@@ -384,7 +383,7 @@ class DashboardOne extends React.Component {
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
           Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
-            this.openModal('signoff', null, 'supervisor')}></span> : 
+            this.openModal('signoff', {props}, 'supervisor')}></span> : 
           <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'supervisor')}>
           <span className="react-table-click-text table-click">{props.value}</span></span>
         }
@@ -463,7 +462,6 @@ class DashboardOne extends React.Component {
     }
 
     render() {
-      console.log(this.props.user)
         const columns = this.state.columns;
         const machine = this.state.selectedMachine;
         const date = this.state.selectedDateParsed;

@@ -199,7 +199,6 @@ function isComponentValid(role, name) {
   }
   let match = undefined;
   for (let i of componentStructure[role]) {
-    console.log(i)
     if (name === i) {
       match = i;
     }

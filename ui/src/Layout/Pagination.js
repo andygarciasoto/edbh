@@ -3,7 +3,7 @@ import React from 'react';
 import i18next from 'i18next';
 import FontAwesome from 'react-fontawesome';
 import { mapShift, formatDate } from '../Utils/Requests';
-import moment from 'moment';
+import Tooltip from 'react-tooltip'
 
 class Pagination extends React.Component {
     constructor(props) {
@@ -70,7 +70,7 @@ class Pagination extends React.Component {
         const t = this.props.t;
         return (
             <div id="semi-button-deck">
-                <FontAwesome name="angle-double-left" className="icon-arrow" onClick={() => this.onSelect('double-back')} />
+                <FontAwesome name="angle-double-left"  data-tip='shift' data-for='last-shift' className="icon-arrow" onClick={() => this.onSelect('double-back')} />
                 <span className="semi-button-shift-change-left" onClick={() => this.onSelect('back')}>
                     <FontAwesome name="caret-left fa-2" className="icon-arrow" />
                     <span id="previous-shift">{t('Previous Shift')}</span>
@@ -78,7 +78,9 @@ class Pagination extends React.Component {
                 <span className="semi-button-shift-change-right" onClick={() => this.onSelect('next')}>
                     <span id="current-shift">{t('Next Shift')}</span>
                     <FontAwesome name="caret-right fa-2" className="icon-arrow" />
-                    <FontAwesome name="angle-double-right fa-2" className="icon-arrow" />
+                    <FontAwesome data-tip='shift' data-for='current-shift' name="angle-double-right fa-2" className="icon-arrow" />
+                    <Tooltip id='current-shift'>{'Back to Current Shift'}</Tooltip>
+                    <Tooltip id='last-shift'>{'Go back Two Shifts'}</Tooltip>
                 </span>
             </div>
         )
