@@ -7,7 +7,7 @@ import moment from 'moment';
 import ConfirmModal from  '../Layout/ConfirmModal';
 import LoadingModal from  '../Layout/LoadingModal';
 import ErrorModal from  '../Layout/ErrorModal';
-import { sendPost, getCurrentTime } from '../Utils/Requests';
+import { sendPost, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
 
 
 class CommentsModal extends React.Component {
@@ -31,7 +31,7 @@ class CommentsModal extends React.Component {
             last_name: this.props.user.last_name,
             comment: this.state.value,
             dhx_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            // timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
+            row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
             timestamp: getCurrentTime(),
             asset_code: this.props.parentData[0]
         }, '/dxh_new_comment')

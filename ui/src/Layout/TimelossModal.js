@@ -8,7 +8,7 @@ import { sendPut } from '../Utils/Requests';
 import ConfirmModal from  '../Layout/ConfirmModal';
 import LoadingModal from  '../Layout/LoadingModal';
 import ErrorModal from  '../Layout/ErrorModal';
-import { timelossGetReasons as getReasons } from '../Utils/Requests';
+import { timelossGetReasons as getReasons, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
 
 
 
@@ -44,7 +44,9 @@ class TimelossModal extends React.Component {
         clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
         first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
         last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-        asset_code: this.props.parentData[0]
+        asset_code: this.props.parentData[0],
+        row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
+        timestamp: getCurrentTime(),
         }
         this.setState({modal_loading_IsOpen: true}, () => {
             const response = sendPut(data, '/dt_data');
