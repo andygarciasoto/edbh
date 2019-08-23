@@ -99,7 +99,9 @@ router.get('/data', async function (req, res) {
             const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
             const objectWithLatestComment = utils.createLatestComment(mappedObject);
             const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-            res.status(200).json(objectWithTimelossSummary);
+            const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary);
+            console.log(objectWithUnallocatedTime);
+            res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
 
