@@ -20,11 +20,11 @@ class DatePickerCustom extends React.Component {
         });
         this.props.changeDate(date);
         this.props.collectInput(date, 'date');
-        localStorage.setItem('date', date);
+        sessionStorage.setItem('date', date);
       }
 
     render() {
-        var date = window.localStorage.getItem("date");
+        var date = sessionStorage.getItem("date");
         if (date !== null){
             date = new Date(date);
         }

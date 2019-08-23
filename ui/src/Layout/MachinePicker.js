@@ -24,11 +24,11 @@ class MachinePickerCustom extends React.Component {
         this.setState({ value: e });
         this.props.changeMachine(e);
         this.props.collectInput(e, 'machine');
-        localStorage.setItem('machine', e);
+        sessionStorage.setItem('machine', e);
       }
 
     render() {
-        var machine = window.localStorage.getItem("machine");
+        var machine = sessionStorage.getItem("machine");
         const t = this.props.t;
         const machines = this.state.machines;
         return (

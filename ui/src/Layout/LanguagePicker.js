@@ -23,7 +23,7 @@ class LanguagePickerCustom extends React.Component {
         i18next.changeLanguage(e, ()=>console.log('Changed the language to ' + e)) // -> returns a Promise
         this.props.changeDateLanguage(e);
         this.props.openMenu();
-        localStorage.setItem('language', e);
+        sessionStorage.setItem('language', e);
       }
 
       componentWillReceiveProps(nextProps) {
@@ -31,7 +31,7 @@ class LanguagePickerCustom extends React.Component {
       }
 
     render() {
-      var language = window.localStorage.getItem("language");
+      var language = sessionStorage.getItem("language");
         return (
           <DropdownButton
             alignleft="true"
