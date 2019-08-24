@@ -77,6 +77,7 @@ class TimelossModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps)
         if (nextProps.currentRow){
         const total =  this.calculateTotal(
             nextProps, 
@@ -85,7 +86,8 @@ class TimelossModal extends React.Component {
         this.setState({
             timelost: nextProps.timelost,
             allocated_time: total,
-            unallocated_time: 60 - total > 0 ? 60 - total : 0,
+            // unallocated_time: 60 - total > 0 ? 60 - total : 0,
+            unallocated_time: nextProps.currentRow.unallocated_time
         })
         if (nextProps.currentRow) {
             this.setState({
