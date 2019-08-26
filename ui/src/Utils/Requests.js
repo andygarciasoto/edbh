@@ -200,6 +200,7 @@ function isComponentValid(role, name) {
       'actual',
       'timelost', 
       'comments', 
+      'pagination',
       'operator_signoff', 
       'intershifts', 
     ]
