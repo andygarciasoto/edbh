@@ -13,7 +13,7 @@ import SignoffModal from '../Layout/SignoffModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
-import { getRequestData, getIntershift, formatDate, isComponentValid, mapShiftReverse } from '../Utils/Requests';
+import { getRequestData, getIntershift, formatDate, isComponentValid, mapShiftReverse, isFieldAllowed } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -69,13 +69,13 @@ class DashboardOne extends React.Component {
         this.getDashboardData = this.getDashboardData.bind(this);
     }
 
-    openModal(type, val, previous) {
+    openModal(type, val, extraParam) {
+      console.log(extraParam)
       let value = ''
       let modalType = ''
       if (type === 'values') {
         if (val) {
           if (val.props) {
-            console.log(val.props)
             if (isNaN(val.props.value)) {
               value = val.props.value === null ? undefined : val.props.value;
               modalType = 'text'
@@ -91,8 +91,13 @@ class DashboardOne extends React.Component {
             currentRow = val.props.row._original;
           }
           if (!val.props.row._subRows || val.props.row._subRows.length === 1) {
+            let allowed = false;
+            if (extraParam === 'actual') {
+              allowed = isFieldAllowed(this.props.user.role, val.props.row);
+              console.log(allowed)
+            }
             this.setState({
-              modal_values_IsOpen: true,
+              modal_values_IsOpen: allowed,
               modal_comments_IsOpen: false,
               modal_dropdown_IsOpen: false,
               valueToEdit: value,
@@ -101,13 +106,18 @@ class DashboardOne extends React.Component {
             })
           }
         } else { 
-            this.setState({
-              valueToEdit: value,
-              modal_values_IsOpen: true,
-              modal_comments_IsOpen: false,
-              modal_dropdown_IsOpen: false,
-              currentRow: val ? val : undefined
-            })
+          let allowed;
+          if (extraParam === 'actual') {
+            allowed = isFieldAllowed(this.props.user.role, val.props.row);
+            console.log(allowed)
+          }
+          this.setState({
+            valueToEdit: value,
+            modal_values_IsOpen: allowed,
+            modal_comments_IsOpen: false,
+            modal_dropdown_IsOpen: false,
+            currentRow: val ? val : undefined
+          })
         }
       }
       if (type === 'comments') {
@@ -146,14 +156,14 @@ class DashboardOne extends React.Component {
               this.setState({
                 modal_signoff_IsOpen: true, 
                 currentRow: val.props.row._subRows[0]._original,
-                signOffRole: previous ? previous : null,
+                signOffRole: extraParam ? extraParam : null,
               }) 
             }
           }
         } else {
           this.setState({
             modal_signoff_IsOpen: true, 
-            signOffRole: previous ? previous : null,
+            signOffRole: extraParam ? extraParam : null,
           }) 
         }
       }
@@ -288,8 +298,8 @@ class DashboardOne extends React.Component {
           accessor: 'actual_pcs',
           width: 90,
           Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}}
-          onClick={() => this.openModal('values')}></span> : 
-          <span className={`ideal`} onClick={() => this.openModal('values', {props})}>
+          onClick={() => this.openModal('values', null, 'actual')}></span> : 
+          <span className={`ideal`} onClick={() => this.openModal('values', {props}, 'actual')}>
           <span className="react-table-click-text table-click" style={{color: 'white'}} >{props.value}</span></span>,
           style: {textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)`},
           // aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
@@ -297,8 +307,8 @@ class DashboardOne extends React.Component {
           // aggregate: (values, rows) => console.log(rows),
           Aggregated: props => {
             return (props.value === '' || props.value === null) ? 
-            <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values', {props})}></span> : 
-            <span className='ideal' onClick={() => this.openModal('values', {props})}>
+            <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('values', {props}, 'actual')}></span> : 
+            <span className='ideal' onClick={() => this.openModal('values', {props}, 'actual')}>
             <span style={{color: 'white'}} className="react-table-click-text table-click">{props.value}</span></span>
           }
         }, {
@@ -391,7 +401,6 @@ class DashboardOne extends React.Component {
       } 
 
     async getDashboardData(data, columns) {
-      console.log(data)
       let response = {};
       let comments = {};
       if (data) {
