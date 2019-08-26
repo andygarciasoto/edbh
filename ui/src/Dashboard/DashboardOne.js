@@ -13,7 +13,7 @@ import SignoffModal from '../Layout/SignoffModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
-import { getRequestData, getIntershift, formatDate, isComponentValid } from '../Utils/Requests';
+import { getRequestData, getIntershift, formatDate, isComponentValid, mapShiftReverse } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -360,31 +360,29 @@ class DashboardOne extends React.Component {
           Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
           accessor: 'oper_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
-            this.openModal('signoff', null, 'operator')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'operator')}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'}></span> : 
+          <span className='ideal'>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
           Aggregated:props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
-            this.openModal('signoff', {props}, 'operator')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'operator')}>
+            isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', {props}, 'operator') : void(0)}></span> : 
+          <span className='ideal' onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ?this.openModal('signoff', {props}, 'operator'): void(0)}>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
         },{
           Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
           accessor: 'superv_id',
           width: 90,
-          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() =>
-             this.openModal('signoff', null, 'supervisor')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'supervisor')}>
+          Cell: props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}}></span> : 
+          <span className='ideal'>
           <span className="react-table-click-text table-click">{props.value}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
           // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
           aggregate: (values, rows) => values[0],
           Aggregated:  props => (props.value === '' || props.value === null) ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => 
-            this.openModal('signoff', {props}, 'supervisor')}></span> : 
-          <span className='ideal' onClick={() => this.openModal('signoff', {props}, 'supervisor')}>
+            isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', {props}, 'supervisor') : void(0)}></span> : 
+          <span className='ideal' onClick={() => isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', {props}, 'supervisor') : void(0)}>
           <span className="react-table-click-text table-click">{props.value}</span></span>
         }
       ];
@@ -393,13 +391,14 @@ class DashboardOne extends React.Component {
       } 
 
     async getDashboardData(data, columns) {
+      console.log(data)
       let response = {};
       let comments = {};
       if (data) {
         response = await getRequestData(data);
       }
       if (response instanceof Object) {
-       this.setState({data: response, columns})
+       this.setState({data: response, columns, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1]})
       } else {
         console.log('Data could not be retrieved from the endpoint /data');
       }
@@ -438,7 +437,7 @@ class DashboardOne extends React.Component {
     changeLanguage(e) {
       e = e.split('_')[0]
       const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-      let parsedDate = moment(date).locale(e).format('YYYYMMDD');
+      let parsedDate = moment(date).locale(e).format('YYYY-MM-DD');
       this.setState({selectedDateParsed: parsedDate})
       this.fetchData();
     }
@@ -487,11 +486,12 @@ class DashboardOne extends React.Component {
                   changeDateLanguage={this.changeLanguage}
                   sendToMain={this.headerData}
                   selectedShift={this.state.selectedShift}
+                  user={this.props.user}
                 />
                 {isComponentValid(this.props.user.role, 'pagination') ? <Pagination 
                   selectedShift={this.state.selectedShift}
                   selectedDate={this.state.selectedDate}
-                  fetchData={this.fetchData}
+                  getDashboardData={this.getDashboardData}
                   selectedMachine={this.state.selectedMachine}
                   t={t}
                 /> : null}
@@ -499,11 +499,11 @@ class DashboardOne extends React.Component {
                     <Row>
                         <Col md={12} lg={12} id="dashboardOne-table">
                             <Row style={{paddingLeft: '5%'}}>
-                                <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                                <Col md={2}><h5>{moment(date).locale('en').format('LL')}</h5></Col>
+                                <Col md={2}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                                 <Col md={4}><h5 style={{textTransform: 'Capitalize'}}>{this.props.user.first_name ? 
                                   `Hello ${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void(0)}{`Signed in as ${this.props.user.role}`}</h5></Col>
+                                <Col md={3}><h5>{'Showing Data for: '}{moment(this.state.selectedDate).locale('en').format('LL')}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable
                                 getTdProps={this.handleTableCellClick}

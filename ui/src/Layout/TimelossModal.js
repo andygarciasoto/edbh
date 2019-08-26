@@ -77,7 +77,6 @@ class TimelossModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
         if (nextProps.currentRow){
         const total =  this.calculateTotal(
             nextProps, 

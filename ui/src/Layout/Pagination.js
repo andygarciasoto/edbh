@@ -2,8 +2,9 @@
 import React from 'react';
 import i18next from 'i18next';
 import FontAwesome from 'react-fontawesome';
-import { mapShift, formatDate } from '../Utils/Requests';
+import { mapShift, formatDate, getCurrentTime } from '../Utils/Requests';
 import Tooltip from 'react-tooltip'
+import moment from 'moment';
 
 class Pagination extends React.Component {
     constructor(props) {
@@ -25,45 +26,52 @@ class Pagination extends React.Component {
     onSelect(e) {
         let currentShift = mapShift(this.state.shift);
         let currentDate = this.state.date;
-        let currentYear = currentDate.slice(0, 4);
-        let currentMonth = currentDate.slice(4, 6);
-        let currentDay = Number(currentDate.slice(6, 8));
+        let yesterday = moment(currentDate).add(-1, 'days').format('YYYY-MM-DD HH:mm:ss');
+        let newDate;
+        let newShift;
+
+        if (moment(currentDate) === moment()) {
+            return;
+        }
+        if (currentShift === 1 && e === 'double-back') {
+            newDate = yesterday;
+            newShift = 2;
+            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
+            return;
+        }
+        if (currentShift === 2 && e === 'double-back') {
+            newDate = yesterday;
+            newShift = 3;
+            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
+            return;
+        }
+        if (currentShift === 1 && e === 'back') {
+            newDate = yesterday;
+            newShift = 3;
+            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
+            return;
+        }
+        if (currentShift === 3 && e === 'next') {
+            newDate = moment(currentDate).add(1, 'days');
+            newShift = 1;
+            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
+            return;
+        }
+        if (e === 'double-next') {
+            newDate = getCurrentTime();
+            this.props.getDashboardData([this.props.selectedMachine, newDate, 1]);
+            return;
+        }
+        if (e === 'next') {
+            newDate = getCurrentTime();
+            this.props.getDashboardData([this.props.selectedMachine, newDate, currentShift+1]);
+        }
+        if ((e === 'back' && currentShift === 2) || (e === 'back' && currentShift === 3)) {
+            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift-1]);
+        }
         if (e === 'double-back') {
-            currentShift = currentShift - 2;
-            if (currentShift === -2) {
-                currentShift = -1;
-            }
-        } else if (e === 'back') {
-            currentShift = currentShift - 1;
-            if (currentShift === -2) {
-                currentShift = -1;
-            }
-            if (currentShift <= 0) {
-                currentDay = currentDay - 1;
-                currentShift = 3;
-            }
-        } else if (e === 'next') {
-            if (currentShift >= 3) {
-                currentShift = 1;
-                return;
-            } else {
-                currentShift = currentShift + 1;
-            }
+            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift-2]);
         }
-        this.setState({ shift: currentShift })
-        // ---------------------------------
-        if (currentDay < 1) {
-            currentDay = 31
-        }
-        if (currentDay > 31) {
-            currentDay = 1
-        }
-        if (currentDay < 10) {
-            currentDay = "0" + currentDay.toString();
-        }
-        const newDate = currentYear + currentMonth + currentDay;
-        this.setState({ date: newDate });
-        this.props.fetchData([this.props.selectedMachine, newDate, currentShift]);
     }
 
     render() {

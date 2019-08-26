@@ -9,6 +9,7 @@ import ShiftPickerCustom from './ShiftPicker';
 import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
+import { isComponentValid } from '../Utils/Requests';
 import moment from 'moment';
 import config from '../config.json';
 import { Link } from 'react-router-dom';
@@ -43,9 +44,10 @@ class Header extends React.Component {
     }
 
     openMenu() {
+        isComponentValid(this.props.user.role, 'megamenu') ? 
         this.state.megaMenuToggle === 'dropdown-content opened' ?
             this.setState({ megaMenuToggle: 'dropdown-content' }) :
-            this.setState({ megaMenuToggle: 'dropdown-content opened' });
+            this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void(0);
     }
 
     returnToParent(data) {

@@ -45,6 +45,21 @@ function mapShift(rawshift) {
   return shift;
 }
 
+function mapShiftReverse(rawshift) {
+  let shift;
+  if (rawshift === 1) {
+    shift = '1st Shift';
+  }
+  if (rawshift === 2) {
+    shift = '2nd Shift';
+  }
+  if (rawshift === 3) {
+    shift = '3rd Shift';
+  } 
+  const returnShift = shift === undefined ? rawshift: shift;
+  return returnShift;
+}
+
 async function sendPost(data, route) {
   const res = await axios.post(`${API}${route}`, data)
   .then(function (response) {
@@ -160,17 +175,17 @@ async function timelossGetReasons(machine) {
 function isComponentValid(role, name) {
   const componentStructure = {
     administrator: [
-      'megamenu',
-      'actual',
+      'megamenu', //
+      'actual', //!
       'partnumber',
       'timelost',
       'ideal', 
       'target', 
       'comments', 
-      'operator_signoff', 
-      'supervisor_signoff',
+      'operator_signoff',  //
+      'supervisor_signoff', //
       'intershifts', 
-      'pagination',
+      'pagination', //
     ],
     supervisor: [
       'megamenu',
@@ -216,4 +231,18 @@ function isFieldAllowed(role, row) {
   // if role is admin return always true
 }
 
-export { getRequestData, getIntershift, getRequest, mapShift, formatDate, formatDateWithTime, formatDateWithCurrentTime, getCurrentTime, sendPost, timelossGetReasons, sendPut, isComponentValid, isFieldAllowed }
+export { getRequestData,
+  getIntershift, 
+  getRequest,
+  mapShift, 
+  mapShiftReverse, 
+  formatDate, 
+  formatDateWithTime,
+  formatDateWithCurrentTime,
+  getCurrentTime,
+  sendPost,
+  timelossGetReasons,
+  sendPut,
+  isComponentValid,
+  isFieldAllowed 
+}
