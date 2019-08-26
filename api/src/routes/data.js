@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { runInNewContext } from 'vm';
 const fs = require('fs')
 
@@ -13,10 +13,10 @@ var nJwt = require('njwt');
 var eastern = "America/New_York";
 
 function toTimeZone(zone) {
-    var format = 'YYYY-MM-DD HH:MM:SS';
+    var format = 'YYYY-MM-DD HH:mm:ss';
     return moment().tz(zone).format(format);
- }
- 
+}
+
 
 router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
@@ -46,7 +46,6 @@ router.use(function (req, res, next) {
     if (token) {
         nJwt.verify(token, config["signingKey"], function (err) {
             if (err) {
-                console.log(err);
                 return res.sendStatus(401);
             } else {
                 next()
@@ -213,7 +212,7 @@ router.post('/dxh_new_comment', async function (req, res) {
 
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp =  toTimeZone(eastern);
+    const timestamp = toTimeZone(eastern);
     const row_timestamp = parms.row_timestamp;
 
     if (!params.clocknumber) {
