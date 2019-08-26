@@ -278,7 +278,6 @@ router.put('/dt_data', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const timestamp = toTimeZone(eastern);
-    console.log(timestamp);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
