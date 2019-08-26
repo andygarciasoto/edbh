@@ -350,8 +350,8 @@ class DashboardOne extends React.Component {
             <span className='ideal-click'>
             <span className="react-table-click-text table-click comments">{''}</span></span>,
           style: {textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)'},
-          // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-          aggregate: (values, rows) => values[0],
+          // aggregate: (values, rows) => console.log(rows),
+          aggregate: (values, rows) => values[0] ? rows[0]._original.actions_comments.length > 1 ? values[0] + ` (${(rows[0]._original.actions_comments.length)}+ more)` : values[0] : '',
           Aggregated: props => !props.value ? <span style={{paddingRight: '90%', cursor: 'pointer'}} className={'empty-field'} onClick={() => this.openModal('comments', props)}></span> : 
           <span className='ideal' onClick={() => this.openModal('comments', props)}>
           <span className="react-table-click-text table-click comments">{props.value}</span></span>,
@@ -500,9 +500,9 @@ class DashboardOne extends React.Component {
                         <Col md={12} lg={12} id="dashboardOne-table">
                             <Row style={{paddingLeft: '5%'}}>
                                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                                <Col md={2}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
-                                <Col md={4}><h5 style={{textTransform: 'Capitalize'}}>{this.props.user.first_name ? 
-                                  `Hello ${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void(0)}{`Signed in as ${this.props.user.role}`}</h5></Col>
+                                <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
+                                <Col md={3}><h5 style={{textTransform: 'Capitalize'}}>{this.props.user.first_name ? 
+                                  `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void(0)}{`(${this.props.user.role})`}</h5></Col>
                                 <Col md={3}><h5>{'Showing Data for: '}{moment(this.state.selectedDate).locale('en').format('LL')}</h5></Col>
                             </Row>
                             {!_.isEmpty(data) ? <ReactTable

@@ -38,7 +38,7 @@ class ShiftPickerCustom extends React.Component {
             className="shift-picker-button"
           >
           {
-            this.state.shifts ? this.state.shifts.map((shift, index) => {
+            (this.state.shifts && this.state.shifts.length > 0) ? this.state.shifts.map((shift, index) => {
               return <Dropdown.Item key={shift.shift_code} eventKey={shift.shift_name} onSelect={(e)=>this.onSelect(e)}>{t(shift.shift_name)}</Dropdown.Item>
             }) : null
           }
