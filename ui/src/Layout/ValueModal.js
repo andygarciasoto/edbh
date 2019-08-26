@@ -39,14 +39,14 @@ class ValueModal extends React.Component {
             asset_code: this.props.parentData[0]
         }
         if (!data.actual) {
-            this.setState({modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value'})
+            // this.setState({modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value'})
         } else {
             this.setState({modal_loading_IsOpen: true}, () => {
                 const response = sendPut({
                     ...data
                 }, '/production_data')
                 response.then((res) => {
-                    if (res !== 200) {
+                    if (res !== 200 || !res) {
                         this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
                     } else {
                         this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
@@ -69,7 +69,6 @@ class ValueModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
         if (nextProps.currentVal === '' || !nextProps.currentVal) {
             this.setState({existingValue: false}) 
         } else {
@@ -128,7 +127,7 @@ class ValueModal extends React.Component {
                         t={this.props.t}
                     />
                     <ErrorModal
-                        isOpen={this.state.modal_loading_IsOpen}
+                        isOpen={this.state.modal_error_IsOpen}
                         //  onAfterOpen={this.afterOpenModal}
                         onRequestClose={this.closeModal}
                         contentLabel="Example Modal"

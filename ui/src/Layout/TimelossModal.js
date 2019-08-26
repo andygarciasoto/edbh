@@ -23,7 +23,7 @@ class TimelossModal extends React.Component {
             validationMessage: '',
             time_to_allocate: 0,
             unallocated_time: 0,
-            allowSubmit: false,
+            allowSubmit: true,
             new_tl_reason: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
@@ -57,6 +57,7 @@ class TimelossModal extends React.Component {
                     this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
                 }
                 this.props.Refresh(this.props.parentData);
+                this.setState({new_tl_reason: '', allowSubmit: true, time_to_allocate: 0})
                 this.props.onRequestClose();
             })
         })
@@ -84,7 +85,8 @@ class TimelossModal extends React.Component {
         this.setState({
             timelost: nextProps.timelost,
             allocated_time: total,
-            unallocated_time: 60 - total > 0 ? 60 - total : 0,
+            // unallocated_time: 60 - total > 0 ? 60 - total : 0,
+            unallocated_time: nextProps.currentRow.unallocated_time
         })
         if (nextProps.currentRow) {
             this.setState({
@@ -115,10 +117,8 @@ class TimelossModal extends React.Component {
         }
     }
 
-    validate(unallocated, allocate, reason) {
-        const {unallocated_time, time_to_allocate, new_tl_reason, allowSubmit} = this.state;
-        console.log({unallocated_time, time_to_allocate, new_tl_reason, allowSubmit})
-        if (this.state.time_to_allocate < this.state.unallocated_time && this.state.new_tl_reason !== '') {
+    validate() {
+        if (this.state.new_tl_reason !== '') {
             this.setState({allowSubmit: false});
         }
     }
@@ -212,7 +212,7 @@ class TimelossModal extends React.Component {
                                     <Form.Group controlId="formGridState">
                                     <ReactSelect
                                         value={this.state.new_tl_reason}
-                                        onChange={(e)=> this.setState({new_tl_reason: e})}
+                                        onChange={(e)=> this.setState({new_tl_reason: e}, (e) => this.validate(e))}
                                         options={reasons}
                                         className={"react-select-container"}
                                         classNamePrefix={"react_control"}

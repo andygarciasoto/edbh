@@ -14,8 +14,8 @@ function restructureSQLObject(obj, format) {
         obj.map((item, key) => {
             item = Object.values(item)[0];
             newArray.push(item);
-            }) 
-        } else if (format === 'communication') {
+        })
+    } else if (format === 'communication') {
         obj.map((item, key) => {
             item = Object.values(item)[0];
             newArray.push(item);
@@ -36,10 +36,12 @@ function restructureSQLObjectByContent(obj) {
                 newItem['target'] = prod.target;
                 newItem['actual'] = prod.actual;
                 newItem['order_number'] = prod.order_number;
+                newItem['routed_cycle_time'] = prod.routed_cycle_time;
                 newArray.push(newItem);
                 delete newItem.production;
             }
-        )} else {
+            )
+        } else {
             item['product_code'] = '';
             item['ideal'] = '';
             item['target'] = '';
@@ -58,24 +60,24 @@ function replaceFieldNames(obj, mapping) {
         const keyValues = Object.keys(objItem).map(key => {
             const newKey = mapping[key] || key;
             return { [newKey]: objItem[key] };
-          });
-          newObjArray.push(Object.assign({}, ...keyValues));
+        });
+        newObjArray.push(Object.assign({}, ...keyValues));
     })
     return newObjArray;
 }
 
 var nameMapping = {
-    hour_interval : "hour_interval",
-    ideal : "ideal",
-    target : "target_pcs",
-    actual : "actual_pcs",
-    cumulative_target : "cumulative_target_pcs",
-    cumulative_actual : "cumulative_pcs",
-    timelost : "timelost", // get the latest time lost or calculate the total
-    dtreason_code : "timelost_reason_code",
-    comment : "actions_comments",
-    operator_signoff : "oper_id",
-    supervisor_signoff : "superv_id"
+    hour_interval: "hour_interval",
+    ideal: "ideal",
+    target: "target_pcs",
+    actual: "actual_pcs",
+    cumulative_target: "cumulative_target_pcs",
+    cumulative_actual: "cumulative_pcs",
+    timelost: "timelost", // get the latest time lost or calculate the total
+    dtreason_code: "timelost_reason_code",
+    comment: "actions_comments",
+    operator_signoff: "oper_id",
+    supervisor_signoff: "superv_id"
 }
 
 function createLatestComment(obj) {
@@ -85,7 +87,7 @@ function createLatestComment(obj) {
         }
     })
     return obj;
-} 
+}
 
 function createTimelossSummary(obj) {
     obj.map((item, index) => {
@@ -106,15 +108,26 @@ function structureMachines(obj) {
     obj.map((item, index) => {
         let machineObj = {};
         machineObj.asset_id = item.asset_id,
-        machineObj.asset_code = item.asset_code,
-        machineObj.asset_name = item.asset_name,
-        machineObj.asset_description = item.asset_description,
-        machineObj.asset_level = item.asset_level,
-        machineObj.site_code = item.site_code,
-        machineObj.parent_asset_code = item.parent_asset_code
+            machineObj.asset_code = item.asset_code,
+            machineObj.asset_name = item.asset_name,
+            machineObj.asset_description = item.asset_description,
+            machineObj.asset_level = item.asset_level,
+            machineObj.site_code = item.site_code,
+            machineObj.parent_asset_code = item.parent_asset_code
         machines.push(machineObj);
     })
     return machines;
 }
 
-export {restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines};
+function createUnallocatedTime(obj) {
+    obj.map((item, index) => {
+        if (item.actual_pcs >= item.ideal) {
+            item['unallocated_time'] = 0;
+        } else {
+            item['unallocated_time'] = ((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60;
+        }
+    })
+    return obj;
+}
+
+export { restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines, createUnallocatedTime };

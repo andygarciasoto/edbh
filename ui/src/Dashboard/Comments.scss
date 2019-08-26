@@ -17,11 +17,11 @@
     color: $color-link;
 }
 
-.intershift-comment div {
-    max-width: 80%;
-    white-space: nowrap; 
+.intershift-comment div { 
     overflow: hidden;
     text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: inherit;
 }
 
 #intershift-table {

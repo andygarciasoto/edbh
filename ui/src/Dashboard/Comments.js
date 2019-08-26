@@ -5,9 +5,8 @@ import './Comments.scss';
 import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from  'react-fontawesome';
 import Spinner from '../Spinner';
-import moment from 'moment';
 import _ from 'lodash';
-import { sendPut, getCurrentTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime} from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -23,6 +22,7 @@ class Comments extends React.Component {
             modal_error_IsOpen: false,
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
+            row: this.props.dxh_parent || {}
         } 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -30,15 +30,19 @@ class Comments extends React.Component {
     }  
 
     enterCommunication(e) {
+        let data = {};
         this.setState({modal_loading_IsOpen: true}, () => {
-            const data = {
-                dhx_data_id : this.props.dxh_id,
-                comment : this.state.value,
-                first_name: this.props.user.first_name,
-                last_name: this.props.user.last_name,
-                timestamp: getCurrentTime(),
-                inter_shift_id : 0,
-                asset_code: this.props.parentData[0]
+            if (!_.isEmpty(this.state.row)) {
+                data = {
+                    dhx_data_id : this.state.row.dxhdata_id,
+                    comment : this.state.value,
+                    first_name: this.props.user.first_name,
+                    last_name: this.props.user.last_name,
+                    timestamp: getCurrentTime(),
+                    row_timestamp: formatDateWithTime(this.state.row.hour_interval_start),
+                    inter_shift_id : 0,
+                    asset_code: this.props.parentData[0]
+                }
             }
             const response = sendPut(data, '/intershift_communication');
             response.then((res) => {
@@ -66,6 +70,10 @@ class Comments extends React.Component {
         this.setState({modal_thread_IsOpen: true});
     }
 
+    componentWillMount(){
+        this.setState({row: this.props.dxh_parent})
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
            let comments = [];
@@ -78,7 +86,8 @@ class Comments extends React.Component {
             this.setState({
                 lastComment: comments[0] || null,
                 commentLen: comments.length,
-                comments: comments
+                comments: comments, 
+                row: nextProps.dxh_parent
             }) 
         }
     }
@@ -89,7 +98,7 @@ class Comments extends React.Component {
         if (this.state.lastComment) {
            lastComment = this.state.lastComment;
         }
-        const lastCommentDate = lastComment ? moment(lastComment.entered_on).format('YYYY-MM-DD') : null;
+        const lastCommentDate = lastComment ? formatDateWithTime(lastComment.entered_on) : null;
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>
@@ -105,7 +114,7 @@ class Comments extends React.Component {
                     {lastComment ? lastComment.intershift_id !== null ? Object.values(lastComment).length > 0 ? <React.Fragment>
                         <tr>
                             <td style={{width: '20%'}}><span>{`${lastComment.first_name} - ${lastComment.last_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
-                            <td className={"intershift-comment"}><div>{lastComment.comment}</div>
+                            <td style={{width: '80%'}} className={"intershift-comment"}><div>{lastComment.comment}</div>
                             <span className="intershift-read-more" onClick={this.openModal}>{`${t('Read More')} (${this.state.commentLen})`}<FontAwesome name="angle-right" style={{paddingLeft: 5}}/></span></td>
                         </tr>
                         </React.Fragment> : <tr><td ><Spinner/></td><td className={"intershift-comment"}><Spinner/></td></tr> : 
