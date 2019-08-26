@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { runInNewContext } from 'vm';
 const fs = require('fs')
 
@@ -10,6 +10,13 @@ var router = express.Router();
 var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
+var eastern = "America/New_York";
+
+function toTimeZone(zone) {
+    var format = 'YYYY-MM-DD HH:mm:ss';
+    return moment().tz(zone).format(format);
+}
+
 
 router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
@@ -39,7 +46,6 @@ router.use(function (req, res, next) {
     if (token) {
         nJwt.verify(token, config["signingKey"], function (err) {
             if (err) {
-                console.log(err);
                 return res.sendStatus(401);
             } else {
                 next()
@@ -206,8 +212,8 @@ router.post('/dxh_new_comment', async function (req, res) {
 
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp = params.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = params.row_timestamp;
+    const timestamp = toTimeZone(eastern);
+    const row_timestamp = parms.row_timestamp;
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {
@@ -270,8 +276,7 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = req.body.row_timestamp;
+    const timestamp = toTimeZone(eastern);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
@@ -314,8 +319,7 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = req.body.row_timestamp;
+    const timestamp = toTimeZone(eastern);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
@@ -356,9 +360,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = req.body.row_timestamp;
-    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const timestamp = toTimeZone(eastern);
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -398,9 +400,11 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = req.body.row_timestamp;
-    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const timestamp = toTimeZone(eastern);
+    const override = req.body.override ? req.body.override : 0;
+
+    if (dhx_data_id == undefined)
+        return res.status(500).send("Missing parameters");
 
     if (!clocknumber) {
         if (!(first_name || last_name)) {
@@ -438,8 +442,7 @@ router.put('/production_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
-    const row_timestamp = req.body.row_timestamp;
+    const timestamp = toTimeZone(eastern);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 

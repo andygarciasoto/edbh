@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
+    "moment-timezone": "^0.5.26",
     "mssql": "^5.1.0",
     "njwt": "^1.0.0",
     "tedious": "^2.7.0",
