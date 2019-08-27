@@ -69,7 +69,6 @@ class SignoffModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.user.role);
         this.setState({
             signOffRole: nextProps.signOffRole,
             headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') + ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')'

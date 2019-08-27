@@ -213,7 +213,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
     const timestamp = toTimeZone(eastern);
-    const row_timestamp = parms.row_timestamp;
+    const row_timestamp = params.row_timestamp;
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {

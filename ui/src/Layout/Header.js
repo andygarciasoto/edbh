@@ -23,6 +23,7 @@ class Header extends React.Component {
             machineValue: config['machine'],
             dateValue: new Date(),
             shiftValue: 'Select Shift',
+            newOrder_value: ''
         }
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
@@ -66,7 +67,6 @@ class Header extends React.Component {
         this.setState({ megaMenuToggle: 'dropdown-content' });
     }
 
-
     render() {
         const t = this.props.t;
         return (
@@ -109,9 +109,16 @@ class Header extends React.Component {
                                     />
                                 </MegaMenu>
                             </span>
-                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => console.log(e)}>{t('New Order')}&nbsp;</span>
+                            <span 
+                                className="header-item" 
+                                href="#" 
+                                id="mega-menu">
+                                    <span className="header-elem"
+                                    value={this.state.newOrder_value}
+                                    onClick={(e) => this.props.openModal('order')}>
+                                    {t('New Order')}&nbsp;</span>
                                 <FontAwesome
-                                    onClick={(e) => console.log(e)}
+                                    onClick={(e) => this.props.openModal('order')}
                                     name="file-text" /></span>
                         </div>
                     </Col>
