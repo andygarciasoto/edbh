@@ -11,53 +11,53 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var eastern = "America/New_York";
+var format = 'YYYY-MM-DD HH:mm:ss';
 
-function toTimeZone(zone) {
-    var format = 'YYYY-MM-DD HH:mm:ss';
-    return moment().tz(zone).format(format);
+function toTimeZone(time, zone) {
+    return moment(time).tz(zone).format(format);
 }
 
-router.use(function (err, req, res, next) {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401);
-        res.json({ "message": err.name + ": " + err.message });
-    } else
-        next(err);
-});
+// router.use(function (err, req, res, next) {
+//     if (err.name === 'UnauthorizedError') {
+//         res.status(401);
+//         res.json({ "message": err.name + ": " + err.message });
+//     } else
+//         next(err);
+// });
 
-router.use(function (req, res, next) {
-    var allowedOrigins = config['cors']
-    var origin = req.headers.origin;
-    if (allowedOrigins.indexOf(origin) > -1) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader("Access-Control-Allow-Credentials", "true")
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// router.use(function (req, res, next) {
+//     var allowedOrigins = config['cors']
+//     var origin = req.headers.origin;
+//     if (allowedOrigins.indexOf(origin) > -1) {
+//         res.setHeader('Access-Control-Allow-Origin', origin);
+//     }
+//     res.setHeader("Access-Control-Allow-Credentials", "true")
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 
-router.use(function (req, res, next) {
-    let token = req.header('Authorization');
-    if (token && token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length).trimLeft();
-    }
-    if (token) {
-        nJwt.verify(token, config["signingKey"], function (err) {
-            if (err) {
-                return res.sendStatus(401);
-            } else {
-                next()
-            }
-        });
-    } else {
-        res.status(401);
-        return res.json({
-            success: false,
-            message: 'Auth token is not supplied'
-        });
-    }
-});
+// router.use(function (req, res, next) {
+//     let token = req.header('Authorization');
+//     if (token && token.startsWith('Bearer ')) {
+//         token = token.slice(7, token.length).trimLeft();
+//     }
+//     if (token) {
+//         nJwt.verify(token, config["signingKey"], function (err) {
+//             if (err) {
+//                 return res.sendStatus(401);
+//             } else {
+//                 next()
+//             }
+//         });
+//     } else {
+//         res.status(401);
+//         return res.json({
+//             success: false,
+//             message: 'Auth token is not supplied'
+//         });
+//     }
+// });
 
 function responsePostPut(response, req, res) {
     try {
@@ -211,8 +211,8 @@ router.post('/dxh_new_comment', async function (req, res) {
 
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp = toTimeZone(eastern);
-    const row_timestamp = params.row_timestamp;
+    const timestamp = params.timestamp ? toTimeZone(params.timestamp, eastern) : moment().tz(eastern).format(format);
+    const row_timestamp = toTimeZone(params.row_timestamp, eastern);
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {
@@ -275,10 +275,10 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
-    const row_timestamp = req.body.row_timestamp;
+    const row_timestamp = toTimeZone(req.body.row_timestamp, eastern);
 
     if (dt_reason_id === undefined || dt_minutes === undefined)
         return res.status(400).send("Missing parameters");
@@ -319,10 +319,10 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
-    const row_timestamp = req.body.row_timestamp;
+    const row_timestamp = toTimeZone(req.body.row_timestamp, eastern);
 
     if (comment == undefined)
         return res.status(400).send("Missing parameters");
@@ -361,8 +361,9 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
-    const row_timestamp = req.body.row_timestamp;
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
+    const row_timestamp = toTimeZone(req.body.row_timestamp, eastern);
+
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -402,9 +403,9 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const override = req.body.override ? req.body.override : 0;
-    const row_timestamp = req.body.row_timestamp;
+    const row_timestamp = toTimeZone(req.body.row_timestamp, eastern);
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -445,10 +446,10 @@ router.put('/production_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
-    const row_timestamp = req.body.row_timestamp;
+    const row_timestamp = toTimeZone(req.body.row_timestamp, eastern);
 
     if (actual === undefined)
         return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
