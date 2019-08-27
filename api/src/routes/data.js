@@ -10,8 +10,8 @@ var router = express.Router();
 var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
-// var _timezone = "America/New_York";
-var _timezone = config["timezone"];
+var _timezone = "America/New_York";
+/// var _timezone = config["timezone"];
 var format = 'YYYY-MM-DD HH:mm:ss';
 
 function toTimeZone(time, zone) {
