@@ -30,7 +30,7 @@ router.post("/badge", async function (req, res) {
     async (data) => {
         try {
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
-            let username = response[1].Username;
+            let username = response[0].Username;
             var jwt = nJwt.create(username, config['signingKey']);
             var token = jwt.compact();
             const url = `${config['URL']}/dashboard#token=${token}`;
