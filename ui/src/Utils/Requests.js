@@ -1,5 +1,7 @@
 import { API } from './Constants';
 import moment from 'moment';
+import config from '../config.json'
+
 const axios = require('axios');
 
 async function getRequestData(data) {
@@ -225,11 +227,25 @@ function isComponentValid(role, name) {
 } 
 
 function isFieldAllowed(role, row) {
-  // get current day
-  // get current time
-  // if its not current day return false
-  // if its not the previous or current hour return false
-  // if role is admin return always true
+  if (role !== 'administrator') {
+    let rollback = role === 'operator' ? 2 : config['rollback'];
+    const rowtime = row._subRows[0]._original.hour_interval_start;
+    const now = getCurrentTime();
+    const minusDate = moment(now).add(-rollback, 'hours');
+
+    if (!moment(now).isSame(rowtime, 'day')) {
+      console.log('not allowed by day');
+      return false;
+    }
+
+    if (!moment(rowtime).isAfter(minusDate)) {
+      console.log('not allowed by hour');
+      return false;
+    }
+    return true;
+  } else {
+    return true;
+  }
 }
 
 export { getRequestData,
