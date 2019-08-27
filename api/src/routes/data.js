@@ -11,10 +11,10 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var eastern = "America/New_York";
+var format = 'YYYY-MM-DD HH:mm:ss';
 
-function toTimeZone(zone) {
-    var format = 'YYYY-MM-DD HH:mm:ss';
-    return moment().tz(zone).format(format);
+function toTimeZone(time, zone) {
+    return moment(time).tz(zone).format(format);
 }
 
 router.use(function (err, req, res, next) {
@@ -211,8 +211,8 @@ router.post('/dxh_new_comment', async function (req, res) {
 
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp = toTimeZone(eastern);
-    const row_timestamp = parms.row_timestamp;
+    const timestamp = params.timestamp ? toTimeZone(params.timestamp, eastern) : moment().tz(eastern).format(format);
+    const row_timestamp = params.row_timestamp;
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {
@@ -275,7 +275,7 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
@@ -318,7 +318,7 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
@@ -359,7 +359,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -399,7 +399,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const override = req.body.override ? req.body.override : 0;
 
     if (dhx_data_id == undefined)
@@ -441,7 +441,7 @@ router.put('/production_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = toTimeZone(eastern);
+    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, eastern) : moment().tz(eastern).format(format);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
 
