@@ -212,7 +212,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
     const timestamp = toTimeZone(eastern);
-    const row_timestamp = parms.row_timestamp;
+    const row_timestamp = params.row_timestamp;
 
     if (!params.clocknumber) {
         if (!(params.first_name || params.last_name)) {
@@ -278,6 +278,7 @@ router.put('/dt_data', async function (req, res) {
     const timestamp = toTimeZone(eastern);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const row_timestamp = req.body.row_timestamp;
 
     if (dt_reason_id === undefined || dt_minutes === undefined)
         return res.status(400).send("Missing parameters");
@@ -321,6 +322,7 @@ router.put('/intershift_communication', async function (req, res) {
     const timestamp = toTimeZone(eastern);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const row_timestamp = req.body.row_timestamp;
 
     if (comment == undefined)
         return res.status(400).send("Missing parameters");
@@ -360,6 +362,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const timestamp = toTimeZone(eastern);
+    const row_timestamp = req.body.row_timestamp;
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -401,6 +404,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const last_name = req.body.last_name;
     const timestamp = toTimeZone(eastern);
     const override = req.body.override ? req.body.override : 0;
+    const row_timestamp = req.body.row_timestamp;
 
     if (dhx_data_id == undefined)
         return res.status(500).send("Missing parameters");
@@ -444,6 +448,7 @@ router.put('/production_data', async function (req, res) {
     const timestamp = toTimeZone(eastern);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const row_timestamp = req.body.row_timestamp;
 
     if (actual === undefined)
         return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
