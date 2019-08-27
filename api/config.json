@@ -6,5 +6,6 @@
     "cors": ["http://localhost:3000", "http://localhost:3001"],
     "URL": "http://localhost:3000",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
-    "loginURL": "http://localhost:3000/dashboard"
+    "loginURL": "http://localhost:3000/dashboard",
+    "timezone": "MST"
 }
