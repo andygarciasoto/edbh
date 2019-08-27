@@ -17,7 +17,6 @@ function toTimeZone(zone) {
     return moment().tz(zone).format(format);
 }
 
-
 router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
@@ -185,7 +184,7 @@ router.get('/shifts', async function (req, res) {
         await sqlQuery(query,
             response => responseGet(response, req, res));
     } catch (e) {
-        res.status(500).send('Database Connection Error');
+        res.status(500).send({ message: 'Error', api_error: e });
     }
 })
 
@@ -200,7 +199,7 @@ router.get('/intershift_communication', async function (req, res) {
         await sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
             response => responseGet(response, req, res, 'InterShiftData'));
     } catch (e) {
-        res.status(500).send('Database Connection Error');
+        res.status(500).send({ message: 'Error', api_error: e });
     }
 });
 
@@ -476,6 +475,21 @@ router.put('/production_data', async function (req, res) {
             response => responsePostPut(response, req, res)) :
             await sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                 response => responsePostPut(response, req, res));
+    }
+});
+
+router.get('/order_data', async function (req, res) {
+    const asset_code = req.query.asset_code;
+    const order_number = req.query.order_number;
+    const is_current_order = req.query.is_current_order || 0;
+    if (asset_code == undefined || order_number == undefined)
+        return res.status(400).send("Bad Request - Missing parameters");
+
+    try {
+        await sqlQuery(`exec spLocal_EY_DxH_Get_OrderData '${asset_code}', '${order_number}', ${is_current_order};`,
+            response => responseGet(response, req, res, 'OrderData'));
+    } catch (e) {
+        res.status(500).send({ message: 'Error', api_error: e });
     }
 });
 
