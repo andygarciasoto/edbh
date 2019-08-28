@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { getRequest } from '../Utils/Requests';
+import { sendPost } from '../Utils/Requests';
 import { Button, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
 import _ from 'lodash';
@@ -42,15 +42,16 @@ class OrderTwoModal extends React.Component {
     }
 
     submit(e) {
-        const data = { params: {
-            order_number: this.state.value, 
-            asset_code: this.props.parentData[0]
-        }}
+        const data = {
+            order_number: this.props.data.order_number,
+            part_number: this.props.data.order_id,
+            part_quantity: this.props.data.order_quantity,
+        }
         this.setState({modal_loading_IsOpen: true}, () => {
-            const response = getRequest('/order_data', data)
+            const response = sendPost('/order_data', data)
             response.then((res) => {
-                if (!res) {
-                    this.setState({modal_error_IsOpen: true, errorMessage: 'The order you entered was not found.'})
+                if (!res || res.status !== 200) {
+                    this.setState({modal_error_IsOpen: true, errorMessage: 'Could not insert in the Jtrax database.'})
                 } else {
                     this.setState({modal_loading_IsOpen: false})
                 }
@@ -64,7 +65,7 @@ class OrderTwoModal extends React.Component {
 
     render() {
         const t = this.props.t;
-        console.log(this.props)
+        if (this.props.data) {
             return (
                 <React.Fragment>
                 <Modal
@@ -73,11 +74,15 @@ class OrderTwoModal extends React.Component {
                 style={this.state.style}
                 contentLabel="Example Modal">
                   <p>{'Data Confirmation'}</p>
-                  <ul className={'order-modal-two'}>
-                      <Row><Col md={5}>{`Order Number: `}</Col><Col md={6}>{`342134333332243545345434`}</Col><Col md={1}></Col></Row>
-                      <Row><Col md={5}>{`Part Number: `}</Col><Col md={6}>{`324234324`}</Col><Col md={1}></Col></Row>
-                      <Row><Col md={5}>{`Part Quantity: `}</Col><Col md={6}>{`100`}</Col><Col md={1}></Col></Row>
-                  </ul>
+                  {
+                      this.props.data.order_id ?
+                      <ul className={'order-modal-two'}>
+                      <Row><Col md={5}>{`Order Number: `}</Col><Col md={6}>{this.props.data.order_number}</Col><Col md={1}></Col></Row>
+                      <Row><Col md={5}>{`Part Number: `}</Col><Col md={6}>{this.props.data.order_id}</Col><Col md={1}></Col></Row>
+                      <Row><Col md={5}>{`Part Quantity: `}</Col><Col md={6}>{this.props.data.order_quantity}</Col><Col md={1}></Col></Row>
+                  </ul> : <p style={{textAlign: 'center'}}>{'No order found with that number'}</p>
+                  }
+                  {this.props.data.order_id ? <React.Fragment>
                    <Button variant="outline-success" 
                    style={{ marginTop: '20px', textAlign: 'center' }} 
                    className="error-button signoff-buttons" 
@@ -86,6 +91,12 @@ class OrderTwoModal extends React.Component {
                    style={{ marginTop: '20px', textAlign: 'center' }} 
                    className="error-button signoff-buttons" 
                    onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
+                   </React.Fragment>
+                    :  <Button variant="outline-default" 
+                    style={{ marginTop: '20px', textAlign: 'center' }} 
+                    className="error-button signoff-buttons" 
+                    onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
+                }
                </Modal>
                <ConfirmModal
                     isOpen={this.state.modal_confirm_IsOpen}
@@ -112,9 +123,25 @@ class OrderTwoModal extends React.Component {
                     message={this.state.errorMessage}
                 />
                </React.Fragment>
-            )
+            )  } else {
+                return (
+                    <Modal
+                    isOpen={this.props.isOpen}
+                    onRequestClose={this.props.onRequestClose}
+                    style={this.state.style}
+                    contentLabel="Example Modal">
+                      <p>{'Data Confirmation'}</p>
+                        <p>{'No order was found with that number'}</p>
+                       <Button variant="outline-default" 
+                       style={{ marginTop: '20px', textAlign: 'center' }} 
+                       className="error-button signoff-buttons" 
+                       onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
+                   </Modal>
+                )
+
+            }
         }
-}
+    }
 
 Modal.setAppElement('#root');
 export default OrderTwoModal;
