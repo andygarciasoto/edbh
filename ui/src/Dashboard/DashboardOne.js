@@ -213,9 +213,9 @@ class DashboardOne extends React.Component {
         };
         
         this.setState({modalStyle})
-        const date = new Date();
-        const x = moment(date).locale(this.state.currentLanguage).format('LL');
-        this.setState({selectedDate: date, selectedDateParsed: x})
+        //const date = new Date();
+        const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
+        this.setState({selectedDate: this.state.selectedDate, selectedDateParsed: x})
         this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
     }
 
