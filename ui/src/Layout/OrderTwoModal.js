@@ -1,16 +1,15 @@
 import React from  'react';
 import Modal from 'react-modal';
-import BarcodeReader from 'react-barcode-reader';
-import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
 import { getRequest } from '../Utils/Requests';
+import { Button, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
 
-class OrderModal extends React.Component {
+class OrderTwoModal extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -19,12 +18,27 @@ class OrderModal extends React.Component {
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
+            style: {
+                content: {
+                    top: '50%',
+                    left: '50%',
+                    right: 'auto',
+                    bottom: 'auto',
+                    marginRight: '-50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '30%'
+                },
+                overlay: {
+                    backgroundColor: 'rgba(0,0,0, 0.6)'
+                }
+            }
         } 
         this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        this.handleScan = this.handleScan.bind(this);
-        this.handleError = this.handleError.bind(this);
+    }
+
+    closeModal() {
+        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
     }
 
     submit(e) {
@@ -40,7 +54,7 @@ class OrderModal extends React.Component {
                 } else {
                     this.setState({modal_loading_IsOpen: false})
                 }
-                this.props.showValidateDataModal(res);
+                this.props.Refresh(this.props.parentData);
                 this.setState({value: ''})
                 this.closeModal();
             })
@@ -48,55 +62,30 @@ class OrderModal extends React.Component {
         this.setState({newValue: ''})
     }
 
-    onChange(e) {
-        if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
-                this.setState({newValue: e.target.value});
-        } else {
-            this.setState({modal_error_IsOpen: true, errorMessage: 'Not a valid value'})
-        }
-    }
-
-    closeModal() {
-        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
-    }
-
-    handleScan(data){
-        this.setState({
-          result: 'Scanning',
-          value: data,
-        }) 
-      }
-
-    handleError(err) {
-        this.setState({modal_error_IsOpen: true, errorMessage: 'Scan failed',});
-        console.error(err)
-      }
-
     render() {
         const t = this.props.t;
+        console.log(this.props)
             return (
                 <React.Fragment>
                 <Modal
                 isOpen={this.props.isOpen}
                 onRequestClose={this.props.onRequestClose}
-                style={this.props.style}
+                style={this.state.style}
                 contentLabel="Example Modal">
-                   <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                   <BarcodeReader
-                        onError={this.handleError}
-                        onScan={this.handleScan}
-                    />
-                   <span className="dashboard-modal-field-group"><p>{t('Enter Order Number')}:</p>
-                    <Form.Control 
-                        style={{paddingTop: '5px'}} 
-                        type={this.props.formType } 
-                        value={this.state.value} 
-                        min="0"
-                        maxLength={18}
-                        onChange={(val) => this.setState({value: val.target.value})}>  
-                    </Form.Control>
-                   </span>
-                   <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submit}>{t('Submit')}</Button>
+                  <p>{'Data Confirmation'}</p>
+                  <ul className={'order-modal-two'}>
+                      <Row><Col md={5}>{`Order Number: `}</Col><Col md={6}>{`342134333332243545345434`}</Col><Col md={1}></Col></Row>
+                      <Row><Col md={5}>{`Part Number: `}</Col><Col md={6}>{`324234324`}</Col><Col md={1}></Col></Row>
+                      <Row><Col md={5}>{`Part Quantity: `}</Col><Col md={6}>{`100`}</Col><Col md={1}></Col></Row>
+                  </ul>
+                   <Button variant="outline-success" 
+                   style={{ marginTop: '20px', textAlign: 'center' }} 
+                   className="error-button signoff-buttons" 
+                   onClick={this.submit}>{this.props.t('Accept')}</Button>
+                   <Button variant="outline-default" 
+                   style={{ marginTop: '20px', textAlign: 'center' }} 
+                   className="error-button signoff-buttons" 
+                   onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                </Modal>
                <ConfirmModal
                     isOpen={this.state.modal_confirm_IsOpen}
@@ -128,4 +117,4 @@ class OrderModal extends React.Component {
 }
 
 Modal.setAppElement('#root');
-export default OrderModal;
+export default OrderTwoModal;

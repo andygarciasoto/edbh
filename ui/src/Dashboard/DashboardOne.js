@@ -11,6 +11,7 @@ import ValueModal from  '../Layout/ValueModal';
 import TimelossModal from  '../Layout/TimelossModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
+import OrderTwoModal from '../Layout/OrderTwoModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
@@ -50,6 +51,7 @@ class DashboardOne extends React.Component {
             modal_dropdown_IsOpen: false,
             modal_signoff_IsOpen: false,
             modal_order_IsOpen: false,
+            modal_order_two_IsOpen: false,
             valid_barcode: false,
             barcode: 1001,
             dataCall: {},
@@ -78,8 +80,11 @@ class DashboardOne extends React.Component {
     }
 
     showValidateDataModal(data) {
-      console.log('-------------------------');
-      console.log(data);
+      this.setState({
+        modal_order_IsOpen: false, 
+        modal_order_two_IsOpen: true, 
+        orderTwo_data: data[0].OrderData
+      })
     }
 
     openModal(type, val, extraParam) {
@@ -194,6 +199,7 @@ class DashboardOne extends React.Component {
         modal_dropdown_IsOpen: false, 
         modal_signoff_IsOpen: false,
         modal_order_IsOpen: false, 
+        modal_order_two_IsOpen: false, 
       });
     }
 
@@ -643,6 +649,18 @@ class DashboardOne extends React.Component {
                   Refresh={this.getDashboardData}
                   parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                   showValidateDataModal={this.showValidateDataModal}
+                />
+
+                <OrderTwoModal
+                  isOpen={this.state.modal_order_two_IsOpen}
+                  open={this.openModal}
+                  onRequestClose={this.closeModal}
+                  contentLabel="Example Modal"
+                  data={this.props.orderTwo_data}
+                  t={t}
+                  user={this.props.user}
+                  Refresh={this.getDashboardData}
+                  parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
                 />
             </React.Fragment>
         );
