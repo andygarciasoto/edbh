@@ -13,6 +13,7 @@ import { isComponentValid } from '../Utils/Requests';
 import moment from 'moment';
 import config from '../config.json';
 import { Link } from 'react-router-dom';
+import $ from 'jquery';
 
 
 class Header extends React.Component {
@@ -20,9 +21,9 @@ class Header extends React.Component {
         super(props);
         this.state = {
             megaMenuToggle: 'dropdown-content',
-            machineValue: config['machine'],
-            dateValue: new Date(),
-            shiftValue: 'Select Shift',
+            machineValue: props.selectedMachine || config['machine'],
+            dateValue: new Date(props.selectedDate),
+            shiftValue: props.selectedShift || 'Select Shift',
         }
         this.openMenu = this.openMenu.bind(this);
         this.collectInputs = this.collectInputs.bind(this);
@@ -31,23 +32,30 @@ class Header extends React.Component {
     }
 
     collectInputs(value, type) {
+        let { search } = this.props;
+        let queryItem = Object.assign({}, search);
         if (type === 'machine') {
+            queryItem["mc"] = value;
             this.setState({ machineValue: value })
         }
         if (type === 'date') {
+            queryItem["dt"] = moment(value).format('YYYY/MM/DD');
             this.setState({ dateValue: moment(value).format('YYYY/MM/DD') })
         }
         if (type === 'shift') {
+            queryItem["sf"] = value;
             // this.setState({shiftValue: value})
             this.props.sendToMain(value);
         }
+        let parameters = $.param(queryItem);
+        this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
     }
 
     openMenu() {
-        isComponentValid(this.props.user.role, 'megamenu') ? 
-        this.state.megaMenuToggle === 'dropdown-content opened' ?
-            this.setState({ megaMenuToggle: 'dropdown-content' }) :
-            this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void(0);
+        isComponentValid(this.props.user.role, 'megamenu') ?
+            this.state.megaMenuToggle === 'dropdown-content opened' ?
+                this.setState({ megaMenuToggle: 'dropdown-content' }) :
+                this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void (0);
     }
 
     returnToParent(data) {
@@ -85,7 +93,7 @@ class Header extends React.Component {
                                         collectInput={this.collectInputs}
                                         changeMachine={this.props.changeMachine}
                                         t={t}
-                                        value={t('Select Machine')} />
+                                        value={this.state.machineValue || t('Select Machine')} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
                                         changeDate={this.props.changeDate}
