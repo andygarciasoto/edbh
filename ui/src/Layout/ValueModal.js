@@ -39,7 +39,7 @@ class ValueModal extends React.Component {
             asset_code: this.props.parentData[0]
         }
         if (!data.actual) {
-            // this.setState({modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value'})
+            this.setState({modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value'})
         } else {
             this.setState({modal_loading_IsOpen: true}, () => {
                 const response = sendPut({

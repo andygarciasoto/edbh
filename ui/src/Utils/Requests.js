@@ -177,17 +177,17 @@ async function timelossGetReasons(machine) {
 function isComponentValid(role, name) {
   const componentStructure = {
     administrator: [
-      'megamenu', //
-      'actual', //!
+      'megamenu',
+      'actual', 
       'partnumber',
       'timelost',
       'ideal', 
       'target', 
       'comments', 
-      'operator_signoff',  //
-      'supervisor_signoff', //
+      'operator_signoff', 
+      'supervisor_signoff',
       'intershifts', 
-      'pagination', //
+      'pagination',
     ],
     supervisor: [
       'megamenu',
@@ -234,12 +234,10 @@ function isFieldAllowed(role, row) {
     const minusDate = moment(now).add(-rollback, 'hours');
 
     if (!moment(now).isSame(rowtime, 'day')) {
-      console.log('not allowed by day');
       return false;
     }
 
     if (!moment(rowtime).isAfter(minusDate)) {
-      console.log('not allowed by hour');
       return false;
     }
     return true;

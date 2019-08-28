@@ -199,7 +199,7 @@ class TimelossModal extends React.Component {
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>
-                                <input className={'timelost-field'} type="number"
+                                <input className={'timelost-field'} type="number" min="0"
                                     value={this.state.time_to_allocate}
                                     onChange={this.allocateTime}></input>
                             </Col>
