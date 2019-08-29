@@ -5,12 +5,12 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { getRequest } from '../Utils/Requests';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
 
-class ValueModal extends React.Component {
+class OrderModal extends React.Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -28,23 +28,21 @@ class ValueModal extends React.Component {
     }
 
     submit(e) {
-        const data = {
-        // data goes here
-        }
-        console.log(this.state.value, this.props.parentData[0])
+        const data = { params: {
+            order_number: this.state.value, 
+            asset_code: this.props.parentData[0]
+        }}
         this.setState({modal_loading_IsOpen: true}, () => {
-            const response = sendPut({
-                ...data
-            }, '/order_data')
+            const response = getRequest('/order_data', data)
             response.then((res) => {
-                if (res !== 200 || !res) {
+                if (!res) {
                     this.setState({modal_error_IsOpen: true, errorMessage: 'The order you entered was not found.'})
                 } else {
                     this.setState({modal_loading_IsOpen: false})
                 }
-                this.props.Refresh(this.props.parentData);
+                this.props.showValidateDataModal(res);
                 this.setState({value: ''})
-                this.props.showValidateDataModal(...res);
+                this.closeModal();
             })
             })
         this.setState({newValue: ''})
@@ -94,6 +92,7 @@ class ValueModal extends React.Component {
                         type={this.props.formType } 
                         value={this.state.value} 
                         min="0"
+                        maxLength={18}
                         onChange={(val) => this.setState({value: val.target.value})}>  
                     </Form.Control>
                    </span>
@@ -129,4 +128,4 @@ class ValueModal extends React.Component {
 }
 
 Modal.setAppElement('#root');
-export default ValueModal;
+export default OrderModal;

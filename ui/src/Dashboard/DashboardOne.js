@@ -11,6 +11,7 @@ import ValueModal from '../Layout/ValueModal';
 import TimelossModal from '../Layout/TimelossModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
+import OrderTwoModal from '../Layout/OrderTwoModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
@@ -79,10 +80,14 @@ class DashboardOne extends React.Component {
     this.showValidateDataModal = this.showValidateDataModal.bind(this);
   }
 
-  showValidateDataModal(data) {
-    console.log('-------------------------');
-    console.log(data);
-  }
+    showValidateDataModal(data) {
+      console.log(data)
+      this.setState({
+        modal_order_IsOpen: false, 
+        modal_order_two_IsOpen: true, 
+        orderTwo_data: data[0].OrderData
+      })
+    }
 
   openModal(type, val, extraParam) {
     let value = ''
@@ -150,10 +155,14 @@ class DashboardOne extends React.Component {
         }
       }
       this.setState({
-        modal_values_IsOpen: false,
-        modal_comments_IsOpen: true,
-        modal_dropdown_IsOpen: false,
-      })
+        modal_authorize_IsOpen: false,
+        modal_comments_IsOpen: false, 
+        modal_values_IsOpen: false, 
+        modal_dropdown_IsOpen: false, 
+        modal_signoff_IsOpen: false,
+        modal_order_IsOpen: false, 
+        modal_order_two_IsOpen: false, 
+      });
     }
     if (type === 'dropdown') {
       if (val) {
@@ -196,6 +205,7 @@ class DashboardOne extends React.Component {
       modal_dropdown_IsOpen: false,
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
+      modal_order_two_IsOpen: false,
     });
   }
 
@@ -257,7 +267,10 @@ class DashboardOne extends React.Component {
           {this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
         accessor: 'hour_interval',
         minWidth: 150,
-        style: { backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
+        style: { backgroundColor: 'rgb(247, 247, 247)', 
+        borderRight: 'solid 1px rgb(219, 219, 219)', 
+        borderLeft: 'solid 1px rgb(219, 219, 219)', 
+        borderTop: 'solid 1px rgb(219, 219, 219)' },
         Pivot: row => {
           return <span>{row.value}</span>;
         },
@@ -647,7 +660,6 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
           signOffRole={this.state.signOffRole}
         />
-
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}
           open={this.openModal}
@@ -662,9 +674,20 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
           showValidateDataModal={this.showValidateDataModal}
         />
-      </React.Fragment>
-    );
-  }
+        <OrderTwoModal
+          isOpen={this.state.modal_order_two_IsOpen}
+          open={this.openModal}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+          data={this.state.orderTwo_data}
+          t={t}
+          user={this.props.user}
+          Refresh={this.getDashboardData}
+          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+        />
+          </React.Fragment>
+        );
+    }
 };
 
 export default DashboardOne;
