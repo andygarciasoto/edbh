@@ -5,7 +5,6 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { getRequest } from '../Utils/Requests';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
@@ -19,6 +18,20 @@ class OrderModal extends React.Component {
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
+            style: {
+                content: {
+                    top: '50%',
+                    left: '50%',
+                    right: 'auto',
+                    bottom: 'auto',
+                    marginRight: '-50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '30%'
+                },
+                overlay: {
+                    backgroundColor: 'rgba(0,0,0, 0.6)'
+                }
+            }
         } 
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -28,28 +41,11 @@ class OrderModal extends React.Component {
     }
 
     submit(e) {
-        const data = { params: {
-            order_number: this.state.value, 
-            asset_code: this.props.parentData[0]
-        }}
-        this.setState({modal_loading_IsOpen: true}, () => {
-            const response = getRequest('/order_data', data)
-            response.then((res) => {
-                if (!res) {
-                    this.setState({modal_error_IsOpen: true, errorMessage: 'The order you entered was not found.'})
-                } else {
-                    this.setState({modal_loading_IsOpen: false})
-                }
-                this.props.showValidateDataModal(res);
-                this.setState({value: ''})
-                this.closeModal();
-            })
-            })
-        this.setState({newValue: ''})
+        this.props.signOffSupervisor(this.state.value);
     }
 
     onChange(e) {
-        if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
+        if (parseInt(e.target.value) !== 0 || e.target.value !== '') {
                 this.setState({newValue: e.target.value});
         } else {
             this.setState({modal_error_IsOpen: true, errorMessage: 'Not a valid value'})
@@ -68,7 +64,7 @@ class OrderModal extends React.Component {
       }
 
     handleError(err) {
-        this.setState({modal_error_IsOpen: true, errorMessage: 'Scan failed',});
+        this.setState({modal_error_IsOpen: true, errorMessage: 'Scan failed'});
         console.error(err)
       }
 
@@ -79,7 +75,7 @@ class OrderModal extends React.Component {
                 <Modal
                 isOpen={this.props.isOpen}
                 onRequestClose={this.props.onRequestClose}
-                style={this.props.style}
+                style={this.state.style}
                 contentLabel="Example Modal">
                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                    <BarcodeReader

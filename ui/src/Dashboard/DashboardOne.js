@@ -669,6 +669,7 @@ class DashboardOne extends React.Component {
           currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
           formType={this.state.modalType}
           t={t}
+          label={'Enter Order Number'}
           user={this.props.user}
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
