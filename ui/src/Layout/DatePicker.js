@@ -1,6 +1,6 @@
 
 import React from 'react';
-import DatePicker from  'react-datepicker';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.scss';
 import moment from 'moment';
@@ -8,30 +8,30 @@ import moment from 'moment';
 class DatePickerCustom extends React.Component {
     constructor(props) {
         super(props);
-		this.state = {
+        this.state = {
             startDate: this.props.date,
-        } 
-        this.handleChange = this.handleChange.bind(this); 
-    }  
+        }
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ startDate: nextProps.date })
+    }
 
     handleChange(date) {
         this.setState({
-          startDate: date
+            startDate: date
         });
         this.props.collectInput(date, 'date');
         this.props.changeDate(date);
-      }
+    }
 
     render() {
-        var date = sessionStorage.getItem("date");
-        if (date !== null){
-            date = new Date(date);
-        }
         return (
             <DatePicker
                 fixedHeight
                 className={'date-picker-field'}
-                selected={date != null ? date : this.state.startDate }
+                selected={this.state.startDate}
                 onChange={this.handleChange}
             />
         );

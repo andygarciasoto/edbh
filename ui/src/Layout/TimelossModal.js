@@ -76,7 +76,7 @@ class TimelossModal extends React.Component {
         }))
     }
 
-    componentWillReceiveProps(nextProps) {
+    async componentWillReceiveProps(nextProps) {
         if (nextProps.currentRow) {
             const total = this.calculateTotal(
                 nextProps,
@@ -94,6 +94,10 @@ class TimelossModal extends React.Component {
                     break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
                 })
             }
+            const reasons = await getReasons(nextProps.machine);
+            this.setState({
+                reasons
+            });
         }
     }
 
