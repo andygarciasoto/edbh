@@ -206,8 +206,13 @@ router.get('/intershift_communication', async function (req, res) {
     const shift_code = req.query.sf;
     if (asset_code == undefined || production_day == undefined || shift_code == undefined)
         return res.status(400).send("Bad Request - Missing parameters");
+<<<<<<< HEAD
         
    
+=======
+
+    try {
+>>>>>>> 1089e9838e4e0d1be9bb28f9c343d5c74c0fa536
         await sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
             (err, response) => {
                 if (err){
@@ -439,28 +444,40 @@ router.put('/supervisor_sign_off', async function (req, res) {
         }
     }
 
-    if (dhx_data_id == undefined) {
-        if (asset_code === undefined) {
-            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
-        } else {
-            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                async (data) => {
-                    try {
-                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                        dhx_data_id = response[0].dxhdata_id;
+    await sqlQuery(`exec dbo.sp_clocknumberlogin '${clocknumber}'`,
+        async (data) => {
+            try {
+                let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
+                let role = response[0].Role;
+                if (role === 'Supervisor') {
+                    if (dhx_data_id == undefined) {
+                        if (asset_code === undefined) {
+                            return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+                        } else {
+                            await sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
+                                async (data) => {
+                                    try {
+                                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                                        dhx_data_id = response[0].dxhdata_id;
+                                        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                                            response => responsePostPut(response, req, res)) :
+                                            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                                                responsePostPut(response, req, res));
+                                    } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
+                                });
+                        }
+                    } else {
                         clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
                             response => responsePostPut(response, req, res)) :
                             await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
                                 responsePostPut(response, req, res));
-                    } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
-                });
-        }
-    } else {
-        clocknumber ? await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
-            response => responsePostPut(response, req, res)) :
-            await sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
-                responsePostPut(response, req, res));
-    }
+                    }
+                } else {
+                    return res.status(400).json({ message: "Bad Request - Unauthorized Role to SignOff" });
+                }
+
+            } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
+        });
 });
 
 router.put('/production_data', async function (req, res) {

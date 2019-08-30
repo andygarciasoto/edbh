@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
+import ValidateModal from '../Layout/ValidateModal';
 import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
 
 
@@ -14,8 +15,11 @@ class SignoffModal extends React.Component {
         super(props);
         this.state = {
             value: '',
-            signoffMessage: props.t(props.message) || props.t('By clicking Accept you confirm that all the values for this hour are correct'),
+            signoffMessage: props.t(props.message) || 
+                props.t('By clicking Accept you confirm that all the values for this hour are correct'),
             headerMessage: '',
+            errorMessage: '',
+            modal_validate_IsOpen: false,
             style: {
                 content: {
                     top: '50%',
@@ -31,21 +35,25 @@ class SignoffModal extends React.Component {
             }
         }
         this.signOff = this.signOff.bind(this);
+        this.signOffSupervisor = this.signOffSupervisor.bind(this);
         this.closeModal = this.closeModal.bind(this);
     }
 
     closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ modal_confirm_IsOpen: false, 
+            modal_loading_IsOpen: false, 
+            modal_error_IsOpen: false, 
+            modal_validate_IsOpen: false });
     }
 
-    signOff() {
+    signOffSupervisor(number) {
         let rowData = {}
         if (this.props.currentRow) {
             rowData = this.props.currentRow
         }
         const data = {
             dhx_data_id: rowData.dxhdata_id,
-            clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
+            clocknumber: number,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             asset_code: this.props.parentData[0],
@@ -57,10 +65,17 @@ class SignoffModal extends React.Component {
                 ...data
             }, `/${this.state.signOffRole}_sign_off`)
             response.then((res) => {
+                console.log(res)
                 if (res !== 200 || !res) {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true })
+                    this.setState({ modal_loading_IsOpen: false, 
+                        modal_error_IsOpen: true,  
+                        modal_validate_IsOpen: false, 
+                        errorMessage: 'Invalid Clock Number' })
                 } else {
-                    this.setState({ request_status: res, modal_loading_IsOpen: false, modal_confirm_IsOpen: true })
+                    this.setState({ request_status: res, 
+                        modal_loading_IsOpen: false,
+                        modal_confirm_IsOpen: true, 
+                        modal_validate_IsOpen: false })
                 }
                 this.props.Refresh(this.props.parentData);
                 this.props.onRequestClose();
@@ -68,10 +83,53 @@ class SignoffModal extends React.Component {
         })
     }
 
+    signOff() {
+        let rowData = {}
+        if (this.props.currentRow) {
+            rowData = this.props.currentRow
+        }
+        if (this.state.signOffRole === 'operator') {
+            const data = {
+                dhx_data_id: rowData.dxhdata_id,
+                clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
+                first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
+                last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+                asset_code: this.props.parentData[0],
+                row_timestamp: formatDateWithTime(rowData.hour_interval_start),
+                timestamp: getCurrentTime(),
+            }
+            this.setState({ modal_loading_IsOpen: true }, () => {
+                const response = sendPut({
+                    ...data
+                }, `/${this.state.signOffRole}_sign_off`)
+                response.then((res) => {
+                    console.log(res)
+                    if (res !== 200 || !res) {
+                        this.setState({ 
+                            modal_loading_IsOpen: false, 
+                            modal_error_IsOpen: true, 
+                            modal_validate_IsOpen: false})
+                    } else {
+                        this.setState({ 
+                            request_status: res, 
+                            modal_loading_IsOpen: false,
+                            modal_confirm_IsOpen: true, 
+                            modal_validate_IsOpen: false })
+                    }
+                    this.props.Refresh(this.props.parentData);
+                    this.props.onRequestClose();
+                })
+            })
+        } else if (this.props.signOffRole === 'supervisor') {
+            this.setState({modal_validate_IsOpen: true})
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
             signOffRole: nextProps.signOffRole,
-            headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') + ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')'
+            headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') + 
+            ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')'
         })
     }
 
@@ -92,8 +150,10 @@ class SignoffModal extends React.Component {
                     <div className={"wrap-signoff"}>
                         <p style={{ fontWeight: 'bold' }} className="dashboard-modal-signoff-header">{this.state.headerMessage}</p>
                         <p style={{ textAlign: 'center' }}>{this.state.signoffMessage}</p>
-                        <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }} className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
-                        <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }} className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
+                        <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }} 
+                        className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
+                        <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }} 
+                        className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                     </div>
                 </Modal>
                 <ConfirmModal
@@ -118,7 +178,16 @@ class SignoffModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     t={this.props.t}
+                    message={this.state.errorMessage}
                 />
+                <ValidateModal
+                    isOpen={this.state.modal_validate_IsOpen} 
+                    onRequestClose={this.closeModal}
+                    contentLabel="Example Modal"
+                    label={'Please scan your clocknumber'}
+                    t={this.props.t}
+                    signOffSupervisor={this.signOffSupervisor}
+                    />
             </React.Fragment>
         )
     }

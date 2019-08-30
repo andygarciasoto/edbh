@@ -23,12 +23,44 @@ class Pagination extends React.Component {
         })
     }
 
+    getActualShiftFromActualDate() {
+        let actualDate = moment();
+        let actualShift = 0;
+        if (actualDate >= moment(moment(actualDate).format('YYYY-MM-DD') + ' 07:00') && actualDate < moment(moment(actualDate).format('YYYY-MM-DD') + ' 15:00')) {
+            actualShift = 1;
+        } else if (actualDate > moment(moment(actualDate).format('YYYY-MM-DD') + ' 15:00') && actualDate < moment(moment(actualDate).format('YYYY-MM-DD') + ' 19:00')) {
+            actualShift = 2;
+        } else {
+            actualShift = 3;
+        }
+        return actualShift;
+    }
+
     onSelect(e) {
+        //Get the correct date and shift of the application.
+        let actualDate = moment();
+        let actualShift = this.getActualShiftFromActualDate();
+        //Get the actual selection of date and Shift from the UI.
+        let actualDateSelection = moment(this.state.date);
+        let actualShiftSelection = mapShift(this.state.shift);
+
         let currentShift = mapShift(this.state.shift);
         let currentDate = this.state.date;
         let yesterday = moment(currentDate).add(-1, 'days').format('YYYY-MM-DD HH:mm:ss');
         let newDate;
         let newShift;
+
+        if (e === 'next') {
+            if (actualDate < actualDateSelection) {
+                console.log('Don´t move to the next shift');
+                return;
+            } else if (actualDate.format('YYYYMMDD') === actualDateSelection.format('YYYYMMDD')) {
+                if (actualShift === actualShiftSelection) {
+                    console.log('Don´t move to the next shift');
+                    return;
+                }
+            }
+        }
 
         if (moment(currentDate) === moment()) {
             return;
@@ -59,18 +91,18 @@ class Pagination extends React.Component {
         }
         if (e === 'double-next') {
             newDate = getCurrentTime();
-            this.props.getDashboardData([this.props.selectedMachine, newDate, 1]);
+            this.props.getDashboardData([this.props.selectedMachine, newDate, actualShift]);
             return;
         }
         if (e === 'next') {
             newDate = getCurrentTime();
-            this.props.getDashboardData([this.props.selectedMachine, newDate, currentShift+1]);
+            this.props.getDashboardData([this.props.selectedMachine, newDate, currentShift + 1]);
         }
         if ((e === 'back' && currentShift === 2) || (e === 'back' && currentShift === 3)) {
-            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift-1]);
+            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift - 1]);
         }
         if (e === 'double-back') {
-            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift-2]);
+            this.props.getDashboardData([this.props.selectedMachine, currentDate, currentShift - 2]);
         }
     }
 
@@ -78,7 +110,7 @@ class Pagination extends React.Component {
         const t = this.props.t;
         return (
             <div id="semi-button-deck">
-                <FontAwesome name="angle-double-left"  data-tip='shift' data-for='last-shift' className="icon-arrow" onClick={() => this.onSelect('double-back')} />
+                <FontAwesome name="angle-double-left" data-tip='shift' data-for='last-shift' className="icon-arrow" onClick={() => this.onSelect('double-back')} />
                 <span className="semi-button-shift-change-left" onClick={() => this.onSelect('back')}>
                     <FontAwesome name="caret-left fa-2" className="icon-arrow" />
                     <span id="previous-shift">{t('Previous Shift')}</span>
