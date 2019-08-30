@@ -1,4 +1,4 @@
-import { API } from './Constants';
+import { API, AUTH } from './Constants';
 import moment from 'moment';
 import config from '../config.json'
 
@@ -13,18 +13,9 @@ async function getRequestData(data) {
             sf: mapShift(data[2]),
         }
     }
-    res = await axios.get(`${API}/data`, parameters)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
+    res = await axios.get(`${API}/data`, parameters);
+    console.log("this is the res: " ,res);
+
     if (res) {
       return res.data;
     }
@@ -72,6 +63,19 @@ async function sendPost(data, route) {
   })
   if (res) {
     return res.status;
+  } 
+}
+
+async function sendPostAuth(data, route) {
+  const res = await axios.post(`${AUTH}${route}`, data)
+  .then(function (response) {
+    return response;
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  if (res) {
+    return res;
   } 
 }
 
@@ -256,6 +260,7 @@ export { getRequestData,
   formatDateWithCurrentTime,
   getCurrentTime,
   sendPost,
+  sendPostAuth,
   timelossGetReasons,
   sendPut,
   isComponentValid,

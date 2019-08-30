@@ -94,9 +94,9 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(500).send("Missing parameters");
+    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(400).send("Missing parameters");
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-    async function structureShiftdata(query) {
+    function structureShiftdata(query) {
         try {
             const response = JSON.parse(Object.values(query)[0].Shift_Data);
             const structuredObject = utils.restructureSQLObject(response, 'shift');
@@ -110,21 +110,32 @@ router.get('/data', async function (req, res) {
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
 
-    await sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`,
-        response => structureShiftdata(response));
+    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`,
+        (err, response) => { 
+            if (err){
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            structureShiftdata(response); 
+})
 });
+
 
 router.get('/machine', async function (req, res) {
     function structureMachines(response) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    try {
         const query = "select asset_code From Asset Where asset_level = 'Cell' And status = 'Active' Order by asset_code";
-        await sqlQuery(query, response => structureMachines(response));
-    } catch (e) {
-        res.status(500).send('Database Connection Error');
-    }
+        sqlQuery(query, (err, response) => {
+            if (err){
+                console.log(err)
+                res.sendStatus(500);
+                return;
+            }
+            structureMachines(response);
+        });
 });
 
 router.get('/me', async function (req, res) {
@@ -196,12 +207,16 @@ router.get('/intershift_communication', async function (req, res) {
     if (asset_code == undefined || production_day == undefined || shift_code == undefined)
         return res.status(400).send("Bad Request - Missing parameters");
         
-    try {
+   
         await sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
-            response => responseGet(response, req, res, 'InterShiftData'));
-    } catch (e) {
-        res.status(500).send({ message: 'Error', api_error: e });
-    }
+            (err, response) => {
+                if (err){
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                }
+            responseGet(response, req, res, 'InterShiftData');
+            });
 });
 
 router.post('/dxh_new_comment', async function (req, res) {
@@ -253,7 +268,14 @@ router.get('/timelost_reasons', async function (req, res) {
     }
     const machine = req.query.mc;
 
-    await sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, response => responseGet(response, req, res, 'DTReason'));
+    sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, (err, response) => {
+        if (err){
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+    responseGet(response, req, res, 'DTReason');
+    });
 });
 
 router.get('/dxh_data_id', async function (req, res) {

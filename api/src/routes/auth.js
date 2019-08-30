@@ -21,22 +21,34 @@ router.get("/", function (req, res) {
     res.redirect(401, config['loginURL']);
 });
 
-router.post("/badge", async function (req, res) {
+router.post("/badge", cors(), async function (req, res) {
     const params = req.body;
     if (!params.badge)
     return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
 
-    await sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
-    async (data) => {
+    sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
+    (err, data) => {
+        if (err){
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+        if (data.length === 0){
+            res.sendStatus(401);
+            return;
+        }
         try {
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
-            let username = response[0].Username;
-            var jwt = nJwt.create(username, config['signingKey']);
+            let role = response[0].Role;
+            req.body.username = role;
+            var jwt = nJwt.create(claimsList[req.body.username], config['signingKey']);
             var token = jwt.compact();
             const url = `${config['URL']}/dashboard#token=${token}`;
-            res.redirect(302, url);
+            res.status(200).send({token: token});
+            return;
 
           }  catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
+          return res.redirect(401, config['loginURL']);
                 });
 });
 
