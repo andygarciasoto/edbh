@@ -556,9 +556,11 @@ class DashboardOne extends React.Component {
         {isComponentValid(this.props.user.role, 'pagination') ? <Pagination
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
-          getDashboardData={this.getDashboardData}
+          getDashboardData={this.fetchData}
           selectedMachine={this.state.selectedMachine}
           t={t}
+          history={this.props.history}
+          search={this.props.search}
         /> : null}
         <div className="wrapper-main">
           <Row>

@@ -68,7 +68,7 @@ class Header extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ shiftValue: nextProps.t(nextProps.selectedShift) })
+        this.setState({ shiftValue: nextProps.t(nextProps.selectedShift), dateValue: new Date(nextProps.selectedDate) })
     }
 
     onScroll() {
