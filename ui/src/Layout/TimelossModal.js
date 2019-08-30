@@ -86,14 +86,10 @@ class TimelossModal extends React.Component {
                 timelost: nextProps.timelost,
                 allocated_time: total,
                 // unallocated_time: 60 - total > 0 ? 60 - total : 0,
-                unallocated_time: nextProps.currentRow.unallocated_time
+                unallocated_time: nextProps.currentRow.unallocated_time,
+                setup_time: nextProps.currentRow.summary_setup_minutes || 0,
+                break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
-            if (nextProps.currentRow) {
-                this.setState({
-                    setup_time: nextProps.currentRow.summary_setup_minutes || 0,
-                    break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
-                })
-            }
             const reasons = await getReasons(nextProps.machine);
             this.setState({
                 reasons

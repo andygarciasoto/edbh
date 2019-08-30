@@ -601,7 +601,7 @@ class DashboardOne extends React.Component {
             comments={this.state.comments}
             dxh_parent={dxh_parent ? dxh_parent : null}
             Refresh={this.getDashboardData}
-            parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+            parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           />
         </div>
         <ValueModal
@@ -616,7 +616,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           currentRow={this.state.currentRow}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
 
         <CommentsModal
@@ -630,7 +630,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
         />
 
@@ -646,8 +646,8 @@ class DashboardOne extends React.Component {
           machine={this.state.selectedMachine}
           currentRow={this.state.currentRow}
           user={this.props.user}
-          Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          Refresh={this.fetchData}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
 
         <SignoffModal
@@ -659,7 +659,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           signOffRole={this.state.signOffRole}
         />
         <OrderModal
@@ -674,7 +674,7 @@ class DashboardOne extends React.Component {
           label={'Enter Order Number'}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           showValidateDataModal={this.showValidateDataModal}
         />
         <OrderTwoModal
@@ -686,7 +686,7 @@ class DashboardOne extends React.Component {
           t={t}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
           </React.Fragment>
         );
