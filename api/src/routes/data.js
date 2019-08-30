@@ -206,13 +206,8 @@ router.get('/intershift_communication', async function (req, res) {
     const shift_code = req.query.sf;
     if (asset_code == undefined || production_day == undefined || shift_code == undefined)
         return res.status(400).send("Bad Request - Missing parameters");
-<<<<<<< HEAD
         
    
-=======
-
-    try {
->>>>>>> 1089e9838e4e0d1be9bb28f9c343d5c74c0fa536
         await sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
             (err, response) => {
                 if (err){
