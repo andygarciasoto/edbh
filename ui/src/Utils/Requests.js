@@ -194,6 +194,7 @@ function isComponentValid(role, name) {
       'actual',
       'timelost', 
       'comments',  
+      'operator_signoff',
       'supervisor_signoff',
       'intershifts', 
       'pagination',
@@ -204,7 +205,8 @@ function isComponentValid(role, name) {
       'comments', 
       'pagination',
       'operator_signoff', 
-      'intershifts', 
+      'intershifts',
+      'supervisor_signoff'
     ]
   }
 
