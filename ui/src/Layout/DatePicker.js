@@ -8,7 +8,6 @@ import moment from 'moment';
 class DatePickerCustom extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props.date);
         this.state = {
             startDate: this.props.date,
         }
@@ -16,7 +15,6 @@ class DatePickerCustom extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.date);
         this.setState({ startDate: nextProps.date })
     }
 
@@ -29,7 +27,6 @@ class DatePickerCustom extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <DatePicker
                 fixedHeight

@@ -56,11 +56,10 @@ class Pagination extends React.Component {
 
         if (e === 'next') {
             if (actualDate < actualDateSelection) {
-                console.log('Don´t move to the next shift');
                 return;
             } else if (actualDate.format('YYYYMMDD') === actualDateSelection.format('YYYYMMDD')) {
                 if (actualShift === actualShiftSelection) {
-                    console.log('Don´t move to the next shift');
+                    
                     return;
                 }
             }
@@ -68,7 +67,6 @@ class Pagination extends React.Component {
 
         if (e === 'double-next') {
             if (actualDate < actualDateSelection) {
-                console.log('Don´t move to the next shift');
                 return;
             }
         }
@@ -78,20 +76,16 @@ class Pagination extends React.Component {
         if (e === 'back') {
             if (diffDays === -1) {
                 if (actualShift === 1 && actualShiftSelection <= 2) {
-                    console.log('Don´t move to back shift');
                     return;
                 }
                 if (actualShift === 2 && actualShiftSelection <= 3) {
-                    console.log('Don´t move to back shift');
                     return;
                 }
                 if (actualShift === 3 && actualShiftSelection === 1) {
-                    console.log('Don´t move to back shift');
                     return;
                 }
             } else {
                 if (diffDays < -1) {
-                    console.log('Don´t move to back shift');
                     return;
                 }
             }
@@ -99,7 +93,6 @@ class Pagination extends React.Component {
 
         if (e === 'double-back') {
             if (diffDays < 0) {
-                console.log('Don´t move to back shift');
                 return;
             }
         }
@@ -161,6 +154,7 @@ class Pagination extends React.Component {
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
             this.props.getDashboardData([this.props.selectedMachine, moment(currentDate), currentShift - 1]);
+            return;
         }
 
     }
