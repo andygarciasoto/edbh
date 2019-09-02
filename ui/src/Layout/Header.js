@@ -65,7 +65,7 @@ class Header extends React.Component {
                     <Col className={'col'} md={9} lg={9}>
                         <div className="links header-side">
                             <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
-                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
+                            {isComponentValid(this.props.user.role, 'megamenu') ? <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.openMenu(e)}
                                     name="bars" />
@@ -97,7 +97,9 @@ class Header extends React.Component {
                                     />
                                 </MegaMenu>
                             </span>
-                            <span
+                             : null}
+                             {isComponentValid(this.props.user.role, 'neworder') ? 
+                                <span
                                 className="header-item"
                                 href="#"
                                 id="mega-menu">
@@ -107,7 +109,8 @@ class Header extends React.Component {
                                     {t('New Order')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.props.openModal('order')}
-                                    name="file-text" /></span>
+                                    name="file-text" /></span> : null
+                                }
                         </div>
                     </Col>
                 </Row>

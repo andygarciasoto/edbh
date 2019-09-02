@@ -37,7 +37,6 @@ class CommentsModal extends React.Component {
         response.then((res) => {
             if (res !== 200 || !res) {
                 this.setState({modal_error_IsOpen: true})
-                console.log(response.row_timestamp);
             } else {
                 this.setState({request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false})
             }

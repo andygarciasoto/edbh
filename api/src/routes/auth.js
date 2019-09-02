@@ -23,9 +23,9 @@ router.get("/", function (req, res) {
 
 router.post("/badge", cors(), async function (req, res) {
     const params = req.body;
-    if (!params.badge)
+    if (!params.badge) {
     return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
-
+}
     sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
     (err, data) => {
         if (err){

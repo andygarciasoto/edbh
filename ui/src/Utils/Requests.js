@@ -14,8 +14,7 @@ async function getRequestData(data) {
         }
     }
     res = await axios.get(`${API}/data`, parameters);
-    console.log("this is the res: " ,res);
-
+    
     if (res) {
       return res.data;
     }
@@ -151,7 +150,7 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment().format('YYYY-MM-DD HH:mm:ss');
+  return moment.utc().format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -192,6 +191,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     supervisor: [
       'megamenu',
@@ -202,6 +202,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     operator: [
       'actual',
@@ -210,7 +211,8 @@ function isComponentValid(role, name) {
       'pagination',
       'operator_signoff', 
       'intershifts',
-      'supervisor_signoff'
+      'supervisor_signoff',
+      'neworder'
     ]
   }
 
@@ -252,7 +254,16 @@ function isFieldAllowed(role, row) {
   }
 }
 
-export { getRequestData,
+function formatNumber(number, decimals) {
+  if (!decimals) {
+    return Math.round(number);
+  } else {
+    return number.toFixed(decimals);
+  }
+}
+
+export { 
+  getRequestData,
   getIntershift, 
   getRequest,
   mapShift, 
@@ -266,5 +277,6 @@ export { getRequestData,
   timelossGetReasons,
   sendPut,
   isComponentValid,
-  isFieldAllowed 
+  isFieldAllowed,
+  formatNumber
 }

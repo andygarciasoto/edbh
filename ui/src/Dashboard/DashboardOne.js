@@ -119,7 +119,6 @@ class DashboardOne extends React.Component {
           let allowed = false;
           if (extraParam === 'actual') {
             allowed = isFieldAllowed(this.props.user.role, val.props.row);
-            console.log(allowed)
           }
           this.setState({
             modal_values_IsOpen: allowed,
@@ -157,9 +156,9 @@ class DashboardOne extends React.Component {
       }
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: false,
-        modal_values_IsOpen: false,
-        modal_dropdown_IsOpen: false,
+        modal_comments_IsOpen: true, 
+        modal_values_IsOpen: false, 
+        modal_dropdown_IsOpen: false, 
         modal_signoff_IsOpen: false,
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: false,
@@ -547,8 +546,8 @@ class DashboardOne extends React.Component {
   render() {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
-    const date = this.state.selectedDateParsed;
     const data = this.state.data;
+    console.log(data);
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
