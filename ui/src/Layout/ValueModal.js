@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime, formatNumber } from '../Utils/Requests';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
@@ -29,7 +29,7 @@ class ValueModal extends React.Component {
     submit(e) {
         const data = {
             dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            actual: this.state.newValue ? parseInt(this.state.newValue) : null,
+            actual: this.state.newValue ? formatNumber(parseInt(this.state.newValue)) : null,
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,

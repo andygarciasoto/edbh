@@ -191,6 +191,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     supervisor: [
       'megamenu',
@@ -201,6 +202,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     operator: [
       'actual',
@@ -209,7 +211,8 @@ function isComponentValid(role, name) {
       'pagination',
       'operator_signoff', 
       'intershifts',
-      'supervisor_signoff'
+      'supervisor_signoff',
+      'neworder'
     ]
   }
 
@@ -251,7 +254,16 @@ function isFieldAllowed(role, row) {
   }
 }
 
-export { getRequestData,
+function formatNumber(number, decimals) {
+  if (!decimals) {
+    return Math.round(number);
+  } else {
+    return number.toFixed(decimals);
+  }
+}
+
+export { 
+  getRequestData,
   getIntershift, 
   getRequest,
   mapShift, 
@@ -265,5 +277,6 @@ export { getRequestData,
   timelossGetReasons,
   sendPut,
   isComponentValid,
-  isFieldAllowed 
+  isFieldAllowed,
+  formatNumber
 }
