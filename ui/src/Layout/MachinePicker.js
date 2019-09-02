@@ -20,10 +20,12 @@ class MachinePickerCustom extends React.Component {
         this.setState({ machines: machineArray })
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({ value: nextProps.value });
+    }
+
     onSelect(e) {
-        this.setState({ value: e });
-        this.props.changeMachine(e);
-        this.props.collectInput(e, 'machine');
+        this.props.collectInput(e, 'machineValue');
     }
 
     render() {

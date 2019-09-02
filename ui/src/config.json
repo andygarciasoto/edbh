@@ -2,7 +2,7 @@
     "machine": 10832,
     "user": "Ryan Parker",
     "role": "supervisor",
-    "language": "en",
+    "language": "EN-US",
     "clockNumber": 12332009,
     "loginPage": "http://localhost:3000/login",
     "root": "http://localhost:3000",

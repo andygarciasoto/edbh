@@ -3,27 +3,22 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.scss';
-import moment from 'moment';
 
 class DatePickerCustom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            startDate: this.props.date,
+            startDate: this.props.value,
         }
         this.handleChange = this.handleChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ startDate: nextProps.date })
+        this.setState({ startDate: nextProps.value })
     }
 
     handleChange(date) {
-        this.setState({
-            startDate: date
-        });
-        this.props.collectInput(date, 'date');
-        this.props.changeDate(date);
+        this.props.collectInput(date, 'dateValue');
     }
 
     render() {
