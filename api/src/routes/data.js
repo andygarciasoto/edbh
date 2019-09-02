@@ -228,7 +228,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     }
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp = params.timestamp ? toTimeZone(params.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const row_timestamp = params.row_timestamp;
 
     if (!params.clocknumber) {
@@ -340,7 +340,7 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
@@ -414,7 +414,7 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
@@ -493,7 +493,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const row_timestamp = req.body.row_timestamp;
 
 
@@ -571,7 +571,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
 
@@ -665,7 +665,7 @@ router.put('/production_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = req.body.timestamp ? toTimeZone(req.body.timestamp, _timezone) : moment().tz(_timezone).format(format);
+    const timestamp = moment().tz(_timezone).format(format);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
