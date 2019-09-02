@@ -4,6 +4,7 @@ var nJwt = require('njwt');
 var sqlQuery = require('../objects/sqlConnection');
 import config from '../../config.json';
 import cors from 'cors';
+const storage = require('node-sessionstorage');
 
 var claims = {
     iss: config['URL'],
@@ -12,8 +13,8 @@ var claims = {
 }
 
 var claimsList = {
-    Administrator: { iss: config['URL'], sub: 'users/Administrator', scope: 'admin' },
-    Operator: { iss: config['URL'], sub: 'users/Operator', scope: 'operator' },
+    Administrator: { iss: config['URL'], sub: 'users/Administrator', scope: 'admin'},
+    Operator: { iss: config['URL'], sub: 'users/Operator', scope: 'operator'},
     Supervisor: { iss: config['URL'], sub: 'users/Supervisor', scope: 'supervisor' }
 }
 
@@ -33,17 +34,16 @@ router.post("/badge", cors(), async function (req, res) {
             res.sendStatus(500);
             return;
         }
-        if (data.length === 0){
-            res.sendStatus(401);
-            return;
-        }
         try {
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
+            if (response === null){
+                res.sendStatus(401);
+                return;
+            }
             let role = response[0].Role;
             req.body.username = role;
             var jwt = nJwt.create(claimsList[req.body.username], config['signingKey']);
             var token = jwt.compact();
-            const url = `${config['URL']}/dashboard#token=${token}`;
             res.status(200).send({token: token});
             return;
 
@@ -53,14 +53,35 @@ router.post("/badge", cors(), async function (req, res) {
 });
 
 router.post("/", function (req, res) {
-    if (claimsList[req.body.username] && req.body.password === 'parkerdxh2019') {
-        var jwt = nJwt.create(claimsList[req.body.username], config['signingKey']);
+    const params = req.body;
+    if (!params.username) {
+        return res.status(400).json({ message: "Bad Request - Missing Username" });
+    }
+    sqlQuery(`exec dbo.sp_usernamelogin '${params.username}'`,
+    (err, data) => {
+        if (err){
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+            let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
+            if (response === null){
+                res.sendStatus(401);
+                return;
+            }
+            let role = response[0].Role;
+            storage.setItem('username', params.username);
+            params.username = role;
+    
+        if (claimsList[params.username] && params.password === 'parkerdxh2019') {
+        var jwt = nJwt.create(claimsList[params.username], config['signingKey']);
         var token = jwt.compact();
         const url = `${config['URL']}/dashboard#token=${token}`;
         res.redirect(302, url);
         return;
     }
     return res.redirect(401, config['loginURL']);
+          });
 });
 
 module.exports = router;

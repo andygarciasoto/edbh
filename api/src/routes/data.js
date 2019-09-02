@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment-timezone';
 import { runInNewContext } from 'vm';
-const fs = require('fs')
+const fs = require('fs');
+const storage = require('node-sessionstorage');
 
 import config from '../../config.json';
 
@@ -140,7 +141,6 @@ router.get('/machine', async function (req, res) {
 
 router.get('/me', async function (req, res) {
     let token = req.header('Authorization');
-    let user = {};
     if (token && token.startsWith('Bearer ')) {
         token = token.slice(7, token.length).trimLeft();
     }
@@ -155,24 +155,22 @@ router.get('/me', async function (req, res) {
                 message: e
             });
         }
-        if (payload && payload.body.sub) {
-            switch (payload.body.sub) {
-                case 'users/Administrator':
-                    user = { first_name: 'Adam', last_name: 'Hall', role: 'administrator', clock_number: 2477 };
-                    break;
-                case 'users/Operator':
-                    user = { first_name: 'Allen', last_name: 'Tabor', role: 'operator', clock_number: 1560 };
-                    break;
-                case 'users/Supervisor':
-                    user = { first_name: 'Shawn', last_name: 'Mariani', role: 'supervisor', clock_number: 47132 };
-                    break;
-                default:
-                    res.status(401);
-                    return res.json({
-                        success: false,
-                        message: 'User sub is invalid'
-                    });
+        if (storage.getItem('username')) {
+            let user = storage.getItem('username');
+            sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
+            (err, data) => {
+                if (err){
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                }
+            let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
+            if (response === null){
+                res.sendStatus(401);
+                return;
             }
+            return res.status(200).json(response);
+        });  
         } else {
             res.status(401);
             return res.json({
@@ -187,7 +185,6 @@ router.get('/me', async function (req, res) {
             message: 'Auth token is not supplied'
         });
     }
-    return res.status(200).json(user);
 });
 
 router.get('/shifts', async function (req, res) {
