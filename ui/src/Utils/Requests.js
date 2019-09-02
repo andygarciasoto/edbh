@@ -14,8 +14,7 @@ async function getRequestData(data) {
         }
     }
     res = await axios.get(`${API}/data`, parameters);
-    console.log("this is the res: " ,res);
-
+    
     if (res) {
       return res.data;
     }
@@ -151,7 +150,7 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment().format('YYYY-MM-DD HH:mm:ss');
+  return moment.utc().format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {

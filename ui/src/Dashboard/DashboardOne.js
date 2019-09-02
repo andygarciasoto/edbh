@@ -156,7 +156,7 @@ class DashboardOne extends React.Component {
       }
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: false, 
+        modal_comments_IsOpen: true, 
         modal_values_IsOpen: false, 
         modal_dropdown_IsOpen: false, 
         modal_signoff_IsOpen: false,
