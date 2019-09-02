@@ -87,8 +87,16 @@ function init() {
             return response;
         })
         .then(function (json) {
+            const user = {
+                first_name: json.data[0]['First Name'],
+                last_name: json.data[0]['Last Name'],
+                username: json.data[0].Username,
+                password: json.data[0].Password,
+                role: json.data[0].Role,
+                clock_number: json.data[0].Badge
+            }
             ReactDOM.render(
-                <App user={json.data} />, document.getElementById('root'));
+                <App user={user} />, document.getElementById('root'));
         }).catch((e) => {
             console.log(e)
         })

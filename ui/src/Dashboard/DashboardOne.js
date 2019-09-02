@@ -16,6 +16,7 @@ import OrderTwoModal from '../Layout/OrderTwoModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
+import openSocket from 'socket.io-client';
 import {
   getRequestData,
   getIntershift,
@@ -29,6 +30,7 @@ import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
+import { SOCKET } from '../Utils/Constants';
 import('moment/locale/es');
 
 
@@ -82,7 +84,6 @@ class DashboardOne extends React.Component {
   }
 
   showValidateDataModal(data) {
-    console.log(data)
     this.setState({
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: true,
@@ -226,10 +227,30 @@ class DashboardOne extends React.Component {
         backgroundColor: 'rgba(0,0,0, 0.6)'
       }
     };
-
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
     this.setState({ modalStyle, selectedDate: this.state.selectedDate, selectedDateParsed: x })
     this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+
+    const socket = openSocket.connect(SOCKET);
+    socket.on('connect', () => console.log('Connected to the Websocket Service'));
+    socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
+    try {
+        socket.on('message', response => {
+          console.log('Message from socket service. To be tested in deployed version and removed after.');
+            if (response.message === true) {
+              if ((this.state.modal_authorize_IsOpen === false) && 
+              (this.state.modal_comments_IsOpen === false) && 
+              (this.state.modal_dropdown_IsOpen === false) && 
+              (this.state.modal_order_IsOpen === false) && 
+              (this.state.modal_signoff_IsOpen === false) && 
+              (this.state.modal_values_IsOpen === false) && 
+              (this.state.modal_order_two_IsOpen === false)
+              ) {
+                this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+              }
+            }
+        });
+    } catch (e) { console.log(e) }
   };
 
   componentWillReceiveProps(nextProps) {
@@ -544,10 +565,10 @@ class DashboardOne extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
-    console.log(data);
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
