@@ -2,7 +2,6 @@
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import './LanguagePicker.scss';
-import i18next from 'i18next';
 
 class LanguagePickerCustom extends React.Component {
   constructor(props) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Form, Button, Row, Col, Table } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import * as _ from 'lodash';
 import './ManualEntryModal.scss';
 import { sendPut } from '../Utils/Requests';
