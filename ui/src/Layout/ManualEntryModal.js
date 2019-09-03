@@ -105,7 +105,6 @@ class ManualEntryModal extends React.Component {
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Manual Entry')}</h4></span>
                     <span className="dashboard-modal-field-group"><p>{t('Part Number')}:</p>
                         <Form.Control
-                            disabled={true}
                             value={this.state.part_number}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
@@ -115,7 +114,6 @@ class ManualEntryModal extends React.Component {
                     <br />
                     <span className="dashboard-modal-field-group"><p>{t('Ideal')}:</p>
                         <Form.Control
-                            disabled={true}
                             value={this.state.ideal}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
@@ -125,7 +123,6 @@ class ManualEntryModal extends React.Component {
                     <br />
                     <span className="dashboard-modal-field-group"><p>{t('Target')}:</p>
                         <Form.Control
-                            disabled={true}
                             value={this.state.target}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
