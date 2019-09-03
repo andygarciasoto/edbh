@@ -12,6 +12,7 @@ import TimelossModal from '../Layout/TimelossModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
 import OrderTwoModal from '../Layout/OrderTwoModal';
+import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
@@ -53,6 +54,7 @@ class DashboardOne extends React.Component {
       modal_dropdown_IsOpen: false,
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
+      modal_manualentry_IsOpen: false,
       valid_barcode: false,
       barcode: 1001,
       dataCall: {},
@@ -80,14 +82,14 @@ class DashboardOne extends React.Component {
     this.showValidateDataModal = this.showValidateDataModal.bind(this);
   }
 
-    showValidateDataModal(data) {
-      console.log(data)
-      this.setState({
-        modal_order_IsOpen: false, 
-        modal_order_two_IsOpen: true, 
-        orderTwo_data: data[0].OrderData
-      })
-    }
+  showValidateDataModal(data) {
+    console.log(data)
+    this.setState({
+      modal_order_IsOpen: false,
+      modal_order_two_IsOpen: true,
+      orderTwo_data: data[0].OrderData
+    })
+  }
 
   openModal(type, val, extraParam) {
     let value = ''
@@ -156,12 +158,12 @@ class DashboardOne extends React.Component {
       }
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: false, 
-        modal_values_IsOpen: false, 
-        modal_dropdown_IsOpen: false, 
+        modal_comments_IsOpen: true,
+        modal_values_IsOpen: false,
+        modal_dropdown_IsOpen: false,
         modal_signoff_IsOpen: false,
-        modal_order_IsOpen: false, 
-        modal_order_two_IsOpen: false, 
+        modal_order_IsOpen: false,
+        modal_order_two_IsOpen: false,
       });
     }
     if (type === 'dropdown') {
@@ -171,6 +173,20 @@ class DashboardOne extends React.Component {
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
           modal_dropdown_IsOpen: true,
+          current_display_timelost: timelost,
+          currentRow: val.row._subRows[0]._original,
+
+        })
+      }
+    }
+    if (type === 'manualentry') {
+      if (val) {
+        const timelost = val.row._subRows[0]._original.timelost;
+        this.setState({
+          modal_values_IsOpen: false,
+          modal_comments_IsOpen: false,
+          modal_dropdown_IsOpen: false,
+          modal_manualentry_IsOpen: true,
           current_display_timelost: timelost,
           currentRow: val.row._subRows[0]._original,
 
@@ -206,6 +222,7 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: false,
+      modal_manualentry_IsOpen: false
     });
   }
 
@@ -267,10 +284,12 @@ class DashboardOne extends React.Component {
           {this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
         accessor: 'hour_interval',
         minWidth: 150,
-        style: { backgroundColor: 'rgb(247, 247, 247)', 
-        borderRight: 'solid 1px rgb(219, 219, 219)', 
-        borderLeft: 'solid 1px rgb(219, 219, 219)', 
-        borderTop: 'solid 1px rgb(219, 219, 219)' },
+        style: {
+          backgroundColor: 'rgb(247, 247, 247)',
+          borderRight: 'solid 1px rgb(219, 219, 219)',
+          borderLeft: 'solid 1px rgb(219, 219, 219)',
+          borderTop: 'solid 1px rgb(219, 219, 219)'
+        },
         Pivot: row => {
           return <span>{row.value}</span>;
         },
@@ -304,8 +323,9 @@ class DashboardOne extends React.Component {
             paddingRight: 180,
             cursor: 'pointer'
           }}
-            className={'empty-field'}></span> :
-          <span className='ideal'>
+            className={'empty-field'}
+            onClick={() => this.openModal('manualentry', props)}></span> :
+          <span className='ideal' onClick={() => this.openModal('manualentry', props)}>
             <span className="empty">{props.value}</span></span>,
         PivotValue: <span>{''}</span>
       }, {
@@ -688,9 +708,23 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
         />
-          </React.Fragment>
-        );
-    }
+        <ManualEntryModal
+          isOpen={this.state.modal_manualentry_IsOpen}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={this.state.modalStyle}
+          contentLabel="Example Modal"
+          t={t}
+          timelost={this.state.current_display_timelost}
+          machine={this.state.selectedMachine}
+          currentRow={this.state.currentRow}
+          user={this.props.user}
+          Refresh={this.fetchData}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+        />
+      </React.Fragment>
+    );
+  }
 };
 
 export default DashboardOne;
