@@ -20,6 +20,8 @@
     "moment-timezone": "^0.5.26",
     "mssql": "^5.1.0",
     "njwt": "^1.0.0",
+    "node-sessionstorage": "^1.0.0",
+    "socket.io": "^2.2.0",
     "tedious": "^2.7.0",
     "tedious-connection-pool": "^1.0.5"
   },

@@ -8,7 +8,11 @@ import { sendPut } from '../Utils/Requests';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
-import { timelossGetReasons as getReasons, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
+import { 
+    timelossGetReasons as getReasons, 
+    formatDateWithTime, 
+    getCurrentTime,
+    formatNumber } from '../Utils/Requests';
 
 
 
@@ -86,14 +90,10 @@ class TimelossModal extends React.Component {
                 timelost: nextProps.timelost,
                 allocated_time: total,
                 // unallocated_time: 60 - total > 0 ? 60 - total : 0,
-                unallocated_time: nextProps.currentRow.unallocated_time
+                unallocated_time: nextProps.currentRow.unallocated_time,
+                setup_time: nextProps.currentRow.summary_setup_minutes || 0,
+                break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
-            if (nextProps.currentRow) {
-                this.setState({
-                    setup_time: nextProps.currentRow.summary_setup_minutes || 0,
-                    break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
-                })
-            }
             const reasons = await getReasons(nextProps.machine);
             this.setState({
                 reasons
@@ -155,15 +155,15 @@ class TimelossModal extends React.Component {
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                             <p>{t('Total Timelost')}</p>
-                            <input type="text" disabled={true} value={this.state.allocated_time}></input>
+                            <input type="text" disabled={true} value={formatNumber(this.state.allocated_time)}></input>
                         </Col>
                         <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
                             <p>{t('Lunch/Break Time')}</p>
-                            <input type="text" disabled={true} value={this.state.break_time}></input>
+                            <input type="text" disabled={true} value={formatNumber(this.state.break_time)}></input>
                         </Col>
                         <Col sm={4} md={4} className="setup-timeloss number-field timeloss-top">
                             <p>{t('Setup Time')}</p>
-                            <input type="text" disabled={true} value={this.state.setup_time}></input>
+                            <input type="text" disabled={true} value={formatNumber(this.state.setup_time)}></input>
                         </Col>
                     </Row>
                     <div className="timeloss-table">
@@ -199,7 +199,7 @@ class TimelossModal extends React.Component {
                                 <input className={'timelost-field'}
                                     type="text"
                                     disabled={true}
-                                    value={this.state.unallocated_time}></input>
+                                    value={formatNumber(this.state.unallocated_time)}></input>
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>
@@ -215,7 +215,7 @@ class TimelossModal extends React.Component {
                             <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{this.props.label ? this.props.label : t('New Value')}:</p>
                             <Form.Group controlId="formGridState">
                                 <ReactSelect
-                                    value={this.state.new_tl_reason}
+                                    value={formatNumber(this.state.new_tl_reason)}
                                     onChange={(e) => this.setState({ new_tl_reason: e }, (e) => this.validate(e))}
                                     options={reasons}
                                     className={"react-select-container"}

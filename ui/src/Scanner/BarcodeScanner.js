@@ -4,6 +4,7 @@ import './BarcodeScanner.scss';
 import BlinkDots from '../Layout/BlinkDots';
 import ErrorModal from  '../Layout/ErrorModal';
 import LoadingModal from  '../Layout/LoadingModal';
+import { sendPostAuth } from '../Utils/Requests';
 
 class  BarcodeScanner extends Component {
   constructor(props){
@@ -51,14 +52,17 @@ class  BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    if (code === '201710281758') {
-      console.log('success!')
-      this.handleLoad();
-    } else {
-      console.log('fail!')
-      this.setState({result: 'Error'});
-      this.handleError();
+    const response = sendPostAuth({
+      badge: code
+  }, '/badge')
+  response.then((res) => {
+    if (res.status !== 200) {
+        this.handleError();
+        this.setState({result: 'Error'});
+        console.log("This is not working: " ,code);
     }
+    window.location.replace("/dashboard#token=" +res.data.token);
+  }) 
   }
 
   handleError(err) {

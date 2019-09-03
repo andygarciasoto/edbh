@@ -23,7 +23,7 @@ var connectionConfig = {
 //create the pool
 var pool = new ConnectionPool(poolConfig, connectionConfig);
 
-async function PerformQuery(statement, callback) {
+function PerformQuery(statement, callback) {
   pool.on('error', function (err) {
     console.error(err);
   });
@@ -31,7 +31,7 @@ async function PerformQuery(statement, callback) {
   pool.acquire(async function (err, connection) {
     if (err) {
       console.error(err);
-      return;
+      return callback(err);
     } else {
       var results = [];
       var request = new Request(statement, function (error) {
@@ -42,9 +42,9 @@ async function PerformQuery(statement, callback) {
         //release the connection back to the pool when finished
         connection.release();
         //pass the results array on through the callback
-        callback(results);
+        callback(null, results);
       });
-      await request.on("row", columns => {
+      request.on("row", columns => {
         var _item = {};
         // Converting the response row to a JSON formatted object: [property]: value
         for (var name in columns) {

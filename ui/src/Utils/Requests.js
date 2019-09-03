@@ -1,4 +1,4 @@
-import { API } from './Constants';
+import { API, AUTH } from './Constants';
 import moment from 'moment';
 import config from '../config.json'
 
@@ -13,18 +13,8 @@ async function getRequestData(data) {
             sf: mapShift(data[2]),
         }
     }
-    res = await axios.get(`${API}/data`, parameters)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
+    res = await axios.get(`${API}/data`, parameters);
+    
     if (res) {
       return res.data;
     }
@@ -72,6 +62,19 @@ async function sendPost(data, route) {
   })
   if (res) {
     return res.status;
+  } 
+}
+
+async function sendPostAuth(data, route) {
+  const res = await axios.post(`${AUTH}${route}`, data)
+  .then(function (response) {
+    return response;
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  if (res) {
+    return res;
   } 
 }
 
@@ -147,7 +150,7 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment().format('YYYY-MM-DD HH:mm:ss');
+  return moment.utc().format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -174,7 +177,11 @@ async function timelossGetReasons(machine) {
   }
 }
 
-function isComponentValid(role, name) {
+function isComponentValid(user_role, name) {
+  let role;
+  if (user_role) {
+    role = user_role.toLowerCase();
+  }
   const componentStructure = {
     administrator: [
       'megamenu',
@@ -188,6 +195,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     supervisor: [
       'megamenu',
@@ -198,6 +206,7 @@ function isComponentValid(role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
+      'neworder'
     ],
     operator: [
       'actual',
@@ -206,7 +215,8 @@ function isComponentValid(role, name) {
       'pagination',
       'operator_signoff', 
       'intershifts',
-      'supervisor_signoff'
+      'supervisor_signoff',
+      'neworder'
     ]
   }
 
@@ -248,7 +258,16 @@ function isFieldAllowed(role, row) {
   }
 }
 
-export { getRequestData,
+function formatNumber(number, decimals) {
+  if (!decimals) {
+    return Math.round(number);
+  } else {
+    return number.toFixed(decimals);
+  }
+}
+
+export { 
+  getRequestData,
   getIntershift, 
   getRequest,
   mapShift, 
@@ -258,8 +277,10 @@ export { getRequestData,
   formatDateWithCurrentTime,
   getCurrentTime,
   sendPost,
+  sendPostAuth,
   timelossGetReasons,
   sendPut,
   isComponentValid,
-  isFieldAllowed 
+  isFieldAllowed,
+  formatNumber
 }

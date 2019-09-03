@@ -4,6 +4,7 @@ import '../sass/tooltip.scss'
 import Header from '../Layout/Header';
 import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
+import i18next from 'i18next';
 import 'react-table/react-table.css';
 import moment from 'moment';
 import CommentsModal from '../Layout/CommentModal';
@@ -16,6 +17,7 @@ import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
+import openSocket from 'socket.io-client';
 import {
   getRequestData,
   getIntershift,
@@ -29,6 +31,7 @@ import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
+import { SOCKET } from '../Utils/Constants';
 import('moment/locale/es');
 
 
@@ -36,7 +39,7 @@ class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
     var hour = (new Date().getHours());
-    var shiftByHour;
+    let shiftByHour;
     if (hour >= 7 && hour < 15) {
       shiftByHour = '1st Shift';
     } else if (hour >= 15 && hour < 23) {
@@ -61,7 +64,7 @@ class DashboardOne extends React.Component {
       selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
       selectedDateParsed: '',
       selectedMachine: props.search.mc || config['machine'],
-      currentLanguage: sessionStorage.getItem('language') || config['language'],
+      currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
       modalType: '',
       expanded: {},
@@ -83,7 +86,6 @@ class DashboardOne extends React.Component {
   }
 
   showValidateDataModal(data) {
-    console.log(data)
     this.setState({
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: true,
@@ -120,7 +122,6 @@ class DashboardOne extends React.Component {
           let allowed = false;
           if (extraParam === 'actual') {
             allowed = isFieldAllowed(this.props.user.role, val.props.row);
-            console.log(allowed)
           }
           this.setState({
             modal_values_IsOpen: allowed,
@@ -227,6 +228,9 @@ class DashboardOne extends React.Component {
   }
 
   async componentDidMount() {
+    let currentLanguage = this.state.currentLanguage.toLowerCase();
+    currentLanguage = currentLanguage.replace('-', '_')
+    i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
     const modalStyle = {
       content: {
         top: '50%',
@@ -240,16 +244,54 @@ class DashboardOne extends React.Component {
         backgroundColor: 'rgba(0,0,0, 0.6)'
       }
     };
-
-    this.setState({ modalStyle })
-    //const date = new Date();
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
-    this.setState({ selectedDate: this.state.selectedDate, selectedDateParsed: x })
+    this.setState({ modalStyle, selectedDate: this.state.selectedDate, selectedDateParsed: x })
     this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
-  }
+
+    const socket = openSocket.connect(SOCKET);
+    socket.on('connect', () => console.log('Connected to the Websocket Service'));
+    socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
+    try {
+      socket.on('message', response => {
+        console.log('Message from socket service. To be tested in deployed version and removed after.');
+        if (response.message === true) {
+          if ((this.state.modal_authorize_IsOpen === false) &&
+            (this.state.modal_comments_IsOpen === false) &&
+            (this.state.modal_dropdown_IsOpen === false) &&
+            (this.state.modal_order_IsOpen === false) &&
+            (this.state.modal_signoff_IsOpen === false) &&
+            (this.state.modal_values_IsOpen === false) &&
+            (this.state.modal_order_two_IsOpen === false)
+          ) {
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+          }
+        }
+      });
+    } catch (e) { console.log(e) }
+  };
 
   componentWillReceiveProps(nextProps) {
-    //this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+    var hour = (new Date().getHours());
+    let shiftByHour;
+    if (hour >= 7 && hour < 15) {
+      shiftByHour = '1st Shift';
+    } else if (hour >= 15 && hour < 23) {
+      shiftByHour = '2nd Shift';
+    } else {
+      shiftByHour = '3rd Shift';
+    };
+    this.setState({
+      selectedDate: nextProps.search.dt || moment().format('YYYY/MM/DD'),
+      selectedMachine: nextProps.search.mc || config['machine'],
+      currentLanguage: nextProps.search.ln || config['language'],
+      selectedShift: nextProps.search.sf || shiftByHour
+    })
+  }
+
+  changeLanguageBrowser = () => {
+    let currentLanguage = this.state.currentLanguage.toLowerCase();
+    currentLanguage = currentLanguage.replace('-', '_');
+    i18next.changeLanguage(currentLanguage);
   }
 
   async fetchData(data) {
@@ -541,9 +583,9 @@ class DashboardOne extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
-    const date = this.state.selectedDateParsed;
     const data = this.state.data;
     // @DEV: *****************************
     // Always assign data to variable then 
@@ -559,17 +601,14 @@ class DashboardOne extends React.Component {
     return (
       <React.Fragment>
         <Header className="app-header"
-          toParent={this.fetchData}
           t={t}
-          changeMachine={this.changeMachine}
-          changeDate={this.changeDate}
-          changeDateLanguage={this.changeLanguage}
-          sendToMain={this.headerData}
           selectedMachine={this.state.selectedMachine}
           selectedDate={this.state.selectedDate}
           selectedShift={this.state.selectedShift}
+          selectedLanguage={this.state.currentLanguage}
           user={this.props.user}
           openModal={this.openModal}
+          changeLanguageBrowser={this.changeLanguageBrowser}
           history={this.props.history}
           search={this.props.search}
         />
@@ -590,7 +629,7 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5>{'Showing Data for: '}{moment(this.state.selectedDate).locale('en').format('LL')}</h5></Col>
+                <Col md={3}><h5>{'Showing Data for: '}{moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}
@@ -621,7 +660,7 @@ class DashboardOne extends React.Component {
             comments={this.state.comments}
             dxh_parent={dxh_parent ? dxh_parent : null}
             Refresh={this.getDashboardData}
-            parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+            parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           />
         </div>
         <ValueModal
@@ -636,7 +675,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           currentRow={this.state.currentRow}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
 
         <CommentsModal
@@ -650,7 +689,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
         />
 
@@ -666,8 +705,8 @@ class DashboardOne extends React.Component {
           machine={this.state.selectedMachine}
           currentRow={this.state.currentRow}
           user={this.props.user}
-          Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          Refresh={this.fetchData}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
 
         <SignoffModal
@@ -679,7 +718,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           signOffRole={this.state.signOffRole}
         />
         <OrderModal
@@ -694,7 +733,7 @@ class DashboardOne extends React.Component {
           label={'Enter Order Number'}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           showValidateDataModal={this.showValidateDataModal}
         />
         <OrderTwoModal
@@ -706,7 +745,7 @@ class DashboardOne extends React.Component {
           t={t}
           user={this.props.user}
           Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, formatDate(this.state.selectedDate).split("-").join(""), this.state.selectedShift]}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
         <ManualEntryModal
           isOpen={this.state.modal_manualentry_IsOpen}
@@ -722,7 +761,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 };

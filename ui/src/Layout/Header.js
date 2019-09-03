@@ -10,10 +10,7 @@ import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
 import QueryButton from './QueryButton';
 import { isComponentValid } from '../Utils/Requests';
-import moment from 'moment';
-import config from '../config.json';
 import { Link } from 'react-router-dom';
-import $ from 'jquery';
 
 
 class Header extends React.Component {
@@ -21,35 +18,18 @@ class Header extends React.Component {
         super(props);
         this.state = {
             megaMenuToggle: 'dropdown-content',
-            machineValue: props.selectedMachine || config['machine'],
+            machineValue: props.selectedMachine || props.t('Select Machine'),
             dateValue: new Date(props.selectedDate),
-            shiftValue: props.selectedShift || 'Select Shift',
+            shiftValue: props.selectedShift || props.t('Select Shift'),
+            languageValue: props.selectedLanguage || props.t('Select Language'),
             newOrder_value: ''
         }
         this.openMenu = this.openMenu.bind(this);
-        this.collectInputs = this.collectInputs.bind(this);
-        this.returnToParent = this.returnToParent.bind(this);
         this.onScroll = this.onScroll.bind(this);
     }
 
-    collectInputs(value, type) {
-        let { search } = this.props;
-        let queryItem = Object.assign({}, search);
-        if (type === 'machine') {
-            queryItem["mc"] = value;
-            this.setState({ machineValue: value })
-        }
-        if (type === 'date') {
-            queryItem["dt"] = moment(value).format('YYYY/MM/DD');
-            this.setState({ dateValue: moment(value).format('YYYY/MM/DD') })
-        }
-        if (type === 'shift') {
-            queryItem["sf"] = value;
-            // this.setState({shiftValue: value})
-            this.props.sendToMain(value);
-        }
-        let parameters = $.param(queryItem);
-        this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
+    collectInputs = (value, type) => {
+        this.setState({ [type]: value });
     }
 
     openMenu() {
@@ -59,16 +39,17 @@ class Header extends React.Component {
                 this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void (0);
     }
 
-    returnToParent(data) {
-        this.props.toParent(data);
-    }
-
     componentDidMount() {
         window.addEventListener('scroll', this.onScroll)
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ shiftValue: nextProps.t(nextProps.selectedShift), dateValue: new Date(nextProps.selectedDate) })
+        this.setState({
+            machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
+            dateValue: new Date(nextProps.selectedDate),
+            shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
+            languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
+        })
     }
 
     onScroll() {
@@ -84,40 +65,41 @@ class Header extends React.Component {
                     <Col className={'col'} md={9} lg={9}>
                         <div className="links header-side">
                             <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
-                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
+                            {isComponentValid(this.props.user.role, 'megamenu') ? <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.openMenu(e)}
                                     name="bars" />
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
-                                        changeMachine={this.props.changeMachine}
                                         t={t}
-                                        value={this.state.machineValue || t('Select Machine')} />
+                                        value={this.state.machineValue} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
-                                        changeDate={this.props.changeDate}
-                                        date={this.state.dateValue} />
+                                        value={this.state.dateValue} />
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={t}
-                                        value={t('Select Shift')}
-                                        currentShift={this.state.shiftValue} />
+                                        value={this.state.shiftValue} />
                                     <LanguagePickerCustom
-                                        changeDateLanguage={this.props.changeDateLanguage}
-                                        openMenu={this.openMenu}
-                                        value={t('Select Language')} />
+                                        collectInput={this.collectInputs}
+                                        value={this.state.languageValue} />
                                     <QueryButton
                                         machine={this.state.machineValue}
                                         date={this.state.dateValue}
                                         shift={this.state.shiftValue}
-                                        toParent={this.returnToParent}
+                                        language={this.state.languageValue}
+                                        changeLanguageBrowser={this.props.changeLanguageBrowser}
                                         openMenu={this.openMenu}
+                                        search={this.props.search}
+                                        history={this.props.history}
                                         t={t}
                                     />
                                 </MegaMenu>
                             </span>
-                            <span
+                             : null}
+                             {isComponentValid(this.props.user.role, 'neworder') ? 
+                                <span
                                 className="header-item"
                                 href="#"
                                 id="mega-menu">
@@ -127,7 +109,8 @@ class Header extends React.Component {
                                     {t('New Order')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.props.openModal('order')}
-                                    name="file-text" /></span>
+                                    name="file-text" /></span> : null
+                                }
                         </div>
                     </Col>
                 </Row>
