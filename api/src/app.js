@@ -6,6 +6,7 @@ import data from './routes/data';
 import auth from './routes/auth';
 var cors = require('cors');
 import config from  '../config.json';
+const io = require('socket.io');
 
 var whitelist = config['cors'];
 var corsOptions = {
@@ -45,8 +46,22 @@ app.use('/auth', auth);
 app.use('/api', data);
 
 var port = process.env.PORT || 8080;
-app.listen(port);
+var server = app.listen(port);
 console.log('Started API on port', port);
+
+const ioServer = io();
+
+ioServer.on('connection', function(socket){
+  setInterval(
+    function() {io.emit('message', {id: 1, message: true})}, 60000
+  )
+});
+
+ioServer.attach(server,{
+  origins : config['cors'],
+  cookie : false,
+  serveClient : false
+});
 
 
 

@@ -13,22 +13,26 @@ import TimelossModal from '../Layout/TimelossModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
 import OrderTwoModal from '../Layout/OrderTwoModal';
+import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import Pagination from '../Layout/Pagination';
+import openSocket from 'socket.io-client';
 import {
   getRequestData,
   getIntershift,
   formatDate,
   isComponentValid,
   mapShiftReverse,
-  isFieldAllowed
+  isFieldAllowed,
+  mapShift
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
+import { SOCKET } from '../Utils/Constants';
 import('moment/locale/es');
 
 
@@ -54,6 +58,7 @@ class DashboardOne extends React.Component {
       modal_dropdown_IsOpen: false,
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
+      modal_manualentry_IsOpen: false,
       valid_barcode: false,
       barcode: 1001,
       dataCall: {},
@@ -82,7 +87,6 @@ class DashboardOne extends React.Component {
   }
 
   showValidateDataModal(data) {
-    console.log(data)
     this.setState({
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: true,
@@ -156,9 +160,9 @@ class DashboardOne extends React.Component {
       }
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: true, 
-        modal_values_IsOpen: false, 
-        modal_dropdown_IsOpen: false, 
+        modal_comments_IsOpen: true,
+        modal_values_IsOpen: false,
+        modal_dropdown_IsOpen: false,
         modal_signoff_IsOpen: false,
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: false,
@@ -171,6 +175,20 @@ class DashboardOne extends React.Component {
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
           modal_dropdown_IsOpen: true,
+          current_display_timelost: timelost,
+          currentRow: val.row._subRows[0]._original,
+
+        })
+      }
+    }
+    if (type === 'manualentry') {
+      if (val) {
+        const timelost = val.row._subRows[0]._original.timelost;
+        this.setState({
+          modal_values_IsOpen: false,
+          modal_comments_IsOpen: false,
+          modal_dropdown_IsOpen: false,
+          modal_manualentry_IsOpen: true,
           current_display_timelost: timelost,
           currentRow: val.row._subRows[0]._original,
 
@@ -206,6 +224,7 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: false,
+      modal_manualentry_IsOpen: false
     });
   }
 
@@ -226,10 +245,30 @@ class DashboardOne extends React.Component {
         backgroundColor: 'rgba(0,0,0, 0.6)'
       }
     };
-
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
     this.setState({ modalStyle, selectedDate: this.state.selectedDate, selectedDateParsed: x })
     this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+
+    const socket = openSocket.connect(SOCKET);
+    socket.on('connect', () => console.log('Connected to the Websocket Service'));
+    socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
+    try {
+      socket.on('message', response => {
+        console.log('Message from socket service. To be tested in deployed version and removed after.');
+        if (response.message === true) {
+          if ((this.state.modal_authorize_IsOpen === false) &&
+            (this.state.modal_comments_IsOpen === false) &&
+            (this.state.modal_dropdown_IsOpen === false) &&
+            (this.state.modal_order_IsOpen === false) &&
+            (this.state.modal_signoff_IsOpen === false) &&
+            (this.state.modal_values_IsOpen === false) &&
+            (this.state.modal_order_two_IsOpen === false)
+          ) {
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+          }
+        }
+      });
+    } catch (e) { console.log(e) }
   };
 
   componentWillReceiveProps(nextProps) {
@@ -242,12 +281,13 @@ class DashboardOne extends React.Component {
     } else {
       shiftByHour = '3rd Shift';
     };
+    let _this = this;
     this.setState({
       selectedDate: nextProps.search.dt || moment().format('YYYY/MM/DD'),
       selectedMachine: nextProps.search.mc || config['machine'],
       currentLanguage: nextProps.search.ln || config['language'],
       selectedShift: nextProps.search.sf || shiftByHour
-    })
+    }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
   }
 
   changeLanguageBrowser = () => {
@@ -327,8 +367,9 @@ class DashboardOne extends React.Component {
             paddingRight: 180,
             cursor: 'pointer'
           }}
-            className={'empty-field'}></span> :
-          <span className='ideal'>
+            className={'empty-field'}
+            onClick={() => this.openModal('manualentry', props)}></span> :
+          <span className='ideal' onClick={() => this.openModal('manualentry', props)}>
             <span className="empty">{props.value}</span></span>,
         PivotValue: <span>{''}</span>
       }, {
@@ -547,7 +588,6 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
-    console.log(data);
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
@@ -576,7 +616,6 @@ class DashboardOne extends React.Component {
         {isComponentValid(this.props.user.role, 'pagination') ? <Pagination
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
-          getDashboardData={this.fetchData}
           selectedMachine={this.state.selectedMachine}
           t={t}
           history={this.props.history}
@@ -708,7 +747,21 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
-      </React.Fragment>
+        <ManualEntryModal
+          isOpen={this.state.modal_manualentry_IsOpen}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={this.state.modalStyle}
+          contentLabel="Example Modal"
+          t={t}
+          timelost={this.state.current_display_timelost}
+          machine={this.state.selectedMachine}
+          currentRow={this.state.currentRow}
+          user={this.props.user}
+          Refresh={this.fetchData}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+        />
+      </React.Fragment >
     );
   }
 };

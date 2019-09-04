@@ -177,7 +177,11 @@ async function timelossGetReasons(machine) {
   }
 }
 
-function isComponentValid(role, name) {
+function isComponentValid(user_role, name) {
+  let role;
+  if (user_role) {
+    role = user_role.toLowerCase();
+  }
   const componentStructure = {
     administrator: [
       'megamenu',
