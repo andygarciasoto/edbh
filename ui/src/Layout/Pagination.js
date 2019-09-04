@@ -108,7 +108,6 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(newShift);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
-            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
             return;
         }
         if (e === 'next') {
@@ -117,13 +116,11 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(currentShift + 1);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
-            this.props.getDashboardData([this.props.selectedMachine, newDate, currentShift + 1]);
         }
 
         if (e === 'double-next') {
             newDate = getCurrentTime();
             this.props.history.push(`${this.props.history.location.pathname}`);
-            this.props.getDashboardData([this.props.selectedMachine, newDate, actualShift]);
             return;
         }
 
@@ -134,7 +131,6 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(newShift);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
-            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
             return;
         }
 
@@ -145,7 +141,6 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(newShift);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
-            this.props.getDashboardData([this.props.selectedMachine, newDate, newShift]);
             return;
         }
         if (e === 'back' && (currentShift === 2 || currentShift === 3)) {
@@ -153,7 +148,6 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(currentShift - 1);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
-            this.props.getDashboardData([this.props.selectedMachine, moment(currentDate), currentShift - 1]);
             return;
         }
 

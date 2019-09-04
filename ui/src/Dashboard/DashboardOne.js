@@ -24,7 +24,8 @@ import {
   formatDate,
   isComponentValid,
   mapShiftReverse,
-  isFieldAllowed
+  isFieldAllowed,
+  mapShift
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -278,12 +279,13 @@ class DashboardOne extends React.Component {
     } else {
       shiftByHour = '3rd Shift';
     };
+    let _this = this;
     this.setState({
       selectedDate: nextProps.search.dt || moment().format('YYYY/MM/DD'),
       selectedMachine: nextProps.search.mc || config['machine'],
       currentLanguage: nextProps.search.ln || config['language'],
       selectedShift: nextProps.search.sf || shiftByHour
-    })
+    }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
   }
 
   changeLanguageBrowser = () => {
@@ -612,7 +614,6 @@ class DashboardOne extends React.Component {
         {isComponentValid(this.props.user.role, 'pagination') ? <Pagination
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
-          getDashboardData={this.fetchData}
           selectedMachine={this.state.selectedMachine}
           t={t}
           history={this.props.history}
