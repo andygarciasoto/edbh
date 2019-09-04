@@ -140,7 +140,7 @@ class TimelossModal extends React.Component {
         const reasons = [];
         if (this.state.reasons) {
             for (let reason of this.state.reasons)
-                reasons.push({ value: reason.DTReason.dtreason_id, label: `${reason.DTReason.dtreason_id} - ${reason.DTReason.dtreason_name}` })
+                reasons.push({ value: reason.DTReason.reason_code, label: `${reason.DTReason.reason_code} - ${reason.DTReason.dtreason_name}` })
         }
         const t = this.props.t;
         return (
@@ -155,7 +155,7 @@ class TimelossModal extends React.Component {
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
                             <p>{t('Total Time Lost')}</p>
-                            <input type="text" disabled={true} value={formatNumber(this.state.allocated_time)}></input>
+                            <input type="text" disabled={true} value={formatNumber(this.state.unallocated_time)}></input>
                         </Col>
                         <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
                             <p>{t('Lunch/Break Time')}</p>
@@ -199,7 +199,7 @@ class TimelossModal extends React.Component {
                                 <input className={'timelost-field'}
                                     type="text"
                                     disabled={true}
-                                    value={formatNumber(this.state.unallocated_time)}></input>
+                                    value={formatNumber(this.state.allocated_time)}></input>
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>

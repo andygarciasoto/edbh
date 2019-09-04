@@ -581,7 +581,6 @@ class DashboardOne extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;

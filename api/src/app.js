@@ -53,7 +53,7 @@ const ioServer = io();
 
 ioServer.on('connection', function(socket){
   setInterval(
-    function() {io.emit('message', {id: 1, message: true})}, config['socket_timeout']
+    function() {ioServer.emit('message', {id: 1, message: true})}, config['socket_timeout']
   )
 });
 

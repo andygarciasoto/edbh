@@ -128,7 +128,8 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    const query = "select asset_code From Asset Where asset_level = 'Cell' And status = 'Active' Order by asset_code";
+    // const query = "select asset_code From Asset Where asset_level = 'Cell' And status = 'Active' Order by asset_code";
+    const query = "exec spLocal_EY_DxH_Get_Asset 'Cell','All'";
     sqlQuery(query, (err, response) => {
         if (err) {
             console.log(err)
