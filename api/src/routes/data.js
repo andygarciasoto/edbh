@@ -2,11 +2,11 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 import { runInNewContext } from 'vm';
 const fs = require('fs');
-const storage = require('node-sessionstorage');
 
 import config from '../../config.json';
 
 var express = require('express');
+var request = require('request');
 var router = express.Router();
 var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
@@ -156,8 +156,8 @@ router.get('/me', async function (req, res) {
                 message: e
             });
         }
-        if (storage.getItem('username')) {
-            let user = storage.getItem('username');
+        if (payload.body.sub) {
+            let user = payload.body.sub.substring(6);
             sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
             (err, data) => {
                 if (err){
@@ -166,6 +166,7 @@ router.get('/me', async function (req, res) {
                     return;
                 }
             let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
+            console.log(response);
             if (response === null){
                 res.sendStatus(401);
                 return;
@@ -769,23 +770,53 @@ router.get("/order_assembly", async function (req, res) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
 
-    sqlQuery(`exec dbo.sp_orderassembly '${params.order_number}','${params.asset_code}'`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
         (err, data) => {
             if (err) {
                 console.log(err);
                 res.sendStatus(500);
                 return;
             }
-            let response = JSON.parse(Object.values(data)[0].GetOrderAssembly);
-            if (response == null) {
-                console.log("This order does not exist. You need to go to Parker to get it.");
-                res.sendStatus(404);
-                return;
-            } else {
-                res.status(200).json(response);
+            let response = JSON.parse(Object.values(data)[0].OrderData);
+            let orderId = response[0].OrderData.order_id;
+            if (orderId === null) {
+                var assembly = { 
+                    order_number: params.order_number, 
+                    asset_code: params.asset_code, 
+                    timestamp: params.timestamp, 
+                    message_source: "assembly" 
+                 };
+    request({
+        url: "http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder",
+        method: "POST",
+        json: true,  
+        body: assembly,
+        timeout: 10000
+    }, function (error, resp, body){
+        if (resp.body === 'Message missing key data'){
+            console.log(resp.body);
+            res.sendStatus(500);
+            return;
+        }
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
+        (err, data) => {
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
                 return;
             }
+            let response = JSON.parse(Object.values(data)[0].OrderData);
+            res.status(200).json(response);
+            return;
         });
-});
+    });
+                    
+                } else{
+                    res.status(200).json(response);
+                    return;
+                }
+            });
+        });
+            
 
 module.exports = router;
