@@ -195,7 +195,8 @@ function isComponentValid(user_role, name) {
       'supervisor_signoff',
       'intershifts', 
       'pagination',
-      'neworder'
+      'neworder',
+      'manualentry',
     ],
     supervisor: [
       'megamenu',
@@ -239,8 +240,8 @@ function isComponentValid(user_role, name) {
 } 
 
 function isFieldAllowed(role, row) {
-  if (role !== 'administrator') {
-    let rollback = role === 'operator' ? 2 : config['rollback'];
+  if (role !== 'Administrator') {
+    let rollback = role === 'Operator' ? 2 : config['rollback'];
     const rowtime = row._subRows[0]._original.hour_interval_start;
     const now = getCurrentTime();
     const minusDate = moment(now).add(-rollback, 'hours');

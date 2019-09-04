@@ -47,7 +47,7 @@ app.use('/api', data);
 
 io.on('connection', function(socket){
   setInterval(
-    function() {io.emit('message', {id: 1, message: true})}, 60000
+    function() {io.emit('message', {id: 1, message: true})}, config['socket_timeout']
   )
 })
 

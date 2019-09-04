@@ -136,7 +136,6 @@ class DashboardOne extends React.Component {
         let allowed;
         if (extraParam === 'actual') {
           allowed = isFieldAllowed(this.props.user.role, val.props.row);
-          console.log(allowed)
         }
         this.setState({
           valueToEdit: value,
@@ -182,16 +181,15 @@ class DashboardOne extends React.Component {
     }
     if (type === 'manualentry') {
       if (val) {
-        const timelost = val.row._subRows[0]._original.timelost;
-        this.setState({
-          modal_values_IsOpen: false,
-          modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: false,
-          modal_manualentry_IsOpen: true,
-          current_display_timelost: timelost,
-          currentRow: val.row._subRows[0]._original,
-
-        })
+        if (isComponentValid(this.props.user.role, 'manualentry')) {
+          this.setState({
+            modal_values_IsOpen: false,
+            modal_comments_IsOpen: false,
+            modal_dropdown_IsOpen: false,
+            modal_manualentry_IsOpen: true,
+            currentRow: val.row._subRows[0]._original,
+          })
+        }
       }
     }
     if (type === 'signoff') {
@@ -365,9 +363,9 @@ class DashboardOne extends React.Component {
             paddingRight: 180,
             cursor: 'pointer'
           }}
-            className={'empty-field'}
+            className={'empty-field table-click'}
             onClick={() => this.openModal('manualentry', props)}></span> :
-          <span className='ideal' onClick={() => this.openModal('manualentry', props)}>
+          <span className='ideal table-click' onClick={() => this.openModal('manualentry', props)}>
             <span className="empty">{props.value}</span></span>,
         PivotValue: <span>{''}</span>
       }, {

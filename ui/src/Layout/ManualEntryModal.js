@@ -108,7 +108,7 @@ class ManualEntryModal extends React.Component {
                             value={this.state.part_number}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
+                            onChange={(val) => this.setState({part_number: val.target.value})}>
                         </Form.Control>
                     </span>
                     <br />
@@ -117,7 +117,7 @@ class ManualEntryModal extends React.Component {
                             value={this.state.ideal}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
+                            onChange={(val) => this.setState({ideal: val.target.value})}>
                         </Form.Control>
                     </span>
                     <br />
@@ -126,7 +126,7 @@ class ManualEntryModal extends React.Component {
                             value={this.state.target}
                             style={{ paddingTop: '5px' }}
                             type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
+                            onChange={(val) => this.setState({target: val.target.value})}>
                         </Form.Control>
                     </span>
 
