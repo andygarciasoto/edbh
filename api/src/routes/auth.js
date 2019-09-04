@@ -4,7 +4,6 @@ var nJwt = require('njwt');
 var sqlQuery = require('../objects/sqlConnection');
 import config from '../../config.json';
 import cors from 'cors';
-const storage = require('node-sessionstorage');
 
 var claims = {
     iss: config['URL'],
@@ -12,11 +11,11 @@ var claims = {
     scope: "admin"
 }
 
-var claimsList = {
+/*var claimsList = {
     Administrator: { iss: config['URL'], sub: 'users/Administrator', scope: 'admin'},
     Operator: { iss: config['URL'], sub: 'users/Operator', scope: 'operator'},
     Supervisor: { iss: config['URL'], sub: 'users/Supervisor', scope: 'supervisor' }
-}
+}*/
 
 router.get("/", function (req, res) {
     res.redirect(401, config['loginURL']);
@@ -40,9 +39,12 @@ router.post("/badge", cors(), async function (req, res) {
                 res.sendStatus(401);
                 return;
             }
+            let username = response[0].Username;
             let role = response[0].Role;
-            req.body.username = role;
-            var jwt = nJwt.create(claimsList[req.body.username], config['signingKey']);
+            var claimsList = {
+                user: { iss: config['URL'], sub: 'users/' + username, scope: role},
+            }
+            var jwt = nJwt.create(claimsList.user, config['signingKey']);
             var token = jwt.compact();
             res.status(200).send({token: token});
             return;
@@ -70,11 +72,12 @@ router.post("/", function (req, res) {
                 return;
             }
             let role = response[0].Role;
-            storage.setItem('username', params.username);
-            params.username = role;
+            var claimsList = {
+                user: { iss: config['URL'], sub: 'users/' + params.username, scope: role},
+            }
     
-        if (claimsList[params.username] && params.password === 'parkerdxh2019') {
-        var jwt = nJwt.create(claimsList[params.username], config['signingKey']);
+        if (claimsList.user && params.password === 'parkerdxh2019') {
+        var jwt = nJwt.create(claimsList.user, config['signingKey']);
         var token = jwt.compact();
         const url = `${config['URL']}/dashboard#token=${token}`;
         res.redirect(302, url);
