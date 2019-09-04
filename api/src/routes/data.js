@@ -19,7 +19,7 @@ function toTimeZone(time, zone) {
     return moment(time).tz(zone).format(format);
 }
 
-/*router.use(function (err, req, res, next) {
+router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -60,7 +60,7 @@ router.use(function (req, res, next) {
         });
     }
 });
-*/
+
 function responsePostPut(response, req, res) {
     try {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
@@ -819,22 +819,3 @@ router.get("/order_assembly", async function (req, res) {
             
 
 module.exports = router;
-
-
-/*
-request.post(
-    'http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder',
-    { 
-    order_number: params.order_number, 
-    asset_code: params.asset_code, 
-    timestamp: params.timestamp, 
-    message_source: "assembly"  
-},
-    function (error, response, body) {
-        if (response.statusCode == 200) {
-            res.status(200).json(response);
-            return;
-        }
-    }
-);  */
-
