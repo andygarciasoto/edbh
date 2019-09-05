@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Form, Button } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
+import ReactSelect from 'react-select';
 import * as _ from 'lodash';
 import './ManualEntryModal.scss';
 import { sendPut } from '../Utils/Requests';
@@ -8,6 +9,7 @@ import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
 import {
+    timelossGetReasons as getReasons,
     formatNumber
 } from '../Utils/Requests';
 
@@ -18,9 +20,14 @@ class ManualEntryModal extends React.Component {
         super(props);
         this.state = {
             currentRow: props.currentRow,
-            part_number: props.currentRow ? props.currentRow.part_number : 0,
-            ideal: props.currentRow ? props.currentRow.ideal : 0,
-            target: props.currentRow ? props.currentRow.target : 0,
+            part_number: 0,
+            ideal: 0,
+            target: 0,
+            quantity: 0,
+            uom: '',
+            uoms: [],
+            part_cycle_time: '',
+            setup_time: '',
             validationMessage: '',
             allowSubmit: true,
             modal_confirm_IsOpen: false,
@@ -60,12 +67,24 @@ class ManualEntryModal extends React.Component {
         // })
     }
 
+    clear = () => {
+
+    }
+
     onChange(e) {
         this.setState({ newValue: e.target.value });
     }
 
 
     componentWillMount() {
+        this.fetchConfiguration();
+    }
+
+    fetchConfiguration() {
+        const reasons = getReasons(this.props.machine);
+        reasons.then((res) => this.setState({
+            uoms: res,
+        }))
     }
 
     componentWillReceiveProps(nextProps) {
@@ -90,9 +109,14 @@ class ManualEntryModal extends React.Component {
     render() {
         const styles = _.cloneDeep(this.props.style);
         if (!_.isEmpty(styles)) {
-            styles.content.width = '20%';
+            styles.content.width = '50%';
             styles.content.overflow = 'visible';
-        }
+        };
+        const reasons = [];
+        if (this.state.uoms) {
+            for (let reason of this.state.uoms)
+                reasons.push({ value: reason.DTReason.dtreason_id, label: `${reason.DTReason.dtreason_id} - ${reason.DTReason.dtreason_name}` })
+        };
         const t = this.props.t;
         return (
             <React.Fragment>
@@ -103,33 +127,72 @@ class ManualEntryModal extends React.Component {
                     contentLabel="Example Modal">
                     <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Manual Entry')}</h4></span>
-                    <span className="dashboard-modal-field-group"><p>{t('Part Number')}:</p>
-                        <Form.Control
-                            value={this.state.part_number}
-                            style={{ paddingTop: '5px' }}
-                            type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
-                        </Form.Control>
-                    </span>
-                    <br />
-                    <span className="dashboard-modal-field-group"><p>{t('Ideal')}:</p>
-                        <Form.Control
-                            value={this.state.ideal}
-                            style={{ paddingTop: '5px' }}
-                            type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
-                        </Form.Control>
-                    </span>
-                    <br />
-                    <span className="dashboard-modal-field-group"><p>{t('Target')}:</p>
-                        <Form.Control
-                            value={this.state.target}
-                            style={{ paddingTop: '5px' }}
-                            type={this.props.formType}
-                            onChange={(val) => this.onChange(val)}>
-                        </Form.Control>
-                    </span>
-
+                    <div className={'new-manualentry-close'}>
+                        <Button variant="outline-primary"
+                            style={{ marginTop: '10px', marginLeft: '10px', marginBottom: '10px' }}
+                            onClick={this.clear}>{t('New Entry')}</Button>
+                    </div>
+                    <div className="new-manualentry">
+                        <Row style={{ marginBottom: '1px' }}>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Part Number')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.part_number}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Ideal')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.ideal}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Target')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.target}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Part Cycle Time')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.part_cycle_time}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Quantity')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.quantity}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Setup Time')}:`}</p>
+                                <input className={'manualentry-field col-md-8 col-sm-8'}
+                                    type={this.props.formType}
+                                    onChange={(val) => this.onChange(val)}
+                                    value={this.state.setup_time}></input>
+                            </Col>
+                            <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('UOM')}:`}</p>
+                                <ReactSelect
+                                    value={this.state.uom}
+                                    onChange={(e) => this.setState({ uom: e })}
+                                    options={reasons}
+                                    className={'manualentry-field col-md-8 col-sm-8'}
+                                    classNamePrefix={"manualentry-field"}
+                                />
+                            </Col>
+                            <Col sm={12} md={12}>
+                                <Button variant="outline-primary"
+                                    style={{ marginLeft: '40%' }}
+                                    onClick={this.submit}>{t('Submit')}</Button>
+                            </Col>
+                        </Row>
+                    </div>
                     <div className={'new-manualentry-close'}>
                         <Button variant="outline-secondary"
                             style={{ marginTop: '10px', marginLeft: '10px' }}
@@ -160,7 +223,7 @@ class ManualEntryModal extends React.Component {
                     t={this.props.t}
                     message={this.state.errorMessage}
                 />
-            </React.Fragment>
+            </React.Fragment >
         )
     }
 }
