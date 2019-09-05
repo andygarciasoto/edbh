@@ -45,6 +45,7 @@ router.post("/badge", cors(), async function (req, res) {
                 user: { iss: config['URL'], sub: 'users/' + username, scope: role},
             }
             var jwt = nJwt.create(claimsList.user, config['signingKey']);
+            jwt.setExpiration(new Date().getTime() + config['token_expiration']);
             var token = jwt.compact();
             res.status(200).send({token: token});
             return;
@@ -78,6 +79,7 @@ router.post("/", function (req, res) {
     
         if (claimsList.user && params.password === 'parkerdxh2019') {
         var jwt = nJwt.create(claimsList.user, config['signingKey']);
+        jwt.setExpiration(new Date().getTime() + config['token_expiration']);
         var token = jwt.compact();
         const url = `${config['URL']}/dashboard#token=${token}`;
         res.redirect(302, url);

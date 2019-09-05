@@ -89,11 +89,18 @@ class DashboardOne extends React.Component {
   }
 
   showValidateDataModal(data) {
-    this.setState({
-      modal_order_IsOpen: false,
-      modal_order_two_IsOpen: true,
-      orderTwo_data: data[0].OrderData
-    })
+    console.log(data)
+    if (data) {
+      this.setState({
+        modal_order_IsOpen: false,
+        modal_order_two_IsOpen: true,
+        orderTwo_data: data[0].OrderData
+      })
+    } else {
+      this.setState({
+        modal_error_IsOpen: true,
+      })
+    }
   }
 
   openModal(type, val, extraParam) {
@@ -186,7 +193,7 @@ class DashboardOne extends React.Component {
       if (val) {
         let url = window.location.search;
         let params = queryString.parse(url);
-        if (params.tp === 'Partially_Manual_Scan_Order') { // change it so it only works for manual
+        if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Partially_Manual_Scan_Order') { // change it so it only works for manual
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
@@ -258,7 +265,6 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
-        console.log('Message from socket service. To be tested in deployed version and removed after.');
         if (response.message === true) {
           if ((this.state.modal_authorize_IsOpen === false) &&
             (this.state.modal_comments_IsOpen === false) &&
