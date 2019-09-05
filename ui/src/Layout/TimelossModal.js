@@ -140,7 +140,7 @@ class TimelossModal extends React.Component {
         const reasons = [];
         if (this.state.reasons) {
             for (let reason of this.state.reasons)
-                reasons.push({ value: reason.DTReason.dtreason_id, label: `${reason.DTReason.dtreason_id} - ${reason.DTReason.dtreason_name}` })
+                reasons.push({ value: reason.DTReason.reason_code, label: `${reason.DTReason.reason_code} - ${reason.DTReason.dtreason_name}` })
         }
         const t = this.props.t;
         return (
@@ -151,11 +151,11 @@ class TimelossModal extends React.Component {
                     style={styles}
                     contentLabel="Example Modal">
                     <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                    <span><h4 style={{ marginLeft: '10px' }}>{t('Timelost')}</h4></span>
+                    <span><h4 style={{ marginLeft: '10px' }}>{t('Time Lost')}</h4></span>
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
-                            <p>{t('Total Timelost')}</p>
-                            <input type="text" disabled={true} value={formatNumber(this.state.allocated_time)}></input>
+                            <p>{t('Total Time Lost')}</p>
+                            <input type="text" disabled={true} value={formatNumber(this.state.unallocated_time)}></input>
                         </Col>
                         <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
                             <p>{t('Lunch/Break Time')}</p>
@@ -171,7 +171,7 @@ class TimelossModal extends React.Component {
                             <thead>
                                 <tr>
                                     <th style={{ width: '10%' }}>{t('Time')}</th>
-                                    <th style={{ width: '20%' }}>{t('Timelost Code')}</th>
+                                    <th style={{ width: '20%' }}>{t('Time Lost Code')}</th>
                                     <th style={{ width: '40%' }}>{t('Reason')}</th>
                                 </tr>
                             </thead>
@@ -185,21 +185,21 @@ class TimelossModal extends React.Component {
                                                 <td>{item.dtreason_name}</td>
                                             </tr>)
                                     }) : <tr>
-                                            <td colSpan={3}>{t('No Timelost entries yet')}.</td>
+                                            <td colSpan={3}>{t('No Time Lost entries yet')}.</td>
                                         </tr>
                                 }
                             </tbody>
                         </Table>
                     </div>
-                    <span className={"new-timelost-label"}>{t('New Timelost Entry')}</span>
+                    <span className={"new-timelost-label"}>{t('New Time Lost Entry')}</span>
                     <div className="new-timeloss">
                         <Row style={{ marginBottom: '1px' }}>
                             <Col sm={6} md={4}>
-                                <p style={{ marginBottom: '1px' }}>{`${t('Unallocated Timelost')}:`}</p>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Unallocated Time Lost')}:`}</p>
                                 <input className={'timelost-field'}
                                     type="text"
                                     disabled={true}
-                                    value={formatNumber(this.state.unallocated_time)}></input>
+                                    value={formatNumber(this.state.allocated_time)}></input>
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>

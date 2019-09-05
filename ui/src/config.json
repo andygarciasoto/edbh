@@ -1,5 +1,6 @@
 {
     "machine": 34002,
+    "machineType": "Partially_Manual_Scan_Order",
     "user": "Ryan Parker",
     "role": "supervisor",
     "language": "EN-US",

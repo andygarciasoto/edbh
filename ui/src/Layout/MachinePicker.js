@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import _ from 'lodash';
 import './MachinePicker.scss';
 import { getRequest } from '../Utils/Requests';
 
@@ -16,7 +17,10 @@ class MachinePickerCustom extends React.Component {
     componentDidMount() {
         const machineArray = [];
         const machines = getRequest('/machine');
-        machines.then((machinesObj => { machinesObj ? machinesObj.map((item, index) => machineArray.push(item.asset_code)) : void (0) }))
+        machines.then((machinesObj => { 
+            machinesObj ?
+            machinesObj.map((item, index) => machineArray.push({asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level }))
+            : void (0) }))
         this.setState({ machines: machineArray })
     }
 
@@ -26,12 +30,17 @@ class MachinePickerCustom extends React.Component {
 
     onSelect(e) {
         this.props.collectInput(e, 'machineValue');
+        const obj = _.find(this.state.machines, {asset_code: e})
+        if (obj.automation_level) {
+            this.props.collectInput(obj.automation_level, 'machineType');
+        }
     }
 
     render() {
         var machine = this.state.value || sessionStorage.getItem("machine");
         const t = this.props.t;
         const machines = this.state.machines;
+        // console.log(machines)
         return (
             <DropdownButton
                 alignleft="true"
@@ -41,7 +50,7 @@ class MachinePickerCustom extends React.Component {
             >
                 {machines.map((machine, index) => {
                     return (
-                        <Dropdown.Item onSelect={(e) => this.onSelect(e)} key={index} eventKey={machine}>{machine}</Dropdown.Item>
+                        <Dropdown.Item onSelect={(e) => this.onSelect(e)} key={index} eventKey={(machine.asset_code)}>{machine.asset_code}</Dropdown.Item>
                     )
                 }
                 )

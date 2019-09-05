@@ -12,7 +12,8 @@ class QueryButton extends React.Component {
             machine: props.machine,
             date: props.date,
             shift: props.shift,
-            language: props.language
+            language: props.language,
+            machine_type: props.machine_type
         }
         this.onSubmit = this.onSubmit.bind(this);
     }
@@ -24,7 +25,8 @@ class QueryButton extends React.Component {
             machine: nextProps.machine,
             date: nextProps.date,
             shift: nextProps.shift,
-            language: nextProps.language
+            language: nextProps.language,
+            machine_type: nextProps.machine_type
         })
     }
 
@@ -35,6 +37,7 @@ class QueryButton extends React.Component {
         queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD');
         queryItem["sf"] = this.state.shift;
         queryItem["ln"] = this.state.language;
+        queryItem["tp"] = this.state.machine_type;
         let parameters = $.param(queryItem);
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
         this.props.openMenu();

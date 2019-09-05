@@ -7,5 +7,6 @@
     "URL": "http://localhost:3000",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "http://localhost:3000/dashboard",
-    "timezone": "MST"
+    "timezone": "MST",
+    "socket_timeout": 60000
 }
