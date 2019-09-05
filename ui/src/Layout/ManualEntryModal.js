@@ -10,6 +10,7 @@ import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
 import {
     getUOMS,
+    getProducts,
     formatNumber
 } from '../Utils/Requests';
 
@@ -20,14 +21,17 @@ class ManualEntryModal extends React.Component {
         super(props);
         this.state = {
             currentRow: props.currentRow,
+            products: [],
+            product_code: '',
             part_number: '',
             ideal: '',
             target: '',
-            quantity: '',
+            quantity: 1,
             uom: '',
             uoms: [],
             part_cycle_time: '',
             setup_time: '',
+            production_status: 'setup',
             validationMessage: '',
             allowSubmit: true,
             isOpen: false,
@@ -36,40 +40,53 @@ class ManualEntryModal extends React.Component {
             modal_error_IsOpen: false
         }
         this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.validate = this.validate.bind(this);
     }
 
     submit(e) {
-        this.setState({
-            part_number: '',
-            target: '',
-            quantity: '', 
-            ideal: '',
-            part_cycle_time: '',
-            setup_time: ''
-        }) 
+
         const data = {
+            asset_code: this.props.parentData[0],
+            product_code: this.state.product_code,
             part_number: this.state.part_number,
-            target: this.state.target,
-            quantity: this.state.quantity, 
+            order_quantity: this.state.quantity,
+            uom_code: this.state.uom,
+            routed_cycle_time: this.state.part_cycle_time,
+            minutes_allowed_per_setup: this.state.setup_time,
+            target_percent_of_ideal: this.state.target,
             ideal: this.state.ideal,
-            part_cycle_time: this.state.part_cycle_time,
-            setup_time: this.state.setup_time,
-            dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
-            timestamp: getCurrentTime(),
+            production_status: this.state.production_status,
+            clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
+            first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
+            last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+            timestamp: getCurrentTime()
         }
-        console.log(data);
+        this.setState({ modal_loading_IsOpen: true }, () => {
+            const response = sendPut(data, '/dt_data');
+            response.then((res) => {
+                if (res !== 200) {
+                    this.setState({ modal_error_IsOpen: true })
+                } else {
+                    this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                }
+                this.props.Refresh(this.props.parentData);
+                this.setState({
+                    part_number: '',
+                    ideal: '',
+                    target: '',
+                    quantity: '',
+                    uom: '',
+                    part_cycle_time: '',
+                    setup_time: '',
+                })
+                this.props.onRequestClose();
+            })
+        })
     }
 
     clear = () => {
 
-    }
-
-    onChange(e) {
-        this.setState({ newValue: e.target.value });
     }
 
 
@@ -77,11 +94,25 @@ class ManualEntryModal extends React.Component {
         this.fetchConfiguration();
     }
 
-    fetchConfiguration() {
-        const uoms = getUOMS();
-        uoms.then((res) => this.setState({
-            uoms: res,
-        }))
+    async fetchConfiguration() {
+        const uoms = await getUOMS();
+        let uoms_options = [];
+        for (let uom of uoms)
+            uoms_options.push({ value: uom.UOM.UOM_code, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` });
+
+        let uom = uoms_options.length === 1 ? uoms_options[0].value : this.state.uom;
+
+        const products = await getProducts();
+        let products_options = [];
+        for (let product of products)
+            products_options.push({ value: product.Product.product_code, label: `${product.Product.product_code}` });
+
+        this.setState({
+            uom,
+            uoms: uoms_options,
+            products: products_options
+        });
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -94,7 +125,9 @@ class ManualEntryModal extends React.Component {
     }
 
     validate() {
-
+        if (this.state.quantity < 1) {
+            this.setState({ allowSubmit: false });
+        }
     }
 
     closeModal() {
@@ -106,11 +139,6 @@ class ManualEntryModal extends React.Component {
         if (!_.isEmpty(styles)) {
             styles.content.width = '50%';
             styles.content.overflow = 'visible';
-        };
-        const uoms = [];
-        if (this.state.uoms) {
-            for (let uom of this.state.uoms)
-                uoms.push({ value: uom.UOM.UOM_id, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` })
         };
         const t = this.props.t;
         return (
@@ -130,10 +158,20 @@ class ManualEntryModal extends React.Component {
                     <div className="new-manualentry">
                         <Row style={{ marginBottom: '1px' }}>
                             <Col sm={6} md={6}>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Product Code')}:`}</p>
+                                <ReactSelect
+                                    value={this.state.product_code}
+                                    onChange={(e) => this.setState({ product_code: e })}
+                                    options={this.state.products}
+                                    className={'manualentry-select col-md-8 col-sm-8'}
+                                    classNamePrefix={"manualentry-field"}
+                                />
+                            </Col>
+                            <Col sm={6} md={6}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Part Number')}:`}</p>
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'text'}
-                                    onChange={(val) => this.setState({part_number: val.target.value})}
+                                    onChange={(val) => this.setState({ part_number: val.target.value })}
                                     value={this.state.part_number}></input>
                             </Col>
                             <Col sm={6} md={6}>
@@ -141,7 +179,7 @@ class ManualEntryModal extends React.Component {
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
-                                    onChange={(val) => this.setState({ideal: val.target.value})}
+                                    onChange={(val) => this.setState({ ideal: val.target.value })}
                                     value={this.state.ideal}></input>
                             </Col>
                             <Col sm={6} md={6}>
@@ -149,7 +187,7 @@ class ManualEntryModal extends React.Component {
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
-                                    onChange={(val) => this.setState({target: val.target.value})}
+                                    onChange={(val) => this.setState({ target: val.target.value })}
                                     value={this.state.target}></input>
                             </Col>
                             <Col sm={6} md={6}>
@@ -157,15 +195,15 @@ class ManualEntryModal extends React.Component {
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
-                                    onChange={(val) => this.setState({part_cycle_time: val.target.value})}
+                                    onChange={(val) => this.setState({ part_cycle_time: val.target.value })}
                                     value={this.state.part_cycle_time}></input>
                             </Col>
                             <Col sm={6} md={6}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Quantity')}:`}</p>
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
-                                    min={0}
-                                    onChange={(val) => this.setState({quantity: val.target.value})}
+                                    min={1}
+                                    onChange={(val) => this.setState({ quantity: val.target.value })}
                                     value={this.state.quantity}></input>
                             </Col>
                             <Col sm={6} md={6}>
@@ -173,7 +211,7 @@ class ManualEntryModal extends React.Component {
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
-                                    onChange={(val) => this.setState({setup_time: val.target.value})}
+                                    onChange={(val) => this.setState({ setup_time: val.target.value })}
                                     value={this.state.setup_time}></input>
                             </Col>
                             <Col sm={6} md={6}>
@@ -181,7 +219,7 @@ class ManualEntryModal extends React.Component {
                                 <ReactSelect
                                     value={this.state.uom}
                                     onChange={(e) => this.setState({ uom: e })}
-                                    options={uoms}
+                                    options={this.state.uoms}
                                     className={'manualentry-select col-md-8 col-sm-8'}
                                     classNamePrefix={"manualentry-field"}
                                 />

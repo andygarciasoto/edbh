@@ -819,7 +819,7 @@ router.get("/order_assembly", async function (req, res) {
 });
 
 router.get('/uom', async function (req, res) {
-    sqlQuery(`exec spLocal_EY_DxH_Get_UOM;`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_UOM;`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -828,6 +828,60 @@ router.get('/uom', async function (req, res) {
             }
             responseGet(response, req, res, 'UOM');
         });
+});
+
+router.get('/product', async function (req, res) {
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Product;`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            responseGet(response, req, res, 'Product');
+        });
+});
+
+router.post('/create_order_data', async function (req, res) {
+    const asset_code = req.body.asset_code || undefined;
+    const product_code = req.body.product_code || undefined;
+    const part_number = req.body.part_number || undefined;
+    const order_quantity = req.body.order_quantity || undefined;
+    const uom_code = req.body.uom_code || undefined;
+    const part_cycle_time = req.body.part_cycle_time || undefined;
+    const minutes_allowed_per_setup = req.body.setup_time || undefined;
+    const target_percent_of_ideal = req.body.target || undefined;
+    const ideal = req.body.ideal || undefined;
+    const production_status = req.body.production_status;
+    const clocknumber = req.body.clocknumber || undefined;
+    const first_name = req.body.first_name || undefined;
+    const last_name = req.body.last_name || undefined;
+    const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
+
+    if (clocknumber) {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${part_cycle_time}, ${minutes_allowed_per_setup}, 
+    ${target_percent_of_ideal}, '${production_status}', '${clocknumber}', Null, Null, '${timestamp}';`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                }
+                responsePostPut(response, req, res);
+            });
+    } else {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${part_cycle_time}, ${minutes_allowed_per_setup}, 
+    ${target_percent_of_ideal}, '${production_status}', Null, '${first_name}', '${last_name}', '${timestamp}';`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                }
+                responsePostPut(response, req, res);
+            });
+    }
+
 });
 
 
