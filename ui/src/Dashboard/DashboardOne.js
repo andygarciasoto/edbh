@@ -186,7 +186,7 @@ class DashboardOne extends React.Component {
       if (val) {
         let url = window.location.search;
         let params = queryString.parse(url);
-        if (params.tp === 'Partially_Manual_Scan_Order') {
+        if (params.tp === 'Partially_Manual_Scan_Order') { // change it so it only works for manual
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,

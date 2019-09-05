@@ -5,7 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from  './LoadingModal';
-import { getRequest } from '../Utils/Requests';
+import { getRequest, getCurrentTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
@@ -30,12 +30,13 @@ class OrderModal extends React.Component {
     submit(e) {
         const data = { params: {
             order_number: this.state.value, 
-            asset_code: this.props.parentData[0]
+            asset_code: this.props.parentData[0],
+            timestamp: getCurrentTime()
         }}
         this.setState({modal_loading_IsOpen: true}, () => {
-            const response = getRequest('/order_data', data)
+            const response = getRequest('/order_assembly', data)
             response.then((res) => {
-                if (!res) {
+                if (!res || res.status !== 200) {
                     this.setState({modal_error_IsOpen: true, errorMessage: 'The order you entered was not found.'})
                 } else {
                     this.setState({modal_loading_IsOpen: false})
