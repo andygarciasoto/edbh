@@ -159,20 +159,20 @@ router.get('/me', async function (req, res) {
         if (payload.body.sub) {
             let user = payload.body.sub.substring(6);
             sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
-            (err, data) => {
-                if (err){
-                    console.log(err);
-                    res.sendStatus(500);
-                    return;
-                }
-            let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
-            console.log(response);
-            if (response === null){
-                res.sendStatus(401);
-                return;
-            }
-            return res.status(200).json(response);
-        });  
+                (err, data) => {
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
+                    console.log(response);
+                    if (response === null) {
+                        res.sendStatus(401);
+                        return;
+                    }
+                    return res.status(200).json(response);
+                });
         } else {
             res.status(401);
             return res.json({
@@ -780,43 +780,55 @@ router.get("/order_assembly", async function (req, res) {
             let response = JSON.parse(Object.values(data)[0].OrderData);
             let orderId = response[0].OrderData.order_id;
             if (orderId === null) {
-                var assembly = { 
-                    order_number: params.order_number, 
-                    asset_code: params.asset_code, 
-                    timestamp: params.timestamp, 
-                    message_source: "assembly" 
-                 };
-    request({
-        url: "http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder",
-        method: "POST",
-        json: true,  
-        body: assembly,
-        timeout: 10000
-    }, function (error, resp, body){
-        if (resp.body === 'Message missing key data'){
-            console.log(resp.body);
-            res.sendStatus(500);
-            return;
-        }
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
-        (err, data) => {
+                var assembly = {
+                    order_number: params.order_number,
+                    asset_code: params.asset_code,
+                    timestamp: params.timestamp,
+                    message_source: "assembly"
+                };
+                request({
+                    url: "http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder",
+                    method: "POST",
+                    json: true,
+                    body: assembly,
+                    timeout: 10000
+                }, function (error, resp, body) {
+                    if (resp.body === 'Message missing key data') {
+                        console.log(resp.body);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
+                        (err, data) => {
+                            if (err) {
+                                console.log(err);
+                                res.sendStatus(500);
+                                return;
+                            }
+                            let response = JSON.parse(Object.values(data)[0].OrderData);
+                            res.status(200).json(response);
+                            return;
+                        });
+                });
+
+            } else {
+                res.status(200).json(response);
+                return;
+            }
+        });
+});
+
+router.get('/uom', async function (req, res) {
+    sqlQuery(`exec spLocal_EY_DxH_Get_UOM;`,
+        (err, response) => {
             if (err) {
                 console.log(err);
                 res.sendStatus(500);
                 return;
             }
-            let response = JSON.parse(Object.values(data)[0].OrderData);
-            res.status(200).json(response);
-            return;
+            responseGet(response, req, res, 'UOM');
         });
-    });
-                    
-                } else{
-                    res.status(200).json(response);
-                    return;
-                }
-            });
-        });
-            
+});
+
 
 module.exports = router;
