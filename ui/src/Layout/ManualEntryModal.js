@@ -9,7 +9,7 @@ import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
 import {
-    timelossGetReasons as getReasons,
+    getUOMS,
     formatNumber
 } from '../Utils/Requests';
 
@@ -30,9 +30,10 @@ class ManualEntryModal extends React.Component {
             setup_time: '',
             validationMessage: '',
             allowSubmit: true,
+            isOpen: false,
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
+            modal_error_IsOpen: false
         }
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -81,8 +82,8 @@ class ManualEntryModal extends React.Component {
     }
 
     fetchConfiguration() {
-        const reasons = getReasons(this.props.machine);
-        reasons.then((res) => this.setState({
+        const uoms = getUOMS();
+        uoms.then((res) => this.setState({
             uoms: res,
         }))
     }
@@ -94,6 +95,7 @@ class ManualEntryModal extends React.Component {
                 part_number: nextProps.currentRow.summary_product_code,
                 ideal: nextProps.currentRow.summary_ideal,
                 target: nextProps.currentRow.summary_target,
+                isOpen: nextProps.isOpen
             });
         }
     }
@@ -112,16 +114,16 @@ class ManualEntryModal extends React.Component {
             styles.content.width = '50%';
             styles.content.overflow = 'visible';
         };
-        const reasons = [];
+        const uoms = [];
         if (this.state.uoms) {
-            for (let reason of this.state.uoms)
-                reasons.push({ value: reason.DTReason.dtreason_id, label: `${reason.DTReason.dtreason_id} - ${reason.DTReason.dtreason_name}` })
+            for (let uom of this.state.uoms)
+                uoms.push({ value: uom.UOM.UOM_id, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` })
         };
         const t = this.props.t;
         return (
             <React.Fragment>
                 <Modal
-                    isOpen={this.props.isOpen}
+                    isOpen={this.state.isOpen}
                     onRequestClose={this.props.onRequestClose}
                     style={styles}
                     contentLabel="Example Modal">
@@ -181,7 +183,7 @@ class ManualEntryModal extends React.Component {
                                 <ReactSelect
                                     value={this.state.uom}
                                     onChange={(e) => this.setState({ uom: e })}
-                                    options={reasons}
+                                    options={uoms}
                                     className={'manualentry-field col-md-8 col-sm-8'}
                                     classNamePrefix={"manualentry-field"}
                                 />

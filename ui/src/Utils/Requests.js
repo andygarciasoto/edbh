@@ -6,18 +6,18 @@ const axios = require('axios');
 
 async function getRequestData(data) {
   let res = {};
-    const parameters = { 
-        params: {
-            mc: data[0],
-            dt: formatDate(data[1]).split("-").join(""),
-            sf: mapShift(data[2]),
-        }
+  const parameters = {
+    params: {
+      mc: data[0],
+      dt: formatDate(data[1]).split("-").join(""),
+      sf: mapShift(data[2]),
     }
-    res = await axios.get(`${API}/data`, parameters);
-    
-    if (res) {
-      return res.data;
-    }
+  }
+  res = await axios.get(`${API}/data`, parameters);
+
+  if (res) {
+    return res.data;
+  }
 }
 
 function mapShift(rawshift) {
@@ -33,7 +33,7 @@ function mapShift(rawshift) {
   }
   if (rawshift === '3rd Shift') {
     shift = 3;
-  } 
+  }
   return shift;
 }
 
@@ -47,62 +47,62 @@ function mapShiftReverse(rawshift) {
   }
   if (rawshift === 3) {
     shift = '3rd Shift';
-  } 
-  const returnShift = shift === undefined ? rawshift: shift;
+  }
+  const returnShift = shift === undefined ? rawshift : shift;
   return returnShift;
 }
 
 async function sendPost(data, route) {
   const res = await axios.post(`${API}${route}`, data)
-  .then(function (response) {
-    return response;
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
   if (res) {
     return res.status;
-  } 
+  }
 }
 
 async function sendPostAuth(data, route) {
   const res = await axios.post(`${AUTH}${route}`, data)
-  .then(function (response) {
-    return response;
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
   if (res) {
     return res;
-  } 
+  }
 }
 
 async function sendPut(data, route) {
   const res = await axios.put(`${API}${route}`, data)
-  .then(function (response) {
-    console.log(response)
-    return response;
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
+    .then(function (response) {
+      console.log(response)
+      return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
   if (res) {
     return res.status;
-  } 
+  }
 }
 
 async function getIntershift(data) {
   let res = {};
 
-  const parameters = { 
-        params: {
-            mc: data[0],
-            dt: formatDate(data[1]).split("-").join(""),
-            sf: mapShift(data[2])
-        }
+  const parameters = {
+    params: {
+      mc: data[0],
+      dt: formatDate(data[1]).split("-").join(""),
+      sf: mapShift(data[2])
     }
-    res = await axios.get(`${API}/intershift_communication`, parameters)
+  }
+  res = await axios.get(`${API}/intershift_communication`, parameters)
     .then(function (response) {
       // handle success
       return response;
@@ -114,24 +114,24 @@ async function getIntershift(data) {
     .finally(function () {
       // nothing
     });
-    if (res) {
-      return res.data;
-    }
+  if (res) {
+    return res.data;
+  }
 }
 
 async function getRequest(route, data) {
   const res = await axios.get(`${API}${route}`, data)
-  .then(function (response) {
-    // handle success
-    return response;
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
-  .finally(function () {
-    // nothing
-  });
+    .then(function (response) {
+      // handle success
+      return response;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // nothing
+    });
   if (res) {
     return res.data;
   }
@@ -154,24 +154,43 @@ function getCurrentTime() {
 }
 
 async function timelossGetReasons(machine) {
-  const parameters = { 
+  const parameters = {
     params: {
-        mc: machine
+      mc: machine
     }
   }
   let res = {};
   res = await axios.get(`${API}/timelost_reasons`, parameters)
-  .then(function (response) {
-    // handle success
-    return response;
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
-  .finally(function () {
-    // nothing
-  });
+    .then(function (response) {
+      // handle success
+      return response;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // nothing
+    });
+  if (res) {
+    return res.data;
+  }
+}
+
+async function getUOMS() {
+  let res = {};
+  res = await axios.get(`${API}/uom`)
+    .then(function (response) {
+      // handle success
+      return response;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // nothing
+    });
   if (res) {
     return res.data;
   }
@@ -185,15 +204,15 @@ function isComponentValid(user_role, name) {
   const componentStructure = {
     administrator: [
       'megamenu',
-      'actual', 
+      'actual',
       'partnumber',
       'timelost',
-      'ideal', 
-      'target', 
-      'comments', 
-      'operator_signoff', 
+      'ideal',
+      'target',
+      'comments',
+      'operator_signoff',
       'supervisor_signoff',
-      'intershifts', 
+      'intershifts',
       'pagination',
       'neworder',
       'manualentry',
@@ -201,20 +220,20 @@ function isComponentValid(user_role, name) {
     supervisor: [
       'megamenu',
       'actual',
-      'timelost', 
-      'comments',  
+      'timelost',
+      'comments',
       'operator_signoff',
       'supervisor_signoff',
-      'intershifts', 
+      'intershifts',
       'pagination',
       'neworder'
     ],
     operator: [
       'actual',
-      'timelost', 
-      'comments', 
+      'timelost',
+      'comments',
       'pagination',
-      'operator_signoff', 
+      'operator_signoff',
       'intershifts',
       'supervisor_signoff',
       'neworder'
@@ -236,8 +255,8 @@ function isComponentValid(user_role, name) {
   }
   if (match === undefined) {
     return false;
-  } else {return true}
-} 
+  } else { return true }
+}
 
 function isFieldAllowed(role, row) {
   if (role !== 'Administrator') {
@@ -267,13 +286,13 @@ function formatNumber(number, decimals) {
   }
 }
 
-export { 
+export {
   getRequestData,
-  getIntershift, 
+  getIntershift,
   getRequest,
-  mapShift, 
-  mapShiftReverse, 
-  formatDate, 
+  mapShift,
+  mapShiftReverse,
+  formatDate,
   formatDateWithTime,
   formatDateWithCurrentTime,
   getCurrentTime,
@@ -283,5 +302,6 @@ export {
   sendPut,
   isComponentValid,
   isFieldAllowed,
+  getUOMS,
   formatNumber
 }
