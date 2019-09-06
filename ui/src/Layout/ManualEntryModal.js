@@ -26,7 +26,7 @@ class ManualEntryModal extends React.Component {
             product_code: '',
             part_number: '',
             ideal: '',
-            target: 0,
+            target: '',
             quantity: 1,
             uom: '',
             uoms: [],
@@ -48,21 +48,28 @@ class ManualEntryModal extends React.Component {
     submit(e) {
 
         if (this.validate()) {
-            const data = {
+            let data = {
                 asset_code: this.props.parentData[0],
                 product_code: this.state.product_code.value,
                 part_number: this.state.part_number,
                 order_quantity: this.state.quantity,
                 uom_code: this.state.uom.value,
-                routed_cycle_time: this.state.routed_cycle_time,
-                setup_time: this.state.setup_time,
-                target: this.state.target,
                 production_status: this.state.production_status,
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
                 timestamp: getCurrentTime()
             };
+
+            if (this.state.target !== '') {
+                data.target = this.state.target;
+            }
+            if (this.state.routed_cycle_time !== '') {
+                data.routed_cycle_time = this.state.routed_cycle_time;
+            }
+            if (this.state.setup_time !== '') {
+                data.setup_time = this.state.setup_time;
+            }
 
             this.setState({ modal_loading_IsOpen: true }, () => {
                 const response = sendPut(data, '/create_order_data');
@@ -77,12 +84,12 @@ class ManualEntryModal extends React.Component {
                         product_code: '',
                         part_number: '',
                         ideal: '',
-                        target: 0,
+                        target: '',
                         quantity: 1,
                         uom: '',
-                        routed_cycle_time: 0,
-                        setup_time: 0,
-                        production_status: 'setup'
+                        routed_cycle_time: '',
+                        setup_time: '',
+                        production_status: 'setup',
                     })
                     this.props.onRequestClose();
                 })
