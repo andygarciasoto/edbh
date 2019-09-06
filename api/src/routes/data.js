@@ -858,6 +858,16 @@ router.post('/create_order_data', async function (req, res) {
     const last_name = req.body.last_name || undefined;
     const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
 
+    if (!asset_code || !product_code || !uom_code || !part_cycle_time || !minutes_allowed_per_setup || !target_percent_of_ideal || !production_status) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
+
     if (clocknumber) {
         sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${part_cycle_time}, ${minutes_allowed_per_setup}, 
     ${target_percent_of_ideal}, '${production_status}', '${clocknumber}', Null, Null, '${timestamp}';`,
