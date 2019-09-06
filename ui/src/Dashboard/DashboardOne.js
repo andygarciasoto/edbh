@@ -412,7 +412,7 @@ class DashboardOne extends React.Component {
           textAlign: 'center'
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.summary_target,
+        aggregate: (values, rows) => rows[0]._original.summary_target !== null ? rows[0]._original.summary_target: 0,
         Aggregated: props => (props.value === '' || props.value === null) ? 
         <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span> :
           <span className='empty'>
@@ -427,7 +427,7 @@ class DashboardOne extends React.Component {
             <span className="react-table-click-text table-click" style={{ color: 'white' }} >{props.value}</span></span>,
         style: { textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)` },
         // aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
-        aggregate: (values, rows) => rows[0]._original.summary_actual,
+        aggregate: (values, rows) => rows[0]._original.summary_actual !== null ? rows[0]._original.summary_actual : 0,
         // aggregate: (values, rows) => console.log(rows),
         Aggregated: props => {
           return (props.value === '' || props.value === null) ?
