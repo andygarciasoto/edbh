@@ -166,9 +166,10 @@ class DashboardOne extends React.Component {
           })
         }
       }
+      const allowed = isFieldAllowed(this.props.user.role, val.row);
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: true,
+        modal_comments_IsOpen: allowed,
         modal_values_IsOpen: false,
         modal_dropdown_IsOpen: false,
         modal_signoff_IsOpen: false,
@@ -179,10 +180,11 @@ class DashboardOne extends React.Component {
     if (type === 'dropdown') {
       if (val) {
         const timelost = val.row._subRows[0]._original.timelost;
+        const allowed = isFieldAllowed(this.props.user.role, val.row);
         this.setState({
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: true,
+          modal_dropdown_IsOpen: allowed,
           current_display_timelost: timelost,
           currentRow: val.row._subRows[0]._original,
 
@@ -193,13 +195,14 @@ class DashboardOne extends React.Component {
       if (val) {
         let url = window.location.search;
         let params = queryString.parse(url);
+        const allowed = isFieldAllowed(this.props.user.role, val.row);
         if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Partially_Manual_Scan_Order') { // change it so it only works for manual
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
               modal_comments_IsOpen: false,
               modal_dropdown_IsOpen: false,
-              modal_manualentry_IsOpen: true,
+              modal_manualentry_IsOpen: allowed,
               currentRow: val.row._subRows[0]._original,
             })
           }
@@ -210,16 +213,18 @@ class DashboardOne extends React.Component {
       if (val) {
         if (val.props) {
           if (val.props.row._subRows) {
+            const allowed = isFieldAllowed(this.props.user.role, val.props.row);
             this.setState({
-              modal_signoff_IsOpen: true,
+              modal_signoff_IsOpen: allowed,
               currentRow: val.props.row._subRows[0]._original,
               signOffRole: extraParam ? extraParam : null,
             })
           }
         }
       } else {
+        const allowed = isFieldAllowed(this.props.user.role, val.props.row);
         this.setState({
-          modal_signoff_IsOpen: true,
+          modal_signoff_IsOpen: allowed,
           signOffRole: extraParam ? extraParam : null,
         })
       }
@@ -575,7 +580,8 @@ class DashboardOne extends React.Component {
     let _this = this;
     const date = e;
     const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD');
-    this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
+    this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => 
+    { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
   }
 
   changeMachine(e) {
@@ -614,6 +620,7 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
+    console.log(this.props.user)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
@@ -703,7 +710,6 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
-
         <CommentsModal
           isOpen={this.state.modal_comments_IsOpen}
           //  onAfterOpen={this.afterOpenModal}
@@ -718,7 +724,6 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
         />
-
         <TimelossModal
           isOpen={this.state.modal_dropdown_IsOpen}
           //  onAfterOpen={this.afterOpenModal}
@@ -734,7 +739,6 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
-
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
           //  onAfterOpen={this.afterOpenModal}

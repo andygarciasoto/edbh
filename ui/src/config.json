@@ -8,5 +8,6 @@
     "loginPage": "http://localhost:3000/login",
     "root": "http://localhost:3000",
     "api": "http://localhost:8080",
-    "rollback": 8
+    "rollback": 8, 
+    "timezone": "utc"
 }

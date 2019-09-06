@@ -104,9 +104,11 @@ class ManualEntryModal extends React.Component {
 
         const products = await getProducts();
         let products_options = [];
-        for (let product of products)
-            products_options.push({ value: product.Product.product_code, label: `${product.Product.product_code}` });
-
+        if (products) {
+            for (let product of products) {
+                products_options.push({ value: product.Product.product_code, label: `${product.Product.product_code}` });
+            }
+        }
         this.setState({
             uom,
             uoms: uoms_options,
