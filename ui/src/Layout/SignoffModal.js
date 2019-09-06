@@ -19,6 +19,7 @@ class SignoffModal extends React.Component {
                 props.t('By clicking Accept you confirm that all the values for this hour are correct'),
             headerMessage: '',
             errorMessage: '',
+            row: this.props.dxh_parent || {},
             modal_validate_IsOpen: false,
             style: {
                 content: {
@@ -52,12 +53,14 @@ class SignoffModal extends React.Component {
             rowData = this.props.currentRow
         }
         const data = {
-            dhx_data_id: rowData.dxhdata_id,
+            dhx_data_id: rowData ? rowData.dxhdata_id : null,
+            actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
             clocknumber: number,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+            override: 0,
             asset_code: this.props.parentData[0],
-            row_timestamp: formatDateWithTime(rowData.hour_interval_start),
+            row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
             timestamp: getCurrentTime(),
         }
         this.setState({ modal_loading_IsOpen: true }, () => {
@@ -72,15 +75,30 @@ class SignoffModal extends React.Component {
                         modal_validate_IsOpen: false, 
                         errorMessage: 'Invalid Clock Number' })
                 } else {
+                    if(data.dhx_data_id === null){
+                        this.setState({modal_loading_IsOpen: true}, () => {
+                            const resp = sendPut({
+                                ...data
+                            }, '/production_data')
+                            resp.then((res) => {
+                                if (res !== 200 || !res) {
+                                    this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
+                                }
+                                this.setState({actual: ''});
+                                this.props.Refresh(this.props.parentData);
+                                this.props.onRequestClose();
+                    })
+                })
+            }
+                    }
                     this.setState({ request_status: res, 
                         modal_loading_IsOpen: false,
                         modal_confirm_IsOpen: true, 
                         modal_validate_IsOpen: false })
-                }
+                })
                 this.props.Refresh(this.props.parentData);
                 this.props.onRequestClose();
             })
-        })
     }
 
     signOff() {
@@ -90,12 +108,14 @@ class SignoffModal extends React.Component {
         }
         if (this.state.signOffRole === 'operator') {
             const data = {
-                dhx_data_id: rowData.dxhdata_id,
+                dhx_data_id: rowData ? rowData.dxhdata_id : null,
+                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+                override: 0,
                 asset_code: this.props.parentData[0],
-                row_timestamp: formatDateWithTime(rowData.hour_interval_start),
+                row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
                 timestamp: getCurrentTime(),
             }
             this.setState({ modal_loading_IsOpen: true }, () => {
@@ -110,6 +130,21 @@ class SignoffModal extends React.Component {
                             modal_error_IsOpen: true, 
                             modal_validate_IsOpen: false})
                     } else {
+                        if(data.dhx_data_id === null){
+                            this.setState({modal_loading_IsOpen: true}, () => {
+                                const resp = sendPut({
+                                    ...data
+                                }, '/production_data')
+                                resp.then((res) => {
+                                    if (res !== 200 || !res) {
+                                        this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
+                                    }
+                                    this.setState({actual: ''});
+                                    this.props.Refresh(this.props.parentData);
+                                    this.props.onRequestClose();
+                        })
+                    })
+                }
                         this.setState({ 
                             request_status: res, 
                             modal_loading_IsOpen: false,
