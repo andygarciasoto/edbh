@@ -3,17 +3,18 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
       if ((rowInfo && column.id === 'actual_pcs') && (rowInfo.row.actual_pcs !== null)) {
         return {
           style: {
-            backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? '#b80600' : 'green',
-            backgroundImage: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
+            backgroundColor: Number(rowInfo.row.actual_pcs) === 0 || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? '#b80600' : 'green',
+            backgroundImage: Number(rowInfo.row.actual_pcs) === 0 || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
             'url("https://www.transparenttextures.com/patterns/arabesque.png"',
           }
         }
       }
       if ((rowInfo && column.id === 'cumulative_pcs') && (rowInfo.row.cumulative_pcs !== null)) {
+        console.log(rowInfo.row.cumulative_pcs)
         return {
           style: {
-            backgroundColor: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? '#b80600' : 'green',
-            backgroundImage: Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
+            backgroundColor: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? '#b80600' : 'green',
+            backgroundImage: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
             'url("https://www.transparenttextures.com/patterns/arabesque.png"',
           }
         }
