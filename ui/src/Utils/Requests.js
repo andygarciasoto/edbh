@@ -150,7 +150,7 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment.utc().format('YYYY-MM-DD HH:mm:ss');
+  return moment[config['timezone']]().format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -245,7 +245,8 @@ function isComponentValid(user_role, name) {
       'supervisor_signoff',
       'intershifts',
       'pagination',
-      'neworder'
+      'neworder',
+      'manualentry',
     ],
     operator: [
       'actual',
@@ -260,7 +261,6 @@ function isComponentValid(user_role, name) {
   }
 
   if (!['administrator', 'supervisor', 'operator'].includes(role)) {
-    console.log(role)
     return false;
   }
   if (!componentStructure.administrator.includes(name)) {
@@ -283,12 +283,15 @@ function isFieldAllowed(role, row) {
     const rowtime = row._subRows[0]._original.hour_interval_start;
     const now = getCurrentTime();
     const minusDate = moment(now).add(-rollback, 'hours');
-
     if (!moment(now).isSame(rowtime, 'day')) {
       return false;
     }
 
     if (!moment(rowtime).isAfter(minusDate)) {
+      return false;
+    }
+
+    if (moment(rowtime).isAfter(now)) {
       return false;
     }
     return true;

@@ -16,7 +16,7 @@ class SignoffModal extends React.Component {
         this.state = {
             value: '',
             signoffMessage: props.t(props.message) || 
-                props.t('By clicking Accept you confirm that all the values for this hour are correct'),
+                props.t('By clicking Accept you confirm that all the values for this hour are correct.'),
             headerMessage: '',
             errorMessage: '',
             row: this.props.dxh_parent || {},
@@ -173,9 +173,19 @@ class SignoffModal extends React.Component {
         if (!_.isEmpty(styles)) {
             styles.content.width = '50%';
         }
+        let row;
+        let isred;
+        let isgreen;
+        if (this.props.currentRow) {
+            row = this.props.currentRow;
+            isred = (row.actual_pcs  === '') ? 'red' : 'black';
+            isgreen = row.actual_pcs > row.target_pcs ? 'green' : 'black';
+        }
+
+        console.log(row)
         return (
             <React.Fragment>
-                <Modal
+                {row ? <Modal
                     isOpen={this.props.isOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.props.onRequestClose}
@@ -184,13 +194,20 @@ class SignoffModal extends React.Component {
                     <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                     <div className={"wrap-signoff"}>
                         <p style={{ fontWeight: 'bold' }} className="dashboard-modal-signoff-header">{this.state.headerMessage}</p>
-                        <p style={{ textAlign: 'center' }}>{this.state.signoffMessage}</p>
+                        <ul className={'signoff-list-parent'}>
+                            <li><p className={'signoff-list'}>{'Ideal: '}</p><p className={'signoff-list'}>{row.ideal === '' ? 0 : row.ideal}</p></li>
+                            <li><p className={'signoff-list'}>{'Target: '}</p><p className={'signoff-list'}>
+                            {row.target_pcs === '' ? 0 : row.target_pcs}</p></li>
+                            <li><p className={'signoff-list'}>{'Actual: '}</p><p style={{color: isred === 'red' ? isred : isgreen}} className={'signoff-list'}>
+                            {row.actual_pcs === '' ? 0 : row.actual_pcs}</p></li>
+                        </ul>
+                        <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
                         <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }} 
                         className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
                         <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }} 
                         className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                     </div>
-                </Modal>
+                </Modal> : null}
                 <ConfirmModal
                     isOpen={this.state.modal_confirm_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
