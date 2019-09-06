@@ -166,7 +166,6 @@ router.get('/me', async function (req, res) {
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
-                    console.log(response);
                     if (response === null) {
                         res.sendStatus(401);
                         return;
@@ -492,16 +491,14 @@ router.put('/intershift_communication', async function (req, res) {
 
 router.put('/operator_sign_off', async function (req, res) {
 
-    let dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    let dxh_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const timestamp = moment().tz(_timezone).format(format);
+    const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
-
-
-    if (dhx_data_id == undefined)
-        return res.status(500).send("Missing parameters");
+    const asset_code = req.body.asset_code;
 
     if (!clocknumber) {
         if (!(first_name || last_name)) {
@@ -509,7 +506,7 @@ router.put('/operator_sign_off', async function (req, res) {
         }
     }
 
-    if (dhx_data_id == undefined) {
+    if (dxh_data_id == undefined) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
@@ -521,9 +518,9 @@ router.put('/operator_sign_off', async function (req, res) {
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dhx_data_id = response[0].dxhdata_id;
+                    dxh_data_id = response[0].dxhdata_id;
                     if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -533,7 +530,7 @@ router.put('/operator_sign_off', async function (req, res) {
                                 responsePostPut(response, req, res);
                             });
                     } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -547,7 +544,7 @@ router.put('/operator_sign_off', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -557,7 +554,7 @@ router.put('/operator_sign_off', async function (req, res) {
                     responsePostPut(response, req, res);
                 });
         } else {
-            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -578,9 +575,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const timestamp = moment().tz(_timezone).format(format);
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
-
-    if (dhx_data_id == undefined)
-        return res.status(500).send("Missing parameters");
+    const asset_code = req.body.asset_code;
 
     if (!clocknumber) {
         if (!(first_name || last_name)) {
@@ -598,7 +593,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
             let role = response[0].Role;
             if (role === 'Supervisor') {
-                if (dhx_data_id == undefined) {
+                if (dhx_data_id === undefined) {
                     if (asset_code === undefined) {
                         return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
                     } else {
@@ -665,8 +660,10 @@ router.put('/supervisor_sign_off', async function (req, res) {
 });
 
 router.put('/production_data', async function (req, res) {
-    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-    const actual = req.body.actual ? parseFloat(req.body.actual) : undefined;
+    let dxh_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    console.log(req.body.actual);
+    const actual = req.body.actual ? req.body.actual != "signoff" ? parseFloat(req.body.actual) : 0 : undefined;
+    console.log(actual);
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -794,7 +791,6 @@ router.get("/order_assembly", async function (req, res) {
                     timeout: 10000
                 }, function (error, resp, body) {
                     if (resp.body === 'Message missing key data') {
-                        console.log(resp.body);
                         res.sendStatus(500);
                         return;
                     }
