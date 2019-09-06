@@ -18,3 +18,18 @@
     margin: auto;
     width: 20%;
 }
+
+.signoff-list-parent li {
+    list-style-type: none;
+    margin-right: 4%;
+}
+
+.signoff-list-parent li p {
+    display: inline;
+}
+
+.signoff-list-parent {
+    // width: 20%;
+    // margin: 0 auto;
+    text-align: center;
+}
