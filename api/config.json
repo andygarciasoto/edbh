@@ -8,6 +8,6 @@
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "http://localhost:3000/dashboard",
     "timezone": "MST",
-    "socket_timeout": 60000,
+    "socket_timeout": 90000,
     "token_expiration": 14400000
 }

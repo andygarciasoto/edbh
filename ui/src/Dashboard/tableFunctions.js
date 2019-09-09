@@ -10,13 +10,15 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
         }
       }
       if ((rowInfo && column.id === 'cumulative_pcs') && (rowInfo.row.cumulative_pcs !== null)) {
-        return {
-          style: {
-            backgroundColor: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? '#b80600' : 'green',
-            backgroundImage: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
-            'url("https://www.transparenttextures.com/patterns/arabesque.png"',
+          if (rowInfo.subRows !== undefined) {
+            return {
+              style: {
+                backgroundColor: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? '#b80600' : 'green',
+                backgroundImage: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? 'url("https://www.transparenttextures.com/patterns/dark-circles.png")' : 
+                'url("https://www.transparenttextures.com/patterns/arabesque.png"',
+              }
+            }
           }
-        }
       }
       if (rowInfo && column.id === 'actions_comments') {
         if (rowInfo.subRows) {

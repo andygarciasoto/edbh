@@ -26,7 +26,8 @@ import {
   isComponentValid,
   mapShiftReverse,
   isFieldAllowed,
-  mapShift
+  mapShift,
+  getCurrentTime
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -196,7 +197,7 @@ class DashboardOne extends React.Component {
         let url = window.location.search;
         let params = queryString.parse(url);
         const allowed = isFieldAllowed(this.props.user.role, val.row);
-        if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Partially_Manual_Scan_Order') { // change it so it only works for manual
+        if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Manual') { 
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
@@ -409,7 +410,8 @@ class DashboardOne extends React.Component {
           textAlign: 'center'
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.summary_target !== null ? rows[0]._original.summary_target: 0,
+        aggregate: (values, rows) => rows[0]._original.summary_target !== null ? rows[0]._original.summary_target : 
+        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         Aggregated: props => (props.value === '' || props.value === null) ? 
         <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span> :
           <span className='empty'>
@@ -424,7 +426,8 @@ class DashboardOne extends React.Component {
             <span className="react-table-click-text table-click" style={{ color: 'white' }} >{props.value}</span></span>,
         style: { textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)` },
         // aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
-        aggregate: (values, rows) => rows[0]._original.summary_actual !== null ? rows[0]._original.summary_actual : 0,
+        aggregate: (values, rows) => rows[0]._original.summary_actual !== null ? rows[0]._original.summary_actual : 
+        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         // aggregate: (values, rows) => console.log(rows),
         Aggregated: props => {
           return (props.value === '' || props.value === null) ?
@@ -504,7 +507,7 @@ class DashboardOne extends React.Component {
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} 
         className={'empty-field'}></span> :
           <span className='ideal'>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
+            <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => values[0],
@@ -520,7 +523,7 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}></span> :
           <span className='ideal'>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
+            <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => values[0],
@@ -612,7 +615,6 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
-    console.log(this.props.user)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
