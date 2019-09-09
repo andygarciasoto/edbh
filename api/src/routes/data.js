@@ -840,7 +840,6 @@ router.get('/product', async function (req, res) {
 
 router.put('/create_order_data', async function (req, res) {
     const asset_code = req.body.asset_code || undefined;
-    const product_code = req.body.product_code || undefined;
     const part_number = req.body.part_number || undefined;
     const order_quantity = req.body.order_quantity || undefined;
     const uom_code = req.body.uom_code || undefined;
@@ -853,7 +852,7 @@ router.put('/create_order_data', async function (req, res) {
     const last_name = req.body.last_name || undefined;
     const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
 
-    if (!asset_code || !product_code || !uom_code || !production_status) {
+    if (!asset_code || !part_number || !uom_code || !production_status) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
 
@@ -863,11 +862,8 @@ router.put('/create_order_data', async function (req, res) {
         }
     }
 
-    console.log(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
-    ${target}, '${production_status}', '${clocknumber}', Null, Null;`);
-
     if (clocknumber) {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
     ${target}, '${production_status}', '${clocknumber}', Null, Null;`,
             (err, response) => {
                 if (err) {
@@ -878,7 +874,7 @@ router.put('/create_order_data', async function (req, res) {
                 responsePostPut(response, req, res);
             });
     } else {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${product_code}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
     ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`,
             (err, response) => {
                 if (err) {
