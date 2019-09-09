@@ -271,16 +271,7 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if ((this.state.modal_authorize_IsOpen === false) &&
-            (this.state.modal_comments_IsOpen === false) &&
-            (this.state.modal_dropdown_IsOpen === false) &&
-            (this.state.modal_order_IsOpen === false) &&
-            (this.state.modal_signoff_IsOpen === false) &&
-            (this.state.modal_values_IsOpen === false) &&
-            (this.state.modal_order_two_IsOpen === false)
-          ) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
-          }
         }
       });
     } catch (e) { console.log(e) }
