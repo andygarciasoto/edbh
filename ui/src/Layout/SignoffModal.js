@@ -181,8 +181,6 @@ class SignoffModal extends React.Component {
             isred = (row.actual_pcs  === '') ? 'red' : 'black';
             isgreen = row.actual_pcs > row.target_pcs ? 'green' : 'black';
         }
-
-        console.log(row)
         return (
             <React.Fragment>
                 {row ? <Modal

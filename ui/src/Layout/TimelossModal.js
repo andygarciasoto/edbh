@@ -215,7 +215,7 @@ class TimelossModal extends React.Component {
                             <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{this.props.label ? this.props.label : t('New Value')}:</p>
                             <Form.Group controlId="formGridState">
                                 <ReactSelect
-                                    value={formatNumber(this.state.new_tl_reason)}
+                                    value={this.state.new_tl_reason}
                                     onChange={(e) => this.setState({ new_tl_reason: e }, (e) => this.validate(e))}
                                     options={reasons}
                                     className={"react-select-container"}

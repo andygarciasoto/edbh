@@ -270,6 +270,7 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
+        console.log('message coming from socket service', response)
         if (response.message === true) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
         }
