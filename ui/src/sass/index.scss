@@ -25,3 +25,15 @@ code {
 
   a {color: $color-orange}
   a:hover {color: $color-orange; text-decoration: none;}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+  .signoff-reminder-true {
+    color: red; 
+    font-weight: bolder;
+    animation: blinker 1s linear infinite;
+  }

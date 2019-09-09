@@ -16,7 +16,7 @@ class SignoffModal extends React.Component {
         this.state = {
             value: '',
             signoffMessage: props.t(props.message) || 
-                props.t('By clicking Accept you confirm that all the values for this hour are correct.'),
+                props.t("By clicking 'Accept' you confirm that all the values for this hour are correct."),
             headerMessage: '',
             errorMessage: '',
             row: this.props.dxh_parent || {},

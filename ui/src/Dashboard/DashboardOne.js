@@ -16,6 +16,7 @@ import OrderTwoModal from '../Layout/OrderTwoModal';
 import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
+import ErrorModal from '../Layout/ErrorModal';
 import queryString from 'query-string';
 import Pagination from '../Layout/Pagination';
 import openSocket from 'socket.io-client';
@@ -27,7 +28,8 @@ import {
   mapShiftReverse,
   isFieldAllowed,
   mapShift,
-  getCurrentTime
+  getCurrentTime, 
+  formatNumber,
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -54,6 +56,8 @@ class DashboardOne extends React.Component {
       data: [],
       columns: [],
       modalStyle: {},
+      errorModal: false,
+      ErrorMessage: '',
       modal_values_IsOpen: false,
       modal_authorize_IsOpen: false,
       modal_comments_IsOpen: false,
@@ -62,6 +66,7 @@ class DashboardOne extends React.Component {
       modal_order_IsOpen: false,
       modal_manualentry_IsOpen: false,
       valid_barcode: false,
+      signoff_reminder: false,
       barcode: 1001,
       dataCall: {},
       selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
@@ -241,7 +246,8 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: false,
-      modal_manualentry_IsOpen: false
+      modal_manualentry_IsOpen: false,
+      errorModal: false,
     });
   }
 
@@ -271,7 +277,6 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
-        console.log('message coming from socket service', response)
         if (response.message === true) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
         }
@@ -510,7 +515,8 @@ class DashboardOne extends React.Component {
             <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => values[0],
+        aggregate: (values, rows) => !moment(rows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? <span>{values[0]}</span> : 
+        <span className={`signoff-reminder-${this.state.signoff_reminder}`}>{values[0]}</span>,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} 
         className={'empty-field'} onClick={() =>
           isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void (0)}></span> :
@@ -526,7 +532,8 @@ class DashboardOne extends React.Component {
             <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => values[0],
+        aggregate: (values, rows) => !moment(rows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? <span>{values[0]}</span> : 
+        <span className={`signoff-reminder-${this.state.signoff_reminder}`}>{values[0]}</span>,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} 
         className={'empty-field'} onClick={() =>
           isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', { props }, 'supervisor') : void (0)}></span> :
@@ -540,6 +547,14 @@ class DashboardOne extends React.Component {
   }
 
   async getDashboardData(data, columns) {
+    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    console.log(`signoff-reminder-${this.state.signoff_reminder}`, logoffHour)
+    if (logoffHour === 50) {
+      this.setState({signoff_reminder: true})
+    } 
+    if (logoffHour === 55) {
+      this.setState({errorModal: true, errorMessage: "Please Signoff for this hour"})
+    }
     let response = {};
     let comments = {};
     if (data) {
@@ -785,6 +800,14 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
+        <ErrorModal
+          isOpen={this.state.errorModal}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+          t={t}
+          message={this.state.errorMessage}
+      />
       </React.Fragment >
     );
   }
