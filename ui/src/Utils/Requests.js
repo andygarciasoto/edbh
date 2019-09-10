@@ -81,7 +81,6 @@ async function sendPostAuth(data, route) {
 async function sendPut(data, route) {
   const res = await axios.put(`${API}${route}`, data)
     .then(function (response) {
-      console.log(response)
       return response;
     })
     .catch(function (error) {

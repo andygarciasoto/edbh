@@ -16,9 +16,11 @@ import OrderTwoModal from '../Layout/OrderTwoModal';
 import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
+import ErrorModal from '../Layout/ErrorModal';
 import queryString from 'query-string';
 import Pagination from '../Layout/Pagination';
 import openSocket from 'socket.io-client';
+import FontAwesome from 'react-fontawesome';
 import {
   getRequestData,
   getIntershift,
@@ -27,7 +29,8 @@ import {
   mapShiftReverse,
   isFieldAllowed,
   mapShift,
-  getCurrentTime
+  getCurrentTime, 
+  formatNumber,
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -54,6 +57,8 @@ class DashboardOne extends React.Component {
       data: [],
       columns: [],
       modalStyle: {},
+      errorModal: false,
+      ErrorMessage: '',
       modal_values_IsOpen: false,
       modal_authorize_IsOpen: false,
       modal_comments_IsOpen: false,
@@ -62,6 +67,8 @@ class DashboardOne extends React.Component {
       modal_order_IsOpen: false,
       modal_manualentry_IsOpen: false,
       valid_barcode: false,
+      signoff_reminder: false,
+      logoffHourCheck: true,
       barcode: 1001,
       dataCall: {},
       selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
@@ -197,7 +204,7 @@ class DashboardOne extends React.Component {
         let url = window.location.search;
         let params = queryString.parse(url);
         const allowed = isFieldAllowed(this.props.user.role, val.row);
-        if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Manual') { 
+        if (params.tp === 'Manual' || config['machineType'] === 'Manual') { 
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
@@ -241,7 +248,8 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: false,
-      modal_manualentry_IsOpen: false
+      modal_manualentry_IsOpen: false,
+      errorModal: false,
     });
   }
 
@@ -271,7 +279,6 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
-        console.log('message coming from socket service', response)
         if (response.message === true) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
         }
@@ -511,28 +518,42 @@ class DashboardOne extends React.Component {
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => values[0],
-        Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} 
+        Aggregated: props => (props.value === '' || props.value === null) ? <span 
+        style={(!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') && 
+        (this.state.signoff_reminder === true)) ? 
+        { paddingRight: '90%', cursor: 'pointer' } : 
+        { paddingRight: '5%', cursor: 'pointer', textAlign: 'center'}} 
         className={'empty-field'} onClick={() =>
-          isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void (0)}></span> :
-          <span className='ideal' onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', 
+          isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void(0)}>
+          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? '' : 
+          this.state.signoff_reminder === true ? <span><FontAwesome name="warning" className={'signoff-reminder-icon'}/></span> : null}
+          </span> :
+          <span onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', 
           { props }, 'operator') : void (0)}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
+          <span className="react-table-click-text table-click">{props.value}</span></span>
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
         accessor: 'superv_id',
         minWidth: 90,
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}></span> :
           <span className='ideal'>
-            <span className="react-table-click-text table-click">{''}</span></span>,
+            <span className="react-table-click-text table-click">{props.value}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => values[0],
-        Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} 
+        Aggregated: props => (props.value === '' || props.value === null) ? <span 
+        style={(!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') && 
+        (this.state.signoff_reminder === true)) ? 
+        { paddingRight: '90%', cursor: 'pointer' } : 
+        { paddingRight: '80%', cursor: 'pointer'}} 
         className={'empty-field'} onClick={() =>
-          isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', { props }, 'supervisor') : void (0)}></span> :
-          <span className='ideal' onClick={() => isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', 
+          isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', { props }, 'supervisor') : void(0)}>
+          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? '' : 
+          this.state.signoff_reminder === true ? <span style={{textAlign: 'center'}}><FontAwesome name="warning" className={'signoff-reminder-icon'}/></span> : null}
+          </span> :
+          <span onClick={() => isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', 
           { props }, 'supervisor') : void (0)}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>
+          <span className="react-table-click-text table-click">{props.value}</span></span>
       }
     ];
     // fetch data call
@@ -540,6 +561,17 @@ class DashboardOne extends React.Component {
   }
 
   async getDashboardData(data, columns) {
+    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    if (config['first_signoff_reminder'].includes(logoffHour)) {
+      this.setState({signoff_reminder: true})
+    } else {
+      this.setState({signoff_reminder: false})
+    }
+    if (logoffHour === config['second_signoff_reminder']) {
+      if (this.state.logoffHourCheck === true) {
+     this.setState({errorModal: true, errorMessage: "Please Signoff for this hour"})
+      }
+    }
     let response = {};
     let comments = {};
     if (data) {
@@ -626,6 +658,7 @@ class DashboardOne extends React.Component {
     const off = t('Of');
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
+    const obj = this;
     return (
       <React.Fragment>
         <Header className="app-header"
@@ -785,6 +818,17 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
+        <ErrorModal
+          isOpen={this.state.errorModal}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={a => {
+            obj.setState({logoffHourCheck: false})
+            this.closeModal();
+          }}
+          contentLabel="Example Modal"
+          t={t}
+          message={this.state.errorMessage}
+      />
       </React.Fragment >
     );
   }
