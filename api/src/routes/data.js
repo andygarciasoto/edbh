@@ -862,28 +862,49 @@ router.put('/create_order_data', async function (req, res) {
         }
     }
 
-    if (clocknumber) {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
-    ${target}, '${production_status}', '${clocknumber}', Null, Null;`,
+    const query = "select [product_id], [product_code], [product_name], [product_description], [product_family], [value_stream], " +
+        "[grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], " +
+        "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
+    try {
+        await sqlQuery(query,
             (err, response) => {
                 if (err) {
                     console.log(err);
                     res.sendStatus(500);
                     return;
                 }
-                responsePostPut(response, req, res);
-            });
-    } else {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
-    ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`,
-            (err, response) => {
-                if (err) {
-                    console.log(err);
-                    res.sendStatus(500);
+                let result = Object.values(response);
+                if (result[0] === undefined) {
+                    res.status(500).send({ message: 'Error', api_error: 'The code is not in the database' });;
                     return;
                 }
-                responsePostPut(response, req, res);
+                if (clocknumber) {
+                    sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+                    ${target}, '${production_status}', '${clocknumber}', Null, Null;`,
+                        (err, response) => {
+                            if (err) {
+                                console.log(err);
+                                res.sendStatus(500);
+                                return;
+                            }
+                            responsePostPut(response, req, res);
+                        });
+                } else {
+                    sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+                    ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`,
+                        (err, response) => {
+                            if (err) {
+                                console.log(err);
+                                res.sendStatus(500);
+                                return;
+                            }
+                            responsePostPut(response, req, res);
+                        });
+                }
+
             });
+    } catch (e) {
+        res.status(500).send({ message: 'Error', api_error: e });
     }
 
 });
