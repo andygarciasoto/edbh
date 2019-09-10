@@ -63,7 +63,7 @@ class SignoffModal extends React.Component {
             row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
             timestamp: getCurrentTime(),
         }
-        this.setState({ modal_loading_IsOpen: true }, () => {
+        this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false }, () => {
             const response = sendPut({
                 ...data
             }, `/${this.state.signOffRole}_sign_off`)
@@ -156,7 +156,7 @@ class SignoffModal extends React.Component {
                 })
             })
         } else if (this.props.signOffRole === 'supervisor') {
-            this.setState({modal_validate_IsOpen: true})
+            this.setState({modal_validate_IsOpen: true, isOpen: false})
         }
     }
 
@@ -164,7 +164,8 @@ class SignoffModal extends React.Component {
         this.setState({
             signOffRole: nextProps.signOffRole,
             headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') + 
-            ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')'
+            ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
+            isOpen: nextProps.isOpen
         })
     }
 
@@ -184,7 +185,7 @@ class SignoffModal extends React.Component {
         return (
             <React.Fragment>
                 {row ? <Modal
-                    isOpen={this.props.isOpen}
+                    isOpen={this.state.isOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.props.onRequestClose}
                     style={styles}

@@ -32,8 +32,16 @@ code {
   }
 }
 
-  .signoff-reminder-true {
-    color: red; 
-    font-weight: bolder;
-    animation: blinker 1s linear infinite;
-  }
+.signoff-reminder-true {
+  color: red; 
+  font-weight: bolder;
+  animation: blinker 1s linear infinite;
+  text-align: center;
+}
+
+.signoff-reminder-icon {
+  color: red; 
+  animation: blinker 1s linear infinite;
+  text-align: center;
+  width: 100%;
+}
