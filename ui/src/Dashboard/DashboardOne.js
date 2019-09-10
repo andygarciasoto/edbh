@@ -204,7 +204,7 @@ class DashboardOne extends React.Component {
         let url = window.location.search;
         let params = queryString.parse(url);
         const allowed = isFieldAllowed(this.props.user.role, val.row);
-        if (params.tp === 'Partially_Manual_Scan_Order' || config['machineType'] === 'Manual') { 
+        if (params.tp === 'Manual' || config['machineType'] === 'Manual') { 
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
@@ -280,7 +280,7 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-            // this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
         }
       });
     } catch (e) { console.log(e) }
@@ -562,7 +562,6 @@ class DashboardOne extends React.Component {
 
   async getDashboardData(data, columns) {
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
-    // console.log(`signoff-reminder-${this.state.signoff_reminder}`, logoffHour)
     if (config['first_signoff_reminder'].includes(logoffHour)) {
       this.setState({signoff_reminder: true})
     } else {
