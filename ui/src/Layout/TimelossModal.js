@@ -43,7 +43,7 @@ class TimelossModal extends React.Component {
     submit(e) {
         const data = {
             dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            dt_reason_id: this.state.new_tl_reason.value,
+            dt_reason_id: this.state.new_tl_reason.reason_id,
             dt_minutes: parseInt(this.state.time_to_allocate),
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
@@ -140,7 +140,7 @@ class TimelossModal extends React.Component {
         const reasons = [];
         if (this.state.reasons) {
             for (let reason of this.state.reasons)
-                reasons.push({ value: reason.DTReason.reason_code, label: `${reason.DTReason.reason_code} - ${reason.DTReason.dtreason_name}` })
+                reasons.push({ value: reason.DTReason.reason_code, label: `${reason.DTReason.reason_code} - ${reason.DTReason.dtreason_name}`, reason_id: reason.DTReason.dtreason_id })
         }
         const t = this.props.t;
         return (
