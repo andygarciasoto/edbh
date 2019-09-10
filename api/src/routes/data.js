@@ -865,43 +865,51 @@ router.put('/create_order_data', async function (req, res) {
     const query = "select [product_id], [product_code], [product_name], [product_description], [product_family], [value_stream], " +
         "[grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], " +
         "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
+
+    const queryInsertNewProduct = `exec dbo.sp_importproducts '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
+        '', '', '', 'Active', 'SQL manual entry', '${moment.utc().format('YYYY-MM-DD HH:MM:SS')}';`;
+
+    const queryCreateOrder = clocknumber ? `exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', 
+        ${routed_cycle_time}, ${setup_time}, ${target}, '${production_status}', '${clocknumber}', Null, Null;` :
+        `exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+                    ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`;
+
     try {
         await sqlQuery(query,
-            (err, response) => {
+            async (err, response) => {
                 if (err) {
-                    console.log(err);
-                    res.sendStatus(500);
+                    res.status(500).send({ message: 'Error', database_error: err });
                     return;
                 }
                 let result = Object.values(response);
                 if (result[0] === undefined) {
-                    res.status(500).send({ message: 'Error', api_error: 'The code is not in the database' });;
-                    return;
-                }
-                if (clocknumber) {
-                    sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
-                    ${target}, '${production_status}', '${clocknumber}', Null, Null;`,
-                        (err, response) => {
+                    await sqlQuery(queryInsertNewProduct,
+                        async (err, response) => {
                             if (err) {
                                 console.log(err);
-                                res.sendStatus(500);
+                                res.status(500).send({ message: 'Error', database_error: err });
                                 return;
                             }
-                            responsePostPut(response, req, res);
+                            await sqlQuery(queryCreateOrder,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
                         });
                 } else {
-                    sqlQuery(`exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
-                    ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`,
+                    await sqlQuery(queryCreateOrder,
                         (err, response) => {
                             if (err) {
-                                console.log(err);
-                                res.sendStatus(500);
+                                res.status(500).send({ message: 'Error', database_error: err });
                                 return;
                             }
                             responsePostPut(response, req, res);
                         });
                 }
-
             });
     } catch (e) {
         res.status(500).send({ message: 'Error', api_error: e });
