@@ -19,47 +19,47 @@ function toTimeZone(time, zone) {
     return moment(time).tz(zone).format(format);
 }
 
-router.use(function (err, req, res, next) {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401);
-        res.json({ "message": err.name + ": " + err.message });
-    } else
-        next(err);
-});
+// router.use(function (err, req, res, next) {
+//     if (err.name === 'UnauthorizedError') {
+//         res.status(401);
+//         res.json({ "message": err.name + ": " + err.message });
+//     } else
+//         next(err);
+// });
 
-router.use(function (req, res, next) {
-    var allowedOrigins = config['cors']
-    var origin = req.headers.origin;
-    if (allowedOrigins.indexOf(origin) > -1) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader("Access-Control-Allow-Credentials", "true")
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// router.use(function (req, res, next) {
+//     var allowedOrigins = config['cors']
+//     var origin = req.headers.origin;
+//     if (allowedOrigins.indexOf(origin) > -1) {
+//         res.setHeader('Access-Control-Allow-Origin', origin);
+//     }
+//     res.setHeader("Access-Control-Allow-Credentials", "true")
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 
-router.use(function (req, res, next) {
-    let token = req.header('Authorization');
-    if (token && token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length).trimLeft();
-    }
-    if (token) {
-        nJwt.verify(token, config["signingKey"], function (err) {
-            if (err) {
-                return res.sendStatus(401);
-            } else {
-                next()
-            }
-        });
-    } else {
-        res.status(401);
-        return res.json({
-            success: false,
-            message: 'Auth token is not supplied'
-        });
-    }
-});
+// router.use(function (req, res, next) {
+//     let token = req.header('Authorization');
+//     if (token && token.startsWith('Bearer ')) {
+//         token = token.slice(7, token.length).trimLeft();
+//     }
+//     if (token) {
+//         nJwt.verify(token, config["signingKey"], function (err) {
+//             if (err) {
+//                 return res.sendStatus(401);
+//             } else {
+//                 next()
+//             }
+//         });
+//     } else {
+//         res.status(401);
+//         return res.json({
+//             success: false,
+//             message: 'Auth token is not supplied'
+//         });
+//     }
+// });
 
 function responsePostPut(response, req, res) {
     try {
@@ -915,6 +915,24 @@ router.put('/create_order_data', async function (req, res) {
         res.status(500).send({ message: 'Error', api_error: e });
     }
 
+});
+
+router.get('/asset_display_system', async function (req, res) {
+    const display_system_name = req.query.display_system_name;
+
+    if (!display_system_name) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem '${display_system_name}';`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            responseGet(response, req, res, 'AssetDisplaySystem');
+        });
 });
 
 
