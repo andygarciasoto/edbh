@@ -7,6 +7,7 @@ import './i18n';
 import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
+import queryString from 'query-string';
 import { access } from 'fs';
 
 const loginStateStorageKey = "loginState";
@@ -82,24 +83,61 @@ function init() {
         return Promise.reject(error);
     });
 
+    // let url = window.location.search;
+    // let params = queryString.parse(url);
+
+    // axios.all(
+    //     [
+    //         axios.get(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } }),
+    //         axios.get(`${API}/asset_display_system`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) }, params: {display_system_name: params.ds} }),
+    //     ]
+    // )
+        
+    
+    //     .then(function (responseUser, responseMachine) {
+    //         return [responseUser, responseMachine];
+    //     })
+    //     .then(function (json, jsonMachine) {
+    //         console.log(json, jsonMachine);
+    //         const machineData = {
+    //             asset_code: jsonMachine[0].AssetDisplaySystem.asset_code,
+    //             asset_level: jsonMachine[0].AssetDisplaySystem.asset_level,
+    //             automation_level: jsonMachine[0].AssetDisplaySystem.automation_level,
+    //             display_name: jsonMachine[0].AssetDisplaySystem.displaysystem_name, 
+    //             asset_description: jsonMachine[0].AssetDisplaySystem.asset_description
+    //         }
+    //         const user = {
+    //             first_name: json.data[0]['First Name'],
+    //             last_name: json.data[0]['Last Name'],
+    //             username: json.data[0].Username,
+    //             password: json.data[0].Password,
+    //             role: json.data[0].Role,
+    //             clock_number: json.data[0].Badge
+    //         }
+    //         ReactDOM.render(
+    //             <App user={user} defaultAsset={machineData} />, document.getElementById('root'));
+    //     }).catch((e) => {
+    //         console.log(e)
+    //     })
+
     axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
-        .then(function (response) {
-            return response;
-        })
-        .then(function (json) {
-            const user = {
-                first_name: json.data[0]['First Name'],
-                last_name: json.data[0]['Last Name'],
-                username: json.data[0].Username,
-                password: json.data[0].Password,
-                role: json.data[0].Role,
-                clock_number: json.data[0].Badge
-            }
-            ReactDOM.render(
-                <App user={user} />, document.getElementById('root'));
-        }).catch((e) => {
-            console.log(e)
-        })
+    .then(function (response) {
+        return response;
+    })
+    .then(function (json) {
+        const user = {
+            first_name: json.data[0]['First Name'],
+            last_name: json.data[0]['Last Name'],
+            username: json.data[0].Username,
+            password: json.data[0].Password,
+            role: json.data[0].Role,
+            clock_number: json.data[0].Badge
+        }
+        ReactDOM.render(
+            <App user={user} />, document.getElementById('root'));
+    }).catch((e) => {
+        console.log(e)
+    })
 
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.

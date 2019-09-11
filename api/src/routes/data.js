@@ -918,10 +918,11 @@ router.put('/create_order_data', async function (req, res) {
 });
 
 router.get('/asset_display_system', async function (req, res) {
-    const display_system_name = req.query.display_system_name;
+    let display_system_name = req.query.display_system_name;
 
     if (!display_system_name) {
-        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        // return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        display_system_name = 'CR2080435W1';
     }
 
     sqlQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem '${display_system_name}';`,
