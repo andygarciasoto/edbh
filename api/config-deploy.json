@@ -6,5 +6,7 @@
     "cors": ["https://dxhapi.azurewebsites.net", "https://dxhweb.azurewebsites.net"],
     "URL": "https://dxhweb.azurewebsites.net",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
-    "loginURL": "https://dxhweb.azurewebsites.net/dashboard"
+    "loginURL": "https://dxhweb.azurewebsites.net/dashboard",
+    "socket_timeout": 90000,
+    "token_expiration": 14400000
 }

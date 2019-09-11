@@ -1,5 +1,6 @@
 {
     "machine": 34002,
+    "machineType": "Partially_Manual_Scan_Order",
     "user": "Ryan Parker",
     "role": "supervisor",
     "language": "EN-US",
@@ -7,5 +8,8 @@
     "loginPage": "https://dxhweb.azurewebsites.net/login",
     "root": "https://dxhweb.azurewebsites.net",
     "api": "https://dxhapi.azurewebsites.net",
-    "rollback": 8
+    "rollback": 8,
+    "timezone": "utc",
+    "first_signoff_reminder": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+    "second_signoff_reminder": 55
 }
