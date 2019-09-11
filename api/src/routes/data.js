@@ -115,7 +115,7 @@ router.get('/data', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             structureShiftdata(response);
@@ -133,7 +133,7 @@ router.get('/machine', async function (req, res) {
     sqlQuery(query, (err, response) => {
         if (err) {
             console.log(err)
-            res.sendStatus(500);
+            res.status(500).send({ message: 'Error', database_error: err });
             return;
         }
         structureMachines(response);
@@ -162,7 +162,7 @@ router.get('/me', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
@@ -195,7 +195,7 @@ router.get('/shifts', async function (req, res) {
             (err, response) => {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    res.status(500).send({ message: 'Error', database_error: err });
                     return;
                 }
                 res.status(200).json(response);
@@ -216,7 +216,7 @@ router.get('/intershift_communication', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'InterShiftData');
@@ -247,7 +247,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -257,7 +257,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -267,7 +267,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -281,7 +281,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -291,7 +291,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -309,7 +309,7 @@ router.get('/timelost_reasons', async function (req, res) {
     sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, (err, response) => {
         if (err) {
             console.log(err);
-            res.sendStatus(500);
+            res.status(500).send({ message: 'Error', database_error: err });
             return;
         }
         responseGet(response, req, res, 'DTReason');
@@ -328,7 +328,7 @@ router.get('/dxh_data_id', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err)
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'GetDxHDataId');
@@ -369,7 +369,7 @@ router.put('/dt_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -379,7 +379,7 @@ router.put('/dt_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 } responsePostPut(response, req, res);
                             });
@@ -392,7 +392,7 @@ router.put('/dt_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     } responsePostPut(response, req, res);
                 });
@@ -401,7 +401,7 @@ router.put('/dt_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -436,7 +436,7 @@ router.put('/intershift_communication', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -446,7 +446,7 @@ router.put('/intershift_communication', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -456,7 +456,7 @@ router.put('/intershift_communication', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -470,7 +470,7 @@ router.put('/intershift_communication', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -480,7 +480,7 @@ router.put('/intershift_communication', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -514,7 +514,7 @@ router.put('/operator_sign_off', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -524,7 +524,7 @@ router.put('/operator_sign_off', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -534,7 +534,7 @@ router.put('/operator_sign_off', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -548,7 +548,7 @@ router.put('/operator_sign_off', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -558,7 +558,7 @@ router.put('/operator_sign_off', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -587,7 +587,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
         (err, data) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
@@ -601,7 +601,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                             (err, data) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -611,7 +611,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                                         (err, response) => {
                                             if (err) {
                                                 console.log(err);
-                                                res.sendStatus(500);
+                                                res.status(500).send({ message: 'Error', database_error: err });
                                                 return;
                                             }
                                             responsePostPut(response, req, res);
@@ -621,7 +621,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                                         (err, response) => {
                                             if (err) {
                                                 console.log(err);
-                                                res.sendStatus(500);
+                                                res.status(500).send({ message: 'Error', database_error: err });
                                                 return;
                                             }
                                             responsePostPut(response, req, res);
@@ -635,7 +635,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -645,7 +645,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -689,7 +689,7 @@ router.put('/production_data', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -699,7 +699,7 @@ router.put('/production_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -709,7 +709,7 @@ router.put('/production_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.sendStatus(500);
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -723,7 +723,7 @@ router.put('/production_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -733,7 +733,7 @@ router.put('/production_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -754,7 +754,7 @@ router.get('/order_data', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'OrderData');
@@ -771,7 +771,7 @@ router.get("/order_assembly", async function (req, res) {
         (err, data) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             let response = JSON.parse(Object.values(data)[0].OrderData);
@@ -791,14 +791,18 @@ router.get("/order_assembly", async function (req, res) {
                     timeout: 10000
                 }, function (error, resp, body) {
                     if (resp.body === 'Message missing key data') {
-                        res.sendStatus(500);
+                        res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
+                        return;
+                    }
+                    if (error) {
+                        res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }
                     sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
                         (err, data) => {
                             if (err) {
                                 console.log(err);
-                                res.sendStatus(500);
+                                res.status(500).send({ message: 'Error', database_error: err });
                                 return;
                             }
                             let response = JSON.parse(Object.values(data)[0].OrderData);
@@ -819,7 +823,7 @@ router.get('/uom', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'UOM');
@@ -831,7 +835,7 @@ router.get('/product', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'Product');
@@ -929,7 +933,7 @@ router.get('/asset_display_system', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
             responseGet(response, req, res, 'AssetDisplaySystem');
