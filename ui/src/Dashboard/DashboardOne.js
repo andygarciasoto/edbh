@@ -73,8 +73,9 @@ class DashboardOne extends React.Component {
       dataCall: {},
       selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
       selectedDateParsed: '',
-      selectedMachine: props.search.mc || config['machine'],
-      selectedMachineType: props.search.tp || config['machineType'],
+      selectedMachine: props.search.mc || this.props.defaultAsset.asset_code,
+      selectedMachineType: props.search.tp || this.props.defaultAsset.automation_level,
+      station: props.search.st || this.props.defaultAsset.display_name,
       currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
       modalType: '',
@@ -254,6 +255,7 @@ class DashboardOne extends React.Component {
   }
 
   async componentDidMount() {
+    console.log(this.props.defaultAsset)
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
     i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
