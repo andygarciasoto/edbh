@@ -524,11 +524,11 @@ class DashboardOne extends React.Component {
         style={(!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') && 
         (this.state.signoff_reminder === true)) ? 
         { paddingRight: '90%', cursor: 'pointer' } : 
-        { paddingRight: '5%', cursor: 'pointer', textAlign: 'center'}} 
+        { paddingRight: '80%', cursor: 'pointer'}} 
         className={'empty-field'} onClick={() =>
           isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void(0)}>
           {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? '' : 
-          this.state.signoff_reminder === true ? <span><FontAwesome name="warning" className={'signoff-reminder-icon'}/></span> : null}
+          this.state.signoff_reminder === true ? <span style={{textAlign: 'center'}}><FontAwesome name="warning" className={'signoff-reminder-icon'}/></span> : null}
           </span> :
           <span onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', 
           { props }, 'operator') : void (0)}>
@@ -691,7 +691,7 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5>{'Showing Data for: '}{moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
+                <Col md={3}><h5 style={{fontSize: '1.1em'}}>{'Showing Data for: '}{moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}

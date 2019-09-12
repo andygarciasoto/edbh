@@ -137,6 +137,13 @@ class TimelossModal extends React.Component {
             styles.content.width = '50%';
             styles.content.overflow = 'visible';
         }
+        const selectStyles = {
+            control: base => ({
+                ...base,
+                height: 35,
+                minHeight: 35
+            })
+        }
         const reasons = [];
         if (this.state.reasons) {
             for (let reason of this.state.reasons)
@@ -220,6 +227,7 @@ class TimelossModal extends React.Component {
                                     options={reasons}
                                     className={"react-select-container"}
                                     classNamePrefix={"react_control"}
+                                    styles={selectStyles}
                                 />
                             </Form.Group>
                         </div>
