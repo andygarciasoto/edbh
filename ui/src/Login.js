@@ -4,6 +4,8 @@ import Background from './backdrop1.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
 import { AUTH } from './Utils/Constants';
+import queryString from 'query-string'
+import { getRequest } from  './Utils/Requests';
 
 class Login extends React.Component {
     constructor(props) {
@@ -20,7 +22,7 @@ class Login extends React.Component {
             backgroundImage: `linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8) ), url(${Background})`,
             height: '100vh',
             backgroundSize: '150%, 150%',
-        }})
+        }});
     }  
 
     render() {
