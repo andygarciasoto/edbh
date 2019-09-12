@@ -17,9 +17,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/login') {
     let url = window.location.search;
     let params = queryString.parse(url);
     const machineName = params.st;
+    localStorage.setItem('machine_name', machineName);
     console.log(machineName);
     ReactDOM.render(
-        <App machine={machineName}/>
+        <App machine={machineName} />
         , document.getElementById('root'));
 } else {
     init();
@@ -95,7 +96,7 @@ function init() {
                 asset_code: machineValues.asset_code,
                 asset_level: machineValues.asset_level,
                 automation_level: machineValues.automation_level,
-                display_name: machineValues.displaysystem_name, 
+                display_name: machineValues.displaysystem_name,
                 asset_description: machineValues.asset_description
             }
             const user = {

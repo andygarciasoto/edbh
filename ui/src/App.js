@@ -15,7 +15,7 @@ import * as qs from 'query-string';
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-    const machine = propsApp.machine || 'CR2080435W1';
+    const machine = propsApp.machine || localStorage.getItem('machine_name') || 'CR2080435W1';
     const machineData = axios.get(`${API}/asset_display_system?st=${machine}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') }});
     machineData.then((data) => localStorage.setItem('machineKey', JSON.stringify(data.data[0].AssetDisplaySystem)));
   return (
