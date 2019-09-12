@@ -1,6 +1,7 @@
 {
+    "station": "CR2080435W1",
     "machine": 34002,
-    "machineType": "Partially_Manual_Scan_Order",
+    "machineType": "Automated",
     "user": "Ryan Parker",
     "role": "supervisor",
     "language": "EN-US",

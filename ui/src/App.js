@@ -11,11 +11,17 @@ import { API } from './Utils/Constants';
 import { getRequest } from './Utils/Requests';
 import axios from 'axios';
 import * as qs from 'query-string';
+import config from './config.json';
 
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  const machine = propsApp.machine || localStorage.getItem('machine_name') || 'CR2080435W1';
+  let machine = propsApp.machine || localStorage.getItem('machine_name');
+
+  if (machine === 'undefined') {
+    localStorage.setItem('machine_name', config['station']);
+    machine = config['station'];
+  }
   const machineData = axios.get(`${API}/asset_display_system?st=${machine}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } });
   machineData.then((data) => localStorage.setItem('machineKey', JSON.stringify(data.data[0].AssetDisplaySystem)));
   return (
@@ -32,7 +38,7 @@ function App(propsApp) {
             return (
               <DashboardOne
                 user={propsApp.user} t={t}
-                defaultAsset={machine}
+                defaultAsset={propsApp.defaultAsset}
                 history={props.history}
                 search={qs.parse(props.history.location.search)} />
             )

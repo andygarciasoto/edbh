@@ -18,7 +18,6 @@ if (window.location.pathname === '/' || window.location.pathname === '/login') {
     let params = queryString.parse(url);
     const machineName = params.st;
     localStorage.setItem('machine_name', machineName);
-    console.log(machineName);
     ReactDOM.render(
         <App machine={machineName} />
         , document.getElementById('root'));
