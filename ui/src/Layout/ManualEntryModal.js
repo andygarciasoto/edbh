@@ -215,7 +215,7 @@ class ManualEntryModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
-                    message={'manualentry was inserted.'}
+                    message={'Manual Entry Succesfully Inserted.'}
                     title={'Request Successful'}
                 />
                 <LoadingModal
