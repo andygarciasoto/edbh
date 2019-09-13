@@ -9,8 +9,13 @@
     "loginPage": "http://localhost:3000/login",
     "root": "http://localhost:3000",
     "api": "http://localhost:8080",
+<<<<<<< HEAD
     "rollback": 2, 
     "timezone": "utc",
+=======
+    "rollback": 1, 
+    "timezone": "America/New_York",
+>>>>>>> c0d4b0e4200a99a893725ab362057326465055d0
     "first_signoff_reminder": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
     "second_signoff_reminder": 55
 }

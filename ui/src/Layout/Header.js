@@ -20,7 +20,7 @@ class Header extends React.Component {
         this.state = {
             megaMenuToggle: 'dropdown-content',
             machineValue: props.selectedMachine || props.t('Select Machine'),
-            machineType: config['machineType'],
+            machineType: props.selectedMachineType,
             dateValue: new Date(props.selectedDate),
             shiftValue: props.selectedShift || props.t('Select Shift'),
             languageValue: props.selectedLanguage || props.t('Select Language'),
