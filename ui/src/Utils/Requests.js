@@ -1,5 +1,5 @@
 import { API, AUTH } from './Constants';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import config from '../config.json'
 
 const axios = require('axios');
@@ -149,7 +149,7 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment[config['timezone']]().format('YYYY-MM-DD HH:mm:ss');
+  return moment().tz(config['timezone']).format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -277,25 +277,17 @@ function isComponentValid(user_role, name) {
 }
 
 function isFieldAllowed(role, row) {
-  if (role !== 'Administrator') {
-    let rollback = role === 'Operator' ? 2 : config['rollback'];
-    const rowtime = row._subRows[0]._original.hour_interval_start;
-    const now = getCurrentTime();
-    const minusDate = moment(now).add(-rollback, 'hours');
-    if (!moment(now).isSame(rowtime, 'day')) {
-      return false;
-    }
 
-    if (!moment(rowtime).isAfter(minusDate)) {
-      return false;
-    }
+  let rowTime = moment(row._subRows[0]._original.hour_interval_start);
+  let actualSiteTime = moment().tz(config['timezone']);
+  let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH'))
+    .diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
 
-    if (moment(rowtime).isAfter(now)) {
-      return false;
-    }
-    return true;
+  if (role === 'Operator') {
+    return diffHours === 0;
   } else {
-    return true;
+    let rollback = config['rollback'];
+    return diffHours >= 0 && diffHours <= rollback && (row._subRows[0]._original.superv_id == null || row._subRows[0]._original.superv_id == undefined);
   }
 }
 
