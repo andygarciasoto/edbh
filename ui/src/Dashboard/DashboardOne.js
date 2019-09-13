@@ -663,6 +663,7 @@ class DashboardOne extends React.Component {
         <Header className="app-header"
           t={t}
           selectedMachine={this.state.selectedMachine}
+          selectedMachineType={this.state.selectedMachineType}
           selectedDate={this.state.selectedDate}
           selectedShift={this.state.selectedShift}
           selectedLanguage={this.state.currentLanguage}
