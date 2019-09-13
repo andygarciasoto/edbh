@@ -368,8 +368,8 @@ class DashboardOne extends React.Component {
               cursor: 'pointer'
             }}
             className={'empty-field'}></span> :
-          <span className='ideal'>
-            <span className="empty">{props.value}</span></span>,
+          <span className='ideal' onClick={() => this.openModal('manualentry', props)}>
+            <span className="empty" onClick={() => this.openModal('manualentry', props)}>{props.value}</span></span>,
         style: {
           textAlign: 'center',
           borderRight: 'solid 1px rgb(219, 219, 219)',
