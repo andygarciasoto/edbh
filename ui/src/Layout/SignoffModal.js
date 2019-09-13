@@ -21,6 +21,7 @@ class SignoffModal extends React.Component {
             errorMessage: '',
             row: this.props.dxh_parent || {},
             modal_validate_IsOpen: false,
+            isOpen: false,
             style: {
                 content: {
                     top: '50%',
@@ -76,7 +77,7 @@ class SignoffModal extends React.Component {
                         errorMessage: 'Invalid Clock Number' })
                 } else {
                     if(data.dhx_data_id === null){
-                        this.setState({modal_loading_IsOpen: true}, () => {
+                        this.setState({modal_loading_IsOpen: true, isOpen: false}, () => {
                             const resp = sendPut({
                                 ...data
                             }, '/production_data')
@@ -102,7 +103,7 @@ class SignoffModal extends React.Component {
     }
 
     signOff() {
-        if (this.props.user.role === 'Supervisor') {
+        if (this.props.user.role === 'Supervisor' && this.state.signOffRole === 'operator') {
             this.setState({modal_error_IsOpen: true, errorMessage: 'You cannot sign off as an Operator.', isOpen: false});
             this.props.onRequestClose()
             return;
@@ -123,7 +124,7 @@ class SignoffModal extends React.Component {
                 row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
                 timestamp: getCurrentTime(),
             }
-            this.setState({ modal_loading_IsOpen: true }, () => {
+            this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
                 const response = sendPut({
                     ...data
                 }, `/${this.state.signOffRole}_sign_off`)
@@ -161,7 +162,7 @@ class SignoffModal extends React.Component {
                 })
             })
         } else if (this.props.signOffRole === 'supervisor') {
-            this.setState({modal_validate_IsOpen: true, isOpen: false})
+            this.setState({isOpen: false, modal_validate_IsOpen: true})
         }
     }
 

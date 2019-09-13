@@ -35,6 +35,10 @@ class Header extends React.Component {
     }
 
     openMenu() {
+        this.state.megaMenuToggle === 'dropdown-content' ?
+        this.props.sendMenuToggle(true) :
+        this.props.sendMenuToggle(false);
+        
         isComponentValid(this.props.user.role, 'megamenu') ?
             this.state.megaMenuToggle === 'dropdown-content opened' ?
                 this.setState({ megaMenuToggle: 'dropdown-content' }) :

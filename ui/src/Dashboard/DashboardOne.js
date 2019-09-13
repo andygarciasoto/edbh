@@ -66,6 +66,7 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_manualentry_IsOpen: false,
+      isMenuOpen: false,
       valid_barcode: false,
       signoff_reminder: false,
       logoffHourCheck: true,
@@ -95,10 +96,10 @@ class DashboardOne extends React.Component {
     this.headerData = this.headerData.bind(this);
     this.getDashboardData = this.getDashboardData.bind(this);
     this.showValidateDataModal = this.showValidateDataModal.bind(this);
+    this.menuToggle = this.menuToggle.bind(this); 
   }
 
   showValidateDataModal(data) {
-    console.log(data)
     if (data) {
       this.setState({
         modal_order_IsOpen: false,
@@ -220,12 +221,25 @@ class DashboardOne extends React.Component {
       if (val) {
         if (val.props) {
           if (val.props.row._subRows) {
-            const allowed = isFieldAllowed(this.props.user.role, val.props.row);
-            this.setState({
-              modal_signoff_IsOpen: allowed,
-              currentRow: val.props.row._subRows[0]._original,
-              signOffRole: extraParam ? extraParam : null,
-            })
+            if (((val.props.row._subRows[0]._original.oper_id === null) && (extraParam === 'operator'))  ||
+             ((val.props.row._subRows[0]._original.superv_id === null) && (extraParam === 'supervisor'))){
+              const allowed = isFieldAllowed(this.props.user.role, val.props.row);
+              this.setState({
+                modal_signoff_IsOpen: allowed,
+                currentRow: val.props.row._subRows[0]._original,
+                signOffRole: extraParam ? extraParam : null,
+              })
+            } else if  (((val.props.row._subRows[0]._original.oper_id !== null) && (extraParam === 'operator'))  ||
+            ((val.props.row._subRows[0]._original.superv_id !== null) && (extraParam === 'supervisor'))){
+              if (moment(getCurrentTime()).isSame(val.props.row._subRows[0]._original.hour_interval_start, 'hours')) {
+                const allowed = isFieldAllowed(this.props.user.role, val.props.row);
+                this.setState({
+                  modal_signoff_IsOpen: allowed,
+                  currentRow: val.props.row._subRows[0]._original,
+                  signOffRole: extraParam ? extraParam : null,
+                })
+              }
+            }
           }
         }
       } else {
@@ -252,8 +266,13 @@ class DashboardOne extends React.Component {
     });
   }
 
+  menuToggle(flag) {
+    this.setState({
+      isMenuOpen: flag
+    })
+  }
+
   async componentDidMount() {
-    console.log(this.props.defaultAsset)
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
     i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
@@ -280,7 +299,10 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen) {
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+          } else {
+          }
         }
       });
     } catch (e) { console.log(e) }
@@ -359,7 +381,7 @@ class DashboardOne extends React.Component {
       }, {
         Header: () => <span className={'wordwrap'}
           data-tip={t('Part Number')}>{t('Part Number')}</span>,
-        minWidth: 180,
+        minWidth: 185,
         accessor: 'product_code',
         Cell: props => (props.value === '' || props.value === null) ?
           <span
@@ -672,6 +694,7 @@ class DashboardOne extends React.Component {
           changeLanguageBrowser={this.changeLanguageBrowser}
           history={this.props.history}
           search={this.props.search}
+          sendMenuToggle={this.menuToggle}
         />
         {isComponentValid(this.props.user.role, 'pagination') ? <Pagination
           selectedShift={this.state.selectedShift}
@@ -689,7 +712,8 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5 style={{ fontSize: '1.1em' }}>{'Showing Data for: '}{moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
+                <Col md={3}><h5 style={{fontSize: '1.0em'}}>{'Showing Data for: '}
+                {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}
