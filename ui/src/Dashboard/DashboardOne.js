@@ -591,7 +591,7 @@ class DashboardOne extends React.Component {
     }
     if (logoffHour === config['second_signoff_reminder']) {
       if (this.state.logoffHourCheck === true) {
-        this.setState({ errorModal: true, errorMessage: "Please Signoff for this hour" })
+        this.setState({ errorModal: true, errorMessage: "Please sign off for this hour" })
       }
     }
     let response = {};
