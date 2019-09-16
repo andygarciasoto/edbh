@@ -871,7 +871,7 @@ router.put('/create_order_data', async function (req, res) {
         "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
 
     const queryInsertNewProduct = `exec dbo.sp_importproducts '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
-        '', '', '', 'Active', 'SQL manual entry', '${moment.utc().format('YYYY-MM-DD HH:MM:SS')}';`;
+        '', '', '', 'Active', 'SQL manual entry', '${moment.utc().format('YYYY-MM-DD HH:MM')}';`;
 
     const queryCreateOrder = clocknumber ? `exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', 
         ${routed_cycle_time}, ${setup_time}, ${target}, '${production_status}', '${clocknumber}', Null, Null;` :
