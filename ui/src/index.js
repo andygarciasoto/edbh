@@ -85,19 +85,13 @@ function init() {
         }
         return Promise.reject(error);
     });
+    let machine = localStorage.getItem('machine_name');
+
     axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
         .then(function (response) {
             return response;
         })
         .then(function (json) {
-            const machineValues = JSON.parse(localStorage.getItem('machineKey'));
-            const machineData = {
-                asset_code: machineValues.asset_code,
-                asset_level: machineValues.asset_level,
-                automation_level: machineValues.automation_level,
-                display_name: machineValues.displaysystem_name,
-                asset_description: machineValues.asset_description
-            }
             const user = {
                 first_name: json.data[0]['First Name'],
                 last_name: json.data[0]['Last Name'],
@@ -106,11 +100,34 @@ function init() {
                 role: json.data[0].Role,
                 clock_number: json.data[0].Badge
             }
-            ReactDOM.render(
-                <App user={user} defaultAsset={machineData} />, document.getElementById('root'));
+
+            axios(`${API}/asset_display_system?st=${machine}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
+                .then(function (response) {
+                    return response;
+                })
+                .then(function (responseMachine) {
+                    let machineValues = JSON.parse(localStorage.getItem('machineKey'));
+
+                    if (machineValues == null) {
+                        machineValues = responseMachine.data[0].AssetDisplaySystem;
+                        localStorage.setItem('machineKey', JSON.stringify(responseMachine.data[0].AssetDisplaySystem));
+                    }
+
+                    const machineData = {
+                        asset_code: machineValues.asset_code,
+                        asset_level: machineValues.asset_level,
+                        automation_level: machineValues.automation_level,
+                        display_name: machineValues.displaysystem_name,
+                        asset_description: machineValues.asset_description
+                    }
+                    ReactDOM.render(
+                        <App user={user} defaultAsset={machineData} />, document.getElementById('root'));
+                });
         }).catch((e) => {
             console.log(e)
-        })
+        });
+
+
 
     // axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
     // .then(function (response) {
