@@ -44,7 +44,7 @@ import('moment/locale/es');
 class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
-    var hour = (new Date().getHours());
+    var hour = moment(getCurrentTime()).hours();
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
       shiftByHour = '1st Shift';
@@ -96,7 +96,7 @@ class DashboardOne extends React.Component {
     this.headerData = this.headerData.bind(this);
     this.getDashboardData = this.getDashboardData.bind(this);
     this.showValidateDataModal = this.showValidateDataModal.bind(this);
-    this.menuToggle = this.menuToggle.bind(this); 
+    this.menuToggle = this.menuToggle.bind(this);
   }
 
   showValidateDataModal(data) {
@@ -221,16 +221,16 @@ class DashboardOne extends React.Component {
       if (val) {
         if (val.props) {
           if (val.props.row._subRows) {
-            if (((val.props.row._subRows[0]._original.oper_id === null) && (extraParam === 'operator'))  ||
-             ((val.props.row._subRows[0]._original.superv_id === null) && (extraParam === 'supervisor'))){
+            if (((val.props.row._subRows[0]._original.oper_id === null) && (extraParam === 'operator')) ||
+              ((val.props.row._subRows[0]._original.superv_id === null) && (extraParam === 'supervisor'))) {
               const allowed = isFieldAllowed(this.props.user.role, val.props.row);
               this.setState({
                 modal_signoff_IsOpen: allowed,
                 currentRow: val.props.row._subRows[0]._original,
                 signOffRole: extraParam ? extraParam : null,
               })
-            } else if  (((val.props.row._subRows[0]._original.oper_id !== null) && (extraParam === 'operator'))  ||
-            ((val.props.row._subRows[0]._original.superv_id !== null) && (extraParam === 'supervisor'))){
+            } else if (((val.props.row._subRows[0]._original.oper_id !== null) && (extraParam === 'operator')) ||
+              ((val.props.row._subRows[0]._original.superv_id !== null) && (extraParam === 'supervisor'))) {
               if (moment(getCurrentTime()).isSame(val.props.row._subRows[0]._original.hour_interval_start, 'hours')) {
                 const allowed = isFieldAllowed(this.props.user.role, val.props.row);
                 this.setState({
@@ -712,8 +712,8 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5 style={{fontSize: '1.0em'}}>{'Showing Data for: '}
-                {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
+                <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
+                  {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}
