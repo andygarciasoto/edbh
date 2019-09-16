@@ -28,10 +28,9 @@ class SignIn extends React.Component {
                     <h3 style={{fontSize: '0.9em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <BarcodeScanner t={this.props.t}/>
                 </div>
-                <div className="app-info"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></div>
+                <div className="app-info"><p></p></div>
             </div>
         );
     }
 };
-
 export default SignIn;
