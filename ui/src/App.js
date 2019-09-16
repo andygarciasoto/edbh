@@ -19,11 +19,10 @@ function App(propsApp) {
   let machine = propsApp.machine || localStorage.getItem('machine_name');
 
   if (machine === 'undefined') {
-    localStorage.setItem('machine_name', config['station']);
+    let machineValues = JSON.parse(localStorage.getItem('machineKey'));
+    localStorage.setItem('machine_name', (machineValues == null ? config['station'] : machineValues.displaysystem_name));
     machine = config['station'];
   }
-  const machineData = axios.get(`${API}/asset_display_system?st=${machine}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } });
-  machineData.then((data) => localStorage.setItem('machineKey', JSON.stringify(data.data[0].AssetDisplaySystem)));
   return (
     <Router>
       <Helmet>
