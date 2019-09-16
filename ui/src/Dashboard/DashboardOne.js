@@ -203,7 +203,7 @@ class DashboardOne extends React.Component {
     }
     if (type === 'manualentry') {
       if (val) {
-        const allowed = isFieldAllowed(this.props.user.role, val.row);
+        const allowed = isFieldAllowed(this.props.user.role, val.row, true);
         if (this.state.selectedMachineType === 'Manual' || config['machineType'] === 'Manual') {
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
@@ -547,7 +547,7 @@ class DashboardOne extends React.Component {
             { paddingRight: '80%', cursor: 'pointer' }}
           className={'empty-field'} onClick={() =>
             isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void (0)}>
-          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? '' :
+          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
             this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
         </span> :
           <span onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff',
@@ -570,7 +570,7 @@ class DashboardOne extends React.Component {
             { paddingRight: '80%', cursor: 'pointer' }}
           className={'empty-field'} onClick={() =>
             isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', { props }, 'supervisor') : void (0)}>
-          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? '' :
+          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
             this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
         </span> :
           <span onClick={() => isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff',
@@ -591,7 +591,7 @@ class DashboardOne extends React.Component {
     }
     if (logoffHour === config['second_signoff_reminder']) {
       if (this.state.logoffHourCheck === true) {
-        this.setState({ errorModal: true, errorMessage: "Please sign off for this hour" })
+        this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
       }
     }
     let response = {};
