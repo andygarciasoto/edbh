@@ -277,7 +277,9 @@ function isComponentValid(user_role, name) {
 }
 
 function isFieldAllowed(role, row) {
-
+  if (role === 'Administrator') {
+    return true;
+  }
   let rowTime = moment(row._subRows[0]._original.hour_interval_start);
   let actualSiteTime = moment().tz(config['timezone']);
   let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH'))
@@ -287,7 +289,7 @@ function isFieldAllowed(role, row) {
     return diffHours === 0;
   } else {
     let rollback = config['rollback'];
-    return diffHours >= 0 && diffHours <= rollback && (row._subRows[0]._original.superv_id == null || row._subRows[0]._original.superv_id == undefined);
+    return diffHours >= 0 && diffHours <= rollback && (row._subRows[0]._original.superv_id == null || row._subRows[0]._original.superv_id === undefined);
   }
 }
 

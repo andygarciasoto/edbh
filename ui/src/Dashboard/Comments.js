@@ -118,7 +118,7 @@ class Comments extends React.Component {
                                         {this.state.commentLen > 1 ? 
                                         <span className="intershift-read-more" 
                                         onClick={this.openModal}>{`${t('Read More')}
-                                        (${this.state.commentLen-1})`}
+                                        (${this.state.commentLen})`}
                                         <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
                                         </span> : null
                                     }</td>
