@@ -3,8 +3,8 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
       if ((rowInfo && column.id === 'actual_pcs') && (rowInfo.row.actual_pcs !== null)) {
         return {
           style: {
-            backgroundColor: Number(rowInfo.row.actual_pcs) === 0 || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? '#b80600' : 'green',
-            backgroundImage: Number(rowInfo.row.actual_pcs) === 0 || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? 'url("../dark-circles.png")' : 
+            backgroundColor: (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? '#b80600' : 'green',
+            backgroundImage: (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? 'url("../dark-circles.png")' : 
             'url("../arabesque.png")',
           }
         }
@@ -13,8 +13,8 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
           if (rowInfo.subRows !== undefined) {
             return {
               style: {
-                backgroundColor: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? '#b80600' : 'green',
-                backgroundImage: (Number(rowInfo.row.cumulative_pcs) < Number(rowInfo.row.cumulative_target_pcs)) ? 'url("../dark-circles.png")' : 
+                backgroundColor: (Number(rowInfo.row.cumulative_pcs) <= Number(rowInfo.row.cumulative_target_pcs)) ? '#b80600' : 'green',
+                backgroundImage: (Number(rowInfo.row.cumulative_pcs) <= Number(rowInfo.row.cumulative_target_pcs)) ? 'url("../dark-circles.png")' : 
                 'url("../arabesque.png")',
               }
             }
