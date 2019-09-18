@@ -101,7 +101,7 @@ class TimelossModal extends React.Component {
             });
         }
     }
-
+/*
     calculateTotal(nextProps, setupTime, breakTime) {
         let allocated_time = setupTime + breakTime;
         if (nextProps.timelost) {
@@ -111,7 +111,7 @@ class TimelossModal extends React.Component {
         }
         return allocated_time;
     }
-
+*/
     allocateTime(e) {
         const value = parseInt(e.target.value);
         const max = Math.round(this.state.allocated_time);
