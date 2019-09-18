@@ -89,8 +89,8 @@ class TimelossModal extends React.Component {
             this.setState({
                 timelost: nextProps.timelost,
                 allocated_time: total,
-                // unallocated_time: 60 - total > 0 ? 60 - total : 0,
-                unallocated_time: nextProps.currentRow.unallocated_time,
+                unallocated_time: 60 - total > 0 ? 60 - total : 0,
+                // unallocated_time: nextProps.currentRow.unallocated_time,
                 setup_time: nextProps.currentRow.summary_setup_minutes || 0,
                 break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
@@ -113,7 +113,7 @@ class TimelossModal extends React.Component {
 
     allocateTime(e) {
         const value = parseInt(e.target.value);
-        const max = this.state.unallocated_time;
+        const max = this.state.allocated_time;
         if (value >= max) {
             this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value })
         } else {
