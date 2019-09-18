@@ -507,8 +507,8 @@ class DashboardOne extends React.Component {
           <span className='ideal'>
             <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => values[0],
+        aggregate: (values, rows) => moment(getCurrentTime()).isSame(moment(rows[0]._original.hour_interval_start), 'hours') || 
+        !moment(getCurrentTime()).isBefore(moment(rows[0]._original.hour_interval_start), 'hours') ? formatNumber(rows[0]._original.unallocated_time) : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}
           onClick={() => this.openModal('dropdown', props)}></span> :

@@ -20,6 +20,18 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
             }
           }
       }
+      if ((rowInfo && column.id === 'timelost_summary') && (rowInfo.row.timelost_summary !== null)) {
+        console.log(rowInfo.row._subRows[0]._original.unallocated_time)
+        if (rowInfo.row._subRows[0]._original.allocated_time !== 0) {
+          return {
+            style: {
+              backgroundColor: '#8a0e0e',
+              backgroundImage: 'url("../dark-circles.png")',
+              color: 'white'
+            }
+          }
+        }
+      }
       if (rowInfo && column.id === 'actions_comments') {
         if (rowInfo.subRows) {
           rowInfo.subRows.map((item, key) => {
