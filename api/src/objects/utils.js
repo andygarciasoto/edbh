@@ -124,7 +124,7 @@ function createUnallocatedTime(obj) {
             item['unallocated_time'] = 0;
         }
         else {
-            item['unallocated_time'] = (((item.summary_ideal - item.summary_actual) * item.routed_cycle_time) / 60) ;
+            item['unallocated_time'] = (((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60) ;
         }
         item['allocated_time'] = item['unallocated_time'] - (item.summary_setup_minutes + item.summary_breakandlunch_minutes + item.timelost_summary);
         if (item['allocated_time'] < 0){
