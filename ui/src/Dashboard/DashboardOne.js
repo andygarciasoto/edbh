@@ -323,7 +323,8 @@ class DashboardOne extends React.Component {
       selectedDate: nextProps.search.dt || moment().format('YYYY/MM/DD'),
       selectedMachine: nextProps.search.mc || config['machine'],
       currentLanguage: nextProps.search.ln || config['language'],
-      selectedShift: nextProps.search.sf || shiftByHour
+      selectedShift: nextProps.search.sf || shiftByHour,
+      selectedMachineType: nextProps.search.tp || nextProps.defaultAsset.automation_level || config['machineType'],
     }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
   }
 
@@ -371,8 +372,8 @@ class DashboardOne extends React.Component {
           borderLeft: 'solid 1px rgb(219, 219, 219)',
           borderTop: 'solid 1px rgb(219, 219, 219)'
         },
-        Pivot: row => {
-          return <span>{row.value}</span>;
+        Pivot: (row) => {
+          return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? row.value + '*' : row.value}</span>
         },
         disableExpander: false,
         filterMethod: (filter, rows) =>

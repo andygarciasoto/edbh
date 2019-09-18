@@ -282,15 +282,12 @@ function isFieldAllowed(role, row) {
   }
   let rowTime = moment(row._subRows[0]._original.hour_interval_start);
   let actualSiteTime = moment().tz(config['timezone']);
-  let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH'))
-    .diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
-
-  if (role === 'Operator') {
-    return diffHours === 0;
-  } else {
-    let rollback = config['rollback'];
-    return diffHours >= 0 && diffHours <= rollback && (row._subRows[0]._original.superv_id == null || row._subRows[0]._original.superv_id === undefined);
-  }
+  let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
+  let result;
+  if (role === 'Operator' || role === 'Supervisor') {
+    (diffHours === 0 || diffHours === 1) ? result = true : result = false;
+    }
+  return result;
 }
 
 function formatNumber(number, decimals) {
