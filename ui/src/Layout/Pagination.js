@@ -6,6 +6,7 @@ import { mapShift, formatDate, getCurrentTime, mapShiftReverse } from '../Utils/
 import Tooltip from 'react-tooltip'
 import moment from 'moment';
 import $ from 'jquery';
+import config from '../config.json';
 
 class Pagination extends React.Component {
     constructor(props) {
@@ -25,7 +26,7 @@ class Pagination extends React.Component {
     }
 
     getActualShiftFromActualDate() {
-        let actualDate = moment();
+        let actualDate = moment().tz(config['timezone']);
         let actualShift = 0;
         if (actualDate >= moment(moment(actualDate).format('YYYY-MM-DD') + ' 07:00') && actualDate < moment(moment(actualDate).format('YYYY-MM-DD') + ' 15:00')) {
             actualShift = 1;
@@ -39,7 +40,7 @@ class Pagination extends React.Component {
 
     onSelect(e) {
         //Get the correct date and shift of the application.
-        let actualDate = moment();
+        let actualDate = moment().tz(config['timezone']);
         let actualShift = this.getActualShiftFromActualDate();
         //Get the actual selection of date and Shift from the UI.
         let actualDateSelection = moment(this.state.date);
@@ -97,7 +98,7 @@ class Pagination extends React.Component {
             }
         }
 
-        if (moment(currentDate) === moment()) {
+        if (moment(currentDate) === moment().tz(config['timezone'])) {
             return;
         }
 
@@ -119,8 +120,11 @@ class Pagination extends React.Component {
         }
 
         if (e === 'double-next') {
-            newDate = getCurrentTime();
-            this.props.history.push(`${this.props.history.location.pathname}`);
+            newDate = moment(currentDate);
+            queryItem["dt"] = newDate.format('YYYY/MM/DD');
+            queryItem["sf"] = queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
+            let parameters = $.param(queryItem);
+            this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
             return;
         }
 

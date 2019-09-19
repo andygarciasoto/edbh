@@ -3,8 +3,8 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
       if ((rowInfo && column.id === 'actual_pcs') && (rowInfo.row.actual_pcs !== null)) {
         return {
           style: {
-            backgroundColor: (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? '#b80600' : 'green',
-            backgroundImage: (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? 'url("../dark-circles.png")' : 
+            backgroundColor: (Number(rowInfo.row.actual_pcs) === 0 && Number(rowInfo.row.target_pcs) === 0) || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? '#b80600' : 'green',
+            backgroundImage: (Number(rowInfo.row.actual_pcs) === 0 && Number(rowInfo.row.target_pcs) === 0) || (Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs)) ? 'url("../dark-circles.png")' : 
             'url("../arabesque.png")',
           }
         }
@@ -19,6 +19,18 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
               }
             }
           }
+      }
+      if ((rowInfo && column.id === 'timelost_summary') && (rowInfo.row.timelost_summary !== null)) {
+        console.log(rowInfo.row._subRows[0]._original.unallocated_time)
+        if (rowInfo.row._subRows[0]._original.allocated_time !== 0) {
+          return {
+            style: {
+              backgroundColor: '#8a0e0e',
+              backgroundImage: 'url("../dark-circles.png")',
+              color: 'white'
+            }
+          }
+        }
       }
       if (rowInfo && column.id === 'actions_comments') {
         if (rowInfo.subRows) {

@@ -69,7 +69,6 @@ class SignoffModal extends React.Component {
                 ...data
             }, `/${this.state.signOffRole}_sign_off`)
             response.then((res) => {
-                console.log(res)
                 if (res !== 200 || !res) {
                     this.setState({ modal_loading_IsOpen: false, 
                         modal_error_IsOpen: true,  
@@ -88,14 +87,15 @@ class SignoffModal extends React.Component {
                                 this.setState({actual: ''});
                                 this.props.Refresh(this.props.parentData);
                                 this.props.onRequestClose();
-                    })
-                })
-            }
+                                })
+                            })
+                        }
                     }
                     this.setState({ request_status: res, 
                         modal_loading_IsOpen: false,
                         modal_confirm_IsOpen: true, 
-                        modal_validate_IsOpen: false })
+                        modal_validate_IsOpen: false 
+                    })
                 })
                 this.props.Refresh(this.props.parentData);
                 this.props.onRequestClose();
