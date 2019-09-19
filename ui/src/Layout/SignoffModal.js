@@ -54,7 +54,7 @@ class SignoffModal extends React.Component {
             rowData = this.props.currentRow
         }
         const data = {
-            dhx_data_id: rowData ? rowData.dxhdata_id : null,
+            dxh_data_id: rowData ? rowData.dxhdata_id : null,
             actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
             clocknumber: number,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
@@ -75,7 +75,7 @@ class SignoffModal extends React.Component {
                         modal_validate_IsOpen: false, 
                         errorMessage: 'Invalid Clock Number' })
                 } else {
-                    if(data.dhx_data_id === null){
+                    if(data.dxh_data_id === null){
                         this.setState({modal_loading_IsOpen: true, isOpen: false}, () => {
                             const resp = sendPut({
                                 ...data
@@ -114,7 +114,7 @@ class SignoffModal extends React.Component {
         }
         if (this.state.signOffRole === 'operator') {
             const data = {
-                dhx_data_id: rowData ? rowData.dxhdata_id : null,
+                dxh_data_id: rowData ? rowData.dxhdata_id : null,
                 actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
@@ -136,7 +136,7 @@ class SignoffModal extends React.Component {
                             modal_error_IsOpen: true, 
                             modal_validate_IsOpen: false})
                     } else {
-                        if(data.dhx_data_id === null){
+                        if(data.dxh_data_id === null){
                             this.setState({modal_loading_IsOpen: true}, () => {
                                 const resp = sendPut({
                                     ...data

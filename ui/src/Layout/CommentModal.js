@@ -29,7 +29,7 @@ class CommentsModal extends React.Component {
             first_name: this.props.user.first_name,
             last_name: this.props.user.last_name,
             comment: this.state.value,
-            dhx_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
+            dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
             timestamp: getCurrentTime(),
             asset_code: this.props.parentData[0]
@@ -98,7 +98,7 @@ class CommentsModal extends React.Component {
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                     <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submitComment}>{t('Submit')}</Button>
+                <Button variant="outline-primary" style={{marginTop: '10px'}} disabled={!this.props.IsEditable} onClick={this.submitComment}>{t('Submit')}</Button>
             </Modal>
             <ConfirmModal
                 isOpen={this.state.modal_confirm_IsOpen}

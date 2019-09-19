@@ -182,12 +182,13 @@ class DashboardOne extends React.Component {
       const allowed = isFieldAllowed(this.props.user.role, val.row);
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: allowed,
+        modal_comments_IsOpen: true,
         modal_values_IsOpen: false,
         modal_dropdown_IsOpen: false,
         modal_signoff_IsOpen: false,
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: false,
+        comments_IsEditable: allowed,
       });
     }
     if (type === 'dropdown') {
@@ -197,7 +198,8 @@ class DashboardOne extends React.Component {
         this.setState({
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: allowed,
+          modal_dropdown_IsOpen: true,
+          timelost_IsEditable: allowed,
           current_display_timelost: timelost,
           currentRow: val.row._subRows[0]._original,
 
@@ -779,6 +781,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
+          IsEditable={this.state.comments_IsEditable}
         />
         <TimelossModal
           isOpen={this.state.modal_dropdown_IsOpen}
@@ -794,6 +797,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+          isEditable={this.state.timelost_IsEditable}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
