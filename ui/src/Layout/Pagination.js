@@ -13,7 +13,8 @@ class Pagination extends React.Component {
         super(props);
         this.state = {
             shift: this.props.selectedShift,
-            date: this.props.selectedDate
+            date: this.props.selectedDate,
+            machine: this.props.selectedMachine,
         }
         this.onSelect = this.onSelect.bind(this);
     }
@@ -120,9 +121,11 @@ class Pagination extends React.Component {
         }
 
         if (e === 'double-next') {
-            newDate = moment(currentDate);
+            newDate = moment();
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
-            queryItem["sf"] = queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
+            console.log(queryItem["dt"])
+            queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
+            queryItem["mc"] = this.state.machine;
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
             return;
