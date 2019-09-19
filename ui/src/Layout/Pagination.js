@@ -123,7 +123,6 @@ class Pagination extends React.Component {
         if (e === 'double-next') {
             newDate = moment();
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
-            console.log(queryItem["dt"])
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
             queryItem["mc"] = this.state.machine;
             let parameters = $.param(queryItem);

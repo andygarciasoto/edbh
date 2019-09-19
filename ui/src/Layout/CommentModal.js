@@ -98,7 +98,7 @@ class CommentsModal extends React.Component {
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                     <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submitComment}>{t('Submit')}</Button>
+                <Button variant="outline-primary" style={{marginTop: '10px'}} disabled={!this.props.IsEditable} onClick={this.submitComment}>{t('Submit')}</Button>
             </Modal>
             <ConfirmModal
                 isOpen={this.state.modal_confirm_IsOpen}

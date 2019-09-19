@@ -40,7 +40,6 @@ class MachinePickerCustom extends React.Component {
         var machine = this.state.value || sessionStorage.getItem("machine");
         const t = this.props.t;
         const machines = this.state.machines;
-        // console.log(machines)
         return (
             <DropdownButton
                 alignleft="true"
