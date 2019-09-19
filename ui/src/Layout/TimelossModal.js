@@ -39,6 +39,7 @@ class TimelossModal extends React.Component {
         this.allocateTime = this.allocateTime.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.validate = this.validate.bind(this);
+        this.closeTimeloss = this.closeTimeloss.bind(this);
     }
 
     submit(e) {
@@ -63,7 +64,7 @@ class TimelossModal extends React.Component {
                 }
                 this.props.Refresh(this.props.parentData);
                 this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
-                this.props.onRequestClose();
+                this.closeTimeloss();
             })
         })
     }
@@ -96,6 +97,15 @@ class TimelossModal extends React.Component {
                 reasons
             });
         }
+    }
+    closeTimeloss() {
+        this.setState({
+            validationMessage: '', 
+            time_to_allocate: 0, 
+            unallocated_time: 0, 
+            new_tl_reason: ''
+        });
+        this.props.onRequestClose();
     }
 
     allocateTime(e) {
@@ -149,10 +159,10 @@ class TimelossModal extends React.Component {
             <React.Fragment>
                 <Modal
                     isOpen={this.props.isOpen}
-                    onRequestClose={this.props.onRequestClose}
+                    onRequestClose={this.closeTimeloss}
                     style={styles}
                     contentLabel="Example Modal">
-                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                    <span className="close-modal-icon" onClick={this.closeTimeloss}>X</span>
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Time Lost')}</h4></span>
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
@@ -236,7 +246,7 @@ class TimelossModal extends React.Component {
                     <div className={'new-timeloss-close'}>
                         <Button variant="outline-secondary"
                             style={{ marginTop: '10px', marginLeft: '10px' }}
-                            onClick={this.props.onRequestClose}>{t('Close')}</Button>
+                            onClick={this.closeTimeloss}>{t('Close')}</Button>
                     </div>
                 </Modal>
                 <ConfirmModal
