@@ -301,7 +301,7 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen) {
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
           } else {
           }
