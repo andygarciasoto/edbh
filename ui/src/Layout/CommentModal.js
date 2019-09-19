@@ -29,7 +29,7 @@ class CommentsModal extends React.Component {
             first_name: this.props.user.first_name,
             last_name: this.props.user.last_name,
             comment: this.state.value,
-            dhx_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
+            dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
             timestamp: getCurrentTime(),
             asset_code: this.props.parentData[0]
