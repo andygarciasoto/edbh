@@ -70,7 +70,11 @@ class ValueModal extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.currentVal === '' || !nextProps.currentVal) {
+            if (nextProps.cumulativepcs !== null){
+                this.setState({value: nextProps.currentVal, existingValue: true}) 
+            }else{
             this.setState({existingValue: false}) 
+            }
         } else {
             this.setState({value: nextProps.currentVal, existingValue: true}) 
         }
