@@ -103,11 +103,11 @@ class SignoffModal extends React.Component {
     }
 
     signOff() {
-        if (this.props.user.role === 'Supervisor' && this.state.signOffRole === 'operator') {
-            this.setState({modal_error_IsOpen: true, errorMessage: 'You cannot sign off as an Operator.', isOpen: false});
-            this.props.onRequestClose()
-            return;
-        }
+        // if (this.props.user.role === 'Supervisor' && this.state.signOffRole === 'operator') {
+        //     this.setState({modal_error_IsOpen: true, errorMessage: 'You cannot sign off as an Operator.', isOpen: false});
+        //     this.props.onRequestClose()
+        //     return;
+        // }
         let rowData = {}
         if (this.props.currentRow) {
             rowData = this.props.currentRow
