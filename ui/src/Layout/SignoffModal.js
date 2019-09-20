@@ -115,7 +115,7 @@ class SignoffModal extends React.Component {
         if (this.state.signOffRole === 'operator') {
             const data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
-                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
+                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "zero",
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
