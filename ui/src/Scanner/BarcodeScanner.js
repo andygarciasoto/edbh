@@ -12,6 +12,7 @@ class  BarcodeScanner extends Component {
     this.state = {
       result: this.props.t('Please scan a clock number barcode to begin'),
       modal_error_IsOpen: false,
+      errorMessage: '',
       modal_load_IsOpen: false,
       login: false
     }
@@ -40,7 +41,11 @@ class  BarcodeScanner extends Component {
   }
 
   closeModal() {
-    // this.setState({modal_error_IsOpen: false, modal_load_IsOpen: false});
+    this.setState({
+      modal_error_IsOpen: false, 
+      modal_load_IsOpen: false, 
+      result: this.props.t('Please scan a clock number barcode to begin')
+    });
   }
 
   handleScan(data){
@@ -56,13 +61,12 @@ class  BarcodeScanner extends Component {
       badge: code
   }, '/badge')
   response.then((res) => {
-    if (res.status !== 200) {
+    if (res === undefined || res.status !== 200) {
         this.handleError();
         this.setState({result: 'Error'});
-        console.log("This is not working: " ,code);
-    }
+    }else{
     window.location.replace("/dashboard#token=" +res.data.token);
-  }) 
+  }}) 
   }
 
   handleError(err) {
