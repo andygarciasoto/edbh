@@ -186,7 +186,7 @@ class ManualEntryModal extends React.Component {
                                     value={this.state.part_number}></input>
                             </Col>
                             <Col sm={6} md={6}>
-                                <p style={{ marginBottom: '1px' }}>{`${t('Part Cycle Time')}:`}</p>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Part Cycle Time (Seconds)')}:`}</p>
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
@@ -202,7 +202,7 @@ class ManualEntryModal extends React.Component {
                                     value={this.state.quantity}></input>
                             </Col>
                             <Col sm={6} md={6}>
-                                <p style={{ marginBottom: '1px' }}>{`${t('Setup Time')}:`}</p>
+                                <p style={{ marginBottom: '1px' }}>{`${t('Setup Time (Minutes)')}:`}</p>
                                 <input className={'manualentry-field col-md-8 col-sm-8'}
                                     type={'number'}
                                     min={0}
