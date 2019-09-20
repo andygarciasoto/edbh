@@ -109,7 +109,7 @@ class Header extends React.Component {
                             </span>
                              : null}
                              {isComponentValid(this.props.user.role, 'neworder') ? 
-                             this.state.machineType !== 'Automated'?
+                             ((this.state.machineType) && (this.state.machineType) !== '' && (this.state.machineType !== 'Automated')) ?
                                 <span
                                 className="header-item"
                                 href="#"

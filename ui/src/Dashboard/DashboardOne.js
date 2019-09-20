@@ -370,7 +370,7 @@ class DashboardOne extends React.Component {
           data-tip={t(this.state.selectedShift)}>
           {this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
         accessor: 'hour_interval',
-        minWidth: 150,
+        minWidth: 130,
         style: {
           backgroundColor: 'rgb(247, 247, 247)',
           borderRight: 'solid 1px rgb(219, 219, 219)',
@@ -387,7 +387,7 @@ class DashboardOne extends React.Component {
       }, {
         Header: () => <span className={'wordwrap'}
           data-tip={t('Part Number')}>{t('Part Number')}</span>,
-        minWidth: 185,
+        minWidth: 180,
         accessor: 'product_code',
         Cell: props => (props.value === '' || props.value === null) ?
           <span
@@ -474,7 +474,7 @@ class DashboardOne extends React.Component {
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}</span>,
         accessor: 'cumulative_target_pcs',
-        minWidth: 100,
+        minWidth: 90,
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}></span> :
           <span className='empty'>
@@ -493,7 +493,7 @@ class DashboardOne extends React.Component {
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual')}</span>,
         accessor: 'cumulative_pcs',
-        minWidth: 100,
+        minWidth: 90,
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
           <span className='empty'>
             <span>{''}</span></span>,
@@ -506,7 +506,7 @@ class DashboardOne extends React.Component {
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
         accessor: 'timelost_summary',
-        minWidth: 110,
+        minWidth: 100,
         Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}></span> :
           <span className='ideal'>
