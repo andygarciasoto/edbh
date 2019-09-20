@@ -45,7 +45,7 @@ class ManualEntryModal extends React.Component {
         if (this.validate()) {
             let data = {
                 dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : null,
-                actual: 0,
+                actual: "zero",
                 asset_code: this.props.parentData[0],
                 override: 0,
                 part_number: this.state.part_number,
@@ -64,14 +64,12 @@ class ManualEntryModal extends React.Component {
             if (this.state.setup_time !== '') {
                 data.setup_time = this.state.setup_time;
             }
-
             this.setState({ modal_loading_IsOpen: true }, () => {
                 const response = sendPut(data, '/create_order_data');
                 response.then((res) => {
                     if (res !== 200) {
                         this.setState({ modal_error_IsOpen: true })
                     } else {
-                        if(data.dhx_data_id === null){
                             this.setState({modal_loading_IsOpen: true}, () => {
                                 const resp = sendPut({
                                     ...data
@@ -85,7 +83,6 @@ class ManualEntryModal extends React.Component {
                         this.props.onRequestClose();
                     })
                 })
-            }
             this.setState({ 
                 request_status: res, 
                 modal_loading_IsOpen: false,
