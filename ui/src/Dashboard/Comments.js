@@ -34,7 +34,7 @@ class Comments extends React.Component {
         this.setState({ modal_loading_IsOpen: true }, () => {
             if (!_.isEmpty(this.state.row)) {
                 data = {
-                    dhx_data_id: this.state.row.dxhdata_id,
+                    dxh_data_id: this.state.row.dxhdata_id,
                     comment: this.state.value,
                     first_name: this.props.user.first_name,
                     last_name: this.props.user.last_name,

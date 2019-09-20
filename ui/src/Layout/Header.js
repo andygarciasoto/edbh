@@ -50,11 +50,13 @@ class Header extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        const machine_type = nextProps.search.tp
         this.setState({
             machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
             dateValue: new Date(nextProps.selectedDate),
             shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
             languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
+            machineType: machine_type 
         })
     }
 
@@ -71,7 +73,8 @@ class Header extends React.Component {
                     <Col className={'col'} md={9} lg={9}>
                         <div className="links header-side">
                             <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
-                            {isComponentValid(this.props.user.role, 'megamenu') ? <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
+                            {isComponentValid(this.props.user.role, 'megamenu') ? 
+                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.openMenu(e)}
                                     name="bars" />
@@ -106,6 +109,7 @@ class Header extends React.Component {
                             </span>
                              : null}
                              {isComponentValid(this.props.user.role, 'neworder') ? 
+                             this.state.machineType !== 'Automated'?
                                 <span
                                 className="header-item"
                                 href="#"
@@ -116,7 +120,7 @@ class Header extends React.Component {
                                     {t('New Order')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.props.openModal('order')}
-                                    name="file-text" /></span> : null
+                                    name="file-text" /></span> : null : null
                                 }
                         </div>
                     </Col>

@@ -10,7 +10,6 @@ import { API } from './Utils/Constants';
 import queryString from 'query-string';
 import { access } from 'fs';
 
-const loginStateStorageKey = "loginState";
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 if (window.location.pathname === '/' || window.location.pathname === '/login') {
@@ -126,31 +125,6 @@ function init() {
         }).catch((e) => {
             console.log(e)
         });
-
-
-
-    // axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
-    // .then(function (response) {
-    //     return response;
-    // })
-    // .then(function (json) {
-    //     const user = {
-    //         first_name: json.data[0]['First Name'],
-    //         last_name: json.data[0]['Last Name'],
-    //         username: json.data[0].Username,
-    //         password: json.data[0].Password,
-    //         role: json.data[0].Role,
-    //         clock_number: json.data[0].Badge
-    //     }
-    //     ReactDOM.render(
-    //         <App user={user} />, document.getElementById('root'));
-    // }).catch((e) => {
-    //     console.log(e)
-    // })
-
-    // If you want your app to work offline and load faster, you can change
-    // unregister() to register() below. Note this comes with some pitfalls.
-    // Learn more about service workers: https://bit.ly/CRA-PWA
 };
 
 serviceWorker.unregister();

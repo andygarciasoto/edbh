@@ -239,7 +239,7 @@ router.post('/dxh_new_comment', async function (req, res) {
         }
     }
 
-    if (!params.dhx_data_id) {
+    if (!params.dxh_data_id) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
@@ -277,7 +277,7 @@ router.post('/dxh_new_comment', async function (req, res) {
         }
     } else {
         if (params.clocknumber) {
-            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${timestamp}', ${update}`,
+            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dxh_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${timestamp}', ${update}`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -287,7 +287,7 @@ router.post('/dxh_new_comment', async function (req, res) {
                     responsePostPut(response, req, res);
                 });
         } else {
-            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dhx_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${timestamp}', ${update}`,
+            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${params.dxh_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${timestamp}', ${update}`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -411,7 +411,7 @@ router.put('/dt_data', async function (req, res) {
 });
 
 router.put('/intershift_communication', async function (req, res) {
-    let dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const comment = req.body.comment;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
@@ -428,7 +428,7 @@ router.put('/intershift_communication', async function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-    if (dhx_data_id == undefined) {
+    if (dxh_data_id == undefined) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
@@ -440,9 +440,9 @@ router.put('/intershift_communication', async function (req, res) {
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dhx_data_id = response[0].dxhdata_id;
+                    dxh_data_id = response[0].dxhdata_id;
                     if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -452,7 +452,7 @@ router.put('/intershift_communication', async function (req, res) {
                                 responsePostPut(response, req, res);
                             });
                     } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -466,7 +466,7 @@ router.put('/intershift_communication', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -476,7 +476,7 @@ router.put('/intershift_communication', async function (req, res) {
                     responsePostPut(response, req, res);
                 });
         } else {
-            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dhx_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -491,7 +491,7 @@ router.put('/intershift_communication', async function (req, res) {
 
 router.put('/operator_sign_off', async function (req, res) {
 
-    let dxh_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -568,7 +568,7 @@ router.put('/operator_sign_off', async function (req, res) {
 });
 
 router.put('/supervisor_sign_off', async function (req, res) {
-    let dhx_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -593,7 +593,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
             let role = response[0].Role;
             if (role === 'Supervisor') {
-                if (dhx_data_id === undefined) {
+                if (dxh_data_id === undefined) {
                     if (asset_code === undefined) {
                         return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
                     } else {
@@ -605,9 +605,9 @@ router.put('/supervisor_sign_off', async function (req, res) {
                                     return;
                                 }
                                 let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                                dhx_data_id = response[0].dxhdata_id;
+                                dxh_data_id = response[0].dxhdata_id;
                                 if (clocknumber) {
-                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
                                         (err, response) => {
                                             if (err) {
                                                 console.log(err);
@@ -617,7 +617,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                                             responsePostPut(response, req, res);
                                         });
                                 } else {
-                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
                                         (err, response) => {
                                             if (err) {
                                                 console.log(err);
@@ -631,7 +631,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                     }
                 } else {
                     if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -641,7 +641,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
                                 responsePostPut(response, req, res);
                             });
                     } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dhx_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -660,10 +660,8 @@ router.put('/supervisor_sign_off', async function (req, res) {
 });
 
 router.put('/production_data', async function (req, res) {
-    let dxh_data_id = req.body.dhx_data_id ? parseInt(req.body.dhx_data_id) : undefined;
-    console.log(req.body.actual);
-    const actual = req.body.actual ? req.body.actual != "signoff" ? parseFloat(req.body.actual) : 0 : undefined;
-    console.log(actual);
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    const actual = req.body.actual ? req.body.actual != "zero" ? parseFloat(req.body.actual) : 0 : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -737,7 +735,6 @@ router.put('/production_data', async function (req, res) {
                         return;
                     }
                     responsePostPut(response, req, res);
-
                 });
         }
     }

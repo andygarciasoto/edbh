@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment-timezone';
 
 function restructureSQLObject(obj, format) {
     var newArray = [];
@@ -117,6 +118,9 @@ function structureMachines(obj) {
 
 function createUnallocatedTime(obj) {
     obj.map((item, index) => {
+        var base = moment(item.hour_interval_start).hours();
+        var current = moment().tz("America/New_York").hours();
+
         if ((item.production_id === '') || item.production_id === undefined){
             item['unallocated_time'] = 60;
         }
@@ -125,6 +129,10 @@ function createUnallocatedTime(obj) {
         }
         else {
             item['unallocated_time'] = (((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60) ;
+        }
+        if (base === current){
+            var minutes = moment().minutes();
+            item['unallocated_time'] = minutes < item['unallocated_time'] ? minutes : item['unallocated_time'];
         }
         item['allocated_time'] = item['unallocated_time'] - (item.summary_setup_minutes + item.summary_breakandlunch_minutes + item.timelost_summary);
         if (item['allocated_time'] < 0){

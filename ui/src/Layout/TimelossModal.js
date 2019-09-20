@@ -13,6 +13,7 @@ import {
     formatDateWithTime, 
     getCurrentTime,
     formatNumber } from '../Utils/Requests';
+import ValueModal from './ValueModal';
 
 
 
@@ -38,6 +39,7 @@ class TimelossModal extends React.Component {
         this.allocateTime = this.allocateTime.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.validate = this.validate.bind(this);
+        this.closeTimeloss = this.closeTimeloss.bind(this);
     }
 
     submit(e) {
@@ -62,7 +64,7 @@ class TimelossModal extends React.Component {
                 }
                 this.props.Refresh(this.props.parentData);
                 this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
-                this.props.onRequestClose();
+                this.closeTimeloss();
             })
         })
     }
@@ -83,14 +85,9 @@ class TimelossModal extends React.Component {
     async componentWillReceiveProps(nextProps) {
         if (nextProps.currentRow) {
             const total = nextProps.currentRow.allocated_time;
-            /*const total = this.calculateTotal(
-                nextProps,
-                nextProps.currentRow.summary_setup_minutes,
-                nextProps.currentRow.summary_breakandlunch_minutes);*/
             this.setState({
                 timelost: nextProps.timelost,
                 allocated_time: total,
-                //unallocated_time: 60 - total > 0 ? 60 - total : 0,
                 unallocated_time: nextProps.currentRow.unallocated_time,
                 setup_time: nextProps.currentRow.summary_setup_minutes || 0,
                 break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
@@ -101,29 +98,36 @@ class TimelossModal extends React.Component {
             });
         }
     }
-/*
-    calculateTotal(nextProps, setupTime, breakTime) {
-        let allocated_time = setupTime + breakTime;
-        if (nextProps.timelost) {
-            for (let i of nextProps.timelost) {
-                allocated_time = allocated_time + i.dtminutes;
-            }
-        }
-        return allocated_time;
+    closeTimeloss() {
+        this.setState({
+            validationMessage: '', 
+            time_to_allocate: 0, 
+            unallocated_time: 0, 
+            new_tl_reason: ''
+        });
+        this.props.onRequestClose();
     }
-*/
+
     allocateTime(e) {
         const value = parseInt(e.target.value);
         const max = Math.round(this.state.allocated_time);
         if (value > max) {
-            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed', time_to_allocate: value })
-        } else {
-            this.setState({ time_to_allocate: value, validationMessage: '' });
+            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed.', time_to_allocate: value, allowSubmit: true })
+        } 
+        else if (value === 0) {
+            this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true})
+        }
+        else {
+            !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) : void(0);
         }
     }
 
-    validate() {
-        if (this.state.new_tl_reason !== '') {
+    validate(e) {
+        const value = e || this.state.time_to_allocate;
+        if ((!isNaN(value)) && 
+        (this.state.new_tl_reason !== '') && 
+        (value > 0) && 
+        (value < this.state.allocated_time)) {
             this.setState({ allowSubmit: false });
         }
     }
@@ -155,10 +159,10 @@ class TimelossModal extends React.Component {
             <React.Fragment>
                 <Modal
                     isOpen={this.props.isOpen}
-                    onRequestClose={this.props.onRequestClose}
+                    onRequestClose={this.closeTimeloss}
                     style={styles}
                     contentLabel="Example Modal">
-                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                    <span className="close-modal-icon" onClick={this.closeTimeloss}>X</span>
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Time Lost')}</h4></span>
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
@@ -216,7 +220,7 @@ class TimelossModal extends React.Component {
                                     onChange={this.allocateTime}></input>
                             </Col>
                             <Col sm={6} md={3} style={{ marginBottom: '5px' }}>
-                                <p style={{ marginTop: '5px', color: 'red' }}>{this.state.validationMessage}</p>
+                                <p style={{ marginTop: '5px', color: 'red', fontSize: '0.8em'}}>{this.state.validationMessage}</p>
                             </Col>
                         </Row>
                         <div className="new-timeloss-reasoncode">
@@ -235,14 +239,14 @@ class TimelossModal extends React.Component {
                         <div className={'new-timeloss-button'}>
                             <Button variant="outline-primary"
                                 style={{ marginTop: '30px', marginLeft: '10px' }}
-                                disabled={this.state.allowSubmit}
+                                disabled={this.state.allowSubmit || !this.props.isEditable}
                                 onClick={this.submit}>{t('Submit')}</Button>
                         </div>
                     </div>
                     <div className={'new-timeloss-close'}>
                         <Button variant="outline-secondary"
                             style={{ marginTop: '10px', marginLeft: '10px' }}
-                            onClick={this.props.onRequestClose}>{t('Close')}</Button>
+                            onClick={this.closeTimeloss}>{t('Close')}</Button>
                     </div>
                 </Modal>
                 <ConfirmModal

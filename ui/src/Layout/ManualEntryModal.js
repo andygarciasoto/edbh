@@ -44,10 +44,14 @@ class ManualEntryModal extends React.Component {
 
         if (this.validate()) {
             let data = {
+                dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : null,
+                actual: "zero",
                 asset_code: this.props.parentData[0],
+                override: 0,
                 part_number: this.state.part_number,
                 order_quantity: this.state.quantity,
                 uom_code: this.state.uom.value,
+                row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
                 production_status: this.state.production_status,
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
@@ -60,14 +64,30 @@ class ManualEntryModal extends React.Component {
             if (this.state.setup_time !== '') {
                 data.setup_time = this.state.setup_time;
             }
-
             this.setState({ modal_loading_IsOpen: true }, () => {
                 const response = sendPut(data, '/create_order_data');
                 response.then((res) => {
                     if (res !== 200) {
                         this.setState({ modal_error_IsOpen: true })
                     } else {
+                            this.setState({modal_loading_IsOpen: true}, () => {
+                                const resp = sendPut({
+                                    ...data
+                                }, '/production_data')
+                                resp.then((res) => {
+                                    if (res !== 200 || !res) {
+                                        this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
+                                    }
                         this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                        this.props.Refresh(this.props.parentData);
+                        this.props.onRequestClose();
+                    })
+                })
+            this.setState({ 
+                request_status: res, 
+                modal_loading_IsOpen: false,
+                modal_confirm_IsOpen: true, 
+                modal_validate_IsOpen: false })
                     }
                     this.props.Refresh(this.props.parentData);
                     this.setState({

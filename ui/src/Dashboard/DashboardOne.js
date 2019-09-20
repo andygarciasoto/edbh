@@ -79,6 +79,7 @@ class DashboardOne extends React.Component {
       station: props.search.st || this.props.defaultAsset.display_name || config['station'],
       currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
+      cumulativepcs: '',
       modalType: '',
       expanded: {},
       openDropdownAfter: false,
@@ -148,6 +149,7 @@ class DashboardOne extends React.Component {
             modal_comments_IsOpen: false,
             modal_dropdown_IsOpen: false,
             valueToEdit: value,
+            cumulative_pcs: val.props.row.cumulative_pcs,
             modalType,
             currentRow: val ? val.props ? currentRow : undefined : undefined
           })
@@ -159,6 +161,7 @@ class DashboardOne extends React.Component {
         }
         this.setState({
           valueToEdit: value,
+          cumulative_pcs: val.props.row.cumulative_pcs,
           modal_values_IsOpen: allowed,
           modal_comments_IsOpen: false,
           modal_dropdown_IsOpen: false,
@@ -179,12 +182,13 @@ class DashboardOne extends React.Component {
       const allowed = isFieldAllowed(this.props.user.role, val.row);
       this.setState({
         modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: allowed,
+        modal_comments_IsOpen: true,
         modal_values_IsOpen: false,
         modal_dropdown_IsOpen: false,
         modal_signoff_IsOpen: false,
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: false,
+        comments_IsEditable: allowed,
       });
     }
     if (type === 'dropdown') {
@@ -194,7 +198,8 @@ class DashboardOne extends React.Component {
         this.setState({
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: allowed,
+          modal_dropdown_IsOpen: true,
+          timelost_IsEditable: allowed,
           current_display_timelost: timelost,
           currentRow: val.row._subRows[0]._original,
 
@@ -299,7 +304,7 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen) {
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
           } else {
           }
@@ -755,6 +760,7 @@ class DashboardOne extends React.Component {
           style={this.state.modalStyle}
           contentLabel="Example Modal"
           currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
+          cumulativepcs={this.state.cumulative_pcs}
           formType={this.state.modalType}
           t={t}
           user={this.props.user}
@@ -775,6 +781,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
+          IsEditable={this.state.comments_IsEditable}
         />
         <TimelossModal
           isOpen={this.state.modal_dropdown_IsOpen}
@@ -790,6 +797,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+          isEditable={this.state.timelost_IsEditable}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
