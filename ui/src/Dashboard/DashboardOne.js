@@ -45,6 +45,7 @@ class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
     var hour = moment(getCurrentTime()).hours();
+    console.log(hour)
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
       shiftByHour = '1st Shift';
@@ -84,6 +85,7 @@ class DashboardOne extends React.Component {
       expanded: {},
       openDropdownAfter: false,
       selectedShift: props.search.sf || shiftByHour,
+      dateFromData: false,
     }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -674,6 +676,7 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
+    console.log(this.state.data)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
@@ -686,6 +689,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
+    console.log(this.state.selectedShift)
     return (
       <React.Fragment>
         <Header className="app-header"
@@ -719,7 +723,8 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
-                  {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
+                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? moment(this.state.selectedDate).add(1, 'd').locale(this.state.currentLanguage).format('LL'):
+                   moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}
