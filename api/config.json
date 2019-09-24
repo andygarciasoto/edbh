@@ -5,6 +5,7 @@
     "database": "FCGFOTF",
     "cors": ["http://localhost:3000", "http://localhost:3001"],
     "URL": "http://localhost:3000",
+    "badLogin": "http://localhost:3000?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "http://localhost:3000/dashboard",
     "timezone": "MST",

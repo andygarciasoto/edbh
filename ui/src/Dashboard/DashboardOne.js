@@ -676,7 +676,6 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
-    console.log(this.state.data)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
@@ -689,13 +688,12 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
-    console.log(this.state.selectedShift)
     return (
       <React.Fragment>
         <Header className="app-header"
           t={t}
           selectedMachine={this.state.selectedMachine}
-          selectedMachineType={this.state.selectedMachineType}
+          machineType={this.state.selectedMachineType}
           selectedDate={this.state.selectedDate}
           selectedShift={this.state.selectedShift}
           selectedLanguage={this.state.currentLanguage}
@@ -744,6 +742,7 @@ class DashboardOne extends React.Component {
                 pivotBy={["hour_interval"]}
                 onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
                 expanded={this.state.expanded}
+                resizable={false}
               // getTdProps={this.getTdProps}
               /> : <Spinner />}
             </Col>
