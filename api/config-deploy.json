@@ -5,6 +5,7 @@
     "database": "FCGFOTF",
     "cors": ["https://dxhapi.azurewebsites.net", "https://dxhweb.azurewebsites.net"],
     "URL": "https://dxhweb.azurewebsites.net",
+    "badLogin": "https://dxhweb.azurewebsites.net?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "https://dxhweb.azurewebsites.net/dashboard",
     "socket_timeout": 90000,
