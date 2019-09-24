@@ -50,7 +50,10 @@ router.post("/badge", cors(), async function (req, res) {
             res.status(200).send({token: token});
             return;
 
-          }  catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
+          }  catch (e) { 
+              res.redirect(401, config['badLogin']);
+              // res.status(500).send({ message: 'Error', api_error: e, database_response: data }); 
+                }
           return res.redirect(401, config['loginURL']);
                 });
 });
@@ -69,7 +72,9 @@ router.post("/", function (req, res) {
         }
             let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
             if (response === null){
-                res.sendStatus(401);
+                //res.sendStatus(401);
+                //return;
+                res.redirect(303, config['badLogin']);
                 return;
             }
             let role = response[0].Role;

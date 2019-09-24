@@ -20,7 +20,7 @@ class Header extends React.Component {
         this.state = {
             megaMenuToggle: 'dropdown-content',
             machineValue: props.selectedMachine || props.t('Select Machine'),
-            machineType: props.selectedMachineType,
+            machineType: props.machineType,
             dateValue: new Date(props.selectedDate),
             shiftValue: props.selectedShift || props.t('Select Shift'),
             languageValue: props.selectedLanguage || props.t('Select Language'),
@@ -50,13 +50,12 @@ class Header extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const machine_type = nextProps.search.tp
         this.setState({
             machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
             dateValue: new Date(nextProps.selectedDate),
             shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
             languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
-            machineType: machine_type 
+            machineType: nextProps.machineType
         })
     }
 
