@@ -216,6 +216,7 @@ class TimelossModal extends React.Component {
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>
                                 <input className={'timelost-field'} type="number" min="0"
+                                    disabled={!this.props.isEditable}
                                     value={this.state.time_to_allocate}
                                     onChange={this.allocateTime}></input>
                             </Col>
@@ -233,15 +234,16 @@ class TimelossModal extends React.Component {
                                     className={"react-select-container"}
                                     classNamePrefix={"react_control"}
                                     styles={selectStyles}
+                                    isDisabled={!this.props.isEditable}
                                 />
                             </Form.Group>
                         </div>
                         <div className={'new-timeloss-button'}>
                             <Button variant="outline-primary"
-                                style={{ marginTop: '30px', marginLeft: '10px' }}
+                                style={{ marginTop: '30px'}}
                                 disabled={this.state.allowSubmit || !this.props.isEditable}
                                 onClick={this.submit}>{t('Submit')}</Button>
-                        </div>
+                        </div> {!this.props.isEditable ? <span style={{color: 'grey'}}>{t('Read-Only')}</span> : null}
                     </div>
                     <div className={'new-timeloss-close'}>
                         <Button variant="outline-secondary"

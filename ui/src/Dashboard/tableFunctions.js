@@ -24,7 +24,7 @@ export function handleTableCellClick(state, rowInfo, column, instance, ...rest) 
         if (Math.round(rowInfo.row._subRows[0]._original.allocated_time) !== 0) {
           return {
             style: {
-              backgroundColor: '#8a0e0e',
+              backgroundColor: '#b80600',
               backgroundImage: 'url("../dark-circles.png")',
               color: 'white'
             }

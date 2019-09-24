@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Form, Button, Table } from 'react-bootstrap';
+import { Form, Button, Table, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
 import ConfirmModal from  '../Layout/ConfirmModal';
@@ -96,9 +96,16 @@ class CommentsModal extends React.Component {
                     </Table>
                 </div>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
-                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={this.onChange}></Form.Control>
+                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={!this.props.IsEditable} onChange={this.onChange}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{marginTop: '10px'}} disabled={!this.props.IsEditable} onClick={this.submitComment}>{t('Submit')}</Button>
+                <Row>
+                    <Col sm={6} md={2}>
+                        <Button variant="outline-primary" style={{marginTop: '10px'}} disabled={!this.props.IsEditable} onClick={this.submitComment}>{t('Submit')}</Button>
+                    </Col>
+                    <Col sm={6} md={2}>
+                        {!this.props.IsEditable ? <p style={{marginTop: '15px', color: 'grey'}}>{t('Read-Only')}</p> : void(0)}
+                    </Col>
+                </Row>
             </Modal>
             <ConfirmModal
                 isOpen={this.state.modal_confirm_IsOpen}
