@@ -6,7 +6,7 @@ import ErrorModal from  '../Layout/ErrorModal';
 import LoadingModal from  '../Layout/LoadingModal';
 import { sendPostAuth } from '../Utils/Requests';
 
-class  BarcodeScanner extends Component {
+class   BarcodeScanner extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -51,7 +51,7 @@ class  BarcodeScanner extends Component {
   handleScan(data){
     this.setState({
       result: 'Scanning',
-      code: data,
+      code: Number(data),
     })
     this.authorize(this.state.code); 
   }
@@ -84,6 +84,7 @@ class  BarcodeScanner extends Component {
         <BarcodeReader
           onError={this.handleError}
           onScan={this.handleScan}
+          minLength={4}
         />
         {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
         <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>
