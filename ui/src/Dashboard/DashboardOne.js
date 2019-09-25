@@ -503,7 +503,7 @@ class DashboardOne extends React.Component {
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => rows[0]._original.cumulative_pcs,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
-          <span className='empty'>
+          <span className='ideal'>
             <span>{props.value}</span></span>
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,

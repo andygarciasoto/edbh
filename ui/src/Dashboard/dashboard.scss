@@ -65,6 +65,18 @@
         color: red;
     }
 
+    .ideal {
+        padding: 5px 30px 5px 30px;
+    }
+
+    .ideal:hover {
+        color: $color-link !important;
+        cursor: pointer;
+        * {
+            color: $color-link !important;
+        }
+    }
+
     .comments {font-size: 0.8em;}
 #previous-shift, #current-shift {text-decoration: underline; padding: 8px 8px 8px 5px; margin-bottom: 5px !important;}
 #previous-shift:hover, #current-shift:hover {background-color: rgb(207, 153, 3);}
