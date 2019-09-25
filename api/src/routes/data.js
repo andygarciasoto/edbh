@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment-timezone';
 import { runInNewContext } from 'vm';
+var localStorage = require('localStorage');
 const fs = require('fs');
 
 import config from '../../config.json';
@@ -14,10 +15,6 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 /// var _timezone = config["timezone"];
 var format = 'YYYY-MM-DD HH:mm:ss';
-
-function toTimeZone(time, zone) {
-    return moment(time).tz(zone).format(format);
-}
 
 router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
@@ -157,7 +154,13 @@ router.get('/me', async function (req, res) {
             });
         }
         if (payload.body.sub) {
-            let user = payload.body.sub.substring(6);
+            let user;
+            if (payload.body.oid){
+                user = localStorage.getItem("username");
+                localStorage.removeItem("username");
+            }else{
+            user = payload.body.sub.substring(6);
+        }
             sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
                 (err, data) => {
                     if (err) {
