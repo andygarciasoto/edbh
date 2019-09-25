@@ -43,8 +43,16 @@ function App(propsApp) {
             )
           }
           } />
-        <Route exact path="/login" render={() => <Login t={t} />} />
-        <Route exact path="/" render={() => <SignIn t={t} />} />
+        <Route exact path="/login" render={(props) => 
+        <Login t={t} 
+        history={props.history}
+        search={qs.parse(props.history.location.search)}
+        />} 
+        />
+        <Route exact path="/" render={(props) => <SignIn t={t} 
+         history={props.history}
+         search={qs.parse(props.history.location.search)}
+        />} />
       </Suspense>
     </Router>
   );

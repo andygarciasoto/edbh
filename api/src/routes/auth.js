@@ -63,6 +63,7 @@ router.get("/badge", cors(), async function (req, res) {
             res.sendStatus(500);
             return;
         }
+        try{
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
             if (response === null){
                 res.sendStatus(401);
@@ -83,6 +84,9 @@ router.get("/badge", cors(), async function (req, res) {
             jwt.setExpiration(new Date().getTime() + config['token_expiration']);
             var token = jwt.compact();
             return res.redirect(302, config['loginURL'] + `#token=${token}`);
+          }  catch (e) { 
+              res.redirect(401, config['badLogin']);
+                }
                 });
 });
 
@@ -100,7 +104,9 @@ router.post("/", function (req, res) {
         }
             let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
             if (response === null){
-                res.sendStatus(401);
+                //res.sendStatus(401);
+                //return;
+                res.redirect(303, config['badLogin']);
                 return;
             }
             let role = response[0].Role;

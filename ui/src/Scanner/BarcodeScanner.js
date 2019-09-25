@@ -7,7 +7,7 @@ import LoadingModal from  '../Layout/LoadingModal';
 import { getRequestAuth } from '../Utils/Requests';
 import { AUTH } from '../Utils/Constants';
 
-class  BarcodeScanner extends Component {
+class   BarcodeScanner extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -52,22 +52,12 @@ class  BarcodeScanner extends Component {
   handleScan(data){
     this.setState({
       result: 'Scanning',
-      code: data,
+      code: Number(data),
     })
     this.authorize(this.state.code); 
   }
 
   authorize(code) {
-    /*const response = getRequestAuth(`/badge?badge=${code}`)
-    response.then((res) => {
-      console.log(res)
-      if (!res) {
-          console.log("There is no res");
-      } else {
-          console.log("This is the res");
-      }
-      })*/
-      console.log(`${AUTH}/badge?badge=${code}`);
       window.location.replace(`${AUTH}/badge?badge=${code}`);
   }
 
@@ -86,6 +76,7 @@ class  BarcodeScanner extends Component {
         <BarcodeReader
           onError={this.handleError}
           onScan={this.handleScan}
+          minLength={4}
         />
         {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
         <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>

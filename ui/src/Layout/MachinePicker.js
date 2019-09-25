@@ -19,7 +19,9 @@ class MachinePickerCustom extends React.Component {
         const machines = getRequest('/machine');
         machines.then((machinesObj => { 
             machinesObj ?
-            machinesObj.map((item, index) => machineArray.push({asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level }))
+            machinesObj.map((item, index) => 
+            machineArray.push({asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
+            )
             : void (0) }))
         this.setState({ machines: machineArray })
     }
@@ -49,7 +51,7 @@ class MachinePickerCustom extends React.Component {
             >
                 {machines.map((machine, index) => {
                     return (
-                        <Dropdown.Item onSelect={(e) => this.onSelect(e)} key={index} eventKey={(machine.asset_code)}>{machine.asset_code}</Dropdown.Item>
+                        <Dropdown.Item onSelect={(e) => this.onSelect(e)} key={index} eventKey={(machine.asset_code)}>{machine.asset_name}</Dropdown.Item>
                     )
                 }
                 )
