@@ -39,7 +39,6 @@ class OrderModal extends React.Component {
         this.setState({modal_loading_IsOpen: true}, () => {
             const response = getRequest('/order_assembly', data)
             response.then((res) => {
-                console.log(res)
                 if (!res) {
                     this.setState({modal_error_IsOpen: true, errorMessage: 'The order you entered was not found.'})
                 } else {

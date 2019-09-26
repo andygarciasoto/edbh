@@ -65,19 +65,6 @@ async function sendPost(data, route) {
   }
 }
 
-async function sendPostAuth(data, route) {
-  const res = await axios.post(`${AUTH}${route}`, data)
-    .then(function (response) {
-      return response;
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-  if (res) {
-    return res;
-  }
-}
-
 async function sendPut(data, route) {
   const res = await axios.put(`${API}${route}`, data)
     .then(function (response) {
@@ -120,6 +107,24 @@ async function getIntershift(data) {
 
 async function getRequest(route, data) {
   const res = await axios.get(`${API}${route}`, data)
+    .then(function (response) {
+      // handle success
+      return response;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // nothing
+    });
+  if (res) {
+    return res.data;
+  }
+}
+
+async function getRequestAuth(route, data) {
+  const res = await axios.get(`${AUTH}${route}`, data)
     .then(function (response) {
       // handle success
       return response;
@@ -302,6 +307,7 @@ export {
   getRequestData,
   getIntershift,
   getRequest,
+  getRequestAuth,
   mapShift,
   mapShiftReverse,
   formatDate,
@@ -309,7 +315,6 @@ export {
   formatDateWithCurrentTime,
   getCurrentTime,
   sendPost,
-  sendPostAuth,
   timelossGetReasons,
   sendPut,
   isComponentValid,

@@ -5,10 +5,15 @@
     "database": "FCGFOTF",
     "cors": ["http://localhost:3000", "http://localhost:3001"],
     "URL": "http://localhost:3000",
+    "redirect_uri": "http://localhost:8080/auth/token",
     "badLogin": "http://localhost:3000?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "http://localhost:3000/dashboard",
     "timezone": "MST",
     "socket_timeout": 90000,
-    "token_expiration": 14400000
+    "token_expiration": 14400000,
+    "app_reg_name": "PHIOTFCGFOTFDev",
+    "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+    "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
+    "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127"
 }
