@@ -25,6 +25,7 @@ class SignIn extends React.Component {
     }  
 
     render() {
+        console.log(this.props.search)
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
@@ -32,7 +33,7 @@ class SignIn extends React.Component {
                     <h3 style={{fontSize: '0.9em', paddingTop: '5px'}} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <BarcodeScanner t={this.props.t}/>
                 </div>
-                <div className="app-info"><FontAwesome name="warning"/><span>{this.state.errMessage}</span></div>
+                {this.props.search.err ? <div className="app-info"><FontAwesome name="warning"/><span>{this.state.errMessage}</span></div> : 'null'}
             </div>
         );
     }
