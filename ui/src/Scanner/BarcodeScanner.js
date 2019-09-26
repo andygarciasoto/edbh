@@ -52,7 +52,7 @@ class   BarcodeScanner extends Component {
   handleScan(data){
     this.setState({
       result: 'Scanning',
-      code: Number(data),
+      code: data,
     })
     this.authorize(this.state.code); 
   }
