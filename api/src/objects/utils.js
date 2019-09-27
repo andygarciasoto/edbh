@@ -120,22 +120,38 @@ function createUnallocatedTime(obj) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
-//round by 1 
-// ideal according to the minutes that already past - breaks
+        var totalTime = item.summary_breakandlunch_minutes ? 60 - item.summary_breakandlunch_minutes : 60;
+        var newIdeal = 0;
+        var minutes = moment().minutes();
+
         if ((item.production_id === '') || item.production_id === undefined){
-            item['unallocated_time'] = 60;
-        }
+            item['unallocated_time'] = totalTime;
+        } 
         else if (item.actual_pcs >= item.ideal) {
             item['unallocated_time'] = 0;
         }
+        else if (base === current){
+            if (minutes > item.summary_breakandlunch_minutes){
+                newIdeal = item.ideal * ((minutes - item.summary_breakandlunch_minutes)/(totalTime));
+                var idealTimeForPart = totalTime/item.ideal;
+                var minimumTime = newIdeal * idealTimeForPart;
+                var actualTimeForPart = item.actual_pcs * idealTimeForPart;
+                item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
+            }else{
+                item['unallocated_time'] = 0;
+            }
+        }
         else {
-            item['unallocated_time'] = (((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60) ;
+            if (item.actual_pcs === 0){
+                item['unallocated_time'] = totalTime;    
+            }else{
+                var idealTimeForPart = totalTime/item.ideal;
+                var actualTimeForPart = item.actual_pcs * idealTimeForPart;
+                item['unallocated_time'] = Math.round(totalTime - actualTimeForPart);
+            //item['unallocated_time'] = (((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60) ;
         }
-        if (base === current){
-            var minutes = moment().minutes();
-            item['unallocated_time'] = minutes < item['unallocated_time'] ? minutes : item['unallocated_time'];
-        }
-        item['allocated_time'] = item['unallocated_time'] - (item.summary_setup_minutes + item.summary_breakandlunch_minutes + item.timelost_summary);
+    }
+        item['allocated_time'] = item['unallocated_time'] - /*(item.summary_setup_minutes + item.summary_breakandlunch_minutes +*/ item.timelost_summary;
         if (item['allocated_time'] < 0){
             item['allocated_time'] = 0;
         }
