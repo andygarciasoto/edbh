@@ -155,12 +155,12 @@ router.get('/me', async function (req, res) {
         }
         if (payload.body.sub) {
             let user;
-            if (payload.body.oid){
+            if (payload.body.oid) {
                 user = localStorage.getItem("username");
                 localStorage.removeItem("username");
-            }else{
-            user = payload.body.sub.substring(6);
-        }
+            } else {
+                user = payload.body.sub.substring(6);
+            }
             sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
                 (err, data) => {
                     if (err) {
@@ -790,7 +790,7 @@ router.get("/order_assembly", async function (req, res) {
                     body: assembly,
                     timeout: 10000
                 }, function (error, resp, body) {
-                    if (resp.body === 'Message missing key data') {
+                    if (resp.statusCode >= 400) {
                         res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
                         return;
                     }
@@ -798,19 +798,27 @@ router.get("/order_assembly", async function (req, res) {
                         res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }
-                    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
-                        (err, data) => {
-                            if (err) {
-                                console.log(err);
-                                res.status(500).send({ message: 'Error', database_error: err });
-                                return;
-                            }
-                            let response = JSON.parse(Object.values(data)[0].OrderData);
-                            res.status(200).json(response);
-                            return;
-                        });
+                    var flag = false;
+                    for (var i = 0; i < 10; i++) {
+                        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
+                            (err, dt) => {
+                                if (err) {
+                                    console.log(err);
+                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    return;
+                                }
+                                let response = JSON.parse(Object.values(dt)[0].OrderData);
+                                if (response[0].OrderData.order_id === null || response[0].OrderData.order_id === undefined) {
+                                    setTimeout(delay, 500);
+                                } else {
+                                    if (flag === false) {
+                                        res.status(200).json(response);
+                                        flag = true;
+                                    }
+                                }
+                            });
+                    }
                 });
-
             } else {
                 res.status(200).json(response);
                 return;
@@ -938,6 +946,11 @@ router.get('/asset_display_system', async function (req, res) {
             responseGet(response, req, res, 'AssetDisplaySystem');
         });
 });
+
+function delay() {
+    var msg = "The order hasn't been added to the database. Trying again..."
+    //console.log(msg);
+}
 
 
 module.exports = router;
