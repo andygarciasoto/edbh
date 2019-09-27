@@ -12,7 +12,6 @@ import ValueModal from '../Layout/ValueModal';
 import TimelossModal from '../Layout/TimelossModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
-import OrderTwoModal from '../Layout/OrderTwoModal';
 import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
@@ -817,6 +816,7 @@ class DashboardOne extends React.Component {
         />
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}
+          isOpenTwo={this.state.modal_order_two_IsOpen}
           open={this.openModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
@@ -829,17 +829,6 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           showValidateDataModal={this.showValidateDataModal}
-        />
-        <OrderTwoModal
-          isOpen={this.state.modal_order_two_IsOpen}
-          open={this.openModal}
-          onRequestClose={this.closeModal}
-          contentLabel="Example Modal"
-          data={this.state.orderTwo_data}
-          t={t}
-          user={this.props.user}
-          Refresh={this.getDashboardData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
         />
         <ManualEntryModal
           isOpen={this.state.modal_manualentry_IsOpen}

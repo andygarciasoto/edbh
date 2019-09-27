@@ -120,7 +120,8 @@ function createUnallocatedTime(obj) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
-
+//round by 1 
+// ideal according to the minutes that already past - breaks
         if ((item.production_id === '') || item.production_id === undefined){
             item['unallocated_time'] = 60;
         }
@@ -142,4 +143,4 @@ function createUnallocatedTime(obj) {
     return obj;
 }
 
-export { restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines, createUnallocatedTime };
+export { restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines, createUnallocatedTime };7

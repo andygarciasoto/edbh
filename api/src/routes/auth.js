@@ -75,7 +75,7 @@ router.get("/badge", cors(), async function (req, res) {
                 let role = response[0].Role;
 
                 if (role === 'Supervisor' || role === 'Administrator') {
-                    const url = `https://login.microsoftonline.com/${config['tenant_id']}/oauth2/authorize?client_id=${config['client_id']}&response_type=code&scope=openid`;
+                    const url = `https://login.microsoftonline.com/${config['tenant_id']}/oauth2/authorize?client_id=${config['client_id']}&response_type=code&scope=openid&redirect_uri=${config['redirect_uri']}`;
                     return res.redirect(302, url);
                 } else {
                     var claimsList = {
