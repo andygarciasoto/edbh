@@ -166,7 +166,7 @@ class TimelossModal extends React.Component {
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Time Lost')}</h4></span>
                     <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
                         <Col sm={4} md={4} className="total-timeloss number-field timeloss-top">
-                            <p>{t('Total Time Lost')}</p>
+                            <p>{t('Time Lost')}</p>
                             <input type="text" disabled={true} value={formatNumber(this.state.unallocated_time)}></input>
                         </Col>
                         <Col sm={4} md={4} className="breaktime-timeloss number-field timeloss-top">
