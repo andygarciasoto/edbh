@@ -99,7 +99,7 @@ class OrderModal extends React.Component {
                             value={this.state.value}
                             min="0"
                             autoFocus
-                            disable={true}
+                            // disabled={"true"}
                             maxLength={25}
                             onChange={(val) => this.setState({ value: val.target.value })}>
                         </Form.Control>

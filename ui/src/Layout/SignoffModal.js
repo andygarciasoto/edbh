@@ -46,6 +46,7 @@ class SignoffModal extends React.Component {
             modal_loading_IsOpen: false, 
             modal_error_IsOpen: false, 
             modal_validate_IsOpen: false });
+            this.props.onRequestClose();
     }
 
     signOffSupervisor(number) {

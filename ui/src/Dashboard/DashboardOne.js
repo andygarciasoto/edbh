@@ -16,10 +16,10 @@ import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import ErrorModal from '../Layout/ErrorModal';
-import queryString from 'query-string';
 import Pagination from '../Layout/Pagination';
 import openSocket from 'socket.io-client';
 import FontAwesome from 'react-fontawesome';
+import $ from 'jquery';
 import {
   getRequestData,
   getIntershift,
@@ -30,6 +30,7 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
+  getStationAsset
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -73,9 +74,9 @@ class DashboardOne extends React.Component {
       dataCall: {},
       selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
       selectedDateParsed: '',
-      selectedMachine: props.search.mc || this.props.defaultAsset.asset_code || config['machine'],
-      selectedMachineType: props.search.tp || this.props.defaultAsset.automation_level || config['machineType'],
-      station: props.search.st || this.props.defaultAsset.display_name || config['station'],
+      selectedMachine: props.search.mc || config['machine'],
+      selectedMachineType: props.search.tp || config['machineType'],
+      station: props.search.st || config['station'],
       currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
       cumulativepcs: '',
@@ -277,6 +278,19 @@ class DashboardOne extends React.Component {
     })
   }
 
+  componentWillMount() {
+    const machineAsset = this.props.defaultAsset;
+    console.log(machineAsset)
+    getStationAsset(machineAsset).then(a => {
+      this.setState({
+      selectedMachine: this.props.search.mc || a.asset_code !== 'No Data' ? a.asset_code : config['machine'],
+      selectedMachineType: this.props.search.tp || a.asset_code !== 'No Data' ? a.automation_level : config['machineType'],
+      station: machineAsset || config['station']
+      })
+    }
+  )
+  }
+
   async componentDidMount() {
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
@@ -314,6 +328,7 @@ class DashboardOne extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
+
     var hour = (new Date().getHours());
     let shiftByHour;
     if (hour >= 7 && hour < 15) {

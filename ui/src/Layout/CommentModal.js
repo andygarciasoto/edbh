@@ -99,7 +99,7 @@ class CommentsModal extends React.Component {
                     <Form.Control
                         style={{ paddingTop: '5px' }} 
                         type="text" value={this.state.value} 
-                        autofocus
+                        autoFocus
                         disabled={!this.props.IsEditable} 
                         onChange={this.onChange}>   
                     </Form.Control>

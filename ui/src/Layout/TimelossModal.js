@@ -134,6 +134,7 @@ class TimelossModal extends React.Component {
 
     closeModal() {
         this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.props.onRequestClose();
     }
 
     render() {
@@ -218,7 +219,7 @@ class TimelossModal extends React.Component {
                                 <input className={'timelost-field'} type="number" min="0"
                                     disabled={!this.props.isEditable}
                                     value={this.state.time_to_allocate}
-                                    autofocus
+                                    autoFocus
                                     onChange={this.allocateTime}></input>
                             </Col>
                             <Col sm={6} md={3} style={{ marginBottom: '5px' }}>

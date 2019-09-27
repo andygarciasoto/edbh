@@ -25,7 +25,6 @@ class SignIn extends React.Component {
     }  
 
     render() {
-        console.log(this.props.search)
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">

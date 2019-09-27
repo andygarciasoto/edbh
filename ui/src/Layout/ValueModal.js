@@ -109,7 +109,7 @@ class ValueModal extends React.Component {
                             value={this.state.newValue} 
                             style={{paddingTop: '5px'}}
                             type={this.props.formType} 
-                            autofocus
+                            autoFocus
                             onChange={(val) => this.onChange(val)}>
                         </Form.Control>
                       </span>
@@ -155,7 +155,7 @@ class ValueModal extends React.Component {
                         style={{paddingTop: '5px'}} 
                         type={this.props.formType} 
                         value={this.state.newValue}
-                        autofocus 
+                        autoFocus 
                         onChange={(val) => this.onChange(val)}>  
                     </Form.Control>
                    </span>

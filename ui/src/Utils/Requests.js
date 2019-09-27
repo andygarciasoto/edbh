@@ -1,6 +1,7 @@
 import { API, AUTH } from './Constants';
 import moment from 'moment-timezone';
 import config from '../config.json'
+import _ from 'lodash';
 
 const axios = require('axios');
 
@@ -303,6 +304,27 @@ function formatNumber(number, decimals) {
   }
 }
 
+function getStationAsset(station) {
+  let machineData = {};
+  machineData = axios(`${API}/asset_display_system?st=${station}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } })
+  .then(function (response) {
+      const machineValues = response.data[0].AssetDisplaySystem;
+      machineData = {
+          asset_code: machineValues.asset_code,
+          asset_level: machineValues.asset_level,
+          automation_level: machineValues.automation_level,
+          display_name: machineValues.displaysystem_name,
+          asset_description: machineValues.asset_description
+          }
+          return machineData;
+    }).catch((e) => {
+    console.log(e)
+    });
+    if (machineData) {
+      return machineData;
+    }
+}
+
 export {
   getRequestData,
   getIntershift,
@@ -321,5 +343,6 @@ export {
   isFieldAllowed,
   getUOMS,
   getProducts,
-  formatNumber
+  formatNumber,
+  getStationAsset
 }

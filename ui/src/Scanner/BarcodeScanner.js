@@ -77,7 +77,6 @@ class   BarcodeScanner extends Component {
           onError={this.handleError}
           onScan={this.handleScan}
           minLength={4}
-          autofocus
         />
         {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
         <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>
@@ -88,8 +87,8 @@ class   BarcodeScanner extends Component {
             onRequestClose={this.closeModal}
             contentLabel="Example Modal"
             shouldCloseOnOverlayClick={false}
-            message={'Sign In attempt unsuccessful'}
-            title={'Sign In Error'}
+            message={this.props.titleErr || 'Sign In attempt unsuccessful'}
+            title={this.props.errMessage || 'Sign In Error'}
           />
 
           <LoadingModal

@@ -85,11 +85,11 @@ class OrderModal extends React.Component {
                    <span className="dashboard-modal-field-group"><p>{this.props.label}:</p>
                     <Form.Control 
                         style={{paddingTop: '5px'}} 
-                        type={this.props.formType } 
+                        type={'password'} 
                         value={this.state.value} 
                         min="0"
-                        autofocus
-                        disable={true}
+                        autoFocus
+                        disabled={"true"}
                         maxLength={18}
                         onChange={(val) => this.setState({value: val.target.value})}>  
                     </Form.Control>

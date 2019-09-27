@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import './sass/App.scss';
 import Spinner from './Spinner';
 import SignIn from './SignIn';
@@ -7,22 +7,15 @@ import DashboardOne from './Dashboard/DashboardOne';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { API } from './Utils/Constants';
-import { getRequest } from './Utils/Requests';
-import axios from 'axios';
+import { getStationAsset } from './Utils/Requests';
 import * as qs from 'query-string';
-import config from './config.json';
+import $ from 'jquery';
 
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  let machine = propsApp.machine || localStorage.getItem('machine_name');
-
-  if (machine === 'undefined') {
-    let machineValues = JSON.parse(localStorage.getItem('machineKey'));
-    localStorage.setItem('machine_name', (machineValues == null ? config['station'] : machineValues.displaysystem_name));
-    machine = config['station'];
-  }
+  console.log(propsApp.machine)
+  const machine = propsApp.machine;
   return (
     <Router>
       <Helmet>
@@ -37,7 +30,7 @@ function App(propsApp) {
             return (
               <DashboardOne
                 user={propsApp.user} t={t}
-                defaultAsset={propsApp.defaultAsset}
+                defaultAsset={machine}
                 history={props.history}
                 search={qs.parse(props.history.location.search)} />
             )
@@ -51,8 +44,8 @@ function App(propsApp) {
         />
         <Route exact path="/" render={(props) => 
         <SignIn t={t} 
-         history={props.history}
-         search={qs.parse(props.history.location.search)}
+          history={props.history}
+          search={qs.parse(props.history.location.search)}
         />} />
       </Suspense>
     </Router>
