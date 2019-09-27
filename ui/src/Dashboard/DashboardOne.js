@@ -44,7 +44,6 @@ class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
     var hour = moment(getCurrentTime()).hours();
-    console.log(hour)
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
       shiftByHour = '1st Shift';
@@ -486,7 +485,8 @@ class DashboardOne extends React.Component {
           textAlign: 'center'
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs,
+        aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs  !== null ? rows[0]._original.cumulative_target_pcs :
+        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}></span> :
           <span className='empty'>
@@ -500,7 +500,8 @@ class DashboardOne extends React.Component {
             <span>{''}</span></span>,
         style: { borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center', color: 'white' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_pcs,
+        aggregate: (values, rows) => rows[0]._original.cumulative_pcs  !== null ? rows[0]._original.cumulative_pcs :
+        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
           <span className='ideal'>
             <span>{props.value}</span></span>
