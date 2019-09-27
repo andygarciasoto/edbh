@@ -96,7 +96,13 @@ class CommentsModal extends React.Component {
                     </Table>
                 </div>
                 <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
-                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={!this.props.IsEditable} onChange={this.onChange}></Form.Control>
+                    <Form.Control
+                        style={{ paddingTop: '5px' }} 
+                        type="text" value={this.state.value} 
+                        autofocus
+                        disabled={!this.props.IsEditable} 
+                        onChange={this.onChange}>   
+                    </Form.Control>
                 </span>
                 <Row>
                     <Col sm={6} md={2}>

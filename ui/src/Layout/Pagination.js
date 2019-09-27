@@ -31,11 +31,13 @@ class Pagination extends React.Component {
         let actualShift = 0;
         if (actualDate.format('YYYY-MM-DD HH:mm') >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate.format('YYYY-MM-DD HH:mm') < moment(actualDate).format('YYYY-MM-DD') + ' 15:00') {
             actualShift = 1;
-        } else if (actualDate.format('YYYY-MM-DD HH:mm') > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 19:00') {
+        } else if (actualDate.format('YYYY-MM-DD HH:mm') > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate.format('YYYY-MM-DD') < moment(actualDate).format('YYYY-MM-DD') + ' 23:00') {
             actualShift = 2;
         } else {
             actualShift = 3;
         }
+        console.log(actualShift, actualDate.format('YYYY-MM-DD HH:mm'))
+        console.log(actualDate.format('YYYY-MM-DD HH:mm') > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 23:00')
         return actualShift;
     }
 

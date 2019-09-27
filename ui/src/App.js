@@ -49,7 +49,8 @@ function App(propsApp) {
         search={qs.parse(props.history.location.search)}
         />} 
         />
-        <Route exact path="/" render={(props) => <SignIn t={t} 
+        <Route exact path="/" render={(props) => 
+        <SignIn t={t} 
          history={props.history}
          search={qs.parse(props.history.location.search)}
         />} />

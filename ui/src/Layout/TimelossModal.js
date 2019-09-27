@@ -218,6 +218,7 @@ class TimelossModal extends React.Component {
                                 <input className={'timelost-field'} type="number" min="0"
                                     disabled={!this.props.isEditable}
                                     value={this.state.time_to_allocate}
+                                    autofocus
                                     onChange={this.allocateTime}></input>
                             </Col>
                             <Col sm={6} md={3} style={{ marginBottom: '5px' }}>

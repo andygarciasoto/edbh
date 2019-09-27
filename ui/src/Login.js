@@ -34,11 +34,13 @@ class Login extends React.Component {
                     <Form action={AUTH} method="post">
                     <Form.Group controlId="formGroupEmail" style={{textAlign: 'right'}}>
                         <Form.Label>Username: &nbsp;</Form.Label>
-                        <Form.Control value={this.state.username} name={'username'} type="text" placeholder="Enter username" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({username: e.target.value})}}/>
+                        <Form.Control value={this.state.username} name={'username'} type="text" placeholder="Enter username" style={{width: '400px', float: 'right'}} onChange={(e) => 
+                            {this.setState({username: e.target.value})}}/>
                     </Form.Group>
                     <Form.Group controlId="formGroupPassword">
                         <Form.Label>Password: &nbsp;</Form.Label>
-                        <Form.Control value={this.state.password} name={'password'} type="password" placeholder="Password" style={{width: '400px', float: 'right'}} onChange={(e) => {this.setState({password: e.target.value})}}/>
+                        <Form.Control value={this.state.password} name={'password'} type="password" placeholder="Password" style={{width: '400px', float: 'right'}} onChange={(e) => 
+                            {this.setState({password: e.target.value})}}/>
                     </Form.Group>
                     <Button type="submit" variant="outline-primary" style={{marginTop: '10px'}}>{'Submit'}</Button>
                     </Form>
