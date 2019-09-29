@@ -82,6 +82,7 @@ class ValueModal extends React.Component {
 
     closeModal() {
         this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
+        this.props.onRequestClose();
     }
 
     render() {

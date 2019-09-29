@@ -18,7 +18,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/login') {
     const machineName = params.st;
     localStorage.setItem('machine_name', machineName);
     ReactDOM.render(
-        <App machine={machineName} />
+        <App defaultAsset={machineName} />
         , document.getElementById('root'));
 } else {
     init();
@@ -101,7 +101,7 @@ function init() {
                 clock_number: json.data[0].Badge
             }
             ReactDOM.render(
-                <App user={user} machine={machine} />, document.getElementById('root'));
+                <App user={user} defaultAsset={machine} />, document.getElementById('root'));
         });
 };
 

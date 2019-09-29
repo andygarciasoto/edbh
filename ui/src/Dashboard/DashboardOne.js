@@ -278,19 +278,6 @@ class DashboardOne extends React.Component {
     })
   }
 
-  componentWillMount() {
-    const machineAsset = this.props.defaultAsset;
-    console.log(machineAsset)
-    getStationAsset(machineAsset).then(a => {
-      this.setState({
-      selectedMachine: this.props.search.mc || a.asset_code !== 'No Data' ? a.asset_code : config['machine'],
-      selectedMachineType: this.props.search.tp || a.asset_code !== 'No Data' ? a.automation_level : config['machineType'],
-      station: machineAsset || config['station']
-      })
-    }
-  )
-  }
-
   async componentDidMount() {
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
@@ -325,10 +312,27 @@ class DashboardOne extends React.Component {
         }
       });
     } catch (e) { console.log(e) }
+
+    const machineAsset = this.props.defaultAsset;
+    console.log(machineAsset)
+    getStationAsset(machineAsset).then(a => {
+      this.setState({
+      selectedMachine: a.asset_code !== 'No Data' ? a.asset_code : config['machine'],
+      selectedMachineType:  a.asset_code !== 'No Data' ? a.automation_level : config['machineType'],
+      station: machineAsset || config['station']
+      })
+      let { search } = this.props;
+      let queryItem = Object.assign({}, search);
+      queryItem["st"] = this.props.search.st || this.props.defaultAsset;
+      queryItem["mc"] = this.props.search.mc || a.asset_code;
+      queryItem["tp"] = this.props.search.tp || a.automation_level;
+      let parameters = $.param(queryItem);
+      this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
+    }
+  )
   };
 
   componentWillReceiveProps(nextProps) {
-
     var hour = (new Date().getHours());
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
@@ -344,7 +348,7 @@ class DashboardOne extends React.Component {
       selectedMachine: nextProps.search.mc || config['machine'],
       currentLanguage: nextProps.search.ln || config['language'],
       selectedShift: nextProps.search.sf || shiftByHour,
-      selectedMachineType: nextProps.search.tp || nextProps.defaultAsset.automation_level || config['machineType'],
+      selectedMachineType: nextProps.search.tp || config['machineType'], // @dev
     }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
   }
 
@@ -736,7 +740,8 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
-                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? moment(this.state.selectedDate).add(1, 'd').locale(this.state.currentLanguage).format('LL'):
+                  {/* {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? moment(this.state.selectedDate).add(1, 'd').locale(this.state.currentLanguage).format('LL'): */}
+                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'):
                    moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable

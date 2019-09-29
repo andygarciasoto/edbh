@@ -45,7 +45,8 @@ class SignoffModal extends React.Component {
         this.setState({ modal_confirm_IsOpen: false, 
             modal_loading_IsOpen: false, 
             modal_error_IsOpen: false, 
-            modal_validate_IsOpen: false });
+            modal_validate_IsOpen: false 
+        });
             this.props.onRequestClose();
     }
 

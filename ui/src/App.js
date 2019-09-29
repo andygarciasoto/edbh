@@ -14,8 +14,10 @@ import $ from 'jquery';
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  console.log(propsApp.machine)
-  const machine = propsApp.machine;
+  //const machine = propsApp.defaultAsset;
+  const machine = localStorage.getItem('machine_name');
+  console.log(machine)
+  // sessionStorage.setItem('machine_name', machine);
   return (
     <Router>
       <Helmet>
@@ -32,7 +34,8 @@ function App(propsApp) {
                 user={propsApp.user} t={t}
                 defaultAsset={machine}
                 history={props.history}
-                search={qs.parse(props.history.location.search)} />
+                search={qs.parse(props.history.location.search)} 
+                />
             )
           }
           } />
