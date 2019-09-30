@@ -103,7 +103,8 @@ class TimelossModal extends React.Component {
             validationMessage: '', 
             time_to_allocate: 0, 
             unallocated_time: 0, 
-            new_tl_reason: ''
+            new_tl_reason: '',
+            allowSubmit: true
         });
         this.props.onRequestClose();
     }
@@ -118,7 +119,8 @@ class TimelossModal extends React.Component {
             this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true})
         }
         else {
-            !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) : void(0);
+            !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) : 
+            this.setState({ time_to_allocate: 1, validationMessage: '' }, this.validate(1));
         }
     }
 
@@ -127,13 +129,13 @@ class TimelossModal extends React.Component {
         if ((!isNaN(value)) && 
         (this.state.new_tl_reason !== '') && 
         (value > 0) && 
-        (value < this.state.allocated_time)) {
+        (Math.round(value) <= Math.round(this.state.allocated_time))) {
             this.setState({ allowSubmit: false });
         }
     }
 
     closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false, allowSubmit: true });
         this.props.onRequestClose();
     }
 
@@ -216,7 +218,9 @@ class TimelossModal extends React.Component {
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>
-                                <input className={'timelost-field'} type="number" min="0"
+                                <input className={'timelost-field'} 
+                                    type="number" 
+                                    min="0"
                                     disabled={!this.props.isEditable}
                                     value={this.state.time_to_allocate}
                                     autoFocus
@@ -244,7 +248,8 @@ class TimelossModal extends React.Component {
                             <Button variant="outline-primary"
                                 style={{ marginTop: '30px'}}
                                 disabled={this.state.allowSubmit || !this.props.isEditable}
-                                onClick={this.submit}>{t('Submit')}</Button>
+                                onClick={this.submit}>{t('Submit')}
+                            </Button>
                         </div> {!this.props.isEditable ? <span style={{color: 'grey'}}>{t('Read-Only')}</span> : null}
                     </div>
                     <div className={'new-timeloss-close'}>
