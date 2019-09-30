@@ -27,26 +27,30 @@ class Pagination extends React.Component {
     }
 
     getActualShiftFromActualDate() {
-        let actualDate = moment().tz(config['timezone']);
+        let getDate = moment().tz(config["timezone"]);
+        let currentHour = moment().tz(config["timezone"]).hours();
+        let actualDate = moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`);
+        console.log(actualDate)
         let actualShift = 0;
-        if (actualDate.format('YYYY-MM-DD HH:mm') >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate.format('YYYY-MM-DD HH:mm') < moment(actualDate).format('YYYY-MM-DD') + ' 15:00') {
+        if (actualDate >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 15:00') {
             actualShift = 1;
-        } else if (actualDate.format('YYYY-MM-DD HH:mm') > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate.format('YYYY-MM-DD') < moment(actualDate).format('YYYY-MM-DD') + ' 23:00') {
+        } else if (actualDate > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 23:00') {
             actualShift = 2;
         } else {
             actualShift = 3;
         }
-        console.log(actualShift, actualDate.format('YYYY-MM-DD HH:mm'))
-        console.log(actualDate.format('YYYY-MM-DD HH:mm') > moment(actualDate).format('YYYY-MM-DD') + ' 15:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 23:00')
+        console.log(actualShift, actualDate)
+        console.log(actualDate >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 15:00')
         return actualShift;
     }
 
     onSelect(e) {
         //Get the correct date and shift of the application.
-        let actualDate = moment().tz(config['timezone']);
+        let actualDate = moment().tz(config["timezone"]);
         let actualShift = this.getActualShiftFromActualDate();
         //Get the actual selection of date and Shift from the UI.
         let actualDateSelection = moment(this.state.date);
+        console.log('selection', actualDateSelection.format('YYYY-MM-DD HH:mm'))
         let actualShiftSelection = mapShift(this.state.shift);
 
         let { search } = this.props;
@@ -75,7 +79,6 @@ class Pagination extends React.Component {
         }
 
         let diffDays = actualDateSelection.diff(actualDate, 'days');
-
         if (e === 'back') {
             if (diffDays === -1) {
                 if (actualShift === 1 && actualShiftSelection <= 2) {
@@ -99,8 +102,7 @@ class Pagination extends React.Component {
                 return;
             }
         }
-
-        if (moment(currentDate) === moment().tz(config['timezone'])) {
+            if (moment(currentDate) === moment().tz(config["timezone"])) {
             return;
         }
 
@@ -122,7 +124,7 @@ class Pagination extends React.Component {
         }
 
         if (e === 'double-next') {
-            newDate = moment();
+            newDate = moment().tz(config['timezone']);
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
             let parameters = $.param(queryItem);
@@ -150,7 +152,8 @@ class Pagination extends React.Component {
             return;
         }
         if (e === 'back' && (currentShift === 2 || currentShift === 3)) {
-            queryItem["dt"] = moment(currentDate).format('YYYY/MM/DD');
+            newDate = moment(currentDate);
+            queryItem["dt"] = newDate.format('YYYY/MM/DD');
             queryItem["sf"] = mapShiftReverse(currentShift - 1);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);

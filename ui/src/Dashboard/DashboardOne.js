@@ -72,7 +72,7 @@ class DashboardOne extends React.Component {
       logoffHourCheck: true,
       barcode: 1001,
       dataCall: {},
-      selectedDate: props.search.dt || moment().format('YYYY/MM/DD'),
+      selectedDate: props.search.dt || getCurrentTime(),
       selectedDateParsed: '',
       selectedMachine: props.search.mc || config['machine'],
       selectedMachineType: props.search.tp || config['machineType'],
@@ -296,7 +296,7 @@ class DashboardOne extends React.Component {
       }
     };
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
-    this.setState({ modalStyle, selectedDate: this.state.selectedDate, selectedDateParsed: x })
+    this.setState({ modalStyle, selectedDateParsed: x })
     this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
 
     const socket = openSocket.connect(SOCKET);
@@ -314,7 +314,6 @@ class DashboardOne extends React.Component {
     } catch (e) { console.log(e) }
 
     const machineAsset = this.props.defaultAsset;
-    console.log(machineAsset)
     getStationAsset(machineAsset).then(a => {
       this.setState({
       selectedMachine: a.asset_code !== 'No Data' ? a.asset_code : config['machine'],
@@ -333,7 +332,7 @@ class DashboardOne extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    var hour = (new Date().getHours());
+    var hour = moment(getCurrentTime()).hours();
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
       shiftByHour = '1st Shift';
@@ -344,7 +343,7 @@ class DashboardOne extends React.Component {
     };
     let _this = this;
     this.setState({
-      selectedDate: nextProps.search.dt || moment().format('YYYY/MM/DD'),
+      selectedDate: nextProps.search.dt || getCurrentTime(),
       selectedMachine: nextProps.search.mc || config['machine'],
       currentLanguage: nextProps.search.ln || config['language'],
       selectedShift: nextProps.search.sf || shiftByHour,

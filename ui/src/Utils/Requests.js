@@ -155,7 +155,8 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime() {
-  return moment().tz(config['timezone']).format('YYYY-MM-DD HH:mm:ss');
+  // return moment().tz(config['timezone']).format('YYYY-MM-DD HH:mm:ss');
+  return moment().tz(config["timezone"]).format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
