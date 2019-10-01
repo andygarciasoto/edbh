@@ -30,7 +30,6 @@ class Pagination extends React.Component {
         let getDate = moment().tz(config["timezone"]);
         let currentHour = moment().tz(config["timezone"]).hours();
         let actualDate = moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`);
-        console.log(actualDate)
         let actualShift = 0;
         if (actualDate >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 15:00') {
             actualShift = 1;
@@ -39,8 +38,6 @@ class Pagination extends React.Component {
         } else {
             actualShift = 3;
         }
-        console.log(actualShift, actualDate)
-        console.log(actualDate >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 15:00')
         return actualShift;
     }
 

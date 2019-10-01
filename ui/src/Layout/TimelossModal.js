@@ -89,6 +89,7 @@ class TimelossModal extends React.Component {
                 timelost: nextProps.timelost,
                 allocated_time: total,
                 unallocated_time: nextProps.currentRow.unallocated_time,
+                time_to_allocate: nextProps.currentRow.allocated_time,
                 setup_time: nextProps.currentRow.summary_setup_minutes || 0,
                 break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
