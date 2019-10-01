@@ -154,9 +154,8 @@ function formatDateWithCurrentTime(date) {
   return formatDate(date) + ' ' + moment().format('HH:mm:ss');
 }
 
-function getCurrentTime() {
-  // return moment().tz(config['timezone']).format('YYYY-MM-DD HH:mm:ss');
-  return moment().tz(config["timezone"]).format('YYYY-MM-DD HH:mm:ss');
+function getCurrentTime(timezone) {
+  return moment().tz(timezone || config["timezone"]).format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -283,7 +282,7 @@ function isComponentValid(user_role, name) {
   } else { return true }
 }
 
-function isFieldAllowed(role, row) {
+function isFieldAllowed(role, row, timezone) {
   if (role === 'Administrator') {
     return true;
   }
