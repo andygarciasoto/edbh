@@ -30,7 +30,8 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  getStationAsset
+  getStationAsset,
+  getRequest
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
@@ -85,6 +86,7 @@ class DashboardOne extends React.Component {
       openDropdownAfter: false,
       selectedShift: props.search.sf || shiftByHour,
       dateFromData: false,
+      timezone: config['timezone']
     }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -279,6 +281,8 @@ class DashboardOne extends React.Component {
   }
 
   async componentDidMount() {
+    const timezone = await getRequest('/common_parameters', {params: {parameter_code: 'Eaton_Config_Timezone'}});
+    this.setState({timezone: timezone[0].CommonParameters.value})
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
     i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
@@ -726,6 +730,7 @@ class DashboardOne extends React.Component {
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
           selectedMachine={this.state.selectedMachine}
+          timezone={this.state.timezone}
           t={t}
           history={this.props.history}
           search={this.props.search}
@@ -774,6 +779,7 @@ class DashboardOne extends React.Component {
             dxh_parent={dxh_parent ? dxh_parent : null}
             Refresh={this.getDashboardData}
             parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+            timezone={this.state.timezone}
           />
         </div>
         <ValueModal
@@ -790,6 +796,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+          timezone={this.state.timezone}
         />
         <CommentsModal
           isOpen={this.state.modal_comments_IsOpen}
@@ -805,6 +812,7 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           selectedDate={this.state.selected}
           IsEditable={this.state.comments_IsEditable}
+          timezone={this.state.timezone}
         />
         <TimelossModal
           isOpen={this.state.modal_dropdown_IsOpen}
@@ -821,6 +829,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           isEditable={this.state.timelost_IsEditable}
+          timezone={this.state.timezone}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
@@ -833,6 +842,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           signOffRole={this.state.signOffRole}
+          timezone={this.state.timezone}
         />
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}
@@ -849,6 +859,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
           showValidateDataModal={this.showValidateDataModal}
+          timezone={this.state.timezone}
         />
         <ManualEntryModal
           isOpen={this.state.modal_manualentry_IsOpen}
@@ -863,6 +874,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+          timezone={this.state.timezone}
         />
         <ErrorModal
           isOpen={this.state.errorModal}

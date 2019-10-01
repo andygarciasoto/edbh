@@ -15,6 +15,7 @@ class Pagination extends React.Component {
             shift: this.props.selectedShift,
             date: this.props.selectedDate,
             machine: this.props.selectedMachine,
+            timezone: this.props.timezone || config["timezone"]
         }
         this.onSelect = this.onSelect.bind(this);
     }
@@ -27,8 +28,8 @@ class Pagination extends React.Component {
     }
 
     getActualShiftFromActualDate() {
-        let getDate = moment().tz(config["timezone"]);
-        let currentHour = moment().tz(config["timezone"]).hours();
+        let getDate = moment().tz(this.state.timezone);
+        let currentHour = moment().tz(this.state.timezone).hours();
         let actualDate = moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`);
         let actualShift = 0;
         if (actualDate >= moment(actualDate).format('YYYY-MM-DD') + ' 07:00' && actualDate < moment(actualDate).format('YYYY-MM-DD') + ' 15:00') {
@@ -43,7 +44,7 @@ class Pagination extends React.Component {
 
     onSelect(e) {
         //Get the correct date and shift of the application.
-        let actualDate = moment().tz(config["timezone"]);
+        let actualDate = moment().tz(this.state.timezone);
         let actualShift = this.getActualShiftFromActualDate();
         //Get the actual selection of date and Shift from the UI.
         let actualDateSelection = moment(this.state.date);
@@ -99,7 +100,7 @@ class Pagination extends React.Component {
                 return;
             }
         }
-            if (moment(currentDate) === moment().tz(config["timezone"])) {
+            if (moment(currentDate) === moment().tz(this.state.timezone)) {
             return;
         }
 
@@ -121,7 +122,7 @@ class Pagination extends React.Component {
         }
 
         if (e === 'double-next') {
-            newDate = moment().tz(config['timezone']);
+            newDate = moment().tz(this.state.timezone);
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
             let parameters = $.param(queryItem);
@@ -163,7 +164,13 @@ class Pagination extends React.Component {
         const t = this.props.t;
         return (
             <div id="semi-button-deck">
-                <FontAwesome name="angle-double-left" data-tip='shift' data-for='last-shift' className="icon-arrow" onClick={() => this.onSelect('double-back')} />
+                <FontAwesome 
+                    name="angle-double-left"
+                    data-tip='shift' 
+                    data-for='last-shift' 
+                    className="icon-arrow"
+                    onClick={() => this.onSelect('double-back')} 
+                />
                 <span className="semi-button-shift-change-left" onClick={() => this.onSelect('back')}>
                     <FontAwesome name="caret-left fa-2" className="icon-arrow" />
                     <span id="previous-shift">{t('Previous Shift')}</span>
@@ -171,7 +178,13 @@ class Pagination extends React.Component {
                 <span className="semi-button-shift-change-right">
                     <span id="current-shift" onClick={() => this.onSelect('next')}>{t('Next Shift')}</span>
                     <FontAwesome name="caret-right fa-2" className="icon-arrow" onClick={() => this.onSelect('next')} />
-                    <FontAwesome data-tip='shift' data-for='current-shift' name="angle-double-right fa-2" className="icon-arrow" onClick={() => this.onSelect('double-next')} />
+                    <FontAwesome 
+                        data-tip='shift' 
+                        data-for='current-shift' 
+                        name="angle-double-right fa-2" 
+                        className="icon-arrow" 
+                        onClick={() => this.onSelect('double-next')} 
+                    />
                     <Tooltip id='current-shift'>{'Back to Current Shift'}</Tooltip>
                     <Tooltip id='last-shift'>{'Go back Two Shifts'}</Tooltip>
                 </span>
