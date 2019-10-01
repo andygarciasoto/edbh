@@ -31,8 +31,7 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  getStationAsset,
-  getRequest
+  getStationAsset
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";

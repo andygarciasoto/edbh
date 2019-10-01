@@ -132,7 +132,6 @@ class SignoffModal extends React.Component {
                     ...data
                 }, `/${this.state.signOffRole}_sign_off`)
                 response.then((res) => {
-                    console.log(res)
                     if (res !== 200 || !res) {
                         this.setState({ 
                             modal_loading_IsOpen: false, 
