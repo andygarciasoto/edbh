@@ -13,7 +13,6 @@ var sqlQuery = require('../objects/sqlConnection');
 var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var _timezone = "America/New_York";
-/// var _timezone = config["timezone"];
 var format = 'YYYY-MM-DD HH:mm:ss';
 
 router.use(function (err, req, res, next) {
@@ -758,6 +757,22 @@ router.get('/order_data', async function (req, res) {
                 return;
             }
             responseGet(response, req, res, 'OrderData');
+        });
+});
+
+router.get('/common_parameters', async function (req, res) {
+    const parameter_code = req.query.parameter_code;
+    if (parameter_code == undefined) {
+        return res.status(400).send("Bad Request - Missing parameters");
+    }
+    sqlQuery(`exec spLocal_EY_DxH_Get_CommonParameters '${parameter_code}';`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            responseGet(response, req, res, 'CommonParameters');
         });
 });
 

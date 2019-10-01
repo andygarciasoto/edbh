@@ -133,10 +133,14 @@ function createUnallocatedTime(obj) {
         else if (base === current){
             if (minutes > item.summary_breakandlunch_minutes){
                 newIdeal = item.ideal * ((minutes - item.summary_breakandlunch_minutes)/(totalTime));
+                if (item.actual_pcs < newIdeal){
                 var idealTimeForPart = totalTime/item.ideal;
                 var minimumTime = newIdeal * idealTimeForPart;
                 var actualTimeForPart = item.actual_pcs * idealTimeForPart;
                 item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
+                }else{
+                    item['unallocated_time'] = 0;
+                }
             }else{
                 item['unallocated_time'] = 0;
             }
