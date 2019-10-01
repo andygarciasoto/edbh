@@ -4,8 +4,6 @@ import Background from './backdrop1.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
 import { AUTH } from './Utils/Constants';
-import queryString from 'query-string'
-import { getRequest } from  './Utils/Requests';
 
 class Login extends React.Component {
     constructor(props) {

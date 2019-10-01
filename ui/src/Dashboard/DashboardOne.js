@@ -22,6 +22,7 @@ import FontAwesome from 'react-fontawesome';
 import $ from 'jquery';
 import {
   getRequestData,
+  getRequest,
   getIntershift,
   formatDate,
   isComponentValid,
@@ -69,7 +70,7 @@ class DashboardOne extends React.Component {
       isMenuOpen: false,
       valid_barcode: false,
       signoff_reminder: false,
-      logoffHourCheck: true,
+      logoffHourCheck: localStorage.getItem("signoff") ? localStorage.getItem("signoff") : true,
       barcode: 1001,
       dataCall: {},
       selectedDate: props.search.dt || getCurrentTime(),
@@ -609,17 +610,35 @@ class DashboardOne extends React.Component {
   }
 
   async getDashboardData(data, columns) {
+    const parameter = {
+      params: {
+          parameter_code: 'Eaton_Config_Timezone'
+      }
+  }
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    var minutes = moment().minutes();
     if (config['first_signoff_reminder'].includes(logoffHour)) {
       this.setState({ signoff_reminder: true })
     } else {
       this.setState({ signoff_reminder: false })
     }
     if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true) {
+      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
         this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
       }
     }
+    const resp = getRequest('/common_parameters', parameter);
+    resp.then((res) => {
+      var tz = res[0].CommonParameters.value;
+      var est = moment().tz(tz).hours();
+      if (minutes > 6 && localStorage.getItem("currentHour")){
+        if(localStorage.getItem("currentHour") < est){
+          localStorage.removeItem("signoff");
+          localStorage.removeItem("currentHour");
+        }
+      }
+    })
+    
     let response = {};
     let comments = {};
     if (data) {

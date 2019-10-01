@@ -4,7 +4,6 @@ import './BarcodeScanner.scss';
 import BlinkDots from '../Layout/BlinkDots';
 import ErrorModal from  '../Layout/ErrorModal';
 import LoadingModal from  '../Layout/LoadingModal';
-import { getRequestAuth } from '../Utils/Requests';
 import { AUTH } from '../Utils/Constants';
 
 class   BarcodeScanner extends Component {

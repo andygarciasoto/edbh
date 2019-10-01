@@ -1,7 +1,8 @@
 import React from 'react';
 import Modal from 'react-modal';
 import './ErrorModal.scss';
-import { Button } from 'react-bootstrap'
+import moment from 'moment-timezone';
+import { Button } from 'react-bootstrap';
 import * as _ from 'lodash';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -153,6 +154,9 @@ class SignoffModal extends React.Component {
                         })
                     })
                 }
+                        localStorage.setItem("signoff", false);
+                        var currentHour = moment(rowData.hour_interval_start).hours();
+                        localStorage.setItem("currentHour", currentHour);
                         this.setState({ 
                             request_status: res, 
                             modal_loading_IsOpen: false,
