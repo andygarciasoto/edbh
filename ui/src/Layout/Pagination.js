@@ -15,7 +15,8 @@ class Pagination extends React.Component {
             shift: this.props.selectedShift,
             date: this.props.selectedDate,
             machine: this.props.selectedMachine,
-            timezone: this.props.timezone || config["timezone"]
+            timezone: this.props.timezone || config["timezone"],
+            disabled_fields: false,
         }
         this.onSelect = this.onSelect.bind(this);
     }
@@ -25,6 +26,14 @@ class Pagination extends React.Component {
             date: formatDate(nextProps.selectedDate).split("-").join(""),
             shift: nextProps.selectedShift
         })
+        const today = moment(getCurrentTime())
+        const yesterday = moment(getCurrentTime()).add(-1, 'days');
+        if (moment(nextProps.selectedDate).isSame(today, 'days') || moment(nextProps.selectedDate).isSame(yesterday, 'days')) {
+            this.setState({disabled_fields: false})
+        } else {
+            this.setState({disabled_fields: true})
+        }
+
     }
 
     getActualShiftFromActualDate() {
@@ -48,7 +57,6 @@ class Pagination extends React.Component {
         let actualShift = this.getActualShiftFromActualDate();
         //Get the actual selection of date and Shift from the UI.
         let actualDateSelection = moment(this.state.date);
-        console.log('selection', actualDateSelection.format('YYYY-MM-DD HH:mm'))
         let actualShiftSelection = mapShift(this.state.shift);
 
         let { search } = this.props;
@@ -58,7 +66,7 @@ class Pagination extends React.Component {
         let currentDate = this.state.date;
         let yesterday = moment(currentDate).add(-1, 'days').format('YYYY-MM-DD HH:mm:ss');
         let newDate;
-        let newShift;
+        let newShift; 
 
         if (e === 'next') {
             if (actualDate < actualDateSelection) {
@@ -127,6 +135,7 @@ class Pagination extends React.Component {
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
+            this.setState({disabled_fields: false})
             return;
         }
 
@@ -162,29 +171,60 @@ class Pagination extends React.Component {
 
     render() {
         const t = this.props.t;
+        const showClass = this.state.disabled_fields ? {visibility: 'hidden'} : {};
         return (
             <div id="semi-button-deck">
                 <FontAwesome 
                     name="angle-double-left"
                     data-tip='shift' 
                     data-for='last-shift' 
-                    className="icon-arrow"
+                    className={`icon-arrow`}
                     onClick={() => this.onSelect('double-back')} 
+                    style={showClass}
                 />
-                <span className="semi-button-shift-change-left" onClick={() => this.onSelect('back')}>
-                    <FontAwesome name="caret-left fa-2" className="icon-arrow" />
+                <span 
+                    className={`semi-button-shift-change-left`}
+                    onClick={() => this.onSelect('back')}
+                    style={showClass}
+                    >
+                    <FontAwesome 
+                    name="caret-left fa-2" 
+                    className="icon-arrow" 
+                    style={showClass}
+                    />
                     <span id="previous-shift">{t('Previous Shift')}</span>
                 </span>
                 <span className="semi-button-shift-change-right">
-                    <span id="current-shift" onClick={() => this.onSelect('next')}>{t('Next Shift')}</span>
-                    <FontAwesome name="caret-right fa-2" className="icon-arrow" onClick={() => this.onSelect('next')} />
+                    <span 
+                        id="current-shift" 
+                        onClick={() => this.onSelect('next')}
+                        style={showClass}
+                        >{t('Next Shift')}
+                    </span>
+                    <FontAwesome 
+                        name="caret-right fa-2" 
+                        className="icon-arrow" 
+                        style={showClass}
+                        onClick={() => this.onSelect('next')} />
+                    {!this.state.disabled_fields ? <FontAwesome 
+                        data-tip='shift' 
+                        data-for='current-shift' 
+                        name="angle-double-right fa-2" 
+                        className="icon-arrow" 
+                        onClick={() => this.onSelect('double-next')}
+                    /> : 
+                    <React.Fragment><span 
+                        id="current-shift" 
+                        onClick={() => this.onSelect('double-next')}
+                        >{t('Go Back To Current Shift')}
+                    </span>
                     <FontAwesome 
                         data-tip='shift' 
                         data-for='current-shift' 
                         name="angle-double-right fa-2" 
                         className="icon-arrow" 
-                        onClick={() => this.onSelect('double-next')} 
-                    />
+                        onClick={() => this.onSelect('double-next')}
+                    /></React.Fragment> }
                     <Tooltip id='current-shift'>{'Back to Current Shift'}</Tooltip>
                     <Tooltip id='last-shift'>{'Go back Two Shifts'}</Tooltip>
                 </span>

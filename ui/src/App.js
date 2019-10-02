@@ -3,6 +3,7 @@ import './sass/App.scss';
 import Spinner from './Spinner';
 import SignIn from './SignIn';
 import Login from './Login';
+import Import from './Dashboard/Import';
 import DashboardOne from './Dashboard/DashboardOne';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
@@ -16,7 +17,6 @@ function App(propsApp) {
   const { t } = useTranslation();
   //const machine = propsApp.defaultAsset;
   const machine = localStorage.getItem('machine_name');
-  console.log(machine)
   // sessionStorage.setItem('machine_name', machine);
   return (
     <Router>
@@ -48,6 +48,12 @@ function App(propsApp) {
         <Route exact path="/" render={(props) => 
         <SignIn t={t} 
           history={props.history}
+          search={qs.parse(props.history.location.search)}
+        />} />
+        <Route exact path="/import" render={(props) => 
+        <Import t={t} 
+          history={props.history}
+          user={propsApp.user}
           search={qs.parse(props.history.location.search)}
         />} />
       </Suspense>
