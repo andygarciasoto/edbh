@@ -49,6 +49,11 @@ router.get("/token", cors(), async function (req, res) {
         }
         var jwtx = nJwt.create(jsonwebtoken, config['signingKey']);
         var token = jwtx.compact();
+        if (localStorage.getItem("st")){
+            var st = localStorage.getItem("st");
+            localStorage.removeItem("st");
+            return res.redirect(302, config['loginURL'] + `?st=${st}` + `#token=${token}`);    
+        }
         return res.redirect(302, config['loginURL'] + `#token=${token}`);
     });
 });
@@ -56,6 +61,9 @@ router.get("/badge", cors(), async function (req, res) {
     const params = req.query;
     if (!params.badge) {
         return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
+    }
+    if (params.st){
+        localStorage.setItem("st", params.st);
     }
     sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
         (err, data) => {

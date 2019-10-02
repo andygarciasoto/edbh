@@ -15,7 +15,7 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -56,7 +56,7 @@ router.use(function (req, res, next) {
         });
     }
 });
-
+*/
 function responsePostPut(response, req, res) {
     try {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
@@ -948,7 +948,7 @@ router.get('/asset_display_system', async function (req, res) {
     let display_system_name = req.query.st;
     if (!display_system_name) {
         // return res.status(400).json({ message: "Bad Request - Missing Parameters" });
-        display_system_name = 'CR2080435W1';
+        display_system_name = 'CR2080435W1'; 
     }
 
     sqlQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem '${display_system_name}';`,

@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import BarcodeReader from 'react-barcode-reader'
 import './BarcodeScanner.scss';
 import BlinkDots from '../Layout/BlinkDots';
-import ErrorModal from  '../Layout/ErrorModal';
-import LoadingModal from  '../Layout/LoadingModal';
+import ErrorModal from '../Layout/ErrorModal';
+import LoadingModal from '../Layout/LoadingModal';
 import { AUTH } from '../Utils/Constants';
 
-class   BarcodeScanner extends Component {
-  constructor(props){
+class BarcodeScanner extends Component {
+  constructor(props) {
     super(props)
     this.state = {
       result: this.props.t('Please scan a clock number barcode to begin'),
@@ -24,53 +24,58 @@ class   BarcodeScanner extends Component {
 
   componentDidMount() {
     const modalStyle = {
-      content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : 'auto',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)',
+      content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
       },
-      overlay : {
+      overlay: {
         backgroundColor: 'rgba(0,0,0, 0.6)'
       }
     };
 
-    this.setState({modalStyle})
+    this.setState({ modalStyle })
   }
 
   closeModal() {
     this.setState({
-      modal_error_IsOpen: false, 
-      modal_load_IsOpen: false, 
+      modal_error_IsOpen: false,
+      modal_load_IsOpen: false,
       result: this.props.t('Please scan a clock number barcode to begin')
     });
   }
 
-  handleScan(data){
+  handleScan(data) {
     this.setState({
       result: 'Scanning',
       code: data,
     })
-    this.authorize(this.state.code); 
+    this.authorize(this.state.code);
   }
 
   authorize(code) {
+    if (localStorage.getItem("machine_name")) {
+      var st = localStorage.getItem("machine_name");
+      window.location.replace(`${AUTH}/badge?badge=${code}&st=${st}`);
+    } else {
       window.location.replace(`${AUTH}/badge?badge=${code}`);
+    }
   }
 
   handleError(err) {
-    this.setState({modal_error_IsOpen: true});
+    this.setState({ modal_error_IsOpen: true });
     console.error(err)
   }
 
-  handleLoad(err){
-    this.setState({modal_load_IsOpen: true, login: true});
+  handleLoad(err) {
+    this.setState({ modal_load_IsOpen: true, login: true });
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <div id="barcodeScanner">
         <BarcodeReader
           onError={this.handleError}
@@ -78,29 +83,29 @@ class   BarcodeScanner extends Component {
           minLength={4}
         />
         {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
-        <p style={{display: 'inline'}} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots/>
-        
-        <ErrorModal
-            isOpen={this.state.modal_error_IsOpen}
-            //  onAfterOpen={this.afterOpenModal}
-            onRequestClose={this.closeModal}
-            contentLabel="Example Modal"
-            shouldCloseOnOverlayClick={false}
-            message={this.props.titleErr || 'Sign In attempt unsuccessful'}
-            title={this.props.errMessage || 'Sign In Error'}
-          />
+        <p style={{ display: 'inline' }} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots />
 
-          <LoadingModal
-            isOpen={this.state.modal_load_IsOpen}
-            //  onAfterOpen={this.afterOpenModal}
-            onRequestClose={this.closeModal}
-            style={this.state.modalStyle}
-            contentLabel="Example Modal"
-            login={this.state.login}
-            t={this.props.t}
-            shouldCloseOnOverlayClick={false}
-          />
-          {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
+        <ErrorModal
+          isOpen={this.state.modal_error_IsOpen}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+          shouldCloseOnOverlayClick={false}
+          message={this.props.titleErr || 'Sign In attempt unsuccessful'}
+          title={this.props.errMessage || 'Sign In Error'}
+        />
+
+        <LoadingModal
+          isOpen={this.state.modal_load_IsOpen}
+          //  onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={this.state.modalStyle}
+          contentLabel="Example Modal"
+          login={this.state.login}
+          t={this.props.t}
+          shouldCloseOnOverlayClick={false}
+        />
+        {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
       </div>
     )
   }
