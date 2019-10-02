@@ -118,6 +118,7 @@ function structureMachines(obj) {
 
 function createUnallocatedTime(obj) {
     obj.map((item, index) => {
+        console.log(item);
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
         var totalTime = item.summary_breakandlunch_minutes ? 60 - item.summary_breakandlunch_minutes : 60;
@@ -127,16 +128,16 @@ function createUnallocatedTime(obj) {
         if ((item.production_id === '') || item.production_id === undefined){
             item['unallocated_time'] = totalTime;
         } 
-        else if (item.actual_pcs >= item.ideal) {
+        else if (item.summary_actual >= item.summary_ideal) {
             item['unallocated_time'] = 0;
         }
         else if (base === current){
             if (minutes > item.summary_breakandlunch_minutes){
-                newIdeal = item.ideal * ((minutes - item.summary_breakandlunch_minutes)/(totalTime));
-                if (item.actual_pcs < newIdeal){
-                var idealTimeForPart = totalTime/item.ideal;
+                newIdeal = item.summary_ideal * ((minutes - item.summary_breakandlunch_minutes)/(totalTime));
+                if (item.summary_actual < newIdeal){
+                var idealTimeForPart = totalTime/item.summary_ideal;
                 var minimumTime = newIdeal * idealTimeForPart;
-                var actualTimeForPart = item.actual_pcs * idealTimeForPart;
+                var actualTimeForPart = item.summary_actual * idealTimeForPart;
                 item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
                 }else{
                     item['unallocated_time'] = 0;
@@ -146,13 +147,12 @@ function createUnallocatedTime(obj) {
             }
         }
         else {
-            if (item.actual_pcs === 0){
+            if (item.summary_actual === 0){
                 item['unallocated_time'] = totalTime;    
             }else{
-                var idealTimeForPart = totalTime/item.ideal;
-                var actualTimeForPart = item.actual_pcs * idealTimeForPart;
+                var idealTimeForPart = totalTime/item.summary_ideal;
+                var actualTimeForPart = item.summary_actual * idealTimeForPart;
                 item['unallocated_time'] = Math.round(totalTime - actualTimeForPart);
-            //item['unallocated_time'] = (((item.ideal - item.actual_pcs) * item.routed_cycle_time) / 60) ;
         }
     }
         item['allocated_time'] = item['unallocated_time'] - /*(item.summary_setup_minutes + item.summary_breakandlunch_minutes +*/ item.timelost_summary;
