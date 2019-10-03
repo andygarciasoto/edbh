@@ -1,6 +1,6 @@
 {
     "station": "CR2080435W1",
-    "machine": 34002,
+    "machine": "00000",
     "machineType": "Automated",
     "user": "Ryan Parker",
     "role": "supervisor",

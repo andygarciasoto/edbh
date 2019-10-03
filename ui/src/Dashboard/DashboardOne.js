@@ -77,7 +77,7 @@ class DashboardOne extends React.Component {
       selectedDateParsed: '',
       selectedMachine: props.search.mc || config['machine'],
       selectedMachineType: props.search.tp || config['machineType'],
-      station: props.search.st || config['station'],
+      station: props.search.st || '00000',
       currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
       cumulativepcs: '',
@@ -632,12 +632,14 @@ class DashboardOne extends React.Component {
     }
     const resp = getRequest('/common_parameters', parameter);
     resp.then((res) => {
-      var tz = res[0].CommonParameters.value;
-      var est = moment().tz(tz).hours();
-      if (minutes > 6 && localStorage.getItem("currentHour")){
-        if(localStorage.getItem("currentHour") != est){
-          localStorage.removeItem("signoff");
-          localStorage.removeItem("currentHour");
+      if (res) {
+        var tz = res[0].CommonParameters.value;
+        var est = moment().tz(tz).hours();
+        if (minutes > 6 && localStorage.getItem("currentHour")){
+          if(localStorage.getItem("currentHour") != est){
+            localStorage.removeItem("signoff");
+            localStorage.removeItem("currentHour");
+          }
         }
       }
     })

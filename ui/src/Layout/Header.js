@@ -28,6 +28,7 @@ class Header extends React.Component {
         }
         this.openMenu = this.openMenu.bind(this);
         this.onScroll = this.onScroll.bind(this);
+        this.signOut = this.signOut.bind(this);
     }
 
     collectInputs = (value, type) => {
@@ -63,6 +64,12 @@ class Header extends React.Component {
         this.setState({ megaMenuToggle: 'dropdown-content' });
     }
 
+    signOut() {
+        sessionStorage.setItem('machine_name', undefined);
+        localStorage.setItem('machine_name', undefined);
+        localStorage.setItem('accessToken', undefined);
+    }
+
     render() {
         const t = this.props.t;
         return (
@@ -71,7 +78,7 @@ class Header extends React.Component {
                     <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo" /></Col>
                     <Col className={'col'} md={9} lg={9}>
                         <div className="links header-side">
-                            <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
+                            <span className="header-item header-elem" href="#" id="log-out" onClick={this.signOut}><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
                             {isComponentValid(this.props.user.role, 'megamenu') ? 
                             <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome

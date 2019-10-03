@@ -697,7 +697,7 @@ router.put('/production_data', async function (req, res) {
                     if (err) {
                         console.log("hubo error creando o generando el getdxhdataid");
                         console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
+                        res.status(500).send({ message: 'Error 5052', database_error: err });
                         return;
                     }
                     console.log("entré al response teniendo un getdxhdataid");
@@ -711,7 +711,7 @@ router.put('/production_data', async function (req, res) {
                                 if (err) {
                                     console.log("entré al error creando produccion");
                                     console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    res.status(500).send({ message: 'Error 5050', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -738,7 +738,7 @@ router.put('/production_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
+                        res.status(500).send({ message: 'Error 5051', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
