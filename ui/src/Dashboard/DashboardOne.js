@@ -70,7 +70,7 @@ class DashboardOne extends React.Component {
       isMenuOpen: false,
       valid_barcode: false,
       signoff_reminder: false,
-      logoffHourCheck: localStorage.getItem("signoff") ? localStorage.getItem("signoff") : true,
+      logoffHourCheck: localStorage.getItem("signoff") === false ? localStorage.getItem("signoff") : true,
       barcode: 1001,
       dataCall: {},
       selectedDate: props.search.dt || getCurrentTime(),
@@ -635,7 +635,7 @@ class DashboardOne extends React.Component {
       var tz = res[0].CommonParameters.value;
       var est = moment().tz(tz).hours();
       if (minutes > 6 && localStorage.getItem("currentHour")){
-        if(localStorage.getItem("currentHour") < est){
+        if(localStorage.getItem("currentHour") != est){
           localStorage.removeItem("signoff");
           localStorage.removeItem("currentHour");
         }
