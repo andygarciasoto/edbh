@@ -675,41 +675,31 @@ router.put('/production_data', async function (req, res) {
 
     console.log("datos: " ,dxh_data_id, actual, clocknumber, timestamp, override, asset_code, row_timestamp );
     if (actual === undefined) {
-        console.log("entré al actual undefined");
         return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
     }
     if (!clocknumber) {
-        console.log("entré al actual clocknumber undefined");
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
 
     if (dxh_data_id === undefined || dxh_data_id === null) {
-        console.log("entré al actual dxh_data_id null");
         if (asset_code === undefined) {
-            console.log("entré al asset code undefined");
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            console.log("entré a pedir que me busque o cree getdxhdata");
             sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
                 (err, data) => {
                     if (err) {
-                        console.log("hubo error creando o generando el getdxhdataid");
                         console.log(err);
                         res.status(500).send({ message: 'Error 5052', database_error: err });
                         return;
                     }
-                    console.log("entré al response teniendo un getdxhdataid");
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                     dxh_data_id = response[0].dxhdata_id;
                     if (clocknumber) {
-                        console.log("entré teniendo un clocknumber");
-                        console.log("le quemo los siguientes valores: " ,dxh_data_id, actual, clocknumber, timestamp, override);
                         sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                             (err, response) => {
                                 if (err) {
-                                    console.log("entré al error creando produccion");
                                     console.log(err);
                                     res.status(500).send({ message: 'Error 5050', database_error: err });
                                     return;
@@ -717,7 +707,6 @@ router.put('/production_data', async function (req, res) {
                                 responsePostPut(response, req, res);
                             });
                     } else {
-                        console.log("entré sin clocknumber");
                         sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                             (err, response) => {
                                 if (err) {
@@ -732,8 +721,6 @@ router.put('/production_data', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            console.log("entré con clock number pero tengo dxh");
-            console.log("entré con estos valores: " ,dxh_data_id, actual, clocknumber, timestamp, override);
             sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                 (err, response) => {
                     if (err) {
@@ -744,7 +731,6 @@ router.put('/production_data', async function (req, res) {
                     responsePostPut(response, req, res);
                 });
         } else {
-            console.log("entré sin clocknumber pero con dxh id");
             sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                 (err, response) => {
                     if (err) {
