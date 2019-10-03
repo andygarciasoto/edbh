@@ -663,7 +663,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
 
 router.put('/production_data', async function (req, res) {
     let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-    const actual = req.body.actual ? req.body.actual != "zero" ? parseFloat(req.body.actual) : 0 : undefined;
+    const actual = req.body.actual ? req.body.actual != "signoff" ? parseFloat(req.body.actual) : 0 : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -689,7 +689,7 @@ router.put('/production_data', async function (req, res) {
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
+                        res.status(500).send({ message: 'Error 5052', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -699,7 +699,7 @@ router.put('/production_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    res.status(500).send({ message: 'Error 5050', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -723,7 +723,7 @@ router.put('/production_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
+                        res.status(500).send({ message: 'Error 5051', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);

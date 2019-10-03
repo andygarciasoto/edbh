@@ -15,9 +15,7 @@ import $ from 'jquery';
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  //const machine = propsApp.defaultAsset;
-  const machine = localStorage.getItem('machine_name');
-  // sessionStorage.setItem('machine_name', machine);
+  const machine = sessionStorage.getItem('machine_name');
   return (
     <Router>
       <Helmet>
