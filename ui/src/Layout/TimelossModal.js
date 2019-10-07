@@ -33,6 +33,7 @@ class TimelossModal extends React.Component {
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
+            changed: false
         }
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -85,11 +86,17 @@ class TimelossModal extends React.Component {
     async componentWillReceiveProps(nextProps) {
         if (nextProps.currentRow) {
             const total = nextProps.currentRow.allocated_time;
+            let time = 0;
+            if (this.state.changed === false) {
+                time = nextProps.currentRow.allocated_time
+            } else {
+                time = this.state.time_to_allocate
+            }
             this.setState({
                 timelost: nextProps.timelost,
                 allocated_time: total,
                 unallocated_time: nextProps.currentRow.unallocated_time,
-                time_to_allocate: nextProps.currentRow.allocated_time,
+                time_to_allocate: time,
                 setup_time: nextProps.currentRow.summary_setup_minutes || 0,
                 break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
             })
@@ -114,14 +121,14 @@ class TimelossModal extends React.Component {
         const value = parseInt(e.target.value);
         const max = Math.round(this.state.allocated_time);
         if (value > max) {
-            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed.', time_to_allocate: value, allowSubmit: true })
+            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed.', time_to_allocate: value, allowSubmit: true, changed: true})
         } 
         else if (value === 0) {
-            this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true})
+            this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true, changed: true})
         }
         else {
             !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) : 
-            this.setState({ time_to_allocate: 1, validationMessage: '' }, this.validate(1));
+            this.setState({ time_to_allocate: 1, validationMessage: '', changed: true}, this.validate(1));
         }
     }
 

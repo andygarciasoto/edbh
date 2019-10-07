@@ -45,7 +45,7 @@ class Pagination extends React.Component {
         let elevenShift  = moment(moment(actualDate).format('YYYY-MM-DD') + ' 23:00');
         if ((actualDate.isAfter(sevenShift, 'hours') || actualDate.isSame(sevenShift, 'hours')) && actualDate.isBefore(fifteenShift, 'hours')) {
             actualShift = 1;
-        } else if (actualDate.isAfter(fifteenShift, 'hours') && actualDate.isBefore(elevenShift, 'hours')) {
+        } else if ((actualDate.isSame(fifteenShift, 'hours') || actualDate.isAfter(fifteenShift, 'hours')) && actualDate.isBefore(elevenShift, 'hours')) {
             actualShift = 2;
         } else {
             actualShift = 3;
