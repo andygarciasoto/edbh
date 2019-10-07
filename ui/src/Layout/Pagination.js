@@ -120,7 +120,7 @@ class Pagination extends React.Component {
             newDate = currentShift <= 2 ? moment(yesterday) : moment(currentDate);
             newShift = currentShift === 3 ? 1 : currentShift === 2 ? 3 : 2;
             let diffDays = newDate.diff(actualDate, 'days');
-                if (diffDays < 0) {
+                if (diffDays < -1) {
                     return;
                 }
 
@@ -138,9 +138,6 @@ class Pagination extends React.Component {
             let diffDays = newDate.diff(actualDate, 'days');
             console.log('newdate', newDate.format('YYYY-MM-DD'), actualShift, actualShiftSelection, diffDays)
             if (diffDays === -1) {
-                if (actualShift === 1 && actualShiftSelection === 1) {
-                    return;
-                }
                 if (actualShift === 3 && actualShiftSelection === 1) {
                     return;
                 }
