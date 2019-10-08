@@ -54,6 +54,7 @@ class Pagination extends React.Component {
     }
 
     onSelect(e) {
+        this.props.clearExpanded();
         //Get the correct date and shift of the application.
         let actualDate = moment().tz(this.state.timezone);
         let actualShift = this.getActualShiftFromActualDate();

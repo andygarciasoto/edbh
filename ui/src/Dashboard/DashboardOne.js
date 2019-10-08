@@ -96,6 +96,7 @@ class DashboardOne extends React.Component {
     this.changeLanguage = this.changeLanguage.bind(this);
     this.handleTableCellClick = handleTableCellClick.bind(this);
     this.onExpandedChange = this.onExpandedChange.bind(this);
+    this.clearExpanded = this.clearExpanded.bind(this);
     this.openAfter = this.openAfter.bind(this);
     this.headerData = this.headerData.bind(this);
     this.getDashboardData = this.getDashboardData.bind(this);
@@ -636,7 +637,7 @@ class DashboardOne extends React.Component {
         var tz = res[0].CommonParameters.value;
         var est = moment().tz(tz).hours();
         if (minutes > 6 && localStorage.getItem("currentHour")){
-          if(localStorage.getItem("currentHour") != est){
+          if(localStorage.getItem("currentHour") !== est){
             localStorage.removeItem("signoff");
             localStorage.removeItem("currentHour");
           }
@@ -701,6 +702,12 @@ class DashboardOne extends React.Component {
     });
   }
 
+  clearExpanded() {
+    this.setState({
+      expanded: {}
+    });
+  }
+
   openAfter(e) {
     this.setState({
       modal_values_IsOpen: false,
@@ -745,8 +752,10 @@ class DashboardOne extends React.Component {
           history={this.props.history}
           search={this.props.search}
           sendMenuToggle={this.menuToggle}
+          clearExpanded={this.clearExpanded}
         />
-        {isComponentValid(this.props.user.role, 'pagination') ? <Pagination
+        {isComponentValid(this.props.user.role, 'pagination') ? 
+        <Pagination
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
           selectedMachine={this.state.selectedMachine}
@@ -754,6 +763,7 @@ class DashboardOne extends React.Component {
           t={t}
           history={this.props.history}
           search={this.props.search}
+          clearExpanded={this.clearExpanded}
         /> : null}
         <div className="wrapper-main">
           <Row>
@@ -764,8 +774,9 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
-                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'):
-                   moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
+                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? 
+                  moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL'):
+                  moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}

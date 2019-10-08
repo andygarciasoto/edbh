@@ -91,11 +91,13 @@ class Header extends React.Component {
                                         value={this.state.machineValue} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
-                                        value={this.state.dateValue} />
+                                        value={this.state.dateValue}
+                                         />
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={t}
-                                        value={this.state.shiftValue} />
+                                        value={this.state.shiftValue} 
+                                        />
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.languageValue} />
@@ -110,6 +112,7 @@ class Header extends React.Component {
                                         search={this.props.search}
                                         history={this.props.history}
                                         t={t}
+                                        clearExpanded={this.props.clearExpanded}
                                     />
                                 </MegaMenu>
                             </span>

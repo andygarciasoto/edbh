@@ -31,6 +31,7 @@ class QueryButton extends React.Component {
     }
 
     async onSubmit() {
+        this.props.clearExpanded();
         let { search } = this.props;
         let queryItem = Object.assign({}, search);
         queryItem["mc"] = this.state.machine;

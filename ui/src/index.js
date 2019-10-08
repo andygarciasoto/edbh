@@ -77,7 +77,7 @@ function init() {
     }, function (error) {
         // Redirect to login on 401 status code
         if (error.response && error.response.status === 401) {
-            const loginUrl = configuration['root'] + "/login";
+            const loginUrl = configuration['root'];
             // Redirect to login
             window.location.replace(loginUrl);
             return;
