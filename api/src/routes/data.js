@@ -211,9 +211,9 @@ router.get('/intershift_communication', async function (req, res) {
     const asset_code = req.query.mc;
     const production_day = req.query.dt;
     const shift_code = req.query.sf;
-    if (asset_code == undefined || production_day == undefined || shift_code == undefined)
+    if (asset_code == undefined || production_day == undefined || shift_code == undefined){
         return res.status(400).send("Bad Request - Missing parameters");
-
+    }
     sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
         (err, response) => {
             if (err) {
@@ -308,7 +308,8 @@ router.get('/timelost_reasons', async function (req, res) {
     }
     if (req.query.mc !== 'No Data'){    
     const machine = req.query.mc;
-    sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${machine};`, (err, response) => {
+    console.log("the machine: " ,machine);
+    sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason '${machine}';`, (err, response) => {
         if (err) {
             console.log(err);
             res.status(500).send({ message: 'Error', database_error: err });

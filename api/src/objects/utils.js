@@ -120,19 +120,26 @@ function createUnallocatedTime(obj) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
-        var totalTime = item.summary_breakandlunch_minutes ? 60 - item.summary_breakandlunch_minutes : 60;
+        var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
+        var totalTime = lunch_setup ? 60 - lunch_setup : 60;
+        if (totalTime < 0){
+            totalTime = 0;
+        }
+        if (lunch_setup > 60){
+            lunch_setup = 60;
+        }
         var newIdeal = 0;
         var minutes = moment().minutes();
 
         if ((item.production_id === '') || item.production_id === undefined){
-            item['unallocated_time'] = totalTime;
+            item['unallocated_time'] = totalTime + lunch_setup;
         } 
         else if (item.summary_actual >= item.summary_ideal) {
             item['unallocated_time'] = 0;
         }
         else if (base === current){
-            if (minutes > item.summary_breakandlunch_minutes){
-                newIdeal = item.summary_ideal * ((minutes - item.summary_breakandlunch_minutes)/(totalTime));
+            if (minutes > lunch_setup){
+                newIdeal = item.summary_ideal * ((minutes - lunch_setup)/(totalTime));
                 if (item.summary_actual < newIdeal){
                 var idealTimeForPart = totalTime/item.summary_ideal;
                 var minimumTime = newIdeal * idealTimeForPart;
@@ -147,14 +154,14 @@ function createUnallocatedTime(obj) {
         }
         else {
             if (item.summary_actual === 0){
-                item['unallocated_time'] = totalTime;    
+                item['unallocated_time'] = totalTime + lunch_setup;    
             }else{
                 var idealTimeForPart = totalTime/item.summary_ideal;
                 var actualTimeForPart = item.summary_actual * idealTimeForPart;
                 item['unallocated_time'] = Math.round(totalTime - actualTimeForPart);
         }
     }
-        item['allocated_time'] = item['unallocated_time'] - /*(item.summary_setup_minutes + item.summary_breakandlunch_minutes +*/ item.timelost_summary;
+        item['allocated_time'] = item['unallocated_time'] - (lunch_setup + item.timelost_summary);
         if (item['allocated_time'] < 0){
             item['allocated_time'] = 0;
         }
