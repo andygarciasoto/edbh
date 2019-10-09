@@ -118,6 +118,7 @@ function structureMachines(obj) {
 
 function createUnallocatedTime(obj) {
     obj.map((item, index) => {
+        console.log(item);
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
@@ -135,7 +136,7 @@ function createUnallocatedTime(obj) {
             item['unallocated_time'] = totalTime + lunch_setup;
         } 
         else if (item.summary_actual >= item.summary_ideal) {
-            item['unallocated_time'] = 0;
+            item['unallocated_time'] = lunch_setup;
         }
         else if (base === current){
             if (minutes > lunch_setup){
@@ -144,12 +145,12 @@ function createUnallocatedTime(obj) {
                 var idealTimeForPart = totalTime/item.summary_ideal;
                 var minimumTime = newIdeal * idealTimeForPart;
                 var actualTimeForPart = item.summary_actual * idealTimeForPart;
-                item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
+                item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart) + lunch_setup;
                 }else{
-                    item['unallocated_time'] = 0;
+                    item['unallocated_time'] = lunch_setup;
                 }
             }else{
-                item['unallocated_time'] = 0;
+                item['unallocated_time'] = lunch_setup;
             }
         }
         else {
@@ -158,12 +159,15 @@ function createUnallocatedTime(obj) {
             }else{
                 var idealTimeForPart = totalTime/item.summary_ideal;
                 var actualTimeForPart = item.summary_actual * idealTimeForPart;
-                item['unallocated_time'] = Math.round(totalTime - actualTimeForPart);
+                item['unallocated_time'] = Math.round(totalTime - actualTimeForPart) + lunch_setup;
         }
     }
         item['allocated_time'] = item['unallocated_time'] - (lunch_setup + item.timelost_summary);
         if (item['allocated_time'] < 0){
             item['allocated_time'] = 0;
+        }
+        if (item['unallocated_time'] > 60){
+            item['unallocated_time'] = 60;
         }
     })
     return obj;
