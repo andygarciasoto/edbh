@@ -13,7 +13,7 @@ import * as qs from 'query-string';
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  const machine = sessionStorage.getItem('machine_name');
+  const machine = localStorage.getItem('machine_name');
   return (
     <Router>
       <Helmet>

@@ -75,7 +75,7 @@ class DashboardOne extends React.Component {
       dataCall: {},
       selectedDate: props.search.dt || getCurrentTime(),
       selectedDateParsed: '',
-      selectedMachine: props.search.mc || config['machine'],
+      selectedMachine: props.search.mc,
       selectedMachineType: props.search.tp || config['machineType'],
       station: props.search.st || '00000',
       currentLanguage: props.search.ln || config['language'],
@@ -321,7 +321,7 @@ class DashboardOne extends React.Component {
     const machineAsset = this.props.defaultAsset;
     getStationAsset(machineAsset).then(a => {
       this.setState({
-      selectedMachine: a.asset_code !== 'No Data' ? a.asset_code : config['machine'],
+      selectedMachine: a.asset_code || 'No Data',
       selectedMachineType:  a.asset_code !== 'No Data' ? a.automation_level : config['machineType'],
       station: machineAsset || config['station']
       })
@@ -349,7 +349,7 @@ class DashboardOne extends React.Component {
     let _this = this;
     this.setState({
       selectedDate: nextProps.search.dt || getCurrentTime(),
-      selectedMachine: nextProps.search.mc || config['machine'],
+      selectedMachine: nextProps.search.mc,
       currentLanguage: nextProps.search.ln || config['language'],
       selectedShift: nextProps.search.sf || shiftByHour,
       selectedMachineType: nextProps.search.tp || config['machineType'], // @dev

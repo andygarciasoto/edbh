@@ -16,7 +16,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/login') {
     let url = window.location.search;
     let params = queryString.parse(url);
     const machineName = params.st;
-    sessionStorage.setItem('machine_name', machineName);
+    localStorage.setItem('machine_name', machineName);
     ReactDOM.render(
         <App defaultAsset={machineName} />
         , document.getElementById('root'));

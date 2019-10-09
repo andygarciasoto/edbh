@@ -64,12 +64,12 @@ class Header extends React.Component {
     }
 
     signOut() {
-        localStorage.setItem('accessToken', undefined);
+        // localStorage.setItem('accessToken', undefined);
     }
 
     render() {
         const t = this.props.t;
-        const station = sessionStorage.getItem('machine_name');
+        const station = localStorage.getItem('machine_name');
         const loginUrl = `/?st=${station}`
         return (
             <nav className="navbar">
