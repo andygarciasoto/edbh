@@ -76,10 +76,13 @@ function init() {
         return response;
     }, function (error) {
         // Redirect to login on 401 status code
+        const station = localStorage.getItem('machine_name');
+        console.log(station);
         if (error.response && error.response.status === 401) {
-            const loginUrl = configuration['root'];
+            const loginUrl = configuration['root'] + `?st=${station}`;
             // Redirect to login
             window.location.replace(loginUrl);
+            localStorage.setItem('machine_name', undefined);
             return;
         }
         return Promise.reject(error);

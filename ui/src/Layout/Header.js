@@ -8,7 +8,6 @@ import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
 import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
-import config from '../config.json';
 import QueryButton from './QueryButton';
 import { isComponentValid } from '../Utils/Requests';
 import { Link } from 'react-router-dom';
@@ -65,20 +64,20 @@ class Header extends React.Component {
     }
 
     signOut() {
-        sessionStorage.setItem('machine_name', undefined);
-        localStorage.setItem('machine_name', undefined);
         localStorage.setItem('accessToken', undefined);
     }
 
     render() {
         const t = this.props.t;
+        const station = sessionStorage.getItem('machine_name');
+        const loginUrl = `/?st=${station}`
         return (
             <nav className="navbar">
                 <Row className={'row'}>
                     <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo" /></Col>
                     <Col className={'col'} md={9} lg={9}>
                         <div className="links header-side">
-                            <span className="header-item header-elem" href="#" id="log-out" onClick={this.signOut}><Link to="/">{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
+                            <span className="header-item header-elem" href="#" id="log-out" onClick={this.signOut}><Link to={loginUrl}>{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
                             {isComponentValid(this.props.user.role, 'megamenu') ? 
                             <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
                                 <FontAwesome
