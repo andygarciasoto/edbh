@@ -82,7 +82,6 @@ function init() {
             const loginUrl = configuration['root'] + `?st=${station}`;
             // Redirect to login
             window.location.replace(loginUrl);
-            localStorage.setItem('machine_name', undefined);
             return;
         }
         return Promise.reject(error);
