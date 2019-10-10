@@ -75,7 +75,7 @@ class DashboardOne extends React.Component {
       dataCall: {},
       selectedDate: props.search.dt || getCurrentTime(),
       selectedDateParsed: '',
-      selectedMachine: '',
+      selectedMachine: props.search.mc,
       selectedMachineType: props.search.tp,
       station: props.search.st || '00000',
       currentLanguage: props.search.ln || config['language'],
@@ -623,6 +623,7 @@ class DashboardOne extends React.Component {
           parameter_code: 'Eaton_Config_Timezone'
       }
   }
+  console.log(data);
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
     if (config['first_signoff_reminder'].includes(logoffHour)) {

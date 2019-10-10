@@ -54,7 +54,6 @@ const ioServer = io();
 ioServer.on('connection', function(socket){
   setInterval(
     function() {
-      //ioServer.emit('message', {id: 1, message: true})
       ioServer.to(`${socket.id}`).emit('message', {id: `${socket.id}`, message: true})
     }, config['socket_timeout'])
   })

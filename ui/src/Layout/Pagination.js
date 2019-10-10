@@ -1,6 +1,5 @@
 
 import React from 'react';
-import i18next from 'i18next';
 import FontAwesome from 'react-fontawesome';
 import { mapShift, formatDate, getCurrentTime, mapShiftReverse } from '../Utils/Requests';
 import Tooltip from 'react-tooltip'
@@ -157,7 +156,6 @@ class Pagination extends React.Component {
                 if (diffDays < -1) {
                     return;
                 }
-
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
             queryItem["sf"] = mapShiftReverse(newShift);
             queryItem["hr"] = newHour;

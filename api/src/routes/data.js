@@ -15,7 +15,7 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-/*router.use(function (err, req, res, next) {
+router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -56,7 +56,6 @@ router.use(function (req, res, next) {
         });
     }
 });
-*/
 
 function responsePostPut(response, req, res) {
     try {
@@ -682,11 +681,11 @@ router.put('/production_data', async function (req, res) {
     const row_timestamp = req.body.row_timestamp;
 
     if (actual === undefined) {
-        return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
+        return res.status(400).json({ message: "Bad Request - Missing actual parameter - Actual Undefined" });
     }
     if (!clocknumber) {
         if (!(first_name || last_name)) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+            return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
         }
     }
 
