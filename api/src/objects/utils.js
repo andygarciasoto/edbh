@@ -118,7 +118,6 @@ function structureMachines(obj) {
 
 function createUnallocatedTime(obj) {
     obj.map((item, index) => {
-        console.log(item);
         var base = moment(item.hour_interval_start).hours();
         var current = moment().tz("America/New_York").hours();
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;

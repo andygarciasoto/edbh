@@ -91,8 +91,14 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) return res.status(400).send("Missing parameters");
+    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) {
+        return res.status(400).send("Missing parameters");
+    }
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
+    if (!params.hr){
+        params.hr = moment(params.dt).hours();
+    }
+    params.sf = params.hr;
     function structureShiftdata(query) {
         try {
             const response = JSON.parse(Object.values(query)[0].Shift_Data);
@@ -674,7 +680,6 @@ router.put('/production_data', async function (req, res) {
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
 
-    console.log("datos: " ,dxh_data_id, actual, clocknumber, timestamp, override, asset_code, row_timestamp );
     if (actual === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing actual parameter" });
     }
