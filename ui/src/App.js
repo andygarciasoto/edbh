@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import './sass/App.scss';
 import Spinner from './Spinner';
 import SignIn from './SignIn';
@@ -8,14 +8,12 @@ import DashboardOne from './Dashboard/DashboardOne';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { getStationAsset } from './Utils/Requests';
 import * as qs from 'query-string';
-import $ from 'jquery';
 
 function App(propsApp) {
   // set default machine and type
   const { t } = useTranslation();
-  const machine = sessionStorage.getItem('machine_name');
+  const machine = localStorage.getItem('machine_name');
   return (
     <Router>
       <Helmet>
