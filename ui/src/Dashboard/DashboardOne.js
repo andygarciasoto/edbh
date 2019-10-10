@@ -86,7 +86,8 @@ class DashboardOne extends React.Component {
       openDropdownAfter: false,
       selectedShift: props.search.sf || shiftByHour,
       dateFromData: false,
-      timezone: config['timezone']
+      timezone: config['timezone'],
+      currentHour: hour
     }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -768,6 +769,7 @@ class DashboardOne extends React.Component {
           history={this.props.history}
           search={this.props.search}
           clearExpanded={this.clearExpanded}
+          currentHour={this.state.currentHour}
         /> : null}
         <div className="wrapper-main">
           <Row>
