@@ -12,6 +12,7 @@ async function getRequestData(data) {
       mc: data[0],
       dt: formatDate(data[1]).split("-").join(""),
       sf: mapShift(data[2]),
+      hr: data[3]
     }
   }
   res = await axios.get(`${API}/data`, parameters);

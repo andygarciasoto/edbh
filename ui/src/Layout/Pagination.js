@@ -123,12 +123,11 @@ class Pagination extends React.Component {
             return;
         }
         if (e === 'next') {
-            newDate = moment(currentDate);
+            newDate = moment().tz(this.state.timezone);
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
             const newShift = mapShiftReverse(currentShift + 1);
             queryItem["sf"] = newShift;
-            newHour = mapShift(newShift) === 3 ? config.shifts.third : newShift === 2 ? config.shifts.second : config.shifts.first;
-            console.log(mapShift(newShift), newHour);
+            newHour = mapShift(newShift) === 3 ? config.shifts.third : mapShift(newShift) === 2 ? config.shifts.second : config.shifts.first;
             queryItem["hr"] = newHour;
             this.setState({current_hour: newHour})
             let parameters = $.param(queryItem);
@@ -139,7 +138,7 @@ class Pagination extends React.Component {
             newDate = moment().tz(this.state.timezone);
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
-            queryItem["hr"] = this.state.current_hour;
+            queryItem["hr"] = this.getShiftHour();
             this.setState({current_hour: queryItem["hr"]})
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
@@ -148,12 +147,14 @@ class Pagination extends React.Component {
         }
 
         if (e === 'double-back') {
-            console.log('db')
             newDate = currentShift <= 2 ? moment(yesterday) : moment(currentDate);
             newShift = currentShift === 3 ? 1 : currentShift === 2 ? 3 : 2;
-            newHour = currentShift === 3 ? config.shifts.first : currentShift === 2 ? config.shifts.third : config.shifts.second;
+            newHour = newShift === 3 ? config.shifts.third : newShift === 2 ? config.shifts.second : config.shifts.first;
             let diffDays = newDate.diff(actualDate, 'days');
                 if (diffDays < -1) {
+                    return;
+                }
+                if (diffDays === -1 && (currentShift === 3)) {
                     return;
                 }
             queryItem["dt"] = newDate.format('YYYY/MM/DD');
