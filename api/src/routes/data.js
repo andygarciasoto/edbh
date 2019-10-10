@@ -15,7 +15,7 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -56,6 +56,7 @@ router.use(function (req, res, next) {
         });
     }
 });
+*/
 
 function responsePostPut(response, req, res) {
     try {
@@ -96,7 +97,7 @@ router.get('/data', async function (req, res) {
     }
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     if (!params.hr){
-        params.hr = moment(params.dt).hours();
+        params.hr = moment().tz(_timezone).hours();
     }
     params.sf = params.hr;
     function structureShiftdata(query) {
@@ -113,7 +114,7 @@ router.get('/data', async function (req, res) {
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
 
-    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${params.sf};`,
+    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${params.sf};`,
         (err, response) => {
             if (err) {
                 console.log(err);
