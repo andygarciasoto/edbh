@@ -75,8 +75,8 @@ class DashboardOne extends React.Component {
       dataCall: {},
       selectedDate: props.search.dt || getCurrentTime(),
       selectedDateParsed: '',
-      selectedMachine: props.search.mc,
-      selectedMachineType: props.search.tp || config['machineType'],
+      selectedMachine: '',
+      selectedMachineType: props.search.tp,
       station: props.search.st || '00000',
       currentLanguage: props.search.ln || config['language'],
       valueToEdit: '',
@@ -213,7 +213,7 @@ class DashboardOne extends React.Component {
     if (type === 'manualentry') {
       if (val) {
         const allowed = isFieldAllowed(this.props.user.role, val.row, true);
-        if (this.state.selectedMachineType === 'Manual' || config['machineType'] === 'Manual') {
+        if (this.state.selectedMachineType === 'Manual') {
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
               modal_values_IsOpen: false,
@@ -309,8 +309,9 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
+        console.log(response, 'new msg')
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen) {
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && this.props.search.mc) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
           } else {
           }
@@ -322,8 +323,8 @@ class DashboardOne extends React.Component {
     getStationAsset(machineAsset).then(a => {
       this.setState({
       selectedMachine: a.asset_code || 'No Data',
-      selectedMachineType:  a.asset_code !== 'No Data' ? a.automation_level : config['machineType'],
-      station: machineAsset || config['station']
+      selectedMachineType:  a.automation_level || 'Automated',
+      station: machineAsset,
       })
       let { search } = this.props;
       let queryItem = Object.assign({}, search);
@@ -337,23 +338,26 @@ class DashboardOne extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    var hour = moment(getCurrentTime()).hours();
-    let shiftByHour;
-    if (hour >= 7 && hour < 15) {
-      shiftByHour = '1st Shift';
-    } else if (hour >= 15 && hour < 23) {
-      shiftByHour = '2nd Shift';
-    } else {
-      shiftByHour = '3rd Shift';
-    };
-    let _this = this;
-    this.setState({
-      selectedDate: nextProps.search.dt || getCurrentTime(),
-      selectedMachine: nextProps.search.mc,
-      currentLanguage: nextProps.search.ln || config['language'],
-      selectedShift: nextProps.search.sf || shiftByHour,
-      selectedMachineType: nextProps.search.tp || config['machineType'], // @dev
-    }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
+    if (!_.isEqual(nextProps.search, this.props.search)) {
+      console.log('wll called', _.isEqual(nextProps.search, this.props.search), nextProps.search)
+      var hour = moment(getCurrentTime()).hours();
+      let shiftByHour;
+      if (hour >= 7 && hour < 15) {
+        shiftByHour = '1st Shift';
+      } else if (hour >= 15 && hour < 23) {
+        shiftByHour = '2nd Shift';
+      } else {
+        shiftByHour = '3rd Shift';
+      };
+      let _this = this;
+      this.setState({
+        selectedDate: nextProps.search.dt || getCurrentTime(),
+        selectedMachine: nextProps.search.mc || this.state.selectedMachine,
+        currentLanguage: nextProps.search.ln || config['language'],
+        selectedShift: nextProps.search.sf || shiftByHour,
+        selectedMachineType: nextProps.search.tp || this.state.selectedMachineType // @dev
+      }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
+    }
   }
 
   changeLanguageBrowser = () => {
@@ -647,7 +651,8 @@ class DashboardOne extends React.Component {
     
     let response = {};
     let comments = {};
-    if (data) {
+
+    if (data && data[0]) {
       response = await getRequestData(data);
     }
     if (response instanceof Object) {
@@ -655,7 +660,7 @@ class DashboardOne extends React.Component {
     } else {
       console.log('Data could not be retrieved from the endpoint /data');
     }
-    if (data) {
+    if (data && data[0]) {
       comments = await getIntershift(data);
     }
     if (comments instanceof Object) {

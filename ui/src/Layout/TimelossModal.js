@@ -76,11 +76,13 @@ class TimelossModal extends React.Component {
 
 
     componentWillMount() {
-        const reasons = getReasons(this.props.machine);
-        reasons.then((res) => this.setState({
-            reasons: res,
-            timelost: this.props.timelost,
-        }))
+        if (this.props.machine) {
+            const reasons = getReasons(this.props.machine);
+            reasons.then((res) => this.setState({
+                reasons: res,
+                timelost: this.props.timelost,
+            }))
+        }
     }
 
     async componentWillReceiveProps(nextProps) {
