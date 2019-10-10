@@ -15,7 +15,7 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -56,7 +56,7 @@ router.use(function (req, res, next) {
         });
     }
 });
-
+*/
 function responsePostPut(response, req, res) {
     try {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
@@ -837,9 +837,14 @@ router.get("/order_assembly", async function (req, res) {
                                     if (flag === false) {
                                         res.status(200).json(response);
                                         flag = true;
+                                        return;
                                     }
                                 }
                             });
+                    }
+                    if (flag === false){
+                        res.status(500).send({ message: 'Order took more time than it should. Please try again or try with a different order.', jtrax_error: error });
+                        return;
                     }
                 });
             } else {
