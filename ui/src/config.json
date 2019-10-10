@@ -1,11 +1,5 @@
 {
-    "station": "CR2080435W1",
-    "machine": "00000",
-    "machineType": "Automated",
-    "user": "Ryan Parker",
-    "role": "supervisor",
     "language": "EN-US",
-    "clockNumber": 12332009,
     "loginPage": "http://localhost:3000/login",
     "root": "http://localhost:3000",
     "api": "http://localhost:8080",
