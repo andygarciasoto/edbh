@@ -15,7 +15,7 @@ var nJwt = require('njwt');
 var _timezone = "America/New_York";
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-/*router.use(function (err, req, res, next) {
+router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -56,7 +56,6 @@ router.use(function (req, res, next) {
         });
     }
 });
-*/
 
 function responsePostPut(response, req, res) {
     try {
