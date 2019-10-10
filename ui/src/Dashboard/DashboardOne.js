@@ -339,7 +339,6 @@ class DashboardOne extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (!_.isEqual(nextProps.search, this.props.search)) {
-      console.log('wll called', _.isEqual(nextProps.search, this.props.search), nextProps.search)
       var hour = moment(getCurrentTime()).hours();
       let shiftByHour;
       if (hour >= 7 && hour < 15) {
