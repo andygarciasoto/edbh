@@ -38,8 +38,8 @@ class Pagination extends React.Component {
     }
 
     getActualShiftFromActualDate() {
-        let getDate = moment().tz(this.state.timezone);
-        let currentHour = moment().tz(this.state.timezone).hours();
+        let getDate = moment();
+        let currentHour = moment().hours();
         let actualDate = moment(moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`));
         let actualShift = 0;
         let firstShift = moment(moment(actualDate).format('YYYY-MM-DD') + ` ${moment(config.shifts.first, 'HH').format('HH:mm')}`);
@@ -56,8 +56,8 @@ class Pagination extends React.Component {
     }
 
     getShiftHour() {
-        let getDate = moment().tz(this.props.timezone || config["timezone"]);
-        let currentHour = moment().tz(this.props.timezone || config["timezone"]).hours();
+        let getDate = moment();
+        let currentHour = moment().hours();
         let actualDate = moment(moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`));
         let actualHour = 0;
         let firstShift = moment(moment(actualDate).format('YYYY-MM-DD') + ` ${moment(config.shifts.first, 'HH').format('HH:mm')}`);
@@ -77,7 +77,7 @@ class Pagination extends React.Component {
     onSelect(e) {
         this.props.clearExpanded();
         //Get the correct date and shift of the application.
-        let actualDate = moment().tz(this.state.timezone);
+        let actualDate = moment();
         let actualShift = this.getActualShiftFromActualDate();
         //Get the actual selection of date and Shift from the UI.
         let actualDateSelection = moment(this.props.selectedDate);
@@ -109,36 +109,36 @@ class Pagination extends React.Component {
             }
         }
        
-        if (moment(currentDate) === moment().tz(this.state.timezone)) {
+        if (moment(currentDate) === moment()) {
             return;
         }
         if (currentShift === 3 && e === 'next') {
             newDate = moment(currentDate).add(1, 'days');
             newShift = 1;
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
+            queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(config.shifts.first, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             queryItem["sf"] = mapShiftReverse(newShift);
-            queryItem["hr"] = config.shifts.first;
+            // queryItem["hr"] = config.shifts.first;
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
             return;
         }
         if (e === 'next') {
-            newDate = moment().tz(this.state.timezone);
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
+            newDate = moment();
             const newShift = mapShiftReverse(currentShift + 1);
             queryItem["sf"] = newShift;
             newHour = mapShift(newShift) === 3 ? config.shifts.third : mapShift(newShift) === 2 ? config.shifts.second : config.shifts.first;
-            queryItem["hr"] = newHour;
+            queryItem["dt"] =  moment(newDate.format('YYYY/MM/DD') + ` ${moment(newHour, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
+            // queryItem["hr"] = newHour;
             this.setState({current_hour: newHour})
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
         }
 
         if (e === 'double-next') {
-            newDate = moment().tz(this.state.timezone);
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
+            newDate = moment();
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
-            queryItem["hr"] = this.getShiftHour();
+            // queryItem["hr"] = this.getShiftHour();
+            queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(this.getShiftHour(), 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             this.setState({current_hour: queryItem["hr"]})
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
@@ -157,9 +157,9 @@ class Pagination extends React.Component {
                 if (diffDays === -1 && (currentShift === 3)) {
                     return;
                 }
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
+            queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(newHour, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             queryItem["sf"] = mapShiftReverse(newShift);
-            queryItem["hr"] = newHour;
+            // queryItem["hr"] = newHour;
             this.setState({current_hour: queryItem["hr"]})
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
@@ -169,8 +169,8 @@ class Pagination extends React.Component {
         if (currentShift === 1 && e === 'back') {
             newDate = moment(yesterday);
             newShift = 3;
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
-            queryItem["hr"] = config.shifts.third;
+            queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(config.shifts.third, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
+            // queryItem["hr"] = config.shifts.third;
             this.setState({current_hour: queryItem["hr"]})
             let diffDays = newDate.diff(actualDate, 'days');
             if (diffDays === -1) {
@@ -198,11 +198,11 @@ class Pagination extends React.Component {
                         return;
                     }
                 }
-
-            queryItem["dt"] = newDate.format('YYYY/MM/DD');
             const newShift = mapShiftReverse(currentShift - 1);
             queryItem["sf"] = newShift;
-            queryItem["hr"] = mapShift(newShift) === 2 ? config.shifts.second : config.shifts.first;
+            queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(mapShift(newShift) === 2 ? 
+                config.shifts.second : config.shifts.first, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
+            // queryItem["hr"] = mapShift(newShift) === 2 ? config.shifts.second : config.shifts.first;
             this.setState({current_hour: queryItem["hr"]})
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);

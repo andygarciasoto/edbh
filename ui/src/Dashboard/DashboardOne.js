@@ -214,7 +214,7 @@ class DashboardOne extends React.Component {
     }
     if (type === 'manualentry') {
       if (val) {
-        const allowed = isFieldAllowed(this.props.user.role, val.row, true);
+        const allowed = isFieldAllowed(this.props.user.role, val.row);
         if (this.state.selectedMachineType === 'Manual') {
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
@@ -378,7 +378,6 @@ class DashboardOne extends React.Component {
         resizable: false,
         sortable: false,
         Aggregated: cellInfo => {
-          // cellInfo.subRows.length > 1 ? 
           const needsExpander =
             cellInfo.subRows && cellInfo.subRows.length > 1 ? true : false;
           const expanderEnabled = !cellInfo.column.disableExpander;

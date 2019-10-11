@@ -156,7 +156,10 @@ function formatDateWithCurrentTime(date) {
 }
 
 function getCurrentTime(timezone) {
-  return moment().tz(timezone || config["timezone"]).format('YYYY-MM-DD HH:mm:ss');
+  if (timezone) {
+    return moment().tz(timezone).format('YYYY-MM-DD HH:mm:ss');
+  }
+  return moment().format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function timelossGetReasons(machine) {
@@ -288,7 +291,7 @@ function isFieldAllowed(role, row, timezone) {
     return true;
   }
   let rowTime = moment(row._subRows[0]._original.hour_interval_start);
-  let actualSiteTime = moment().tz(config['timezone']);
+  let actualSiteTime = timezone ? moment().tz(timezone) : moment();
   let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
   let result;
   if (role === 'Operator' || role === 'Supervisor') {
