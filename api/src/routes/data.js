@@ -194,7 +194,7 @@ router.get('/me', async function (req, res) {
 });
 
 router.get('/shifts', async function (req, res) {
-    const query = "select * From [dbo].[Shift] Where status = 'Active' order by shift_sequence;";
+    const query = "select shift_code, shift_name, shift_sequence, datepart(hour, start_time) as hour From [dbo].[Shift] Where status = 'Active' order by shift_sequence;";
     try {
         await sqlQuery(query,
             (err, response) => {
