@@ -2,6 +2,8 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getCurrentTimeOnly, getCurrentTime } from '../Utils/Requests';
+import moment from 'moment';
 import './DatePicker.scss';
 
 class DatePickerCustom extends React.Component {
@@ -18,7 +20,9 @@ class DatePickerCustom extends React.Component {
     }
 
     handleChange(date) {
-        this.props.collectInput(date, 'dateValue');
+        const time = this.props.search.dt ? moment(this.props.search.dt).format('HH:mm') : undefined;
+        const newDate = moment(moment(date).format('YYYY/MM/DD') + ' ' + (time ? time : getCurrentTimeOnly()));
+        this.props.collectInput(new Date(newDate), 'dateValue');
     }
 
     render() {

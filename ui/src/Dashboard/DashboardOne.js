@@ -87,6 +87,7 @@ class DashboardOne extends React.Component {
       selectedShift: props.search.sf || shiftByHour,
       selectedHour: props.search.hr,
       dateFromData: false,
+      shifts: {},
       timezone: config['timezone'],
       currentHour: hour
     }
@@ -284,8 +285,13 @@ class DashboardOne extends React.Component {
   }
 
   async componentDidMount() {
-    const timezone = await getRequest('/common_parameters', {params: {parameter_code: 'Eaton_Config_Timezone'}});
-    this.setState({timezone: timezone[0].CommonParameters.value})
+    const shifts = getRequest('/shifts');
+    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
+    const params = await getRequest('/common_parameters', {params: {parameter_code: 'Eaton_Config_Timezone'}});
+    this.setState({
+      timezone: params[0].CommonParameters.value,
+      commonParams: params[0].CommonParameters
+    })
     let currentLanguage = this.state.currentLanguage.toLowerCase();
     currentLanguage = currentLanguage.replace('-', '_')
     i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
@@ -619,11 +625,6 @@ class DashboardOne extends React.Component {
   }
 
   async getDashboardData(data, columns) {
-    const parameter = {
-      params: {
-          parameter_code: 'Eaton_Config_Timezone'
-      }
-  }
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
     if (config['first_signoff_reminder'].includes(logoffHour)) {
@@ -636,20 +637,14 @@ class DashboardOne extends React.Component {
         this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
       }
     }
-    const resp = getRequest('/common_parameters', parameter);
-    resp.then((res) => {
-      if (res) {
-        var tz = res[0].CommonParameters.value;
-        var est = moment().tz(tz).hours();
-        if (minutes > 6 && localStorage.getItem("currentHour")){
-          if(localStorage.getItem("currentHour") !== est){
-            localStorage.removeItem("signoff");
-            localStorage.removeItem("currentHour");
-          }
-        }
+    var tz = this.state.commonParams.value
+    var est = moment().tz(tz).hours();
+    if (minutes > 6 && localStorage.getItem("currentHour")){
+      if(localStorage.getItem("currentHour") !== est){
+        localStorage.removeItem("signoff");
+        localStorage.removeItem("currentHour");
       }
-    })
-    
+    }
     let response = {};
     let comments = {};
 
@@ -731,7 +726,6 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
-    console.log(this.state)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
@@ -748,6 +742,7 @@ class DashboardOne extends React.Component {
       <React.Fragment>
         <Header className="app-header"
           t={t}
+          commonParams={this.state.commonParams}
           selectedMachine={this.state.selectedMachine}
           machineType={this.state.selectedMachineType}
           selectedDate={this.state.selectedDate}
@@ -760,8 +755,9 @@ class DashboardOne extends React.Component {
           search={this.props.search}
           sendMenuToggle={this.menuToggle}
           clearExpanded={this.clearExpanded}
+          shifts={this.state.shifts}
         />
-        {isComponentValid(this.props.user.role, 'pagination') ? 
+        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) ? 
         <Pagination
           selectedShift={this.state.selectedShift}
           selectedDate={this.state.selectedDate}
@@ -772,6 +768,7 @@ class DashboardOne extends React.Component {
           search={this.props.search}
           clearExpanded={this.clearExpanded}
           currentHour={this.state.currentHour}
+          shifts={this.state.shifts}
         /> : null}
         <div className="wrapper-main">
           <Row>

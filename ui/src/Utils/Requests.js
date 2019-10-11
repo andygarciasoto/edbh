@@ -162,6 +162,13 @@ function getCurrentTime(timezone) {
   return moment().format('YYYY/MM/DD HH:mm');
 }
 
+function getCurrentTimeOnly(timezone) {
+  if (timezone) {
+    return moment().tz(timezone).format('HH:mm');
+  }
+  return moment().format('HH:mm');
+}
+
 async function timelossGetReasons(machine) {
   const parameters = {
     params: {
@@ -348,5 +355,6 @@ export {
   getUOMS,
   getProducts,
   formatNumber,
-  getStationAsset
+  getStationAsset,
+  getCurrentTimeOnly
 }

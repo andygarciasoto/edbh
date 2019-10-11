@@ -21,7 +21,7 @@ class Header extends React.Component {
             megaMenuToggle: 'dropdown-content',
             machineValue: props.selectedMachine || props.t('Select Machine'),
             machineType: props.machineType,
-            dateValue: new Date(moment(props.selectedDate).format('YYYY/MM/DD')),
+            dateValue: new Date(moment(props.selectedDate).format('YYYY/MM/DD HH:mm')),
             shiftValue: props.selectedShift || props.t('Select Shift'),
             languageValue: props.selectedLanguage || props.t('Select Language'),
             newOrder_value: ''
@@ -53,7 +53,7 @@ class Header extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
-            dateValue: new Date(new Date(moment(nextProps.selectedDate).format('YYYY/MM/DD'))),
+            dateValue: new Date(new Date(moment(nextProps.selectedDate).format('YYYY/MM/DD HH:mm'))),
             shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
             languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
             machineType: nextProps.machineType
@@ -92,11 +92,15 @@ class Header extends React.Component {
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.dateValue}
+                                        search={this.props.search}
                                          />
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={t}
-                                        value={this.state.shiftValue} 
+                                        value={this.state.shiftValue}
+                                        date={this.state.dateValue}
+                                        commonParams={this.props.commonParams}
+                                        shifts={this.props.shifts}
                                         />
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}

@@ -1,8 +1,10 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import { getRequest } from '../Utils/Requests';
+import { getRequest, mapShift } from '../Utils/Requests';
+import moment from 'moment';
 import './ShiftPicker.scss';
+import _ from 'lodash';
 
 class ShiftPickerCustom extends React.Component {
   constructor(props) {
@@ -15,15 +17,33 @@ class ShiftPickerCustom extends React.Component {
   }
 
   componentDidMount() {
-    const shifts = getRequest('/shifts');
-    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
+    // const shifts = getRequest('/shifts');
+    // console.log(this.props.shifts)
+    // shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ value: nextProps.value })
+    this.setState({ 
+      value: nextProps.value,
+      shifts: nextProps.shifts 
+    })
   }
 
   onSelect(e) {
+    let hour = '';
+    const date = this.props.date;
+    const shifts = _.orderBy(this.state.shifts, 'shift_code');
+    if (mapShift(e) === 1) {
+      hour = `${moment(shifts[0].hour, 'HH').format('HH:mm')}`;
+    }
+    if (mapShift(e) === 2) {
+      hour = `${moment(shifts[1].hour, 'HH').format('HH:mm')}`;
+    }
+    if (mapShift(e) === 3) {
+      hour = `${moment(shifts[2].hour, 'HH').format('HH:mm')}`;
+    }
+    const newDate = moment(moment(date).format('YYYY/MM/DD') + ' ' + hour);
+    this.props.collectInput(new Date(newDate), 'dateValue');
     this.props.collectInput(e, 'shiftValue');
   }
 

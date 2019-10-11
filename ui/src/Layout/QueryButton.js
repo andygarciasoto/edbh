@@ -31,11 +31,12 @@ class QueryButton extends React.Component {
     }
 
     async onSubmit() {
+        console.log( moment(this.state.date).format('YYYY/MM/DD HH:mm'))
         this.props.clearExpanded();
         let { search } = this.props;
         let queryItem = Object.assign({}, search);
         queryItem["mc"] = this.state.machine;
-        queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD');
+        queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD HH:mm');
         queryItem["sf"] = this.state.shift;
         queryItem["ln"] = this.state.language;
         queryItem["tp"] = this.state.machine_type;
