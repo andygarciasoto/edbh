@@ -304,7 +304,7 @@ class DashboardOne extends React.Component {
     };
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
     this.setState({ modalStyle, selectedDateParsed: x })
-    this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, moment(this.state.selectedDate).hours()]);
+    this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
 
     const socket = openSocket.connect(SOCKET);
     socket.on('connect', () => console.log('Connected to the Websocket Service'));
@@ -314,7 +314,7 @@ class DashboardOne extends React.Component {
         console.log(response, 'new msg')
         if (response.message === true) {
           if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && this.props.search.mc) {
-            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, moment(this.state.selectedDate).hours()]);
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
           } else {
           }
         }
@@ -358,7 +358,7 @@ class DashboardOne extends React.Component {
         selectedShift: nextProps.search.sf || shiftByHour,
         selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
         selectedHour: nextProps.search.hr,
-      }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift, _this.state.selectedHour]) });
+      }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
     }
   }
 
@@ -685,19 +685,19 @@ class DashboardOne extends React.Component {
   changeDate(e) {
     let _this = this;
     const date = e;
-    const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD');
+    const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD HH:ss');
     this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
   }
 
   changeMachine(e) {
     let _this = this;
-    this.setState({ selectedMachine: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift, _this.state.selectedHour]); });
+    this.setState({ selectedMachine: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
   }
 
   changeLanguage(e) {
     e = e.split('_')[0]
     const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-    let parsedDate = moment(date).locale(e).format('YYYY-MM-DD');
+    let parsedDate = moment(date).locale(e).format('YYYY/MM/DD HH:ss');
     this.setState({ selectedDateParsed: parsedDate })
     this.fetchData();
   }
@@ -724,13 +724,14 @@ class DashboardOne extends React.Component {
 
   headerData(e) {
     let _this = this;
-    this.setState({ selectedShift: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift, _this.state.selectedHour]); });
+    this.setState({ selectedShift: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
   }
 
   render() {
     const columns = this.state.columns;
     const machine = this.state.selectedMachine;
     const data = this.state.data;
+    console.log(this.state)
     // @DEV: *****************************
     // Always assign data to variable then 
     // ternary between data and spinner
