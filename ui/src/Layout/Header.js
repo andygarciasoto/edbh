@@ -8,6 +8,7 @@ import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
 import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
+import moment from 'moment';
 import QueryButton from './QueryButton';
 import { isComponentValid } from '../Utils/Requests';
 import { Link } from 'react-router-dom';
@@ -20,7 +21,7 @@ class Header extends React.Component {
             megaMenuToggle: 'dropdown-content',
             machineValue: props.selectedMachine || props.t('Select Machine'),
             machineType: props.machineType,
-            dateValue: new Date(props.selectedDate),
+            dateValue: new Date(moment(props.selectedDate).format('YYYY/MM/DD')),
             shiftValue: props.selectedShift || props.t('Select Shift'),
             languageValue: props.selectedLanguage || props.t('Select Language'),
             newOrder_value: ''
@@ -52,7 +53,7 @@ class Header extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
-            dateValue: new Date(nextProps.selectedDate),
+            dateValue: new Date(new Date(moment(nextProps.selectedDate).format('YYYY/MM/DD'))),
             shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
             languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
             machineType: nextProps.machineType

@@ -144,22 +144,22 @@ async function getRequestAuth(route, data) {
 }
 
 function formatDate(date) {
-  return moment(date).format('YYYY-MM-DD');
+  return moment(date).format('YYYY/MM/DD HH:mm');
 }
 
 function formatDateWithTime(date) {
-  return moment(date).format('YYYY-MM-DD HH:mm:ss');
+  return moment(date).format('YYYY/MM/DD HH:mm');
 }
 
 function formatDateWithCurrentTime(date) {
-  return formatDate(date) + ' ' + moment().format('HH:mm:ss');
+  return formatDate(date) + ' ' + moment().format('HH:mm');
 }
 
 function getCurrentTime(timezone) {
   if (timezone) {
-    return moment().tz(timezone).format('YYYY-MM-DD HH:mm:ss');
+    return moment().tz(timezone).format('YYYY/MM/DD HH:mm');
   }
-  return moment().format('YYYY-MM-DD HH:mm:ss');
+  return moment().format('YYYY/MM/DD HH:mm');
 }
 
 async function timelossGetReasons(machine) {
