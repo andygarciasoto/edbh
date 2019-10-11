@@ -94,11 +94,8 @@ router.get('/data', async function (req, res) {
     if (params.dt == undefined || params.mc == undefined) {
         return res.status(400).send("Missing parameters");
     }
-    console.log("this is the params.dt " ,params.dt);
     const hour = moment(params.dt).hours();
-    console.log(hour);
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-    console.log(params.dt);
     function structureShiftdata(query) {
         try {
             const response = JSON.parse(Object.values(query)[0].Shift_Data);
