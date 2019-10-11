@@ -91,14 +91,14 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined || params.sf == undefined) {
+    if (params.dt == undefined || params.mc == undefined) {
         return res.status(400).send("Missing parameters");
     }
+    console.log("this is the params.dt " ,params.dt);
+    const hour = moment(params.dt).hours();
+    console.log(hour);
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-    if (!params.hr){
-        params.hr = moment().tz(_timezone).hours();
-    }
-    params.sf = params.hr;
+    console.log(params.dt);
     function structureShiftdata(query) {
         try {
             const response = JSON.parse(Object.values(query)[0].Shift_Data);
@@ -113,7 +113,7 @@ router.get('/data', async function (req, res) {
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
 
-    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${params.sf};`,
+    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${hour};`,
         (err, response) => {
             if (err) {
                 console.log(err);
