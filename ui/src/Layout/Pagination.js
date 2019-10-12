@@ -10,7 +10,6 @@ import config from '../config.json';
 
 class Pagination extends React.Component {
     constructor(props) {
-        console.log('!', props)
         super(props);
         this.state = {
             shift: this.props.selectedShift,
@@ -69,7 +68,6 @@ class Pagination extends React.Component {
 
     getShiftHour() {
         const shifts = this.state.shifts;
-        console.log(this.state)
         let getDate = moment();
         let currentHour = moment().hours();
         let actualDate = moment(moment(getDate).format(`YYYY-MM-DD ${currentHour}:mm`));
@@ -107,6 +105,16 @@ class Pagination extends React.Component {
         let newDate;
         let newShift; 
         let newHour;
+
+        if (actualShift === 2 && actualShiftSelection === 3) {
+            return;
+        }
+        if (actualShift === 3 && actualShiftSelection === 1) {
+            return;
+        }
+        if (actualShift === 1 && actualShiftSelection === 2) {
+            return;
+        }
 
         if (e === 'next') {
             if (actualDate < actualDateSelection) {
@@ -166,9 +174,6 @@ class Pagination extends React.Component {
                 if (diffDays < -1) {
                     return;
                 }
-                if (diffDays === -1 && (currentShift === 3)) {
-                    return;
-                }
             queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(newHour, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             queryItem["sf"] = mapShiftReverse(newShift);
             this.setState({current_hour: queryItem["hr"]})
@@ -182,16 +187,6 @@ class Pagination extends React.Component {
             newShift = 3;
             queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(shifts[2].hour, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             this.setState({current_hour: queryItem["hr"]})
-            let diffDays = newDate.diff(actualDate, 'days');
-            if (diffDays === -1) {
-                if (actualShift === 3 && actualShiftSelection === 1) {
-                    return;
-                }
-            } else {
-                if (diffDays < -1) {
-                    return;
-                }
-            }
             queryItem["sf"] = mapShiftReverse(newShift);
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
@@ -199,15 +194,6 @@ class Pagination extends React.Component {
         }
         if (e === 'back' && (currentShift === 2 || currentShift === 3)) {
             newDate = moment(currentDate);
-            let diffDays = newDate.diff(actualDate, 'days');
-                if (actualShift === 1 && actualShiftSelection === 2) {
-                    return;
-                }
-                if (diffDays === -1) {
-                    if (actualShift === 2 && actualShiftSelection === 3) {
-                        return;
-                    }
-                }
             const newShift = mapShiftReverse(currentShift - 1);
             queryItem["sf"] = newShift;
             queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(mapShift(newShift) === 2 ? 
