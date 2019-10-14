@@ -94,7 +94,7 @@ router.get('/data', async function (req, res) {
     if (params.dt == undefined || params.mc == undefined) {
         return res.status(400).send("Missing parameters");
     }
-    const hour = moment(params.dt).hours();
+    const hour = moment(new Date(params.dt)).hours();
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     function structureShiftdata(query) {
         try {
@@ -123,13 +123,16 @@ router.get('/data', async function (req, res) {
 
 
 router.get('/machine', async function (req, res) {
+    const params = req.query;
+    if (!params.site) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
     function structureMachines(response) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    // const query = "select asset_code From Asset Where asset_level = 'Cell' And status = 'Active' Order by asset_code";
-    const query = "exec spLocal_EY_DxH_Get_Asset 'Cell','All'";
-    sqlQuery(query, (err, response) => {
+    sqlQuery(`exec spLocal_EY_DxH_Get_Asset_Testing 'Cell','All',${params.site};`, 
+        (err, response) => {
         if (err) {
             console.log(err)
             res.status(500).send({ message: 'Error', database_error: err });
@@ -194,20 +197,19 @@ router.get('/me', async function (req, res) {
 });
 
 router.get('/shifts', async function (req, res) {
-    const query = "select shift_code, shift_name, shift_sequence, datepart(hour, start_time) as hour From [dbo].[Shift] Where status = 'Active' order by shift_sequence;";
-    try {
-        await sqlQuery(query,
-            (err, response) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).send({ message: 'Error', database_error: err });
-                    return;
-                }
-                res.status(200).json(response);
-            });
-    } catch (e) {
-        res.status(500).send({ message: 'Error', api_error: e });
+    const site = req.query.site;
+    if (!site){
+        return res.status(400).send("Bad Request - Missing parameters");
     }
+    sqlQuery(`exec sp_getshifts ${site}`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            responseGet(response, req, res, 'GetShiftsBySite');
+        });
 })
 
 router.get('/intershift_communication', async function (req, res) {
@@ -311,7 +313,6 @@ router.get('/timelost_reasons', async function (req, res) {
     }
     if (req.query.mc !== 'No Data'){    
     const machine = req.query.mc;
-    console.log("the machine: " ,machine);
     sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason '${machine}';`, (err, response) => {
         if (err) {
             console.log(err);
