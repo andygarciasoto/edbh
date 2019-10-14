@@ -26,7 +26,6 @@ class Pagination extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
         this.setState({
             date: formatDate(nextProps.selectedDate).split("-").join(""),
             shift: nextProps.selectedShift,
@@ -106,9 +105,6 @@ class Pagination extends React.Component {
         let newDate;
         let newShift; 
         let newHour;
-        console.log(this.props.selectedDate)
-        console.log(actualShift, actualShiftSelection, e, actualDate.days() < actualDateSelection.days(), actualDate.format('YYYYMMDD'), actualDateSelection.format('YYYYMMDD'))
-        console.log(parseInt(actualDate.format('DD')), parseInt(actualDateSelection.format('DD')))
 
         if ((actualShift === 2 && actualShiftSelection === 3) && (e === "back" || e === "double-back")) {
             return;
@@ -149,13 +145,11 @@ class Pagination extends React.Component {
         }
         if (e === 'next') {
             newDate = moment(currentDate);
-            console.log(newDate.format('YYYY-MM-DD'))
             const newShift = mapShiftReverse(currentShift + 1);
             queryItem["sf"] = newShift;
             newHour = mapShift(newShift) === 3 ? shifts[2].hour : mapShift(newShift) === 2 ? shifts[1].hour : shifts[0].hour;
             queryItem["dt"] =  moment(newDate.format('YYYY/MM/DD') + ` ${moment(newHour, 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
             let parameters = $.param(queryItem);
-            console.log(queryItem["dt"])
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
         }
 
@@ -163,7 +157,6 @@ class Pagination extends React.Component {
             newDate = moment();
             queryItem["sf"] = mapShiftReverse(this.getActualShiftFromActualDate());
             queryItem["dt"] = moment(newDate.format('YYYY/MM/DD') + ` ${moment(this.getShiftHour(), 'HH').format('HH:mm')}`).format('YYYY/MM/DD HH:mm');
-            console.log(queryItem["dt"])
             let parameters = $.param(queryItem);
             this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
             this.setState({disabled_fields: false})
