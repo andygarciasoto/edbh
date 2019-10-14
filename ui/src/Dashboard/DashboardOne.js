@@ -292,7 +292,7 @@ class DashboardOne extends React.Component {
   }
     const shifts = getRequest('/shifts', st);
     shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
-    const params = await getRequest('/common_parameters', {params: {parameter_code: 'Eaton_Config_Timezone'}});
+    const params = await getRequest('/common_parameters', {params: {parameter_code: this.props.user.site_name}});
     this.setState({
       timezone: params[0].CommonParameters.value,
       commonParams: params[0].CommonParameters
