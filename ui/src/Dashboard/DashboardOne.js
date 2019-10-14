@@ -444,16 +444,24 @@ class DashboardOne extends React.Component {
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => rows[0]._original.summary_product_code,
-        Aggregated: props => (props.value === '' || props.value === null) ?
-          <span style={{
-            paddingRight: 180,
-            cursor: 'pointer'
-          }}
-            className={'empty-field table-click'}
-            onClick={() => this.openModal('manualentry', props)}></span> :
-          <span className='ideal table-click' onClick={() => this.openModal('manualentry', props)}>
-            <span className="empty">{props.value}</span></span>,
-        PivotValue: <span>{''}</span>
+        Aggregated: function(props) {
+          props = _.sortBy(props, props.subRows.map((item) => item._original.production_day));
+          if (props.value === '' || props.value === null) {
+            return ( <span style={{
+              paddingRight: 180,
+              cursor: 'pointer'
+            }}
+              className={'empty-field table-click'}
+              onClick={() => this.openModal('manualentry', props)}></span>)
+          } else {
+            return (
+              <span className='ideal table-click' onClick={() => this.openModal('manualentry', props)}>
+              <span className="empty">{props.value}</span></span>
+            )
+          }
+         },
+        PivotValue: <span>{''}</span>,
+        // Aggregated: props => _.sortBy(props, props.subRows.map((item) => item._original.production_day))
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
         accessor: 'ideal',
