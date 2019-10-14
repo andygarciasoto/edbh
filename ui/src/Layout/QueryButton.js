@@ -31,7 +31,6 @@ class QueryButton extends React.Component {
     }
 
     async onSubmit() {
-        console.log( moment(this.state.date).format('YYYY/MM/DD HH:mm'))
         this.props.clearExpanded();
         let { search } = this.props;
         let queryItem = Object.assign({}, search);
