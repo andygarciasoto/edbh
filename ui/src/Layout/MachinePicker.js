@@ -15,8 +15,13 @@ class MachinePickerCustom extends React.Component {
     }
 
     componentDidMount() {
+        const userSite = {
+            params: {
+                site: this.props.user.site
+            }
+        }
         const machineArray = [];
-        const machines = getRequest('/machine');
+        const machines = getRequest('/machine', userSite);
         machines.then((machinesObj => { 
             machinesObj ?
             machinesObj.map((item, index) => 

@@ -88,6 +88,7 @@ class Header extends React.Component {
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
                                         t={t}
+                                        user={this.props.user}
                                         value={this.state.machineValue} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}

@@ -100,7 +100,8 @@ function init() {
                 username: json.data[0].Username,
                 password: json.data[0].Password,
                 role: json.data[0].Role,
-                clock_number: json.data[0].Badge
+                clock_number: json.data[0].Badge,
+                site: json.data[0].Site
             }
             ReactDOM.render(
                 <App user={user} defaultAsset={machine} />, document.getElementById('root'));
