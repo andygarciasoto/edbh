@@ -787,6 +787,7 @@ class DashboardOne extends React.Component {
                   {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? 
                   moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL'):
                   moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
+                  {/* {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col> */}
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}
