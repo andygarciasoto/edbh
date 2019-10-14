@@ -637,7 +637,7 @@ class DashboardOne extends React.Component {
         this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
       }
     }
-    var tz = this.state.commonParams.value
+    var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
     var est = moment().tz(tz).hours();
     if (minutes > 6 && localStorage.getItem("currentHour")){
       if(localStorage.getItem("currentHour") !== est){
