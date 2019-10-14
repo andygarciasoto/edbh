@@ -14,5 +14,23 @@
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "https://dxhweb.azurewebsites.net/dashboard",
     "socket_timeout": 90000,
+    "token_expiration": 14400000,
+
+
+    "user": "appUser",
+    "password": "5sHEMk45PEtPqxjv8uk9w5gS",
+    "server": "phc-diviot01-dev-sql.database.windows.net",
+    "database": "FCGFOTF",
+    "cors": ["https://edxhapidev.us.parker.corp", "https://edxhdev.us.parker.corp"],
+    "URL": "https://edxhdev.us.parker.corp",
+    "redirect_uri": "https://edxhapidev.us.parker.corp/auth/token",
+    "app_reg_name": "PHIOTFCGFOTFDev",
+    "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+    "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
+    "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127",
+    "badLogin": "https://edxhdev.us.parker.corp?err=true",
+    "signingKey":"JhbGciOiJSUzI1NiJ9",
+    "loginURL": "https://edxhdev.us.parker.corp/dashboard",
+    "socket_timeout": 90000,
     "token_expiration": 14400000
 }
