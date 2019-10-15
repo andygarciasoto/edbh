@@ -444,16 +444,26 @@ class DashboardOne extends React.Component {
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => rows[0]._original.summary_product_code,
-        Aggregated: props => (props.value === '' || props.value === null) ?
-          <span style={{
-            paddingRight: 180,
-            cursor: 'pointer'
-          }}
-            className={'empty-field table-click'}
-            onClick={() => this.openModal('manualentry', props)}></span> :
-          <span className='ideal table-click' onClick={() => this.openModal('manualentry', props)}>
-            <span className="empty">{props.value}</span></span>,
-        PivotValue: <span>{''}</span>
+        Aggregated: function(props) {
+          let newProps = Object.assign({}, props);
+          let newSubrows = _.orderBy(props.subRows, props.subRows.map((item) => item._original.hour_interval_start));
+          newProps.subRows = newSubrows;
+          if (newProps.value === '' || newProps.value === null) {
+            return ( <span style={{
+              paddingRight: 180,
+              cursor: 'pointer'
+            }}
+              className={'empty-field table-click'}
+              onClick={() => this.openModal('manualentry', newProps)}></span>)
+          } else {
+            return (
+              <span className='ideal table-click' onClick={() => this.openModal('manualentry', newProps)}>
+              <span className="empty">{newProps.value}</span></span>
+            )
+          }
+         },
+        PivotValue: <span>{''}</span>,
+        // Aggregated: props => _.sortBy(props, props.subRows.map((item) => item._original.production_day))
       }, {
         Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
         accessor: 'ideal',
@@ -642,7 +652,7 @@ class DashboardOne extends React.Component {
         this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
       }
     }
-    var tz = this.state.commonParams.value
+    var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
     var est = moment().tz(tz).hours();
     if (minutes > 6 && localStorage.getItem("currentHour")){
       if(localStorage.getItem("currentHour") !== est){
