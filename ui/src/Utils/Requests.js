@@ -1,4 +1,4 @@
-import { API, AUTH } from './Constants';
+import { API, AUTH, DATATOOL } from './Constants';
 import moment from 'moment-timezone';
 import config from '../config.json'
 import _ from 'lodash';
@@ -69,6 +69,19 @@ async function sendPost(data, route) {
 
 async function sendPut(data, route) {
   const res = await axios.put(`${API}${route}`, data)
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  if (res) {
+    return res.status;
+  }
+}
+
+async function sendPutDataTool(data, route) {
+  const res = await axios.put(`${DATATOOL}${route}`, data)
     .then(function (response) {
       return response;
     })
@@ -350,6 +363,7 @@ export {
   sendPost,
   timelossGetReasons,
   sendPut,
+  sendPutDataTool,
   isComponentValid,
   isFieldAllowed,
   getUOMS,
