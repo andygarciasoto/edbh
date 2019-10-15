@@ -4,13 +4,18 @@ import {Row, Col} from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import { Link } from 'react-router-dom';
 import '../Layout/Header.scss';
+import { sendPutDataTool } from '../Utils/Requests';
 import _ from 'lodash';
 
 class Import extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            file: {},
+            message: '',
+        };
         this.onFileChange = this.onFileChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     };
 
     componentDidMount() {
@@ -21,9 +26,22 @@ class Import extends React.Component {
         this["_isMounted"] = false;
     }
 
-    onFileChange(file) {
-        console.log(file)
+    onFileChange(event) {
+        this.setState({file: event.target.files[0]});
     }
+
+    onSubmit() {
+        const response = sendPutDataTool({
+            file: this.state.file
+        }, '/upload')
+        response.then((res) => {
+            if (res !== 200 || !res) {
+                this.setState({message: 'File was uploaded and submitted successfully.'})
+            } else {
+                this.setState({message: 'There was an error submitting your file.'})
+            }
+    })
+}
 
 
 render() {
@@ -46,6 +64,8 @@ render() {
                 <div className="">
                     <div className="">
                         <input type="file" name="Open File" id="" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
+                        <div style={{marginTop: '25px'}}><button>{'Submit'}</button></div>
+                        <div style={{marginTop: ''}}><p>{this.state.message}</p></div>
                     </div>
                 </div>
             </div>
