@@ -53,7 +53,7 @@ class TimelossModal extends React.Component {
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             asset_code: this.props.parentData[0],
             row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
-            timestamp: getCurrentTime()
+            timestamp: getCurrentTime(this.props.timezone)
         }
         this.setState({ modal_loading_IsOpen: true }, () => {
             const response = sendPut(data, '/dt_data');

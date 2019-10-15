@@ -43,25 +43,6 @@ class OrderTwoModal extends React.Component {
     }
 
     submit(e) {
-        // const data = {
-        //     order_number: this.props.data.order_number,
-        //     part_number: this.props.data.order_id,
-        //     part_quantity: this.props.data.order_quantity,
-        // }
-        // this.setState({modal_loading_IsOpen: true}, () => {
-        //     const response = sendPost('/order_data', data)
-        //     response.then((res) => {
-        //         if (!res || res.status !== 200) {
-        //             this.setState({modal_error_IsOpen: true, errorMessage: 'Could not insert in the Jtrax database.'})
-        //         } else {
-        //             this.setState({modal_loading_IsOpen: false})
-        //         }
-        //         this.props.Refresh(this.props.parentData);
-        //         this.setState({value: ''})
-        //         this.closeModal();
-        //     })
-        //     })
-        // this.setState({newValue: ''})
         this.props.Refresh(this.props.parentData);
         this.closeModal();
         this.setState({modal_confirm_IsOpen: true});

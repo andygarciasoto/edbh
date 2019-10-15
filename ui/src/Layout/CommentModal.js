@@ -31,7 +31,7 @@ class CommentsModal extends React.Component {
             comment: this.state.value,
             dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
             row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
-            timestamp: getCurrentTime(),
+            timestamp: getCurrentTime(this.props.timezone),
             asset_code: this.props.parentData[0]
         }, '/dxh_new_comment')
         response.then((res) => {

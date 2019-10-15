@@ -65,7 +65,7 @@ class SignoffModal extends React.Component {
             override: 0,
             asset_code: this.props.parentData[0],
             row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
-            timestamp: getCurrentTime(),
+            timestamp: getCurrentTime(this.props.timezone),
         }
         this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, () => {
             const response = sendPut({
@@ -106,11 +106,6 @@ class SignoffModal extends React.Component {
     }
 
     signOff() {
-        // if (this.props.user.role === 'Supervisor' && this.state.signOffRole === 'operator') {
-        //     this.setState({modal_error_IsOpen: true, errorMessage: 'You cannot sign off as an Operator.', isOpen: false});
-        //     this.props.onRequestClose()
-        //     return;
-        // }
         let rowData = {}
         if (this.props.currentRow) {
             rowData = this.props.currentRow
@@ -125,7 +120,7 @@ class SignoffModal extends React.Component {
                 override: 0,
                 asset_code: this.props.parentData[0],
                 row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
-                timestamp: getCurrentTime(),
+                timestamp: getCurrentTime(this.props.timezone),
             }
             this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
                 const response = sendPut({

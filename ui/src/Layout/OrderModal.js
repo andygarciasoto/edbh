@@ -36,7 +36,7 @@ class OrderModal extends React.Component {
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-                timestamp: getCurrentTime()
+                timestamp: getCurrentTime(this.props.timezone)
             }
         }
         this.setState({ modal_loading_IsOpen: true }, () => {

@@ -56,7 +56,7 @@ class ManualEntryModal extends React.Component {
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-                timestamp: getCurrentTime()
+                timestamp: getCurrentTime(this.props.timezone)
             };
             if (this.state.routed_cycle_time !== '') {
                 data.routed_cycle_time = this.state.routed_cycle_time;
