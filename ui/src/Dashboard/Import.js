@@ -33,7 +33,7 @@ class Import extends React.Component {
     onSubmit() {
         const response = sendPutDataTool({
             file: this.state.file
-        }, '/upload')
+        }, '/import_asset')
         response.then((res) => {
             if (res !== 200 || !res) {
                 this.setState({message: 'File was uploaded and submitted successfully.'})
@@ -64,7 +64,7 @@ render() {
                 <div className="">
                     <div className="">
                         <input type="file" name="Open File" id="" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
-                        <div style={{marginTop: '25px'}}><button>{'Submit'}</button></div>
+                        <div style={{marginTop: '25px'}}><button onClick={this.onSubmit}>{'Submit'}</button></div>
                         <div style={{marginTop: ''}}><p>{this.state.message}</p></div>
                     </div>
                 </div>
