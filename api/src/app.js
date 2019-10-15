@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'body-parser';
 import data from './routes/data';
 import auth from './routes/auth';
+import datatool from './routes/datatool';
 var cors = require('cors');
 import config from  '../config.json';
 const io = require('socket.io');
@@ -44,6 +45,7 @@ app.get("/", function(req, res){
 });
 app.use('/auth', auth);
 app.use('/api', data);
+app.use('/datatool', datatool);
 
 var port = process.env.PORT || 8080;
 var server = app.listen(port);

@@ -1,5 +1,6 @@
 export const API = 'http://localhost:8080/api';
 export const AUTH = 'http://localhost:8080/auth';
+export const DATATOOL = 'http://localhost:8080/datatool'
 export const SOCKET = 'http://localhost:8080';
 
 // sf : shift
