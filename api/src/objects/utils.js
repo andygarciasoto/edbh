@@ -116,10 +116,10 @@ function structureMachines(obj) {
     return JSON.parse(machineStruct);
 }
 
-function createUnallocatedTime(obj) {
+function createUnallocatedTime(obj, tz) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
-        var current = moment().tz("America/New_York").hours();
+        var current = tz;
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
         var totalTime = lunch_setup ? 60 - lunch_setup : 60;
         if (totalTime < 0){

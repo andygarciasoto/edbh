@@ -87,7 +87,7 @@ router.get("/badge", cors(), async function (req, res) {
                     return res.redirect(302, url);
                 } else {
                     var claimsList = {
-                        user: { iss: config['URL'], sub: 'users/' + username, scope: role },
+                        user: { iss: config['URL'], sub: 'users/' + username, scope: role},
                     }
                     var jwt = nJwt.create(claimsList.user, config['signingKey']);
                     jwt.setExpiration(new Date().getTime() + config['token_expiration']);

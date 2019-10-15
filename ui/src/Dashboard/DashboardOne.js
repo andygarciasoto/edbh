@@ -88,7 +88,7 @@ class DashboardOne extends React.Component {
       selectedHour: props.search.hr,
       dateFromData: false,
       shifts: {},
-      timezone: config['timezone'],
+      timezone: this.props.user.timezone,
       currentHour: hour
     }
     this.openModal = this.openModal.bind(this);
