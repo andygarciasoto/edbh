@@ -287,12 +287,12 @@ class DashboardOne extends React.Component {
   async componentDidMount() {
     const st = {
       params: {
-          site: this.props.user.site
+        site: this.props.user.site
       }
-  }
+    }
     const shifts = getRequest('/shifts', st);
     shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
-    const params = await getRequest('/common_parameters', {params: {parameter_code: this.props.user.site_name}});
+    const params = await getRequest('/common_parameters', { params: { parameter_code: this.props.user.site_name } });
     this.setState({
       timezone: params[0].CommonParameters.value,
       commonParams: params[0].CommonParameters
@@ -335,9 +335,9 @@ class DashboardOne extends React.Component {
     const machineAsset = this.props.defaultAsset;
     getStationAsset(machineAsset).then(a => {
       this.setState({
-      selectedMachine: a.asset_code || 'No Data',
-      selectedMachineType:  a.automation_level || 'Automated',
-      station: machineAsset,
+        selectedMachine: a.asset_code || 'No Data',
+        selectedMachineType: a.automation_level || 'Automated',
+        station: machineAsset,
       })
       let { search } = this.props;
       let queryItem = Object.assign({}, search);
@@ -347,7 +347,7 @@ class DashboardOne extends React.Component {
       let parameters = $.param(queryItem);
       this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
     }
-  )
+    )
   };
 
   componentWillReceiveProps(nextProps) {
@@ -381,6 +381,7 @@ class DashboardOne extends React.Component {
 
   async fetchData(data) {
     const t = this.props.t;
+    let _this = this;
     const columns = [
       {
         Header: "",
@@ -444,24 +445,24 @@ class DashboardOne extends React.Component {
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
         aggregate: (values, rows) => rows[0]._original.summary_product_code,
-        Aggregated: function(props) {
+        Aggregated: function (props) {
           let newProps = Object.assign({}, props);
           let newSubrows = _.orderBy(props.subRows, props.subRows.map((item) => item._original.hour_interval_start));
           newProps.subRows = newSubrows;
           if (newProps.value === '' || newProps.value === null) {
-            return ( <span style={{
+            return (<span style={{
               paddingRight: 180,
               cursor: 'pointer'
             }}
               className={'empty-field table-click'}
-              onClick={() => this.openModal('manualentry', newProps)}></span>)
+              onClick={() => _this.openModal('manualentry', newProps)}></span>)
           } else {
             return (
-              <span className='ideal table-click' onClick={() => this.openModal('manualentry', newProps)}>
-              <span className="empty">{newProps.value}</span></span>
+              <span className='ideal table-click' onClick={() => _this.openModal('manualentry', newProps)}>
+                <span className="empty">{newProps.value}</span></span>
             )
           }
-         },
+        },
         PivotValue: <span>{''}</span>,
         // Aggregated: props => _.sortBy(props, props.subRows.map((item) => item._original.production_day))
       }, {
@@ -534,8 +535,8 @@ class DashboardOne extends React.Component {
           textAlign: 'center'
         },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs  !== null ? rows[0]._original.cumulative_target_pcs :
-        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
+        aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs !== null ? rows[0]._original.cumulative_target_pcs :
+          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}></span> :
           <span className='empty'>
@@ -549,8 +550,8 @@ class DashboardOne extends React.Component {
             <span>{''}</span></span>,
         style: { borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center', color: 'white' },
         // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_pcs  !== null ? rows[0]._original.cumulative_pcs :
-        !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
+        aggregate: (values, rows) => rows[0]._original.cumulative_pcs !== null ? rows[0]._original.cumulative_pcs :
+          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
           <span className='ideal'>
             <span>{props.value}</span></span>
@@ -563,8 +564,8 @@ class DashboardOne extends React.Component {
           <span className='ideal'>
             <span className="react-table-click-text table-click">{''}</span></span>,
         style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        aggregate: (values, rows) => moment(getCurrentTime()).isSame(moment(rows[0]._original.hour_interval_start), 'hours') || 
-        !moment(getCurrentTime()).isBefore(moment(rows[0]._original.hour_interval_start), 'hours') ? formatNumber(rows[0]._original.unallocated_time) : null,
+        aggregate: (values, rows) => moment(getCurrentTime()).isSame(moment(rows[0]._original.hour_interval_start), 'hours') ||
+          !moment(getCurrentTime()).isBefore(moment(rows[0]._original.hour_interval_start), 'hours') ? formatNumber(rows[0]._original.unallocated_time) : null,
         Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
           className={'empty-field'}
           onClick={() => this.openModal('dropdown', props)}></span> :
@@ -654,8 +655,8 @@ class DashboardOne extends React.Component {
     }
     var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
     var est = moment().tz(tz).hours();
-    if (minutes > 6 && localStorage.getItem("currentHour")){
-      if(localStorage.getItem("currentHour") !== est){
+    if (minutes > 6 && localStorage.getItem("currentHour")) {
+      if (localStorage.getItem("currentHour") !== est) {
         localStorage.removeItem("signoff");
         localStorage.removeItem("currentHour");
       }
@@ -772,19 +773,19 @@ class DashboardOne extends React.Component {
           clearExpanded={this.clearExpanded}
           shifts={this.state.shifts}
         />
-        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) ? 
-        <Pagination
-          selectedShift={this.state.selectedShift}
-          selectedDate={this.state.selectedDate}
-          selectedMachine={this.state.selectedMachine}
-          timezone={this.state.timezone}
-          t={t}
-          history={this.props.history}
-          search={this.props.search}
-          clearExpanded={this.clearExpanded}
-          currentHour={this.state.currentHour}
-          shifts={this.state.shifts}
-        /> : null}
+        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) ?
+          <Pagination
+            selectedShift={this.state.selectedShift}
+            selectedDate={this.state.selectedDate}
+            selectedMachine={this.state.selectedMachine}
+            timezone={this.state.timezone}
+            t={t}
+            history={this.props.history}
+            search={this.props.search}
+            clearExpanded={this.clearExpanded}
+            currentHour={this.state.currentHour}
+            shifts={this.state.shifts}
+          /> : null}
         <div className="wrapper-main">
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
@@ -794,10 +795,10 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
-                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ? 
-                  moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL'):
-                  moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL'): null}</h5></Col>
-                  {/* {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col> */}
+                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ?
+                    moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL') :
+                    moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
+                {/* {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col> */}
               </Row>
               {!_.isEmpty(data) ? <ReactTable
                 sortable={false}

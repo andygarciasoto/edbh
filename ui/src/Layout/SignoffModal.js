@@ -16,8 +16,8 @@ class SignoffModal extends React.Component {
         super(props);
         this.state = {
             value: '',
-            signoffMessage: props.t(props.message) || 
-                props.t("By clicking 'Accept' you confirm that all the values for this hour are correct."),
+            signoffMessage: props.t(props.message) ||
+                props.t("By clicking 'Accept' you confirm that all the values for this hour are correct"),
             headerMessage: '',
             errorMessage: '',
             row: this.props.dxh_parent || {},
@@ -43,12 +43,13 @@ class SignoffModal extends React.Component {
     }
 
     closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, 
-            modal_loading_IsOpen: false, 
-            modal_error_IsOpen: false, 
-            modal_validate_IsOpen: false 
+        this.setState({
+            modal_confirm_IsOpen: false,
+            modal_loading_IsOpen: false,
+            modal_error_IsOpen: false,
+            modal_validate_IsOpen: false
         });
-            this.props.onRequestClose();
+        this.props.onRequestClose();
     }
 
     signOffSupervisor(number) {
@@ -73,36 +74,39 @@ class SignoffModal extends React.Component {
             }, `/${this.state.signOffRole}_sign_off`)
             response.then((res) => {
                 if (res !== 200 || !res) {
-                    this.setState({ modal_loading_IsOpen: false, 
-                        modal_error_IsOpen: true,  
-                        modal_validate_IsOpen: false, 
-                        errorMessage: 'Invalid Clock Number' })
+                    this.setState({
+                        modal_loading_IsOpen: false,
+                        modal_error_IsOpen: true,
+                        modal_validate_IsOpen: false,
+                        errorMessage: 'Invalid Clock Number'
+                    })
                 } else {
-                    if(data.dxh_data_id === null){
-                        this.setState({modal_loading_IsOpen: true, isOpen: false}, () => {
+                    if (data.dxh_data_id === null) {
+                        this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
                             const resp = sendPut({
                                 ...data
                             }, '/production_data')
                             resp.then((res) => {
                                 if (res !== 200 || !res) {
-                                    this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
+                                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
                                 }
-                                this.setState({actual: ''});
+                                this.setState({ actual: '' });
                                 this.props.Refresh(this.props.parentData);
                                 this.props.onRequestClose();
-                                })
                             })
-                        }
+                        })
                     }
-                    this.setState({ request_status: res, 
-                        modal_loading_IsOpen: false,
-                        modal_confirm_IsOpen: true, 
-                        modal_validate_IsOpen: false 
-                    })
+                }
+                this.setState({
+                    request_status: res,
+                    modal_loading_IsOpen: false,
+                    modal_confirm_IsOpen: true,
+                    modal_validate_IsOpen: false
                 })
-                this.props.Refresh(this.props.parentData);
-                this.props.onRequestClose();
             })
+            this.props.Refresh(this.props.parentData);
+            this.props.onRequestClose();
+        })
     }
 
     signOff() {
@@ -128,50 +132,53 @@ class SignoffModal extends React.Component {
                 }, `/${this.state.signOffRole}_sign_off`)
                 response.then((res) => {
                     if (res !== 200 || !res) {
-                        this.setState({ 
-                            modal_loading_IsOpen: false, 
-                            modal_error_IsOpen: true, 
-                            modal_validate_IsOpen: false})
+                        this.setState({
+                            modal_loading_IsOpen: false,
+                            modal_error_IsOpen: true,
+                            modal_validate_IsOpen: false
+                        })
                     } else {
-                        if(data.dxh_data_id === null){
-                            this.setState({modal_loading_IsOpen: true}, () => {
+                        if (data.dxh_data_id === null) {
+                            this.setState({ modal_loading_IsOpen: true }, () => {
                                 const resp = sendPut({
                                     ...data
                                 }, '/production_data')
                                 resp.then((res) => {
                                     if (res !== 200 || !res) {
-                                        this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
+                                        this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
                                     }
-                                    this.setState({actual: ''});
+                                    this.setState({ actual: '' });
                                     this.props.Refresh(this.props.parentData);
                                     this.props.onRequestClose();
-                        })
-                    })
-                }
+                                })
+                            })
+                        }
                         localStorage.setItem("signoff", false);
                         var currentHour = moment(rowData.hour_interval_start).hours();
                         localStorage.setItem("currentHour", currentHour);
-                        this.setState({ 
-                            request_status: res, 
+                        this.setState({
+                            request_status: res,
                             modal_loading_IsOpen: false,
-                            modal_confirm_IsOpen: true, 
-                            modal_validate_IsOpen: false })
+                            modal_confirm_IsOpen: true,
+                            modal_validate_IsOpen: false
+                        })
                     }
                     this.props.Refresh(this.props.parentData);
                     this.props.onRequestClose();
                 })
             })
         } else if (this.props.signOffRole === 'supervisor') {
-            this.setState({isOpen: false, modal_validate_IsOpen: true})
+            this.setState({ isOpen: false, modal_validate_IsOpen: true })
         }
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             signOffRole: nextProps.signOffRole,
-            headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') + 
-            ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
-            isOpen: nextProps.isOpen
+            headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') +
+                ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
+            isOpen: nextProps.isOpen,
+            signoffMessage: nextProps.t("By clicking 'Accept' you confirm that all the values for this hour are correct")
         })
     }
 
@@ -185,7 +192,7 @@ class SignoffModal extends React.Component {
         let isgreen;
         if (this.props.currentRow) {
             row = this.props.currentRow;
-            isred = (row.actual_pcs  === '') ? 'red' : 'black';
+            isred = (row.actual_pcs === '') ? 'red' : 'black';
             isgreen = row.actual_pcs > row.target_pcs ? 'green' : 'black';
         }
         return (
@@ -202,15 +209,15 @@ class SignoffModal extends React.Component {
                         <ul className={'signoff-list-parent'}>
                             <li><p className={'signoff-list'}>{'Ideal: '}</p><p className={'signoff-list'}>{row.ideal === '' ? 0 : row.ideal}</p></li>
                             <li><p className={'signoff-list'}>{'Target: '}</p><p className={'signoff-list'}>
-                            {row.target_pcs === '' ? 0 : row.target_pcs}</p></li>
-                            <li><p className={'signoff-list'}>{'Actual: '}</p><p style={{color: isred === 'red' ? isred : isgreen}} className={'signoff-list'}>
-                            {row.actual_pcs === '' ? 0 : row.actual_pcs}</p></li>
+                                {row.target_pcs === '' ? 0 : row.target_pcs}</p></li>
+                            <li><p className={'signoff-list'}>{'Actual: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
+                                {row.actual_pcs === '' ? 0 : row.actual_pcs}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
-                        <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }} 
-                        className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
-                        <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }} 
-                        className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
+                        <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }}
+                            className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
+                        <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }}
+                            className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                     </div>
                 </Modal> : null}
                 <ConfirmModal
@@ -238,13 +245,13 @@ class SignoffModal extends React.Component {
                     message={this.state.errorMessage}
                 />
                 <ValidateModal
-                    isOpen={this.state.modal_validate_IsOpen} 
+                    isOpen={this.state.modal_validate_IsOpen}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     label={'Please scan your clocknumber'}
                     t={this.props.t}
                     signOffSupervisor={this.signOffSupervisor}
-                    />
+                />
             </React.Fragment>
         )
     }
