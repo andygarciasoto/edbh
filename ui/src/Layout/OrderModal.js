@@ -52,24 +52,16 @@ class OrderModal extends React.Component {
         this.setState({ newValue: '' })
     }
 
-    onChange = (e) => {
-        if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
-            let _this = this;
-            this.setState({ value: e.target.value }, () => { _this.submit(e); });
-        } else {
-            this.setState({ modal_error_IsOpen: true, errorMessage: 'Not a valid value' })
-        }
-    }
-
     closeModal() {
         this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
     }
 
     handleScan(data) {
+        let _this = this;
         this.setState({
             result: 'Scanning',
             value: data,
-        })
+        }, () => { _this.submit(); })
     }
 
     handleError(err) {
@@ -103,8 +95,7 @@ class OrderModal extends React.Component {
                             min="0"
                             autoFocus
                             disabled={true}
-                            maxLength={25}
-                            onChange={this.onChange}>
+                            maxLength={25}>
                         </Form.Control>
                     </span>
                 </Modal>
