@@ -27,7 +27,8 @@ class Import extends React.Component {
     }
 
     onFileChange(event) {
-        this.setState({file: event.target.files[0]});
+        var file = event.target.files[0];
+        this.setState({file: file});
     }
 
     onSubmit() {

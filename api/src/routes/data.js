@@ -213,9 +213,9 @@ router.get('/shifts', async function (req, res) {
 
 router.get('/intershift_communication', async function (req, res) {
     const asset_code = req.query.mc;
-    const production_day = req.query.dt;
+    const production_day = moment(new Date(req.query.dt)).format('YYYY-MM-DD');
     const shift_code = req.query.sf;
-    if (asset_code == undefined || production_day == undefined || shift_code == undefined){
+    if (asset_code === undefined || production_day === undefined || shift_code === undefined){
         return res.status(400).send("Bad Request - Missing parameters");
     }
     sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
@@ -236,7 +236,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     }
     const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
     const update = params.comment_id ? params.comment_id : 0;
-    const timestamp = moment(params.timestamp).format(format);
+    const timestamp = moment(new Date(params.timestamp)).format(format);
     const row_timestamp = params.row_timestamp;
 
     if (!params.clocknumber) {
@@ -349,7 +349,7 @@ router.put('/dt_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = moment(req.body.timestamp).format(format);
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
@@ -423,19 +423,20 @@ router.put('/intershift_communication', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = moment(req.body.timestamp).format(format);
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
 
-    if (comment == undefined)
+    if (comment === undefined){
         return res.status(400).send("Missing parameters");
-    if (!clocknumber) {
+    }
+        if (!clocknumber) {
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-    if (dxh_data_id == undefined) {
+    if (dxh_data_id === undefined) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
@@ -501,7 +502,7 @@ router.put('/operator_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = moment(req.body.timestamp).format(format);
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
     const asset_code = req.body.asset_code;
@@ -513,7 +514,7 @@ router.put('/operator_sign_off', async function (req, res) {
     }
 
     if (dxh_data_id == undefined) {
-        if (asset_code === undefined) {
+        if (asset_code === undefined || asset_code === 'No Data') {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
             sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
@@ -578,13 +579,13 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = moment(req.body.timestamp).format(format);
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
     const asset_code = req.body.asset_code;
 
     if (!clocknumber) {
-        if (!(first_name || last_name)) {
+        if (!(first_name || !last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
@@ -597,10 +598,10 @@ router.put('/supervisor_sign_off', async function (req, res) {
                 return;
             }
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
-            let role = response[0].Role;
+            const role = response[0].Role;
             if (role === 'Supervisor') {
                 if (dxh_data_id === undefined) {
-                    if (asset_code === undefined) {
+                    if (asset_code === undefined || asset_code === 'No Data') {
                         return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
                     } else {
                         sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
@@ -671,7 +672,7 @@ router.put('/production_data', async function (req, res) {
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
-    const timestamp = moment(req.body.timestamp).format(format);
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
@@ -689,11 +690,12 @@ router.put('/production_data', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
+            console.log(asset_code);
             sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
                 (err, data) => {
                     if (err) {
                         console.log(err);
-                        res.status(500).send({ message: 'Error 5052', database_error: err });
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
@@ -703,7 +705,7 @@ router.put('/production_data', async function (req, res) {
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
-                                    res.status(500).send({ message: 'Error 5050', database_error: err });
+                                    res.status(500).send({ message: 'Error', database_error: err });
                                     return;
                                 }
                                 responsePostPut(response, req, res);
@@ -727,7 +729,7 @@ router.put('/production_data', async function (req, res) {
                 (err, response) => {
                     if (err) {
                         console.log(err);
-                        res.status(500).send({ message: 'Error 5051', database_error: err });
+                        res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
                     responsePostPut(response, req, res);
@@ -794,7 +796,7 @@ router.get("/order_assembly", async function (req, res) {
                 return;
             }
             let response = JSON.parse(Object.values(data)[0].OrderData);
-            let orderId = response[0].OrderData.order_id;
+            const orderId = response[0].OrderData.order_id;
             if (orderId === null) {
                 var assembly = {
                     order_number: params.order_number,
