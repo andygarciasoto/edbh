@@ -21,14 +21,12 @@ class OrderModal extends React.Component {
             modal_error_IsOpen: false,
             order_data: ''
         }
-        this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleScan = this.handleScan.bind(this);
         this.handleError = this.handleError.bind(this);
     }
 
-    submit(e) {
+    submit = (e) => {
         const data = {
             params: {
                 order_number: this.state.value,
@@ -54,7 +52,7 @@ class OrderModal extends React.Component {
         this.setState({ newValue: '' })
     }
 
-    onChange(e) {
+    onChange = (e) => {
         if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
             let _this = this;
             this.setState({ value: e.target.value }, () => { _this.submit(e); });

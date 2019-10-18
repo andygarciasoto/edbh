@@ -33,14 +33,12 @@ class OrderModal extends React.Component {
                 }
             }
         }
-        this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleScan = this.handleScan.bind(this);
         this.handleError = this.handleError.bind(this);
     }
 
-    onChange(e) {
+    onChange = (e) => {
         if (parseInt(e.target.value) !== 0 || e.target.value !== '') {
             this.props.signOffSupervisor(e.target.value);
         } else {
