@@ -1,19 +1,19 @@
-import React from  'react';
+import React from 'react';
 import Modal from 'react-modal';
 import BarcodeReader from 'react-barcode-reader';
 import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
-import LoadingModal from  './LoadingModal';
+import LoadingModal from './LoadingModal';
 import './CommentsModal.scss';
 import _ from 'lodash';
 
 
 class OrderModal extends React.Component {
     constructor(props) {
-		super(props);
-		this.state = {
-            value : '',
+        super(props);
+        this.state = {
+            value: '',
             errorMessage: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
@@ -32,7 +32,7 @@ class OrderModal extends React.Component {
                     backgroundColor: 'rgba(0,0,0, 0.6)'
                 }
             }
-        } 
+        }
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -40,68 +40,63 @@ class OrderModal extends React.Component {
         this.handleError = this.handleError.bind(this);
     }
 
-    submit(e) {
-        this.props.signOffSupervisor(this.state.value);
-    }
-
     onChange(e) {
         if (parseInt(e.target.value) !== 0 || e.target.value !== '') {
-                this.setState({newValue: e.target.value});
+            this.props.signOffSupervisor(e.target.value);
         } else {
-            this.setState({modal_error_IsOpen: true, errorMessage: 'Not a valid value'})
+            this.setState({ modal_error_IsOpen: true, errorMessage: 'Not a valid value' })
         }
     }
 
     closeModal() {
-        this.setState({modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false});
+        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
         this.props.onRequestClose();
     }
 
-    handleScan(data){
+    handleScan(data) {
         this.setState({
-          result: 'Scanning',
-          value: data,
-        }) 
-      }
+            result: 'Scanning',
+            value: data,
+        })
+    }
 
     handleError(err) {
         if (!isNaN(err)) {
             this.handleScan(err);
         } else {
-            this.setState({modal_error_IsOpen: true, errorMessage: 'Scan failed: Barcode not Valid'});
+            this.setState({ modal_error_IsOpen: true, errorMessage: 'Scan failed: Barcode not Valid' });
             console.log(err);
         }
-      }
+    }
 
     render() {
         const t = this.props.t;
-            return (
-                <React.Fragment>
+        return (
+            <React.Fragment>
                 <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.onRequestClose}
-                style={this.state.style}
-                contentLabel="Example Modal">
-                   <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                   <BarcodeReader
+                    isOpen={this.props.isOpen}
+                    onRequestClose={this.props.onRequestClose}
+                    style={this.state.style}
+                    contentLabel="Example Modal">
+                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
+                    <BarcodeReader
                         onError={this.handleError}
                         onScan={this.handleScan}
                     />
-                   <span className="dashboard-modal-field-group"><p>{this.props.label}:</p>
-                    <Form.Control 
-                        style={{paddingTop: '5px'}} 
-                        type={'password'} 
-                        value={this.state.value} 
-                        min="0"
-                        autoFocus
-                        disabled={true}
-                        maxLength={18}
-                        onChange={(val) => this.setState({value: val.target.value})}>  
-                    </Form.Control>
-                   </span>
-                   <Button variant="outline-primary" style={{marginTop: '10px'}} onClick={this.submit}>{t('Submit')}</Button>
-               </Modal>
-               <ConfirmModal
+                    <span className="dashboard-modal-field-group"><p>{this.props.label}:</p>
+                        <Form.Control
+                            style={{ paddingTop: '5px' }}
+                            type={'password'}
+                            value={this.state.value}
+                            min="0"
+                            autoFocus
+                            disabled={true}
+                            maxLength={18}
+                            onChange={this.onChange}>
+                        </Form.Control>
+                    </span>
+                </Modal>
+                <ConfirmModal
                     isOpen={this.state.modal_confirm_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
@@ -125,9 +120,9 @@ class OrderModal extends React.Component {
                     t={this.props.t}
                     message={this.state.errorMessage}
                 />
-               </React.Fragment>
-            )
-        }
+            </React.Fragment>
+        )
+    }
 }
 
 Modal.setAppElement('#root');

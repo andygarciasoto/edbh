@@ -56,7 +56,8 @@ class OrderModal extends React.Component {
 
     onChange(e) {
         if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
-            this.setState({ newValue: e.target.value });
+            let _this = this;
+            this.setState({ value: e.target.value }, () => { _this.submit(e); });
         } else {
             this.setState({ modal_error_IsOpen: true, errorMessage: 'Not a valid value' })
         }
@@ -77,7 +78,7 @@ class OrderModal extends React.Component {
         if (!isNaN(err)) {
             this.handleScan(err);
         } else {
-            this.setState({modal_error_IsOpen: true, errorMessage: 'Scan failed: Barcode not Valid'});
+            this.setState({ modal_error_IsOpen: true, errorMessage: 'Scan failed: Barcode not Valid' });
             console.log(err);
         }
     }
@@ -105,10 +106,9 @@ class OrderModal extends React.Component {
                             autoFocus
                             disabled={true}
                             maxLength={25}
-                            onChange={(val) => this.setState({ value: val.target.value })}>
+                            onChange={this.onChange}>
                         </Form.Control>
                     </span>
-                    <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.submit}>{t('Submit')}</Button>
                 </Modal>
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}
