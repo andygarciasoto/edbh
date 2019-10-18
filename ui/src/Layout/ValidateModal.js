@@ -38,24 +38,17 @@ class OrderModal extends React.Component {
         this.handleError = this.handleError.bind(this);
     }
 
-    onChange = (e) => {
-        if (parseInt(e.target.value) !== 0 || e.target.value !== '') {
-            this.props.signOffSupervisor(e.target.value);
-        } else {
-            this.setState({ modal_error_IsOpen: true, errorMessage: 'Not a valid value' })
-        }
-    }
-
     closeModal() {
         this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
         this.props.onRequestClose();
     }
 
     handleScan(data) {
+        let _this = this;
         this.setState({
             result: 'Scanning',
             value: data,
-        })
+        }, () => _this.props.signOffSupervisor(data))
     }
 
     handleError(err) {
@@ -89,8 +82,7 @@ class OrderModal extends React.Component {
                             min="0"
                             autoFocus
                             disabled={true}
-                            maxLength={18}
-                            onChange={this.onChange}>
+                            maxLength={18}>
                         </Form.Control>
                     </span>
                 </Modal>
