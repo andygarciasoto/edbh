@@ -5,6 +5,12 @@ import _ from 'lodash';
 
 const axios = require('axios');
 
+const fileUploadConfig = {
+  headers: {
+  'Content-Type': 'multipart/form-data'
+}
+}
+
 async function getRequestData(data) {
   let res = {};
   const parameters = {
@@ -81,6 +87,7 @@ async function sendPut(data, route) {
 }
 
 async function sendPutDataTool(data, route) {
+
   const res = await axios.put(`${DATATOOL}${route}`, data)
     .then(function (response) {
       return response;
