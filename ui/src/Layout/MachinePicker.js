@@ -22,12 +22,13 @@ class MachinePickerCustom extends React.Component {
         }
         const machineArray = [];
         const machines = getRequest('/machine', userSite);
-        machines.then((machinesObj => { 
+        machines.then((machinesObj => {
             machinesObj ?
-            machinesObj.map((item, index) => 
-            machineArray.push({asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
-            )
-            : void (0) }))
+                machinesObj.map((item, index) =>
+                    machineArray.push({ asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
+                )
+                : void (0)
+        }))
         this.setState({ machines: machineArray })
     }
 
@@ -37,7 +38,7 @@ class MachinePickerCustom extends React.Component {
 
     onSelect(e) {
         this.props.collectInput(e, 'machineValue');
-        const obj = _.find(this.state.machines, {asset_code: e})
+        const obj = _.find(this.state.machines, { asset_code: e })
         if (obj.automation_level) {
             this.props.collectInput(obj.automation_level, 'machineType');
         }

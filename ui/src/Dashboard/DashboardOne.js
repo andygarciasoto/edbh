@@ -332,22 +332,25 @@ class DashboardOne extends React.Component {
       });
     } catch (e) { console.log(e) }
 
-    const machineAsset = this.props.defaultAsset;
-    getStationAsset(machineAsset).then(a => {
-      this.setState({
-        selectedMachine: a.asset_code || 'No Data',
-        selectedMachineType: a.automation_level || 'Automated',
-        station: machineAsset,
-      })
-      let { search } = this.props;
-      let queryItem = Object.assign({}, search);
-      queryItem["st"] = this.props.search.st || this.props.defaultAsset;
-      queryItem["mc"] = this.props.search.mc || a.asset_code;
-      queryItem["tp"] = this.props.search.tp || a.automation_level;
-      let parameters = $.param(queryItem);
-      this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
+    let { search } = this.props;
+    if (!search.mc) {
+      const machineAsset = this.props.defaultAsset;
+      getStationAsset(machineAsset).then(a => {
+        this.setState({
+          selectedMachine: a.asset_code || 'No Data',
+          selectedMachineType: a.automation_level || 'Automated',
+          station: machineAsset,
+        });
+
+        let queryItem = Object.assign({}, search);
+        queryItem["st"] = this.props.search.st || this.props.defaultAsset;
+        queryItem["mc"] = this.props.search.mc || a.asset_code;
+        queryItem["tp"] = this.props.search.tp || a.automation_level;
+        let parameters = $.param(queryItem);
+        this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
+      }
+      )
     }
-    )
   };
 
   componentWillReceiveProps(nextProps) {
