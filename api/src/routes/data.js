@@ -108,7 +108,7 @@ router.get('/data', async function (req, res) {
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
-
+console.log(params.mc, params.dt, hour);
     sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${hour};`,
         (err, response) => {
             if (err) {
@@ -598,6 +598,12 @@ router.put('/supervisor_sign_off', async function (req, res) {
                 return;
             }
             let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
+            if (response === undefined || response === null) {
+                var error = 'Incorrect Clocknumber'
+                console.log(error);
+                res.status(500).send({ message: 'Error', database_error: error });
+                return;
+            }
             const role = response[0].Role;
             if (role === 'Supervisor') {
                 if (dxh_data_id === undefined) {
@@ -812,10 +818,16 @@ router.get("/order_assembly", async function (req, res) {
                     timeout: 10000
                 }, function (error, resp, body) {
                     if (resp.statusCode >= 400) {
+                        for (var i = 0; i < 10; i++) {
+                            setTimeout(delay, 500);
+                        }
                         res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
                         return;
                     }
                     if (error) {
+                        for (var i = 0; i < 10; i++) {
+                            setTimeout(delay, 500);
+                        }
                         res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }

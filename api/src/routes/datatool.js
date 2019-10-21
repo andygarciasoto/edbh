@@ -31,8 +31,7 @@ function responsePostPut(response, req, res) {
 };
 
 router.put('/import_asset', cors(), upload.any(), function (req, res) {
-  var assetValues = {};
-  var key = 1;
+  var assetValues = [];
   const file = req.files;
   if (!file) {
     return res.status(400).json({ message: "Bad Request - Missing Excel file to import" });
@@ -48,12 +47,18 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
       // Iterate over all rows that have values in a worksheet
       worksheet.eachRow(function (row, rowNumber) {
         if (rowNumber !== 1) {
-          assetValues['asset' + key] = JSON.stringify(row.values);
-          key++;
-        }
+          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+            if (colNumber !== 1){
+              assetValues.push(cell.value);
+            }
+          });
+          console.log(assetValues);
+          assetValues = [];
+          console.log("lets see");
+      }
         //console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
       });
-      console.log(assetValues);
+      //console.log(assetValues);
       // use workbook
     });
   return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
