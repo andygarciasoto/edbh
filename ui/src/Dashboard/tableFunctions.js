@@ -1,5 +1,4 @@
 export function handleTableCellClick(state, rowInfo, column, instance, ...rest) {
-  console.log('click');
   if (typeof rowInfo !== "undefined") {
     if ((rowInfo && column.id === 'actual_pcs') && (rowInfo.row.actual_pcs !== null)) {
       return {

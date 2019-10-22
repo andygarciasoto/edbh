@@ -291,7 +291,8 @@ class DashboardOne extends React.Component {
       }
     }
     const shifts = getRequest('/shifts', st);
-    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
+    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) });
+    this.getTableColumns();
     const params = await getRequest('/common_parameters', { params: { parameter_code: this.props.user.site_name } });
     this.setState({
       timezone: params[0].CommonParameters.value,
@@ -316,7 +317,6 @@ class DashboardOne extends React.Component {
     const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
     this.setState({ modalStyle, selectedDateParsed: x })
     this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
-
     const socket = openSocket.connect(SOCKET);
     socket.on('connect', () => console.log('Connected to the Websocket Service'));
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
@@ -383,6 +383,110 @@ class DashboardOne extends React.Component {
   }
 
   async fetchData(data) {
+    // fetch data call
+    this.getDashboardData(data);
+  }
+
+  async getDashboardData(data) {
+    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    var minutes = moment().minutes();
+    if (config['first_signoff_reminder'].includes(logoffHour)) {
+      this.setState({ signoff_reminder: true })
+    } else {
+      this.setState({ signoff_reminder: false })
+    }
+    if (logoffHour === config['second_signoff_reminder']) {
+      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
+        this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
+      }
+    }
+    var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
+    var est = moment().tz(tz).hours();
+    if (minutes > 6 && localStorage.getItem("currentHour")) {
+      if (localStorage.getItem("currentHour") !== est) {
+        localStorage.removeItem("signoff");
+        localStorage.removeItem("currentHour");
+      }
+    }
+    let response = {};
+    let comments = {};
+
+    if (data && data[0]) {
+      response = await getRequestData(data);
+    }
+    if (response instanceof Object) {
+      console.table(response);
+      this.setState({ data: response, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
+    } else {
+      console.log('Data could not be retrieved from the endpoint /data');
+    }
+    if (data && data[0]) {
+      comments = await getIntershift(data);
+    }
+    if (comments instanceof Object) {
+      this.setState({ comments: comments })
+    } else {
+      console.log('Data could not be retrieved from the endpoint /intershift_communication');
+    }
+  }
+
+  getTdProps(state, rowInfo, instance) {
+    if (rowInfo && instance.id === 'actual_pcs') {
+      return {
+        style: {
+          backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'red' : 'green',
+        }
+      }
+    }
+    return {}
+  }
+
+  changeDate(e) {
+    let _this = this;
+    const date = e;
+    const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD HH:ss');
+    this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
+  }
+
+  changeMachine(e) {
+    let _this = this;
+    this.setState({ selectedMachine: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
+  }
+
+  changeLanguage(e) {
+    e = e.split('_')[0]
+    const date = this.state.selectedDate ? this.state.selectedDate : new Date();
+    let parsedDate = moment(date).locale(e).format('YYYY/MM/DD HH:ss');
+    this.setState({ selectedDateParsed: parsedDate })
+    this.fetchData();
+  }
+
+  onExpandedChange(newExpanded) {
+    this.setState({
+      expanded: newExpanded
+    });
+  }
+
+  clearExpanded() {
+    this.setState({
+      expanded: {}
+    });
+  }
+
+  openAfter(e) {
+    this.setState({
+      modal_values_IsOpen: false,
+      modal_comments_IsOpen: false,
+      modal_dropdown_IsOpen: true,
+    })
+  }
+
+  headerData(e) {
+    let _this = this;
+    this.setState({ selectedShift: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
+  }
+
+  getTableColumns() {
     const t = this.props.t;
     let _this = this;
     const columns = [
@@ -639,106 +743,8 @@ class DashboardOne extends React.Component {
             <span className="react-table-click-text table-click">{props.value}</span></span>
       }
     ];
-    // fetch data call
-    this.getDashboardData(data, columns);
-  }
 
-  async getDashboardData(data, columns) {
-    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
-    var minutes = moment().minutes();
-    if (config['first_signoff_reminder'].includes(logoffHour)) {
-      this.setState({ signoff_reminder: true })
-    } else {
-      this.setState({ signoff_reminder: false })
-    }
-    if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
-        this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
-      }
-    }
-    var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
-    var est = moment().tz(tz).hours();
-    if (minutes > 6 && localStorage.getItem("currentHour")) {
-      if (localStorage.getItem("currentHour") !== est) {
-        localStorage.removeItem("signoff");
-        localStorage.removeItem("currentHour");
-      }
-    }
-    let response = {};
-    let comments = {};
-
-    if (data && data[0]) {
-      response = await getRequestData(data);
-    }
-    if (response instanceof Object) {
-      this.setState({ data: response, columns, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
-    } else {
-      console.log('Data could not be retrieved from the endpoint /data');
-    }
-    if (data && data[0]) {
-      comments = await getIntershift(data);
-    }
-    if (comments instanceof Object) {
-      this.setState({ comments: comments })
-    } else {
-      console.log('Data could not be retrieved from the endpoint /intershift_communication');
-    }
-  }
-
-  getTdProps(state, rowInfo, instance) {
-    if (rowInfo && instance.id === 'actual_pcs') {
-      return {
-        style: {
-          backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'red' : 'green',
-        }
-      }
-    }
-    return {}
-  }
-
-  changeDate(e) {
-    let _this = this;
-    const date = e;
-    const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD HH:ss');
-    this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
-  }
-
-  changeMachine(e) {
-    let _this = this;
-    this.setState({ selectedMachine: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
-  }
-
-  changeLanguage(e) {
-    e = e.split('_')[0]
-    const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-    let parsedDate = moment(date).locale(e).format('YYYY/MM/DD HH:ss');
-    this.setState({ selectedDateParsed: parsedDate })
-    this.fetchData();
-  }
-
-  onExpandedChange(newExpanded) {
-    this.setState({
-      expanded: newExpanded
-    });
-  }
-
-  clearExpanded() {
-    this.setState({
-      expanded: {}
-    });
-  }
-
-  openAfter(e) {
-    this.setState({
-      modal_values_IsOpen: false,
-      modal_comments_IsOpen: false,
-      modal_dropdown_IsOpen: true,
-    })
-  }
-
-  headerData(e) {
-    let _this = this;
-    this.setState({ selectedShift: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
+    this.setState({ columns });
   }
 
   render() {
