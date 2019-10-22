@@ -108,7 +108,6 @@ router.get('/data', async function (req, res) {
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
-console.log(params.mc, params.dt, hour);
     sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${hour};`,
         (err, response) => {
             if (err) {
@@ -790,7 +789,7 @@ router.get('/common_parameters', async function (req, res) {
 
 router.get("/order_assembly", async function (req, res) {
     const params = req.query;
-    if (params.order_number == undefined || params.asset_code == undefined || params.timestamp == undefined) {
+    if (params.order_number === undefined || params.asset_code === undefined || params.timestamp === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
 
@@ -803,7 +802,7 @@ router.get("/order_assembly", async function (req, res) {
             }
             let response = JSON.parse(Object.values(data)[0].OrderData);
             const orderId = response[0].OrderData.order_id;
-            if (orderId === null) {
+            if (orderId === null || orderId === undefined) {
                 var assembly = {
                     order_number: params.order_number,
                     asset_code: params.asset_code,
@@ -817,22 +816,16 @@ router.get("/order_assembly", async function (req, res) {
                     body: assembly,
                     timeout: 10000
                 }, function (error, resp, body) {
-                    if (resp.statusCode >= 400) {
-                        for (var i = 0; i < 10; i++) {
-                            setTimeout(delay, 500);
-                        }
-                        res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
-                        return;
-                    }
+                    console.log(error);
                     if (error) {
-                        for (var i = 0; i < 10; i++) {
-                            setTimeout(delay, 500);
-                        }
                         res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }
-                    var flag = false;
-                    for (var i = 0; i < 10; i++) {
+                    console.log(resp.statusCode);
+                    if (resp.statusCode >= 400) {
+                        res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
+                        return;
+                    }
                         sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
                             (err, dt) => {
                                 if (err) {
@@ -841,21 +834,19 @@ router.get("/order_assembly", async function (req, res) {
                                     return;
                                 }
                                 let response = JSON.parse(Object.values(dt)[0].OrderData);
+                                console.log(response[0].OrderData.order_id);
                                 if (response[0].OrderData.order_id === null || response[0].OrderData.order_id === undefined) {
-                                    setTimeout(delay, 500);
-                                } else {
-                                    if (flag === false) {
-                                        res.status(200).json(response);
-                                        flag = true;
+                                        res.status(500).send({ message: 'Order took more time than it should. Please try again or try with a different order.', jtrax_error: error });
                                         return;
-                                    }
+                                } else {
+                                        res.status(200).json(response);
+                                        return;
                                 }
                             });
-                    }
-                    if (flag === false){
-                        res.status(500).send({ message: 'Order took more time than it should. Please try again or try with a different order.', jtrax_error: error });
-                        return;
-                    }
+                            var seconds = 2;
+                            var waitTill = new Date(new Date().getTime() + seconds * 1000);
+                            while(waitTill > new Date()){
+                            }
                 });
             } else {
                 res.status(200).json(response);
