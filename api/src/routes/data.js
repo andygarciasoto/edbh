@@ -108,7 +108,7 @@ router.get('/data', async function (req, res) {
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_Testing '${params.mc}','${params.dt}',${hour};`,
+    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${hour};`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -129,7 +129,7 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Asset_Testing 'Cell','All',${params.site};`, 
+    sqlQuery(`exec spLocal_EY_DxH_Get_Asset 'Cell','All',${params.site};`, 
         (err, response) => {
         if (err) {
             console.log(err)
@@ -792,7 +792,6 @@ router.get("/order_assembly", async function (req, res) {
     if (params.order_number === undefined || params.asset_code === undefined || params.timestamp === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-
     sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
         (err, data) => {
             if (err) {
