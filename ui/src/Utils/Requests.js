@@ -7,8 +7,8 @@ const axios = require('axios');
 
 const fileUploadConfig = {
   headers: {
-  'Content-Type': 'multipart/form-data'
-}
+    'Content-Type': 'multipart/form-data'
+  }
 }
 
 async function getRequestData(data) {
@@ -317,14 +317,17 @@ function isFieldAllowed(role, row, timezone) {
   if (role === 'Administrator') {
     return true;
   }
-  let rowTime = moment(row._subRows[0]._original.hour_interval_start);
-  let actualSiteTime = timezone ? moment().tz(timezone) : moment();
-  let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
-  let result;
-  if (role === 'Operator' || role === 'Supervisor') {
-    (diffHours === 0 || diffHours === 1) ? result = true : result = false;
+  if (row._subRows) {
+    let rowTime = moment(row._subRows[0]._original.hour_interval_start);
+    let actualSiteTime = timezone ? moment().tz(timezone) : moment();
+    let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
+    let result;
+    if (role === 'Operator' || role === 'Supervisor') {
+      result = diffHours === 0 || diffHours === 1;
     }
-  return result;
+    return result;
+  }
+  return false;
 }
 
 function formatNumber(number, decimals) {
@@ -338,22 +341,22 @@ function formatNumber(number, decimals) {
 function getStationAsset(station) {
   let machineData = {};
   machineData = axios(`${API}/asset_display_system?st=${station}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } })
-  .then(function (response) {
+    .then(function (response) {
       const machineValues = response.data[0].AssetDisplaySystem;
       machineData = {
-          asset_code: machineValues.asset_code,
-          asset_level: machineValues.asset_level,
-          automation_level: machineValues.automation_level,
-          display_name: machineValues.displaysystem_name,
-          asset_description: machineValues.asset_description
-          }
-          return machineData;
-    }).catch((e) => {
-    console.log(e)
-    });
-    if (machineData) {
+        asset_code: machineValues.asset_code,
+        asset_level: machineValues.asset_level,
+        automation_level: machineValues.automation_level,
+        display_name: machineValues.displaysystem_name,
+        asset_description: machineValues.asset_description
+      }
       return machineData;
-    }
+    }).catch((e) => {
+      console.log(e)
+    });
+  if (machineData) {
+    return machineData;
+  }
 }
 
 export {
