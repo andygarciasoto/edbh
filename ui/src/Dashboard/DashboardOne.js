@@ -45,6 +45,25 @@ import('moment/locale/es');
 class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = Object.assign(this.getInitialState(props));
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.fetchData = this.fetchData.bind(this);
+    this.changeDate = this.changeDate.bind(this);
+    this.changeMachine = this.changeMachine.bind(this);
+    this.changeLanguage = this.changeLanguage.bind(this);
+    this.handleTableCellClick = handleTableCellClick.bind(this);
+    this.onExpandedChange = this.onExpandedChange.bind(this);
+    this.clearExpanded = this.clearExpanded.bind(this);
+    this.openAfter = this.openAfter.bind(this);
+    this.headerData = this.headerData.bind(this);
+    this.getDashboardData = this.getDashboardData.bind(this);
+    this.showValidateDataModal = this.showValidateDataModal.bind(this);
+    this.menuToggle = this.menuToggle.bind(this);
+  }
+
+  getInitialState(props) {
     var hour = moment(getCurrentTime()).hours();
     let shiftByHour;
     if (hour >= 7 && hour < 15) {
@@ -54,7 +73,7 @@ class DashboardOne extends React.Component {
     } else {
       shiftByHour = '3rd Shift';
     }
-    this.state = {
+    return {
       data: [],
       columns: [],
       modalStyle: {},
@@ -89,22 +108,24 @@ class DashboardOne extends React.Component {
       dateFromData: false,
       shifts: {},
       timezone: this.props.user.timezone,
-      currentHour: hour
+      currentHour: hour,
+      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift')
     }
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.fetchData = this.fetchData.bind(this);
-    this.changeDate = this.changeDate.bind(this);
-    this.changeMachine = this.changeMachine.bind(this);
-    this.changeLanguage = this.changeLanguage.bind(this);
-    this.handleTableCellClick = handleTableCellClick.bind(this);
-    this.onExpandedChange = this.onExpandedChange.bind(this);
-    this.clearExpanded = this.clearExpanded.bind(this);
-    this.openAfter = this.openAfter.bind(this);
-    this.headerData = this.headerData.bind(this);
-    this.getDashboardData = this.getDashboardData.bind(this);
-    this.showValidateDataModal = this.showValidateDataModal.bind(this);
-    this.menuToggle = this.menuToggle.bind(this);
+  }
+
+  getTextTranslations(props) {
+    return {
+      partNumberText: props.t('Part Number'),
+      idealText: props.t('Ideal'),
+      targetText: props.t('Target'),
+      actualText: props.t('Actual'),
+      cumulativeTargetText: props.t('Cumulative Target'),
+      cumulativeActualText: props.t('Cumulative Actual'),
+      timeLostText: props.t('Time Lost (Total Mins.)'),
+      commentsActionText: props.t('Comments And Actions Taken'),
+      operatorText: props.t('Operator'),
+      supervisorText: props.t('Supervisor')
+    }
   }
 
   showValidateDataModal(data) {
@@ -131,44 +152,36 @@ class DashboardOne extends React.Component {
     }
     if (type === 'values') {
       if (val) {
-        if (val.props) {
-          if (isNaN(val.props.value)) {
-            value = val.props.value === null ? undefined : val.props.value;
-            modalType = 'text'
-          } else {
-            value = parseInt(val.props.value)
-            modalType = 'number'
-          }
-        }
-        let currentRow = {};
-        if (val.props.row._subRows) {
-          currentRow = val.props.row._subRows[0]._original;
+        if (isNaN(val[extraParam])) {
+          value = val[extraParam] === null ? undefined : val[extraParam];
+          modalType = 'text'
         } else {
-          currentRow = val.props.row._original;
+          value = parseInt(val[extraParam])
+          modalType = 'number'
         }
-        if (!val.props.row._subRows || val.props.row._subRows.length === 1) {
+        if (!arguments[3]) {
           let allowed = false;
-          if (extraParam === 'actual') {
-            allowed = isFieldAllowed(this.props.user.role, val.props.row);
+          if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
+            allowed = isFieldAllowed(this.props.user.role, val);
           }
           this.setState({
             modal_values_IsOpen: allowed,
             modal_comments_IsOpen: false,
             modal_dropdown_IsOpen: false,
             valueToEdit: value,
-            cumulative_pcs: val.props.row.cumulative_pcs,
+            cumulative_pcs: val.cumulative_pcs,
             modalType,
-            currentRow: val ? val.props ? currentRow : undefined : undefined
+            currentRow: val ? val : undefined
           })
         }
       } else {
         let allowed;
-        if (extraParam === 'actual') {
-          allowed = isFieldAllowed(this.props.user.role, val.props.row);
+        if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
+          allowed = isFieldAllowed(this.props.user.role, val);
         }
         this.setState({
           valueToEdit: value,
-          cumulative_pcs: val.props.row.cumulative_pcs,
+          cumulative_pcs: val.cumulative_pcs,
           modal_values_IsOpen: allowed,
           modal_comments_IsOpen: false,
           modal_dropdown_IsOpen: false,
@@ -177,16 +190,9 @@ class DashboardOne extends React.Component {
       }
     }
     if (type === 'comments') {
-      if (val) {
-        if (val.row._subRows) {
-          const comments = _.sortBy(val.row._subRows[0]._original.actions_comments, 'last_modified_on').reverse();
-          this.setState({
-            current_display_comments: comments,
-            currentRow: val.row._subRows[0]._original
-          })
-        }
-      }
-      const allowed = isFieldAllowed(this.props.user.role, val.row);
+      let current_display_comments = val && val.actions_comments ? _.sortBy(val.actions_comments, 'last_modified_on').reverse() : null;
+      let currentRow = val;
+      const allowed = isFieldAllowed(this.props.user.role, val);
       this.setState({
         modal_authorize_IsOpen: false,
         modal_comments_IsOpen: true,
@@ -196,26 +202,28 @@ class DashboardOne extends React.Component {
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: false,
         comments_IsEditable: allowed,
+        current_display_comments,
+        currentRow
       });
     }
     if (type === 'dropdown') {
       if (val) {
-        const timelost = val.row._subRows[0]._original.timelost;
-        const allowed = isFieldAllowed(this.props.user.role, val.row);
+        const timelost = val.timelost;
+        const allowed = isFieldAllowed(this.props.user.role, val);
         this.setState({
           modal_values_IsOpen: false,
           modal_comments_IsOpen: false,
           modal_dropdown_IsOpen: true,
           timelost_IsEditable: allowed,
           current_display_timelost: timelost,
-          currentRow: val.row._subRows[0]._original,
+          currentRow: val,
 
         })
       }
     }
     if (type === 'manualentry') {
       if (val) {
-        const allowed = isFieldAllowed(this.props.user.role, val.row);
+        const allowed = isFieldAllowed(this.props.user.role, val);
         if (this.state.selectedMachineType === 'Manual') {
           if (isComponentValid(this.props.user.role, 'manualentry')) {
             this.setState({
@@ -223,7 +231,7 @@ class DashboardOne extends React.Component {
               modal_comments_IsOpen: false,
               modal_dropdown_IsOpen: false,
               modal_manualentry_IsOpen: allowed,
-              currentRow: val.row._subRows[0]._original,
+              currentRow: val,
             })
           }
         }
@@ -231,31 +239,27 @@ class DashboardOne extends React.Component {
     }
     if (type === 'signoff') {
       if (val) {
-        if (val.props) {
-          if (val.props.row._subRows) {
-            if (((val.props.row._subRows[0]._original.oper_id === null) && (extraParam === 'operator')) ||
-              ((val.props.row._subRows[0]._original.superv_id === null) && (extraParam === 'supervisor'))) {
-              const allowed = isFieldAllowed(this.props.user.role, val.props.row);
-              this.setState({
-                modal_signoff_IsOpen: allowed,
-                currentRow: val.props.row._subRows[0]._original,
-                signOffRole: extraParam ? extraParam : null,
-              })
-            } else if (((val.props.row._subRows[0]._original.oper_id !== null) && (extraParam === 'operator')) ||
-              ((val.props.row._subRows[0]._original.superv_id !== null) && (extraParam === 'supervisor'))) {
-              if (moment(getCurrentTime()).isSame(val.props.row._subRows[0]._original.hour_interval_start, 'hours')) {
-                const allowed = isFieldAllowed(this.props.user.role, val.props.row);
-                this.setState({
-                  modal_signoff_IsOpen: allowed,
-                  currentRow: val.props.row._subRows[0]._original,
-                  signOffRole: extraParam ? extraParam : null,
-                })
-              }
-            }
+        if (((val.oper_id === null) && (extraParam === 'operator')) ||
+          ((val.superv_id === null) && (extraParam === 'supervisor'))) {
+          const allowed = isFieldAllowed(this.props.user.role, val);
+          this.setState({
+            modal_signoff_IsOpen: allowed,
+            currentRow: val,
+            signOffRole: extraParam ? extraParam : null,
+          })
+        } else if (((val.oper_id !== null) && (extraParam === 'operator')) ||
+          ((val.superv_id !== null) && (extraParam === 'supervisor'))) {
+          if (moment(getCurrentTime()).isSame(val.hour_interval_start, 'hours')) {
+            const allowed = isFieldAllowed(this.props.user.role, val);
+            this.setState({
+              modal_signoff_IsOpen: allowed,
+              currentRow: val,
+              signOffRole: extraParam ? extraParam : null,
+            })
           }
         }
       } else {
-        const allowed = isFieldAllowed(this.props.user.role, val.props.row);
+        const allowed = isFieldAllowed(this.props.user.role, val);
         this.setState({
           modal_signoff_IsOpen: allowed,
           signOffRole: extraParam ? extraParam : null,
@@ -292,15 +296,18 @@ class DashboardOne extends React.Component {
     }
     const shifts = getRequest('/shifts', st);
     shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) });
-    this.getTableColumns();
+    //this.getTableColumns();
     const params = await getRequest('/common_parameters', { params: { parameter_code: this.props.user.site_name } });
     this.setState({
       timezone: params[0].CommonParameters.value,
       commonParams: params[0].CommonParameters
-    })
+    });
     let currentLanguage = this.state.currentLanguage.toLowerCase();
-    currentLanguage = currentLanguage.replace('-', '_')
-    i18next.changeLanguage(currentLanguage, () => console.log('Changed the language to ' + currentLanguage)); // -> returns a Promise
+    currentLanguage = currentLanguage.replace('-', '_');
+    let _this = this;
+    i18next.changeLanguage(currentLanguage, () => {
+      _this.setState(Object.assign(_this.getTextTranslations(_this.props)), () => _this.getTableColumns());
+    }); // -> returns a Promise
     const modalStyle = {
       content: {
         top: '50%',
@@ -365,13 +372,20 @@ class DashboardOne extends React.Component {
         shiftByHour = '3rd Shift';
       };
       let _this = this;
+      if (this.state.currentLanguage !== nextProps.search.ln) {
+        let currentLanguage = nextProps.search.ln.toLowerCase();
+        currentLanguage = currentLanguage.replace('-', '_');
+        i18next.changeLanguage(currentLanguage, () => {
+          _this.setState(Object.assign(_this.getTextTranslations(_this.props)), () => _this.getTableColumns());
+        }); // -> returns a Promise
+      }
       this.setState({
         selectedDate: nextProps.search.dt || getCurrentTime(),
         selectedMachine: nextProps.search.mc || this.state.selectedMachine,
         currentLanguage: nextProps.search.ln || config['language'],
         selectedShift: nextProps.search.sf || shiftByHour,
         selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
-        selectedHour: nextProps.search.hr,
+        selectedHour: nextProps.search.hr
       }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
     }
   }
@@ -415,7 +429,6 @@ class DashboardOne extends React.Component {
       response = await getRequestData(data);
     }
     if (response instanceof Object) {
-      console.table(response);
       this.setState({ data: response, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
     } else {
       console.log('Data could not be retrieved from the endpoint /data');
@@ -486,8 +499,143 @@ class DashboardOne extends React.Component {
     this.setState({ selectedShift: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
   }
 
+  getHeader(text) {
+    return <span className={'wordwrap'} data-tip={text}>{text}</span>
+  }
+
+  getStyle(applyGrey, align, rowInfo, column) {
+    let style = {};
+    if (applyGrey) {
+      style = {
+        backgroundColor: 'rgb(247, 247, 247)',
+        borderRight: 'solid 1px rgb(219, 219, 219)',
+        borderLeft: 'solid 1px rgb(219, 219, 219)',
+        borderTop: 'solid 1px rgb(219, 219, 219)',
+        textAlign: align
+      }
+    } else {
+      style = {
+        textAlign: align,
+        borderRight: 'solid 1px rgb(219, 219, 219)',
+        borderTop: 'solid 1px rgb(219, 219, 219)'
+      }
+    }
+    let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
+    if (rowValid && column.id === 'actual_pcs' && rowValid.actual_pcs !== '') {
+      style.backgroundColor = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? '#b80600' : 'green';
+      style.backgroundImage = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? 'url("../dark-circles.png")' :
+        'url("../arabesque.png")';
+      style.color = 'white';
+
+    } else if (rowValid && column.id === 'cumulative_pcs' && rowValid.cumulative_pcs !== '' && rowValid.cumulative_pcs !== null && rowInfo.subRows !== undefined) {
+      style.backgroundColor = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? '#b80600' : 'green';
+      style.backgroundImage = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? 'url("../dark-circles.png")' :
+        'url("../arabesque.png")';
+      style.color = 'white';
+
+    } else if ((rowInfo && column.id === 'timelost_summary') && (rowInfo.row.timelost_summary !== null) && rowInfo.row._subRows && Math.round(rowInfo.row._subRows[0]._original.allocated_time) !== 0) {
+
+      style.backgroundColor = '#b80600';
+      style.backgroundImage = 'url("../dark-circles.png")';
+      style.color = 'white';
+
+    } else {
+      style.whiteSpace = 'normal!important';
+    }
+    return rowInfo ? { style } : style;
+  }
+
+  renderCell(cellInfo, prop, defaultValue, displayClick, displayEmptyClick) {
+    if (cellInfo.original !== undefined) {
+      return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>{cellInfo.original[prop] || defaultValue}</span>;
+    } else {
+      return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick && displayEmptyClick ? this.openModal(arguments[5], cellInfo, prop, cellInfo.subRows !== undefined) : {}}></span>;
+    }
+  }
+
+  renderAggregated(cellInfo, prop, defaultValue, orderChild, displayClick) {
+    let newCellInfo = Object.assign({}, cellInfo);
+    if (orderChild && newCellInfo.subRows.length > 1) {
+      let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.hour_interval_start));
+      newCellInfo.subRows = newSubrows;
+    }
+    if (newCellInfo.subRows[0] !== undefined && newCellInfo.subRows[0]._original[prop] !== '') {
+      if (prop !== '' || defaultValue !== '') {
+        return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}>{newCellInfo.subRows[0]._original[prop] || defaultValue}</span>;
+      } else {
+        return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}></span>;
+      }
+    } else {
+      return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}></span>;
+    }
+  }
+
+  getTimeLostToSet(cellInfo) {
+    return moment(getCurrentTime()).isSame(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ||
+      !moment(getCurrentTime()).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
+  }
+
+  getCommentsToSet(cellInfo) {
+    return cellInfo.subRows[0]._original.actions_comments ? cellInfo.subRows[0]._original.actions_comments.length > 1 ? cellInfo.subRows[0]._original.actions_comments[0].comment
+      + ` (${(cellInfo.subRows[0]._original.actions_comments.length - 1)}+ more)` : cellInfo.subRows[0]._original.actions_comments[0].comment : '';
+  }
+
+  renderAggregatedSignOff(cellInfo, prop, role) {
+    if (cellInfo.subRows[0]._original[prop] !== null && cellInfo.subRows[0]._original[prop] !== '') {
+      return <span className="react-table-click-text table-click" onClick={() => isComponentValid(this.props.user.role, role) ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
+        {cellInfo.subRows[0]._original[prop]}
+      </span>
+    } else {
+      return <span style={
+        (!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') && this.state.signoff_reminder) ?
+          { paddingRight: '90%', cursor: 'pointer' } :
+          { paddingRight: '80%', cursor: 'pointer' }}
+        className={'empty-field'} onClick={() =>
+          isComponentValid(this.props.user.role, role) ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
+        {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
+          this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
+      </span>;
+    }
+  }
+
+  getExpandClick(state, rowInfo, column) {
+    // this deletes the first repeated row in children section
+    // rowInfo.subRows && rowInfo.subRows.length > 1 ? delete rowInfo.subRows[0]: void(0);
+    // end of fix
+    const needsExpander = rowInfo.subRows && rowInfo.subRows.length > 1 ? true : false;
+    const expanderEnabled = !column.disableExpander;
+    const expandedRows = Object.keys(this.state.expanded).filter(expandedIndex => {
+      return this.state.expanded[expandedIndex] !== false;
+    }).map(Number);
+    const rowIsExpanded =
+      expandedRows.includes(rowInfo.nestingPath[0]) && needsExpander
+        ? true
+        : false;
+    const newExpanded = !needsExpander
+      ? this.state.expanded
+      : rowIsExpanded && expanderEnabled
+        ? {
+          ...this.state.expanded,
+          [rowInfo.nestingPath[0]]: false
+        }
+        : {
+          ...this.state.expanded,
+          [rowInfo.nestingPath[0]]: {}
+        };
+    return {
+      style:
+        needsExpander && expanderEnabled
+          ? { cursor: "pointer" }
+          : { cursor: "auto" },
+      onClick: (e, handleOriginal) => {
+        this.setState({
+          expanded: newExpanded
+        });
+      }
+    };
+  }
+
   getTableColumns() {
-    const t = this.props.t;
     let _this = this;
     const columns = [
       {
@@ -508,239 +656,92 @@ class DashboardOne extends React.Component {
             </div>
           ) : null;
         },
-        Cell: null
+        getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
       },
       { pivot: true },
       {
-        Header: () => <span
-          className={'wordwrap'}
-          data-tip={t(this.state.selectedShift)}>
-          {this.state.selectedShift !== 'Select Shift' ? t(this.state.selectedShift) : t('First Shift')}</span>,
+        Header: this.getHeader(this.state.shiftText),
         accessor: 'hour_interval',
         minWidth: 130,
-        style: {
-          backgroundColor: 'rgb(247, 247, 247)',
-          borderRight: 'solid 1px rgb(219, 219, 219)',
-          borderLeft: 'solid 1px rgb(219, 219, 219)',
-          borderTop: 'solid 1px rgb(219, 219, 219)'
-        },
+        style: this.getStyle(true, 'left'),
         Pivot: (row) => {
           return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? row.value + '*' : row.value}</span>
         },
         disableExpander: false,
         filterMethod: (filter, rows) =>
           matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
-        filterAll: true
+        filterAll: true,
+        getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
       }, {
-        Header: () => <span className={'wordwrap'}
-          data-tip={t('Part Number')}>{t('Part Number')}</span>,
+        Header: this.getHeader(this.state.partNumberText),
         minWidth: 180,
         accessor: 'product_code',
-        Cell: props => (props.value === '' || props.value === null) ?
-          <span
-            style={{
-              paddingRight: '90%',
-              cursor: 'pointer'
-            }}
-            className={'empty-field'}></span> :
-          <span className='ideal' onClick={() => this.openModal('manualentry', props)}>
-            <span className="empty" onClick={() => this.openModal('manualentry', props)}>{props.value}</span></span>,
-        style: {
-          textAlign: 'center',
-          borderRight: 'solid 1px rgb(219, 219, 219)',
-          borderTop: 'solid 1px rgb(219, 219, 219)'
-        },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.summary_product_code,
-        Aggregated: function (props) {
-          let newProps = Object.assign({}, props);
-          let newSubrows = _.orderBy(props.subRows, props.subRows.map((item) => item._original.hour_interval_start));
-          newProps.subRows = newSubrows;
-          if (newProps.value === '' || newProps.value === null) {
-            return (<span style={{
-              paddingRight: 180,
-              cursor: 'pointer'
-            }}
-              className={'empty-field table-click'}
-              onClick={() => _this.openModal('manualentry', newProps)}></span>)
-          } else {
-            return (
-              <span className='ideal table-click' onClick={() => _this.openModal('manualentry', newProps)}>
-                <span className="empty">{newProps.value}</span></span>
-            )
-          }
-        },
-        PivotValue: <span>{''}</span>,
-        // Aggregated: props => _.sortBy(props, props.subRows.map((item) => item._original.production_day))
+        Cell: c => this.renderCell(c, 'product_code', '', true, false, 'manualentry'),
+        Aggregated: a => this.renderAggregated(a, 'summary_product_code', '', true, true, 'manualentry'),
+        style: this.getStyle(false, 'center'),
+        PivotValue: <span>{''}</span>
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Ideal')}>{t('Ideal')}</span>,
+        Header: this.getHeader(this.state.idealText),
         accessor: 'ideal',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ?
-          <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-            className={'empty-field'} onClick={() => this.openModal('values')}></span> :
-          <span className='ideal' onClick={() => this.openModal('values', { props })}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
-        style: { textAlign: 'center', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.summary_ideal,
-        Aggregated: props => (props.value === '' || props.value === null) ?
-          <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span> :
-          <span className='ideal'>
-            <span className="empty">{props.value}</span></span>
+        Cell: c => this.renderCell(c, 'ideal', '0', true, true, 'values', c.original),
+        Aggregated: a => this.renderAggregated(a, 'summary_ideal', '0', false, false),
+        style: this.getStyle(false, 'center')
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Target')}>{t('Target')}</span>,
+        Header: this.getHeader(this.state.targetText),
         accessor: 'target_pcs',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={`empty-field`}></span> :
-          <span>
-            <span>{props.value}</span></span>,
-        style: {
-          backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)',
-          borderLeft: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)',
-          textAlign: 'center'
-        },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.summary_target !== null ? rows[0]._original.summary_target :
-          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
-        Aggregated: props => (props.value === '' || props.value === null) ?
-          <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span> :
-          <span className='empty'>
-            <span>{props.value}</span></span>
+        Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        style: this.getStyle(true, 'center')
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Actual')}>{t('Actual')}</span>,
+        Header: this.getHeader(this.state.actualText),
         accessor: 'actual_pcs',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          onClick={() => this.openModal('values', null, 'actual')}></span> :
-          <span className={`ideal`} onClick={() => this.openModal('values', { props }, 'actual')}>
-            <span className="react-table-click-text table-click" style={{ color: 'white' }} >{props.value}</span></span>,
-        style: { textAlign: 'center', borderTop: `solid 1px rgb(219, 219, 219)` },
-        // aggregate: (values, rows) => values.length > 1 ? _.sum(values.map(Number)) : values[0],
-        aggregate: (values, rows) => rows[0]._original.summary_actual !== null ? rows[0]._original.summary_actual :
-          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
-        // aggregate: (values, rows) => console.log(rows),
-        Aggregated: props => {
-          return (props.value === '' || props.value === null) ?
-            <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() =>
-              this.openModal('values', { props }, 'actual')}></span> :
-            <span className='ideal' onClick={() => this.openModal('values', { props }, 'actual')}>
-              <span style={{ color: 'white' }} className="react-table-click-text table-click">{props.value}</span></span>
-        }
+        Cell: c => this.renderCell(c, 'actual_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'values'),
+        Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Target')}>{t('Cumulative Target')}</span>,
+        Header: this.getHeader(this.state.cumulativeTargetText),
         accessor: 'cumulative_target_pcs',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={'empty-field'}></span> :
-          <span className='empty'>
-            <span>{props.value}</span></span>,
-        style: {
-          backgroundColor: 'rgb(247, 247, 247)', borderRight: 'solid 1px rgb(219, 219, 219)', borderLeft: 'solid 1px rgb(219, 219, 219)',
-          borderTop: 'solid 1px rgb(219, 219, 219)',
-          textAlign: 'center'
-        },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_target_pcs !== null ? rows[0]._original.cumulative_target_pcs :
-          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
-        Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={'empty-field'}></span> :
-          <span className='empty'>
-            <span>{props.value}</span></span>,
+        Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        style: this.getStyle(true, 'center'),
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Cumulative Actual')}>{t('Cumulative Actual')}</span>,
+        Header: this.getHeader(this.state.cumulativeActualText),
         accessor: 'cumulative_pcs',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
-          <span className='empty'>
-            <span>{''}</span></span>,
-        style: { borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)', textAlign: 'center', color: 'white' },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => rows[0]._original.cumulative_pcs !== null ? rows[0]._original.cumulative_pcs :
-          !moment(rows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null,
-        Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%' }} className={'empty-field'}></span> :
-          <span className='ideal'>
-            <span>{props.value}</span></span>
+        Cell: c => this.renderCell(c, '', '', false, false),
+        Aggregated: a => this.renderAggregated(a, 'cumulative_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Time Lost (minutes)')}>{t('Time Lost (Total Mins.)')}</span>,
+        Header: this.getHeader(this.state.timeLostText),
         accessor: 'timelost_summary',
         minWidth: 100,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={'empty-field'}></span> :
-          <span className='ideal'>
-            <span className="react-table-click-text table-click">{''}</span></span>,
-        style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        aggregate: (values, rows) => moment(getCurrentTime()).isSame(moment(rows[0]._original.hour_interval_start), 'hours') ||
-          !moment(getCurrentTime()).isBefore(moment(rows[0]._original.hour_interval_start), 'hours') ? formatNumber(rows[0]._original.unallocated_time) : null,
-        Aggregated: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={'empty-field'}
-          onClick={() => this.openModal('dropdown', props)}></span> :
-          <span className='ideal' onClick={() => this.openModal('dropdown', props)}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
-        // Aggregated: props => console.log(props)
+        Cell: c => this.renderCell(c, '', '', false, false),
+        Aggregated: a => this.renderAggregated(a, '', this.getTimeLostToSet(a), false, true, 'dropdown'),
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Comments And Actions Taken')}>{t('Comments And Actions Taken')}</span>,
+        Header: this.getHeader(this.state.commentsActionText),
         accessor: 'latest_comment',
-        Cell: props => props.value === '' ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span> :
-          <span className='ideal-click'>
-            <span className="react-table-click-text table-click comments">{''}</span></span>,
-        style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        // aggregate: (values, rows) => console.log(rows),
-        aggregate: (values, rows) => values[0] ? rows[0]._original.actions_comments.length > 1 ? values[0]
-          + ` (${(rows[0]._original.actions_comments.length - 1)}+ more)` : values[0] : '',
-        Aggregated: props => !props.value ? <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() =>
-          this.openModal('comments', props)}></span> :
-          <span className='ideal' onClick={() => this.openModal('comments', props)}>
-            <span className="react-table-click-text table-click comments">{props.value}</span></span>,
-        // Aggregated: props => console.log(props.value)
+        Cell: c => this.renderCell(c, '', '', false, false),
+        Aggregated: a => this.renderAggregated(a, '', this.getCommentsToSet(a), false, true, 'comments'),
+        style: this.getStyle(false, 'center')
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Operator')}>{t('Operator')}</span>,
+        Header: this.getHeader(this.state.operatorText),
         accessor: 'oper_id',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}
-          className={'empty-field'}></span> :
-          <span className='ideal'>
-            <span className="react-table-click-text table-click">{''}</span></span>,
-        style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => values[0],
-        Aggregated: props => (props.value === '' || props.value === null) ? <span
-          style={(!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') &&
-            (this.state.signoff_reminder === true)) ?
-            { paddingRight: '90%', cursor: 'pointer' } :
-            { paddingRight: '80%', cursor: 'pointer' }}
-          className={'empty-field'} onClick={() =>
-            isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff', { props }, 'operator') : void (0)}>
-          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
-            this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
-        </span> :
-          <span onClick={() => isComponentValid(this.props.user.role, 'operator_signoff') ? this.openModal('signoff',
-            { props }, 'operator') : void (0)}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>
+        Cell: c => this.renderCell(c, '', '', false, false),
+        Aggregated: a => this.renderAggregatedSignOff(a, 'oper_id', 'operator_signoff', 'signoff', 'operator'),
+        style: this.getStyle(false, 'center')
       }, {
-        Header: () => <span className={'wordwrap'} data-tip={t('Supervisor')}>{t('Supervisor')}</span>,
+        Header: this.getHeader(this.state.supervisorText),
         accessor: 'superv_id',
         minWidth: 90,
-        Cell: props => (props.value === '' || props.value === null) ? <span style={{ paddingRight: '90%', cursor: 'pointer' }}></span> :
-          <span className='ideal'>
-            <span className="react-table-click-text table-click">{props.value}</span></span>,
-        style: { textAlign: 'center', borderRight: 'solid 1px rgb(219, 219, 219)', borderTop: 'solid 1px rgb(219, 219, 219)' },
-        // aggregate: (values, rows) => _.uniqWith(values, _.isEqual).join(", "),
-        aggregate: (values, rows) => values[0],
-        Aggregated: props => (props.value === '' || props.value === null) ? <span
-          style={(!moment(props.row._subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') &&
-            (this.state.signoff_reminder === true)) ?
-            { paddingRight: '90%', cursor: 'pointer' } :
-            { paddingRight: '80%', cursor: 'pointer' }}
-          className={'empty-field'} onClick={() =>
-            isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff', { props }, 'supervisor') : void (0)}>
-          {!moment(props.row._subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
-            this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
-        </span> :
-          <span onClick={() => isComponentValid(this.props.user.role, 'supervisor_signoff') ? this.openModal('signoff',
-            { props }, 'supervisor') : void (0)}>
-            <span className="react-table-click-text table-click">{props.value}</span></span>
+        Cell: c => this.renderCell(c, '', '', false, false),
+        Aggregated: a => this.renderAggregatedSignOff(a, 'superv_id', 'supervisor_signoff', 'signoff', 'supervisor'),
+        style: this.getStyle(false, 'center')
       }
     ];
 
@@ -809,27 +810,26 @@ class DashboardOne extends React.Component {
                     moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
                 {/* {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col> */}
               </Row>
-              {!_.isEmpty(data) ? <ReactTable
-                sortable={false}
-                getTdProps={this.handleTableCellClick}
-                data={data}
-                columns={columns}
-                showPaginationBottom={false}
-                defaultPageSize={8}
-                headerStyle={{ fontSize: '0.5em' }}
-                previousText={back}
-                nextText={next}
-                pageText={page}
-                ofText={off}
-                headerClassName={"wordwrap"}
-                rowsText={rows}
-                pageSizeOptions={[8, 16, 24]}
-                pivotBy={["hour_interval"]}
-                onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
-                expanded={this.state.expanded}
-                resizable={false}
-              // getTdProps={this.getTdProps}
-              /> : <Spinner />}
+              {!_.isEmpty(data) ?
+                <ReactTable
+                  sortable={false}
+                  data={data}
+                  columns={columns}
+                  showPaginationBottom={false}
+                  defaultPageSize={8}
+                  headerStyle={{ fontSize: '0.5em' }}
+                  previousText={back}
+                  nextText={next}
+                  pageText={page}
+                  ofText={off}
+                  headerClassName={"wordwrap"}
+                  rowsText={rows}
+                  pageSizeOptions={[8, 16, 24]}
+                  pivotBy={["hour_interval"]}
+                  onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
+                  expanded={this.state.expanded}
+                  resizable={false}
+                /> : <Spinner />}
             </Col>
           </Row>
           <Comments
