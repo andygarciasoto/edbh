@@ -317,8 +317,8 @@ function isFieldAllowed(role, row, timezone) {
   if (role === 'Administrator') {
     return true;
   }
-  if (row._subRows) {
-    let rowTime = moment(row._subRows[0]._original.hour_interval_start);
+  if (row) {
+    let rowTime = moment(row.hour_interval_start);
     let actualSiteTime = timezone ? moment().tz(timezone) : moment();
     let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
     let result;

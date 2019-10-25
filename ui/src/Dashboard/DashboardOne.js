@@ -108,13 +108,22 @@ class DashboardOne extends React.Component {
       dateFromData: false,
       shifts: {},
       timezone: this.props.user.timezone,
-      currentHour: hour,
-      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift')
+      currentHour: hour
     }
   }
 
   getTextTranslations(props) {
+    var hour = moment(getCurrentTime()).hours();
+    let shiftByHour;
+    if (hour >= 7 && hour < 15) {
+      shiftByHour = '1st Shift';
+    } else if (hour >= 15 && hour < 23) {
+      shiftByHour = '2nd Shift';
+    } else {
+      shiftByHour = '3rd Shift';
+    }
     return {
+      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift'),
       partNumberText: props.t('Part Number'),
       idealText: props.t('Ideal'),
       targetText: props.t('Target'),
@@ -125,6 +134,21 @@ class DashboardOne extends React.Component {
       commentsActionText: props.t('Comments And Actions Taken'),
       operatorText: props.t('Operator'),
       supervisorText: props.t('Supervisor')
+    }
+  }
+
+  getShiftHeader(props) {
+    var hour = moment(getCurrentTime()).hours();
+    let shiftByHour;
+    if (hour >= 7 && hour < 15) {
+      shiftByHour = '1st Shift';
+    } else if (hour >= 15 && hour < 23) {
+      shiftByHour = '2nd Shift';
+    } else {
+      shiftByHour = '3rd Shift';
+    }
+    return {
+      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift'),
     }
   }
 
@@ -372,12 +396,15 @@ class DashboardOne extends React.Component {
         shiftByHour = '3rd Shift';
       };
       let _this = this;
-      if (this.state.currentLanguage !== nextProps.search.ln) {
+      if (nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) {
         let currentLanguage = nextProps.search.ln.toLowerCase();
         currentLanguage = currentLanguage.replace('-', '_');
         i18next.changeLanguage(currentLanguage, () => {
-          _this.setState(Object.assign(_this.getTextTranslations(_this.props)), () => _this.getTableColumns());
+          _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns());
         }); // -> returns a Promise
+      }
+      if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
+        _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns())
       }
       this.setState({
         selectedDate: nextProps.search.dt || getCurrentTime(),
@@ -521,19 +548,19 @@ class DashboardOne extends React.Component {
       }
     }
     let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
-    if (rowValid && column.id === 'actual_pcs' && rowValid.actual_pcs !== '') {
+    if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime())) {
       style.backgroundColor = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
       style.color = 'white';
 
-    } else if (rowValid && column.id === 'cumulative_pcs' && rowValid.cumulative_pcs !== '' && rowValid.cumulative_pcs !== null && rowInfo.subRows !== undefined) {
+    } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime())) {
       style.backgroundColor = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
       style.color = 'white';
 
-    } else if ((rowInfo && column.id === 'timelost_summary') && (rowInfo.row.timelost_summary !== null) && rowInfo.row._subRows && Math.round(rowInfo.row._subRows[0]._original.allocated_time) !== 0) {
+    } else if (rowValid && column.id === 'timelost_summary' && rowInfo.subRows && this.getTimeLostToSet(rowInfo) && Math.round(rowInfo.row._subRows[0]._original.allocated_time) !== 0) {
 
       style.backgroundColor = '#b80600';
       style.backgroundImage = 'url("../dark-circles.png")';
@@ -685,7 +712,7 @@ class DashboardOne extends React.Component {
         accessor: 'ideal',
         minWidth: 90,
         Cell: c => this.renderCell(c, 'ideal', '0', true, true, 'values', c.original),
-        Aggregated: a => this.renderAggregated(a, 'summary_ideal', '0', false, false),
+        Aggregated: a => this.renderAggregated(a, 'summary_ideal', '', false, false),
         style: this.getStyle(false, 'center')
       }, {
         Header: this.getHeader(this.state.targetText),
