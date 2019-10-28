@@ -52,9 +52,23 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
               assetValues.push(cell.value);
             }
           });
-          console.log(assetValues);
+          if (assetValues[8] === 'NULL'){
+            assetValues[8] = 0;
+          }
+          console.log(assetValues[8]);
+          sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Asset '${assetValues[0]}', '${assetValues[1]}', '${assetValues[2]}', '${assetValues[3]}', '${assetValues[4]}',
+          '${assetValues[5]}', '${assetValues[6]}', '${assetValues[7]}', 0, '${assetValues[9]}', '${assetValues[10]}', '${assetValues[11]}', 
+          '${assetValues[12]}', '${assetValues[13]}', '${assetValues[14]}', '${assetValues[15]}', '${assetValues[16]}', '${assetValues[17]}', '${assetValues[18]}'`,
+          (err, data) => {
+              if (err) {
+                  console.log(err);
+                  res.status(500).send({ message: 'Error', database_error: err });
+                  return;
+              }
+              console.log("corro esta cantidad de veces");
+          });
+          console.log("clean");
           assetValues = [];
-          console.log("lets see");
       }
         //console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
       });

@@ -695,7 +695,6 @@ router.put('/production_data', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            console.log(asset_code);
             sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
                 (err, data) => {
                     if (err) {
@@ -815,12 +814,10 @@ router.get("/order_assembly", async function (req, res) {
                     body: assembly,
                     timeout: 10000
                 }, function (error, resp, body) {
-                    console.log(error);
                     if (error) {
                         res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }
-                    console.log(resp.statusCode);
                     if (resp.statusCode >= 400) {
                         res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
                         return;
@@ -833,7 +830,6 @@ router.get("/order_assembly", async function (req, res) {
                                     return;
                                 }
                                 let response = JSON.parse(Object.values(dt)[0].OrderData);
-                                console.log(response[0].OrderData.order_id);
                                 if (response[0].OrderData.order_id === null || response[0].OrderData.order_id === undefined) {
                                         res.status(500).send({ message: 'Order took more time than it should. Please try again or try with a different order.', jtrax_error: error });
                                         return;
@@ -842,7 +838,7 @@ router.get("/order_assembly", async function (req, res) {
                                         return;
                                 }
                             });
-                            var seconds = 2;
+                            var seconds = 1.5;
                             var waitTill = new Date(new Date().getTime() + seconds * 1000);
                             while(waitTill > new Date()){
                             }
@@ -974,11 +970,5 @@ router.get('/asset_display_system', async function (req, res) {
             responseGet(response, req, res, 'AssetDisplaySystem');
         });
 });
-
-function delay() {
-    var msg = "The order hasn't been added to the database. Trying again..."
-    //console.log(msg);
-}
-
 
 module.exports = router;
