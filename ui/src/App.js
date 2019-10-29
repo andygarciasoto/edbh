@@ -8,6 +8,7 @@ import DashboardOne from './Dashboard/DashboardOne';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { isComponentValid } from './Utils/Requests';
 import * as qs from 'query-string';
 
 function App(propsApp) {
@@ -30,28 +31,31 @@ function App(propsApp) {
                 user={propsApp.user} t={t}
                 defaultAsset={machine}
                 history={props.history}
-                search={qs.parse(props.history.location.search)} 
-                />
+                search={qs.parse(props.history.location.search)}
+              />
             )
           }
           } />
-        <Route exact path="/login" render={(props) => 
-        <Login t={t} 
-        history={props.history}
-        search={qs.parse(props.history.location.search)}
-        />} 
+        <Route exact path="/login" render={(props) =>
+          <Login t={t}
+            history={props.history}
+            search={qs.parse(props.history.location.search)}
+          />}
         />
-        <Route exact path="/" render={(props) => 
-        <SignIn t={t} 
-          history={props.history}
-          search={qs.parse(props.history.location.search)}
-        />} />
-        <Route exact path="/import" render={(props) => 
-        <Import t={t} 
-          history={props.history}
-          user={propsApp.user}
-          search={qs.parse(props.history.location.search)}
-        />} />
+        <Route exact path="/" render={(props) =>
+          <SignIn t={t}
+            history={props.history}
+            search={qs.parse(props.history.location.search)}
+          />} />
+        {propsApp.user && isComponentValid(propsApp.user.role, 'import') ?
+          <Route exact path="/import" render={(props) =>
+            <Import t={t}
+              history={props.history}
+              user={propsApp.user}
+              search={qs.parse(props.history.location.search)}
+            />} />
+          : null
+        }
       </Suspense>
     </Router>
   );

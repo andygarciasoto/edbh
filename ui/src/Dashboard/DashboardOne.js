@@ -2,7 +2,7 @@ import React from 'react';
 import './dashboard.scss';
 import '../sass/tooltip.scss'
 import Header from '../Layout/Header';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import i18next from 'i18next';
 import 'react-table/react-table.css';
@@ -19,6 +19,7 @@ import ErrorModal from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
 import openSocket from 'socket.io-client';
 import FontAwesome from 'react-fontawesome';
+import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import {
   getRequestData,
@@ -431,14 +432,17 @@ class DashboardOne extends React.Component {
   async getDashboardData(data) {
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
-    if (config['first_signoff_reminder'].includes(logoffHour)) {
-      this.setState({ signoff_reminder: true })
-    } else {
-      this.setState({ signoff_reminder: false })
-    }
+
+    let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
+    let errorModal = false;
+    let errorMessage = '';
+    let selectedShift = '';
+    let selectedDate = '';
+
     if (logoffHour === config['second_signoff_reminder']) {
       if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
-        this.setState({ errorModal: true, errorMessage: "Please sign off for the previous hour" })
+        errorModal = true;
+        errorMessage = 'Please sign off for the previous hour';
       }
     }
     var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
@@ -456,7 +460,9 @@ class DashboardOne extends React.Component {
       response = await getRequestData(data);
     }
     if (response instanceof Object) {
-      this.setState({ data: response, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
+      selectedShift = mapShiftReverse(data[2]);
+      selectedDate = data[1];
+      // this.setState({ data: response, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
     } else {
       console.log('Data could not be retrieved from the endpoint /data');
     }
@@ -464,21 +470,13 @@ class DashboardOne extends React.Component {
       comments = await getIntershift(data);
     }
     if (comments instanceof Object) {
-      this.setState({ comments: comments })
+      // this.setState({ comments: comments })
     } else {
       console.log('Data could not be retrieved from the endpoint /intershift_communication');
     }
-  }
 
-  getTdProps(state, rowInfo, instance) {
-    if (rowInfo && instance.id === 'actual_pcs') {
-      return {
-        style: {
-          backgroundColor: Number(rowInfo.row.actual_pcs) < Number(rowInfo.row.target_pcs) ? 'red' : 'green',
-        }
-      }
-    }
-    return {}
+    this.setState({ signoff_reminder, errorModal, errorMessage, data: response, selectedShift, selectedDate, comments });
+
   }
 
   changeDate(e) {
@@ -791,6 +789,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
+    const importUrl = `/import`;
     return (
       <React.Fragment>
         <Header className="app-header"
@@ -824,6 +823,9 @@ class DashboardOne extends React.Component {
             shifts={this.state.shifts}
           /> : null}
         <div className="wrapper-main">
+          {isComponentValid(this.props.user.role, 'import') ?
+            <Button variant="outline-primary" className="query-button"><Link to={importUrl}>{'Import Page'} <FontAwesome name="fas fa-arrow-circle-up" /></Link></Button>
+            : null}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
