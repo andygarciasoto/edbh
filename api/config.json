@@ -10,7 +10,7 @@
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "http://localhost:3000/dashboard",
     "timezone": "MST",
-    "socket_timeout": 90000,
+    "socket_timeout": 30000,
     "token_expiration": 14400000,
     "app_reg_name": "PHIOTFCGFOTFDev",
     "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
