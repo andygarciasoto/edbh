@@ -32,15 +32,17 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  getStationAsset
+  getStationAsset,
+  BuildGet
 } from '../Utils/Requests';
 import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
 import config from '../config.json';
-import { SOCKET } from '../Utils/Constants';
+import { SOCKET, API } from '../Utils/Constants';
 import('moment/locale/es');
+const axios = require('axios');
 
 
 class DashboardOne extends React.Component {
@@ -429,7 +431,7 @@ class DashboardOne extends React.Component {
     this.getDashboardData(data);
   }
 
-  async getDashboardData(data) {
+  async getDashboardData(filter) {
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
@@ -453,29 +455,41 @@ class DashboardOne extends React.Component {
         localStorage.removeItem("currentHour");
       }
     }
-    let response = {};
-    let comments = {};
 
-    if (data && data[0]) {
-      response = await getRequestData(data);
-    }
-    if (response instanceof Object) {
-      selectedShift = mapShiftReverse(data[2]);
-      selectedDate = data[1];
-      // this.setState({ data: response, selectedShift: mapShiftReverse(data[2]), selectedDate: data[1] })
-    } else {
-      console.log('Data could not be retrieved from the endpoint /data');
-    }
-    if (data && data[0]) {
-      comments = await getIntershift(data);
-    }
-    if (comments instanceof Object) {
-      // this.setState({ comments: comments })
-    } else {
-      console.log('Data could not be retrieved from the endpoint /intershift_communication');
-    }
+    if (filter && filter[0]) {
+      const parameters = {
+        params: {
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: mapShift(filter[2]),
+          hr: filter[3]
+        }
+      }
+      let requestData = [
+        BuildGet(`${API}/data`, parameters),
+        BuildGet(`${API}/intershift_communication`, parameters)
+      ];
 
-    this.setState({ signoff_reminder, errorModal, errorMessage, data: response, selectedShift, selectedDate, comments });
+      let _this = this;
+
+      axios.all(requestData).then(
+        axios.spread((responseData, responseIntershift) => {
+
+          let data = responseData.data;
+          let comments = responseIntershift.data;
+
+          if (data instanceof Object) {
+            selectedShift = mapShiftReverse(filter[2]);
+            selectedDate = filter[1];
+          }
+
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments });
+
+        })
+      ).catch(function (error) {
+        console.log(error);
+      });
+    }
 
   }
 
@@ -661,7 +675,6 @@ class DashboardOne extends React.Component {
   }
 
   getTableColumns() {
-    let _this = this;
     const columns = [
       {
         Header: "",

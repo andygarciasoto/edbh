@@ -11,6 +11,10 @@ const fileUploadConfig = {
   }
 }
 
+function BuildGet(url, parameters, config) {
+  return axios.get(url, parameters, config);
+}
+
 async function getRequestData(data) {
   let res = {};
   const parameters = {
@@ -381,5 +385,6 @@ export {
   getProducts,
   formatNumber,
   getStationAsset,
-  getCurrentTimeOnly
+  getCurrentTimeOnly,
+  BuildGet
 }
