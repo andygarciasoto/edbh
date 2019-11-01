@@ -102,10 +102,10 @@ function createTimelossSummary(obj) {
         item['timelost_summary'] = summary === 0 ? null : summary;
         item['latest_timelost_code'] = item.timelost !== null ? item.timelost[0].dtreason_code : null;
 
-        if (item['summary_setup_minutes'] < 0 ){
+        if (item['summary_setup_minutes'] < 0) {
             item['summary_setup_minutes'] = 0;
         }
-        if (item['summary_breakandlunch_minutes'] < 0 ){
+        if (item['summary_breakandlunch_minutes'] < 0) {
             item['summary_breakandlunch_minutes'] = 0;
         }
     })
@@ -118,59 +118,60 @@ function structureMachines(obj) {
 }
 
 function createUnallocatedTime(obj, tz) {
+    tz = 12;
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = tz;
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
         var totalTime = lunch_setup ? 60 - lunch_setup : 60;
-        if (totalTime < 0){
+        if (totalTime < 0) {
             totalTime = 0;
         }
-        if (lunch_setup > 60){
+        if (lunch_setup > 60) {
             lunch_setup = 60;
         }
         var newIdeal = 0;
         var minutes = moment().minutes();
 
-        if ((item.production_id === '') || item.production_id === undefined){
-            item['unallocated_time'] = totalTime + lunch_setup;
-        } 
-        else if (item.summary_actual >= item.summary_ideal) {
-            item['unallocated_time'] = lunch_setup;
+        if ((item.production_id === '') || item.production_id === undefined) {
+            item['unallocated_time'] = base === current ? minutes : totalTime + lunch_setup;
         }
-        else if (base === current){
-            if (minutes > lunch_setup){
-                newIdeal = item.summary_ideal * ((minutes - lunch_setup)/(totalTime));
-                if (item.summary_actual < newIdeal){
-                var idealTimeForPart = totalTime/item.summary_ideal;
-                var minimumTime = newIdeal * idealTimeForPart;
-                var actualTimeForPart = item.summary_actual * idealTimeForPart;
-                item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart) + lunch_setup;
-                }else{
-                    item['unallocated_time'] = lunch_setup;
+        else if (item.summary_actual >= item.summary_ideal) {
+            item['unallocated_time'] = 0;
+        }
+        else if (base === current) {
+            if (minutes > lunch_setup) {
+                newIdeal = item.summary_ideal * ((minutes - lunch_setup) / (totalTime));
+                if (item.summary_actual < newIdeal) {
+                    var idealTimeForPart = totalTime / item.summary_ideal;
+                    var minimumTime = newIdeal * idealTimeForPart;
+                    var actualTimeForPart = item.summary_actual * idealTimeForPart;
+                    item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
+                } else {
+                    item['unallocated_time'] = 0;
                 }
-            }else{
-                item['unallocated_time'] = lunch_setup;
+            } else {
+                item['unallocated_time'] = 0;
             }
         }
         else {
-            if (item.summary_actual === 0){
-                item['unallocated_time'] = totalTime + lunch_setup;    
-            }else{
-                var idealTimeForPart = totalTime/item.summary_ideal;
+            if (item.summary_actual === 0) {
+                item['unallocated_time'] = totalTime;
+            } else {
+                var idealTimeForPart = totalTime / item.summary_ideal;
                 var actualTimeForPart = item.summary_actual * idealTimeForPart;
-                item['unallocated_time'] = Math.round(totalTime - actualTimeForPart) + lunch_setup;
+                item['unallocated_time'] = Math.round(totalTime - actualTimeForPart);
+            }
         }
-    }
         item['allocated_time'] = item['unallocated_time'] - (lunch_setup + item.timelost_summary);
-        if (item['allocated_time'] < 0){
+        if (item['allocated_time'] < 0) {
             item['allocated_time'] = 0;
         }
-        if (item['unallocated_time'] > 60){
+        if (item['unallocated_time'] > 60) {
             item['unallocated_time'] = 60;
         }
     })
     return obj;
 }
 
-export { restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines, createUnallocatedTime };7
+export { restructureSQLObject, replaceFieldNames, nameMapping, restructureSQLObjectByContent, createLatestComment, createTimelossSummary, structureMachines, createUnallocatedTime }; 7
