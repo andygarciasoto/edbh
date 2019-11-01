@@ -479,6 +479,7 @@ class DashboardOne extends React.Component {
           let comments = responseIntershift.data;
 
           if (data instanceof Object) {
+            data = _.orderBy(data, ['start_time']);
             selectedShift = mapShiftReverse(filter[2]);
             selectedDate = filter[1];
           }
@@ -595,7 +596,7 @@ class DashboardOne extends React.Component {
   renderAggregated(cellInfo, prop, defaultValue, orderChild, displayClick) {
     let newCellInfo = Object.assign({}, cellInfo);
     if (orderChild && newCellInfo.subRows.length > 1) {
-      let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.hour_interval_start));
+      let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.start_time));
       newCellInfo.subRows = newSubrows;
     }
     if (newCellInfo.subRows[0] !== undefined && newCellInfo.subRows[0]._original[prop] !== '') {
