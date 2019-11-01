@@ -814,7 +814,7 @@ router.get("/order_assembly", async function (req, res) {
                     body: assembly,
                     timeout: 10000
                 }, function (error, resp, body) {
-                    if (error) {
+                    if (error || body) {
                         res.status(500).send({ message: 'Error', jtrax_error: error });
                         return;
                     }
@@ -822,28 +822,13 @@ router.get("/order_assembly", async function (req, res) {
                         res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
                         return;
                     }
-                        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
-                            (err, dt) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                let response = JSON.parse(Object.values(dt)[0].OrderData);
-                                if (response[0].OrderData.order_id === null || response[0].OrderData.order_id === undefined) {
-                                        res.status(500).send({ message: 'Order took more time than it should. Please try again or try with a different order.', jtrax_error: error });
-                                        return;
-                                } else {
-                                        res.status(200).json(response);
-                                        return;
-                                }
-                            });
-                            var seconds = 1.5;
-                            var waitTill = new Date(new Date().getTime() + seconds * 1000);
-                            while(waitTill > new Date()){
-                            }
+                        console.log("exitoso");
+                        console.log(response);
+                        res.status(200).json(response);
+                        return;
                 });
             } else {
+                console.log(response);
                 res.status(200).json(response);
                 return;
             }

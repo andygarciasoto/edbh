@@ -2,36 +2,15 @@ curl --request POST
   --url 'https://phc-fcgfotf01-dev-iothub.azure-devices.net/devices/IVJ1WOKM/messages/events?api-version=2018-06-30' 
   --header 'authorization: SharedAccessSignature sr=phc-fcgfotf01-dev-iothub.azure-devices.net%2Fdevices%2FIVJ1WOKM&sig=vHwnW1%2FdBd9sd3IOhANs0ZgrLikw5cktkAg8xqOjoDA%3D&se=1565796177' 
   --data '{
-  "deviceId": "IVJ1WOKM",
-  "productFilter": "fcgFotf",
-  "data": {
-    "product_code": "Test",
-    "product_name": "Test",
-    "product_description": null,
-    "product_family": null,
-    "grouping1": null,
-    "grouping2": null,
-    "grouping3": null,
-    "grouping4": null,
-    "grouping5": null,
-    "status": "Active",
-    "order_number": "14S588",
-    "asset_code": "12107",
-    "order_quantity": 24,
-    "UOM_code": "Pieces",
-    "routed_cycle_time": 205,
-    "minutes_allowed_per_setup": 0.3,
-    "ideal": 0,
-    "target_percent_of_ideal": 0,
-    "production_status": "production",
-    "valid_from": "1900-01-01T00:00:00",
-    "valid_to": "1900-01-01T00:00:00",
-    "end_time": "1900-01-01T00:00:00",
-    "start_time": "2019-08-07T16:43:57.8429368Z",
-    "timestamp": "2019-08-07T16:43:57.8429368Z",
-    "message_source": "jTrax",
-    "messageType": "Reading"
-  }
+	"timestamp":1572464400000,
+	"data":	[{
+		  "name": "Modbus.ADAM01CRIMPER.CRIMPER_PART_COUNT",
+      "value": 1,
+      "quality": true,
+      "timestamp": 1572464400000
+		}],
+	"deviceId":"PCZ81UO3",
+	"productFilter":"kepserver"
 }
 
 '

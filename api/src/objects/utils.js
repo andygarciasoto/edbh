@@ -37,6 +37,7 @@ function restructureSQLObjectByContent(obj) {
                 newItem['target'] = prod.target;
                 newItem['actual'] = prod.actual;
                 newItem['order_number'] = prod.order_number;
+                newItem['start_time'] = prod.start_time;
                 newItem['routed_cycle_time'] = prod.routed_cycle_time;
                 newArray.push(newItem);
                 delete newItem.production;
