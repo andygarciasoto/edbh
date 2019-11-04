@@ -1,3 +1,8 @@
+
+const appInsights = require("applicationinsights");
+appInsights.setup("363e8d3c-d6ee-465a-898c-71e8b489718d");
+appInsights.start();
+
 var express = require('express');
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
