@@ -479,7 +479,7 @@ class DashboardOne extends React.Component {
           let comments = responseIntershift.data;
 
           if (data instanceof Object) {
-            data = _.orderBy(data, ['start_time']);
+            data = _.orderBy(data, ['hour_interval_start', 'start_time']);
             selectedShift = mapShiftReverse(filter[2]);
             selectedDate = filter[1];
           }
