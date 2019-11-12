@@ -803,7 +803,6 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
-    const importUrl = `/import`;
     return (
       <React.Fragment>
         <Header className="app-header"
@@ -837,9 +836,6 @@ class DashboardOne extends React.Component {
             shifts={this.state.shifts}
           /> : null}
         <div className="wrapper-main">
-          {isComponentValid(this.props.user.role, 'import') ?
-            <Button variant="outline-primary" className="query-button"><Link to={importUrl}>{'Import Page'} <FontAwesome name="fas fa-arrow-circle-up" /></Link></Button>
-            : null}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>

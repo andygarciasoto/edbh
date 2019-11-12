@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.scss';
 import logo from '../Parker_Hannifin.svg';
-import { Row, Col } from 'react-bootstrap';
+import { Nav, Navbar, Row, Dropdown } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import MegaMenu from './MegaMenu';
 import DatePickerCustom from './DatePicker';
@@ -12,6 +12,7 @@ import moment from 'moment';
 import QueryButton from './QueryButton';
 import { isComponentValid } from '../Utils/Requests';
 import { Link } from 'react-router-dom';
+import $ from 'jquery';
 
 
 class Header extends React.Component {
@@ -28,7 +29,6 @@ class Header extends React.Component {
         }
         this.openMenu = this.openMenu.bind(this);
         this.onScroll = this.onScroll.bind(this);
-        this.signOut = this.signOut.bind(this);
     }
 
     collectInputs = (value, type) => {
@@ -37,9 +37,9 @@ class Header extends React.Component {
 
     openMenu() {
         this.state.megaMenuToggle === 'dropdown-content' ?
-        this.props.sendMenuToggle(true) :
-        this.props.sendMenuToggle(false);
-        
+            this.props.sendMenuToggle(true) :
+            this.props.sendMenuToggle(false);
+
         isComponentValid(this.props.user.role, 'megamenu') ?
             this.state.megaMenuToggle === 'dropdown-content opened' ?
                 this.setState({ megaMenuToggle: 'dropdown-content' }) :
@@ -64,26 +64,39 @@ class Header extends React.Component {
         this.setState({ megaMenuToggle: 'dropdown-content' });
     }
 
-    signOut() {
-        // localStorage.setItem('accessToken', undefined);
+    redirectTo = (page) => {
+        let { search } = this.props;
+        let queryItem = Object.assign({}, search);
+        queryItem["mc"] = this.state.machine;
+        queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD HH:mm');
+        queryItem["sf"] = this.state.shift;
+        queryItem["ln"] = this.state.language;
+        queryItem["tp"] = this.state.machine_type;
+        let parameters = $.param(queryItem);
+        this.props.history.push(`${page}?${parameters}`);
     }
 
     render() {
+
+        const customToogle = React.forwardRef(({ children, onClick }, ref) => (
+            <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name='bars' /></a>
+        ));
+
         const t = this.props.t;
         const station = localStorage.getItem('machine_name');
         const loginUrl = `/?st=${station}`
         return (
-            <nav className="navbar">
-                <Row className={'row'}>
-                    <Col className={'col'} md={3} lg={3}><img src={logo} className="App-logo header-side" alt="logo" /></Col>
-                    <Col className={'col'} md={9} lg={9}>
-                        <div className="links header-side">
-                            <span className="header-item header-elem" href="#" id="log-out" onClick={this.signOut}><Link to={loginUrl}>{t('Sign Out')} <FontAwesome name="sign-out" /></Link></span>
-                            {isComponentValid(this.props.user.role, 'megamenu') ? 
-                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Menu')}&nbsp;</span>
+            <Navbar>
+                <Row>
+                    <Navbar.Brand><img src={logo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
+
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse className="justify-content-end">
+                        {isComponentValid(this.props.user.role, 'megamenu') ?
+                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Parameters')}&nbsp;</span>
                                 <FontAwesome
                                     onClick={(e) => this.openMenu(e)}
-                                    name="bars" />
+                                    name="filter" />
                                 <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
@@ -94,7 +107,7 @@ class Header extends React.Component {
                                         collectInput={this.collectInputs}
                                         value={this.state.dateValue}
                                         search={this.props.search}
-                                         />
+                                    />
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={t}
@@ -102,7 +115,7 @@ class Header extends React.Component {
                                         date={this.state.dateValue}
                                         commonParams={this.props.commonParams}
                                         shifts={this.props.shifts}
-                                        />
+                                    />
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.languageValue} />
@@ -121,25 +134,37 @@ class Header extends React.Component {
                                     />
                                 </MegaMenu>
                             </span>
-                             : null}
-                             {isComponentValid(this.props.user.role, 'neworder') ? 
-                             ((this.state.machineType) && (this.state.machineType) !== '' && (this.state.machineType !== 'Automated')) ?
+                            : null}
+                        {isComponentValid(this.props.user.role, 'neworder') ?
+                            ((this.state.machineType) && (this.state.machineType) !== '' && (this.state.machineType !== 'Automated')) ?
                                 <span
-                                className="header-item"
-                                href="#"
-                                id="mega-menu">
-                                <span className="header-elem"
-                                    value={this.state.newOrder_value}
-                                    onClick={(e) => this.props.openModal('order')}>
-                                    {t('New Order')}&nbsp;</span>
-                                <FontAwesome
-                                    onClick={(e) => this.props.openModal('order')}
-                                    name="file-text" /></span> : null : null
-                                }
-                        </div>
-                    </Col>
+                                    className="header-item"
+                                    href="#"
+                                    id="mega-menu">
+                                    <span className="header-elem"
+                                        value={this.state.newOrder_value}
+                                        onClick={(e) => this.props.openModal('order')}>
+                                        {t('New Order')}&nbsp;</span>
+                                    <FontAwesome
+                                        onClick={(e) => this.props.openModal('order')}
+                                        name="file-text" /></span> : null : null
+                        }
+                        {isComponentValid(this.props.user.role, 'import') ?
+                            <Dropdown className="customToogle">
+                                <Dropdown.Toggle as={customToogle} id="dropdown-basic">
+                                    {t('Menu')}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {/* <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{t('Dashboard')}</Dropdown.Item> */}
+                                    <Dropdown.Item onClick={() => this.redirectTo('import')}>{t('Import')}</Dropdown.Item>
+                                    {/* <Dropdown.Item onClick={() => this.redirectTo('admin_dashboard')}>{t('Admin Dashoard')}</Dropdown.Item> */}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            : null}
+                        <Nav.Link href={loginUrl}>{t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
+                    </Navbar.Collapse>
                 </Row>
-            </nav>
+            </Navbar>
         );
     }
 };
