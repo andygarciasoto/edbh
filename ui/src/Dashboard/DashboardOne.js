@@ -478,7 +478,7 @@ class DashboardOne extends React.Component {
           let comments = responseIntershift.data;
 
           if (data instanceof Object) {
-            data = _.orderBy(data, ['start_time']);
+            data = _.orderBy(data, ['hour_interval_start', 'start_time']);
             selectedShift = mapShiftReverse(filter[2]);
             selectedDate = filter[1];
           }
@@ -802,7 +802,6 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
-    const importUrl = `/import`;
     return (
       <React.Fragment>
         <Header className="app-header"
