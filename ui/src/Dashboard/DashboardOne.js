@@ -356,7 +356,6 @@ class DashboardOne extends React.Component {
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
-        console.log(response, 'new msg')
         if (response.message === true) {
           if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && this.props.search.mc) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
@@ -837,9 +836,10 @@ class DashboardOne extends React.Component {
             shifts={this.state.shifts}
           /> : null}
         <div className="wrapper-main">
+          {/*
           {isComponentValid(this.props.user.role, 'import') ?
             <Button variant="outline-primary" className="query-button"><Link to={importUrl}>{'Import Page'} <FontAwesome name="fas fa-arrow-circle-up" /></Link></Button>
-            : null}
+          : null}*/}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
