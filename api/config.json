@@ -1,7 +1,7 @@
 {
     "user": "appUser",
     "password": "5sHEMk45PEtPqxjv8uk9w5gS",
-    "server": "phc-diviot01-dev-sql.database.windows.net",
+    "server": "phc-diviot01-tst-sql.database.windows.net",
     "database": "FCGFOTF",
     "cors": ["http://localhost:3000", "http://localhost:3001"],
     "URL": "http://localhost:3000",
