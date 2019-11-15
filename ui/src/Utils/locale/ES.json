@@ -81,5 +81,6 @@
     "Accept": "Aceptar",
     "Cancel": "Cancelar",
     "New Order": "Nueva Orden",
-    "No intershift communications for this shift": "No hay comunicación entre turnos para este turno"
+    "No intershift communications for this shift": "No hay comunicación entre turnos para este turno",
+    "Parameters": "Parámetros"
 }

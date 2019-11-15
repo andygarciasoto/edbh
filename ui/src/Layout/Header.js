@@ -155,9 +155,9 @@ class Header extends React.Component {
                                     {t('Menu')}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    {/* <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{t('Dashboard')}</Dropdown.Item> */}
+                                    <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{t('Dashboard')}</Dropdown.Item>
                                     <Dropdown.Item onClick={() => this.redirectTo('import')}>{t('Import')}</Dropdown.Item>
-                                    {/* <Dropdown.Item onClick={() => this.redirectTo('admin_dashboard')}>{t('Admin Dashoard')}</Dropdown.Item> */}
+                                    <Dropdown.Item onClick={() => this.redirectTo('summary')}>{t('Summary Dashoard')}</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             : null}

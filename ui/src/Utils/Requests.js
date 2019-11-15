@@ -262,6 +262,7 @@ function isComponentValid(user_role, name) {
   }
   const componentStructure = {
     administrator: [
+      'menu',
       'megamenu',
       'actual',
       'partnumber',

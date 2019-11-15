@@ -37,10 +37,10 @@ class MachinePickerCustom extends React.Component {
     }
 
     onSelect(e) {
-        this.props.collectInput(e, 'machineValue');
+        this.props.collectInput(e, 'mc');
         const obj = _.find(this.state.machines, { asset_code: e })
         if (obj.automation_level) {
-            this.props.collectInput(obj.automation_level, 'machineType');
+            this.props.collectInput(obj.automation_level, 'tp');
         }
     }
 

@@ -17,7 +17,7 @@ class LanguagePickerCustom extends React.Component {
   }
 
   onSelect(e) {
-    this.props.collectInput(e, 'languageValue');
+    this.props.collectInput(e, 'ln');
   }
 
   componentWillReceiveProps(nextProps) {

@@ -13,23 +13,29 @@ class ShiftPickerCustom extends React.Component {
       value: props.value,
       shifts: []
     }
-    this.onSelect = this.onSelect.bind(this);
   }
 
   componentDidMount() {
-    // const shifts = getRequest('/shifts');
-    // console.log(this.props.shifts)
-    // shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) })
+    this.loadData(this.props);
+  }
+
+  loadData(props) {
+    const st = {
+      params: {
+        site: props.user.site
+      }
+    }
+    const shifts = getRequest('/shifts', st);
+    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ 
-      value: nextProps.value,
-      shifts: nextProps.shifts 
+    this.setState({
+      value: nextProps.value
     })
   }
 
-  onSelect(e) {
+  onSelect = (e) => {
     let hour = '';
     const date = this.props.date;
     const shifts = _.orderBy(this.state.shifts, 'shift_code');
@@ -43,8 +49,8 @@ class ShiftPickerCustom extends React.Component {
       hour = `${moment(shifts[2].hour, 'HH').format('HH:mm')}`;
     }
     const newDate = moment(moment(date).format('YYYY/MM/DD') + ' ' + hour);
-    this.props.collectInput(new Date(newDate), 'dateValue');
-    this.props.collectInput(e, 'shiftValue');
+    this.props.collectInput(new Date(newDate), 'dt');
+    this.props.collectInput(e, 'sf');
   }
 
   render() {

@@ -804,23 +804,6 @@ class DashboardOne extends React.Component {
     const obj = this;
     return (
       <React.Fragment>
-        <Header className="app-header"
-          t={t}
-          commonParams={this.state.commonParams}
-          selectedMachine={this.state.selectedMachine}
-          machineType={this.state.selectedMachineType}
-          selectedDate={this.state.selectedDate}
-          selectedShift={this.state.selectedShift}
-          selectedLanguage={this.state.currentLanguage}
-          user={this.props.user}
-          openModal={this.openModal}
-          changeLanguageBrowser={this.changeLanguageBrowser}
-          history={this.props.history}
-          search={this.props.search}
-          sendMenuToggle={this.menuToggle}
-          clearExpanded={this.clearExpanded}
-          shifts={this.state.shifts}
-        />
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) ?
           <Pagination
             selectedShift={this.state.selectedShift}

@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import './QueryButton.scss';
 import $ from 'jquery';
 import moment from 'moment';
-
+import * as qs from 'query-string';
 
 class QueryButton extends React.Component {
     constructor(props) {
@@ -15,7 +15,6 @@ class QueryButton extends React.Component {
             language: props.language,
             machine_type: props.machine_type
         }
-        this.onSubmit = this.onSubmit.bind(this);
     }
     componentDidMount() {
     }
@@ -30,9 +29,9 @@ class QueryButton extends React.Component {
         })
     }
 
-    async onSubmit() {
-        this.props.clearExpanded();
-        let { search } = this.props;
+    onSubmit = async () => {
+        //this.props.clearExpanded();
+        let { search } = qs.parse(this.props.history.location.search);
         let queryItem = Object.assign({}, search);
         queryItem["mc"] = this.state.machine;
         queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD HH:mm');

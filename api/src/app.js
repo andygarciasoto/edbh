@@ -62,7 +62,11 @@ ioServer.on('connection', function (socket) { })
 
 setInterval(
   function () {
-    ioServer.emit('message', { id: `All connected clients`, message: true })
+    try {
+      ioServer.emit('message', { id: `All connected clients`, message: true });
+    } catch (ex) {
+      console.log(ex);
+    }
   }, config['socket_timeout']);
 
 

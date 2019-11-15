@@ -49,10 +49,6 @@ class Import extends React.Component {
         this.setState({ file: file });
     }
 
-    goBack = () => {
-        this.props.history.goBack();
-    }
-
     onSubmit = () => {
         let _this = this;
         this.setState({ isLoading: true }, () => {
@@ -73,18 +69,7 @@ class Import extends React.Component {
     render() {
         return (
             <div className="wrapper-main-import" style={{ height: '100vh' }}>
-                <nav className="navbar app-header" >
-                    <Row className={'row'}>
-                        <Col className={'col'} md={2} lg={1} style={{ paddingRight: '0px' }}><img src={logo} className="App-logo header-side" alt="logo" /></Col>
-                        <Col className={'col no-padding'} md={1} lg={1} style={{ paddingLeft: '0px' }}><span className='title font-extra-bold'>{this.state.dataToolText}</span></Col>
-                        <Col className={'col'} md={9} lg={10}>
-                            <div className="links header-side">
-                                <span className="header-item header-elem" href="#" id="log-out"><Link to="/">{this.state.signOutText} <FontAwesome name="sign-out" /></Link></span>
-                            </div>
-                        </Col>
-                    </Row>
-                </nav>
-                <Button variant="outline-primary" className="query-button" onClick={this.goBack}>{this.state.backText} <FontAwesome name="fas fa-arrow-circle-left" /></Button>
+                <Row></Row>
                 <div className="import-wrapper">
                     <h4 style={{ marginBottom: '20px' }}>{this.state.dataToolImportText}</h4>
                     <div id="UploadFile" className="">

@@ -81,5 +81,6 @@
     "Accept": "Accept",
     "Cancel": "Cancel",
     "New Order": "New Order",
-    "No intershift communications for this shift": "No intershift communications for this shift"
+    "No intershift communications for this shift": "No intershift communications for this shift",
+    "Parameters": "Parameters"
 }

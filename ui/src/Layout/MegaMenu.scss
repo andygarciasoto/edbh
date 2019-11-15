@@ -2,7 +2,7 @@
     // background-color: white;
   }
   
-  #mega-menu .dropdown-content {
+  .dropdown-content {
     display: none;
     position: fixed;
     margin-top: 25px;
@@ -24,4 +24,8 @@
 
   .mega-menu-children:nth-child(5) p {
     visibility: hidden;
+  }
+
+  .title_child{
+    color: #ffb91d;
   }
