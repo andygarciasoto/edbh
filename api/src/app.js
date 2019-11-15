@@ -11,18 +11,18 @@ import data from './routes/data';
 import auth from './routes/auth';
 import datatool from './routes/datatool';
 var cors = require('cors');
-import config from  '../config.json';
+import config from '../config.json';
 const io = require('socket.io');
 
 var whitelist = config['cors'];
 var corsOptions = {
-    origin: function(origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   optionsSuccessStatus: 200,
   allowedHeaders: [
     'Authorization',
@@ -45,7 +45,7 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser())
 
-app.get("/", function(req, res){
+app.get("/", function (req, res) {
   res.send("Dxh Service");
 });
 app.use('/auth', auth);
@@ -58,18 +58,18 @@ console.log('Started API on port', port);
 
 const ioServer = io();
 
-ioServer.on('connection', function(socket){
-  setInterval(
-    function() {
-      ioServer.to(`${socket.id}`).emit('message', {id: `${socket.id}`, message: true})
-    }, config['socket_timeout'])
-  })
+ioServer.on('connection', function (socket) { })
+
+setInterval(
+  function () {
+    ioServer.emit('message', { id: `All connected clients`, message: true })
+  }, config['socket_timeout']);
 
 
-ioServer.attach(server,{
-  origins : config['cors'],
-  cookie : false,
-  serveClient : false
+ioServer.attach(server, {
+  origins: config['cors'],
+  cookie: false,
+  serveClient: false
 });
 
 
