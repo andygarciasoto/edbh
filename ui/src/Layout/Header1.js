@@ -3,7 +3,7 @@ import './Header1.scss';
 import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
 import logo from '../Parker_Hannifin.svg';
-import { isComponentValid } from '../Utils/Requests';
+import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';
 import MachinePickerCustom from './MachinePicker';
 import DatePickerCustom from './DatePicker';
@@ -13,6 +13,7 @@ import QueryButton from './QueryButton';
 import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
+import config from '../config.json';
 
 class Header1 extends React.Component {
 
@@ -26,13 +27,22 @@ class Header1 extends React.Component {
 
     getInitialState(props) {
         let search = qs.parse(props.history.location.search);
+        var hour = moment(getCurrentTime()).hours();
+        let shiftByHour;
+        if (hour >= 7 && hour < 15) {
+            shiftByHour = '1st Shift';
+        } else if (hour >= 15 && hour < 23) {
+            shiftByHour = '2nd Shift';
+        } else {
+            shiftByHour = '3rd Shift';
+        }
         return {
             megaMenuToggle: 'dropdown-content',
             mc: search.mc,
             tp: search.tp,
-            dt: new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')),
-            sf: search.sf || props.t('Select Shift'),
-            ln: search.ln || props.t('Select Language')
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            sf: search.sf || shiftByHour,
+            ln: search.ln || config['language']
         };
     }
 
@@ -42,12 +52,21 @@ class Header1 extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         let search = qs.parse(nextProps.history.location.search);
+        var hour = moment(getCurrentTime()).hours();
+        let shiftByHour;
+        if (hour >= 7 && hour < 15) {
+            shiftByHour = '1st Shift';
+        } else if (hour >= 15 && hour < 23) {
+            shiftByHour = '2nd Shift';
+        } else {
+            shiftByHour = '3rd Shift';
+        }
         this.setState({
             mc: search.mc,
             tp: search.tp,
-            dt: new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')),
-            sf: search.sf || nextProps.t('Select Shift'),
-            ln: search.ln || nextProps.t('Select Language')
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            sf: search.sf || shiftByHour,
+            ln: search.ln || config['language']
         });
     }
 
