@@ -114,7 +114,7 @@ class Header1 extends React.Component {
                             <span>
                                 <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                                 </Nav.Link>
-                                <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t}>
+                                <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history}>
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
@@ -124,13 +124,15 @@ class Header1 extends React.Component {
                                         collectInput={this.collectInputs}
                                         value={this.state.dt}
                                     />
-                                    <ShiftPickerCustom
-                                        collectInput={this.collectInputs}
-                                        t={this.props.t}
-                                        value={this.state.sf}
-                                        date={this.state.dt}
-                                        user={this.props.user}
-                                    />
+                                    {this.props.history.location.pathname !== '/summary' ?
+                                        <ShiftPickerCustom
+                                            collectInput={this.collectInputs}
+                                            t={this.props.t}
+                                            value={this.state.sf}
+                                            date={this.state.dt}
+                                            user={this.props.user}
+                                        />
+                                        : null}
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.ln} />
