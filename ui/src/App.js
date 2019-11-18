@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import './sass/App.scss';
 import Spinner from './Spinner';
 import SignIn from './SignIn';
@@ -14,6 +14,7 @@ import * as qs from 'query-string';
 
 function App(propsApp) {
   // set default machine and type
+  let [showModal, displayModal] = useState(false);
   const { t } = useTranslation();
   const machine = localStorage.getItem('machine_name');
   return (
@@ -24,7 +25,7 @@ function App(propsApp) {
         <meta name="theme-color" content="#ccc" />
       </Helmet>
       <Suspense fallback={<Spinner />}>
-        <Route path="/" render={(props) => (props.location.pathname !== "/" && props.location.pathname !== "/login") && <Header1 history={props.history} t={t} user={propsApp.user} />} />
+        <Route path="/" render={(props) => (props.location.pathname !== "/" && props.location.pathname !== "/login") && <Header1 history={props.history} t={t} user={propsApp.user} openModal={displayModal} />} />
         <Route
           path="/dashboard"
           render={function (props) {
@@ -34,6 +35,8 @@ function App(propsApp) {
                 defaultAsset={machine}
                 history={props.history}
                 search={qs.parse(props.history.location.search)}
+                showNewOrderModal={showModal}
+                closeOrderModal={displayModal}
               />
             )
           }

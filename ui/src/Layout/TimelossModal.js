@@ -8,12 +8,12 @@ import { sendPut } from '../Utils/Requests';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
-import { 
-    timelossGetReasons as getReasons, 
-    formatDateWithTime, 
+import {
+    timelossGetReasons as getReasons,
+    formatDateWithTime,
     getCurrentTime,
-    formatNumber } from '../Utils/Requests';
-import ValueModal from './ValueModal';
+    formatNumber
+} from '../Utils/Requests';
 
 
 
@@ -110,9 +110,9 @@ class TimelossModal extends React.Component {
     }
     closeTimeloss() {
         this.setState({
-            validationMessage: '', 
-            time_to_allocate: 0, 
-            unallocated_time: 0, 
+            validationMessage: '',
+            time_to_allocate: 0,
+            unallocated_time: 0,
             new_tl_reason: '',
             allowSubmit: true
         });
@@ -123,23 +123,23 @@ class TimelossModal extends React.Component {
         const value = parseInt(e.target.value);
         const max = Math.round(this.state.allocated_time);
         if (value > max) {
-            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed.', time_to_allocate: value, allowSubmit: true, changed: true})
-        } 
+            this.setState({ validationMessage: 'Error: The time to allocate exceedes the maximum allowed.', time_to_allocate: value, allowSubmit: true, changed: true })
+        }
         else if (value === 0) {
-            this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true, changed: true})
+            this.setState({ validationMessage: 'Error: You must enter a value greater than zero.', time_to_allocate: value, allowSubmit: true, changed: true })
         }
         else {
-            !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) : 
-            this.setState({ time_to_allocate: 1, validationMessage: '', changed: true}, this.validate(1));
+            !isNaN(value) ? this.setState({ time_to_allocate: value, validationMessage: '' }, this.validate(value)) :
+                this.setState({ time_to_allocate: 1, validationMessage: '', changed: true }, this.validate(1));
         }
     }
 
     validate(e) {
         const value = e || this.state.time_to_allocate;
-        if ((!isNaN(value)) && 
-        (this.state.new_tl_reason !== '') && 
-        (value > 0) && 
-        (Math.round(value) <= Math.round(this.state.allocated_time))) {
+        if ((!isNaN(value)) &&
+            (this.state.new_tl_reason !== '') &&
+            (value > 0) &&
+            (Math.round(value) <= Math.round(this.state.allocated_time))) {
             this.setState({ allowSubmit: false });
         }
     }
@@ -228,8 +228,8 @@ class TimelossModal extends React.Component {
                             </Col>
                             <Col sm={6} md={5} style={{ marginBottom: '5px' }}>
                                 <p style={{ marginBottom: '1px' }}>{`${t('Time to allocate (minutes)')}:`}</p>
-                                <input className={'timelost-field'} 
-                                    type="number" 
+                                <input className={'timelost-field'}
+                                    type="number"
                                     min="0"
                                     disabled={!this.props.isEditable}
                                     value={this.state.time_to_allocate}
@@ -237,7 +237,7 @@ class TimelossModal extends React.Component {
                                     onChange={this.allocateTime}></input>
                             </Col>
                             <Col sm={6} md={3} style={{ marginBottom: '5px' }}>
-                                <p style={{ marginTop: '5px', color: 'red', fontSize: '0.8em'}}>{this.state.validationMessage}</p>
+                                <p style={{ marginTop: '5px', color: 'red', fontSize: '0.8em' }}>{this.state.validationMessage}</p>
                             </Col>
                         </Row>
                         <div className="new-timeloss-reasoncode">
@@ -256,11 +256,11 @@ class TimelossModal extends React.Component {
                         </div>
                         <div className={'new-timeloss-button'}>
                             <Button variant="outline-primary"
-                                style={{ marginTop: '30px'}}
+                                style={{ marginTop: '30px' }}
                                 disabled={this.state.allowSubmit || !this.props.isEditable}
                                 onClick={this.submit}>{t('Submit')}
                             </Button>
-                        </div> {!this.props.isEditable ? <span style={{color: 'grey'}}>{t('Read-Only')}</span> : null}
+                        </div> {!this.props.isEditable ? <span style={{ color: 'grey' }}>{t('Read-Only')}</span> : null}
                     </div>
                     <div className={'new-timeloss-close'}>
                         <Button variant="outline-secondary"

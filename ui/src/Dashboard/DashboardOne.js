@@ -1,8 +1,7 @@
 import React from 'react';
 import './dashboard.scss';
-import '../sass/tooltip.scss'
-import Header from '../Layout/Header';
-import { Row, Col, Button } from 'react-bootstrap';
+import '../sass/tooltip.scss';
+import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import i18next from 'i18next';
 import 'react-table/react-table.css';
@@ -19,12 +18,9 @@ import ErrorModal from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
 import openSocket from 'socket.io-client';
 import FontAwesome from 'react-fontawesome';
-import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import {
-  getRequestData,
   getRequest,
-  getIntershift,
   formatDate,
   isComponentValid,
   mapShiftReverse,
@@ -35,7 +31,6 @@ import {
   getStationAsset,
   BuildGet
 } from '../Utils/Requests';
-import { handleTableCellClick } from "./tableFunctions";
 import classNames from "classnames";
 import matchSorter from "match-sorter";
 import * as _ from 'lodash';
@@ -279,6 +274,7 @@ class DashboardOne extends React.Component {
       modal_manualentry_IsOpen: false,
       errorModal: false,
     });
+    this.props.closeOrderModal(false);
   }
 
   menuToggle(flag) {
@@ -359,35 +355,41 @@ class DashboardOne extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (!_.isEqual(nextProps.search, this.props.search)) {
-      var hour = moment(getCurrentTime()).hours();
-      let shiftByHour;
-      if (hour >= 7 && hour < 15) {
-        shiftByHour = '1st Shift';
-      } else if (hour >= 15 && hour < 23) {
-        shiftByHour = '2nd Shift';
-      } else {
-        shiftByHour = '3rd Shift';
-      };
-      let _this = this;
-      if (nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) {
-        let currentLanguage = nextProps.search.ln.toLowerCase();
-        currentLanguage = currentLanguage.replace('-', '_');
-        i18next.changeLanguage(currentLanguage, () => {
-          _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns());
-        }); // -> returns a Promise
+    if (!nextProps.showNewOrderModal) {
+      if (!_.isEqual(nextProps.search, this.props.search)) {
+        var hour = moment(getCurrentTime()).hours();
+        let shiftByHour;
+        if (hour >= 7 && hour < 15) {
+          shiftByHour = '1st Shift';
+        } else if (hour >= 15 && hour < 23) {
+          shiftByHour = '2nd Shift';
+        } else {
+          shiftByHour = '3rd Shift';
+        };
+        let _this = this;
+        if (nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) {
+          let currentLanguage = nextProps.search.ln.toLowerCase();
+          currentLanguage = currentLanguage.replace('-', '_');
+          i18next.changeLanguage(currentLanguage, () => {
+            _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns());
+          }); // -> returns a Promise
+        }
+        if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
+          _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns())
+        }
+
+        this.setState({
+          selectedDate: nextProps.search.dt || getCurrentTime(),
+          selectedMachine: nextProps.search.mc || this.state.selectedMachine,
+          currentLanguage: nextProps.search.ln || config['language'],
+          selectedShift: nextProps.search.sf || shiftByHour,
+          selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
+          selectedHour: nextProps.search.hr,
+          expanded: {},
+        }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
       }
-      if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
-        _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns())
-      }
-      this.setState({
-        selectedDate: nextProps.search.dt || getCurrentTime(),
-        selectedMachine: nextProps.search.mc || this.state.selectedMachine,
-        currentLanguage: nextProps.search.ln || config['language'],
-        selectedShift: nextProps.search.sf || shiftByHour,
-        selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
-        selectedHour: nextProps.search.hr
-      }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
+    } else {
+      this.openModal('order');
     }
   }
 
@@ -470,11 +472,37 @@ class DashboardOne extends React.Component {
       axios.all(requestData).then(
         axios.spread((responseData1, responseData2, responseData3, responseIntershift) => {
 
-          let data = _.concat(responseData1.data, responseData2.data, responseData3.data);
+          let shift3 = {
+            'hour_interval': this.props.t('3rd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+          };
+
+          let shift1 = {
+            'hour_interval': this.props.t('1st Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+          };
+
+          let shift2 = {
+            'hour_interval': this.props.t('2nd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+          };
+
+          let data = _.concat(
+            [shift3],
+            _.orderBy(responseData1.data, ['hour_interval_start', 'start_time']),
+            [shift1],
+            _.orderBy(responseData2.data, ['hour_interval_start', 'start_time']),
+            [shift2],
+            _.orderBy(responseData3.data, ['hour_interval_start', 'start_time']));
           let comments = responseIntershift.data;
 
           if (data instanceof Object) {
-            data = _.orderBy(data, ['hour_interval_start', 'start_time']);
             selectedShift = mapShiftReverse(filter[2]);
             selectedDate = filter[1];
           }
@@ -579,7 +607,7 @@ class DashboardOne extends React.Component {
     });
   }
 
-  clearExpanded() {
+  clearExpanded = () => {
     this.setState({
       expanded: {}
     });
@@ -604,6 +632,8 @@ class DashboardOne extends React.Component {
 
   getStyle(applyGrey, align, rowInfo, column) {
     let style = {};
+    let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
+
     if (applyGrey) {
       style = {
         backgroundColor: 'rgb(247, 247, 247)',
@@ -619,8 +649,13 @@ class DashboardOne extends React.Component {
         borderTop: 'solid 1px rgb(219, 219, 219)'
       }
     }
-    let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
-    if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime())) {
+
+    if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
+      style.textAlign = 'center';
+      style.borderRight = 'solid 1px rgb(219, 219, 219)';
+      style.borderTop = 'solid 1px rgb(219, 219, 219)';
+      style.backgroundColor = 'white';
+    } else if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime())) {
       style.backgroundColor = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
@@ -657,6 +692,11 @@ class DashboardOne extends React.Component {
     if (orderChild && newCellInfo.subRows.length > 1) {
       let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.start_time));
       newCellInfo.subRows = newSubrows;
+    }
+    let rowValid = newCellInfo ? (newCellInfo.subRows ? newCellInfo.subRows[0] : newCellInfo.row) : null;
+    if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
+      prop = arguments[5] === 'dropdown' ? 'timelost_summary' : arguments[5] === 'comments' ? 'latest_comment' : prop;
+      return <span className={'wordwrap'} data-tip={newCellInfo.subRows[0]._original[prop]}>{newCellInfo.subRows[0]._original[prop]}</span>
     }
     if (newCellInfo.subRows[0] !== undefined && newCellInfo.subRows[0]._original[prop] !== '') {
       if (prop !== '' || defaultValue !== '') {
@@ -761,37 +801,54 @@ class DashboardOne extends React.Component {
         Header: this.getHeader(this.state.shiftText),
         accessor: 'hour_interval',
         minWidth: 130,
-        style: this.getStyle(true, 'left'),
+        //style: this.getStyle(true, 'left'),
         Pivot: (row) => {
-          return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? row.value + '*' : row.value}</span>
+          let rowValid = row ? (row.subRows ? row.subRows[0] : row.row) : null;
+          if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
+            return <span className={'wordwrap'} data-tip={row.value}>{row.value}</span>
+          } else {
+            return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? row.value + '*' : row.value}</span>
+          }
         },
         disableExpander: false,
         filterMethod: (filter, rows) =>
           matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
         filterAll: true,
-        getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
+        getProps: (state, rowInfo, column) => {
+          let style = this.getStyle(true, 'left', rowInfo, column);
+          let style1 = this.getExpandClick(state, rowInfo, column);
+          style.style.cursor = style1.style.cursor;
+          style1.style = style.style;
+          return style1;
+        }
+        //getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
       }, {
         Header: this.getHeader(this.state.partNumberText),
         minWidth: 180,
         accessor: 'product_code',
         Cell: c => this.renderCell(c, 'product_code', '', true, false, 'manualentry'),
         Aggregated: a => this.renderAggregated(a, 'summary_product_code', '', true, true, 'manualentry'),
-        style: this.getStyle(false, 'center'),
-        PivotValue: <span>{''}</span>
+        //style: this.getStyle(false, 'center'),
+        PivotValue: <span>{''}</span>,
+        //getProps: (state, rowInfo, column) => this.getStyleHeaderRow(state, rowInfo, column)
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.idealText),
         accessor: 'ideal',
         minWidth: 90,
         Cell: c => this.renderCell(c, 'ideal', '0', true, true, 'values', c.original),
         Aggregated: a => this.renderAggregated(a, 'summary_ideal', '', false, false),
-        style: this.getStyle(false, 'center')
+        //style: this.getStyle(false, 'center')
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.targetText),
         accessor: 'target_pcs',
         minWidth: 90,
         Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
         Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        style: this.getStyle(true, 'center')
+        //style: this.getStyle(true, 'center'),
+        //getProps: (state, rowInfo, column) => this.getStyleHeaderRow(state, rowInfo, column)
+        getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.actualText),
         accessor: 'actual_pcs',
@@ -805,7 +862,8 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
         Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        style: this.getStyle(true, 'center'),
+        //style: this.getStyle(true, 'center'),
+        getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.cumulativeActualText),
         accessor: 'cumulative_pcs',
@@ -825,21 +883,24 @@ class DashboardOne extends React.Component {
         accessor: 'latest_comment',
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregated(a, '', this.getCommentsToSet(a), false, true, 'comments'),
-        style: this.getStyle(false, 'center')
+        //style: this.getStyle(false, 'center')
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.operatorText),
         accessor: 'oper_id',
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'oper_id', 'operator_signoff', 'signoff', 'operator'),
-        style: this.getStyle(false, 'center')
+        //style: this.getStyle(false, 'center')
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.supervisorText),
         accessor: 'superv_id',
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'superv_id', 'supervisor_signoff', 'signoff', 'supervisor'),
-        style: this.getStyle(false, 'center')
+        //style: this.getStyle(false, 'center')
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }
     ];
 
@@ -864,7 +925,7 @@ class DashboardOne extends React.Component {
     const obj = this;
     return (
       <React.Fragment>
-        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) ?
+        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
           <Pagination
             selectedShift={this.state.selectedShift}
             selectedDate={this.state.selectedDate}
@@ -893,11 +954,18 @@ class DashboardOne extends React.Component {
               </Row>
               {!_.isEmpty(data) ?
                 <ReactTable
+                  getTheadThProps={(state, rowInfo, column) => {
+                    return this.state.summary ?
+                      {
+                        style: { display: 'none' } // override style for 'myHeaderTitle'.
+                      }
+                      : {}
+                  }}
                   sortable={false}
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  defaultPageSize={this.state.summary ? 24 : 8}
+                  defaultPageSize={this.state.summary ? 27 : 8}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}

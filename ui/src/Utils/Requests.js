@@ -1,15 +1,7 @@
 import { API, AUTH, DATATOOL } from './Constants';
 import moment from 'moment-timezone';
-import config from '../config.json'
-import _ from 'lodash';
 
 const axios = require('axios');
-
-const fileUploadConfig = {
-  headers: {
-    'Content-Type': 'multipart/form-data'
-  }
-}
 
 function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);

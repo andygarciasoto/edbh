@@ -8,7 +8,6 @@ import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
 import queryString from 'query-string';
-import { access } from 'fs';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 

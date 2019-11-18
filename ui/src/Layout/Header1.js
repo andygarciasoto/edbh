@@ -149,6 +149,12 @@ class Header1 extends React.Component {
                                 </MegaMenu>
                             </span>
                             : null}
+                        {isComponentValid(this.props.user.role, 'neworder') && this.props.history.location.pathname !== '/summary' ?
+                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp !== 'Automated')) ?
+                                <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
+                                </Nav.Link>
+                                : null : null
+                        }
                         {isComponentValid(this.props.user.role, 'menu') ?
                             <Dropdown className="customToogle">
                                 <Dropdown.Toggle as={customToogle} id="dropdown-basic">

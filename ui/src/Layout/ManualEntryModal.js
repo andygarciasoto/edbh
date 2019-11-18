@@ -9,10 +9,8 @@ import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
 import {
-    getUOMS,
-    formatNumber
+    getUOMS
 } from '../Utils/Requests';
-import { throws } from 'assert';
 
 
 
@@ -70,24 +68,25 @@ class ManualEntryModal extends React.Component {
                     if (res !== 200) {
                         this.setState({ modal_error_IsOpen: true })
                     } else {
-                            this.setState({modal_loading_IsOpen: true}, () => {
-                                const resp = sendPut({
-                                    ...data
-                                }, '/production_data')
-                                resp.then((res) => {
-                                    if (res !== 200 || !res) {
-                                        this.setState({modal_error_IsOpen: true, errorMessage: 'Could not complete request'})
-                                    }
-                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                        this.props.Refresh(this.props.parentData);
-                        this.props.onRequestClose();
-                    })
-                })
-            this.setState({ 
-                request_status: res, 
-                modal_loading_IsOpen: false,
-                modal_confirm_IsOpen: true, 
-                modal_validate_IsOpen: false })
+                        this.setState({ modal_loading_IsOpen: true }, () => {
+                            const resp = sendPut({
+                                ...data
+                            }, '/production_data')
+                            resp.then((res) => {
+                                if (res !== 200 || !res) {
+                                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                                }
+                                this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                                this.props.Refresh(this.props.parentData);
+                                this.props.onRequestClose();
+                            })
+                        })
+                        this.setState({
+                            request_status: res,
+                            modal_loading_IsOpen: false,
+                            modal_confirm_IsOpen: true,
+                            modal_validate_IsOpen: false
+                        })
                     }
                     this.props.Refresh(this.props.parentData);
                     this.setState({

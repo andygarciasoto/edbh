@@ -6,7 +6,6 @@ import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
 import { sendPut, getCurrentTime, formatDateWithTime, formatNumber } from '../Utils/Requests';
 import './CommentsModal.scss';
-import _ from 'lodash';
 
 
 class ValueModal extends React.Component {

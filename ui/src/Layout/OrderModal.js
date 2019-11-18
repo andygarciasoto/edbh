@@ -1,13 +1,12 @@
 import React from 'react';
 import Modal from 'react-modal';
 import BarcodeReader from 'react-barcode-reader';
-import { Form, Button } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
 import { getRequest, getCurrentTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 import OrderTwoModal from '../Layout/OrderTwoModal';
-import _ from 'lodash';
 
 
 class OrderModal extends React.Component {
@@ -74,7 +73,6 @@ class OrderModal extends React.Component {
     }
 
     render() {
-        const t = this.props.t;
         return (
             <React.Fragment>
                 <Modal

@@ -1,11 +1,7 @@
 import React from 'react';
-import logo from '../Parker_Hannifin.svg';
-import { Row, Col, Button } from 'react-bootstrap';
-import FontAwesome from 'react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Row } from 'react-bootstrap';
 import '../Layout/Header.scss';
 import { sendPutDataTool } from '../Utils/Requests';
-import _ from 'lodash';
 
 class Import extends React.Component {
     constructor(props) {

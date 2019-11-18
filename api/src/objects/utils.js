@@ -118,7 +118,6 @@ function structureMachines(obj) {
 }
 
 function createUnallocatedTime(obj, tz) {
-    tz = 12;
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = tz;

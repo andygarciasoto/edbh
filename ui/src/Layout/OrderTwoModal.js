@@ -3,10 +3,8 @@ import Modal from 'react-modal';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
-import { sendPost } from '../Utils/Requests';
 import { Button, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
-import _ from 'lodash';
 
 
 class OrderTwoModal extends React.Component {
@@ -49,7 +47,6 @@ class OrderTwoModal extends React.Component {
     }
 
     render() {
-        const t = this.props.t;
         if (this.props.data) {
             return (
                 <React.Fragment>
