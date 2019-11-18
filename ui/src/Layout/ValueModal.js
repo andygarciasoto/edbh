@@ -111,10 +111,11 @@ class ValueModal extends React.Component {
                                 style={{ paddingTop: '5px' }}
                                 type={this.props.formType}
                                 autoFocus
-                                onChange={(val) => this.onChange(val)}>
+                                onChange={(val) => this.onChange(val)}
+                                disabled={this.props.readOnly}>
                             </Form.Control>
                         </span>
-                        <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.submit}>{t('Submit')}</Button>
+                        <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submit}>{t('Submit')}</Button>
                     </Modal>
                     <ConfirmModal
                         isOpen={this.state.modal_confirm_IsOpen}

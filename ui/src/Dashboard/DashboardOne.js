@@ -50,20 +50,6 @@ class DashboardOne extends React.Component {
     super(props);
 
     this.state = Object.assign(this.getInitialState(props));
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.fetchData = this.fetchData.bind(this);
-    this.changeDate = this.changeDate.bind(this);
-    this.changeMachine = this.changeMachine.bind(this);
-    this.changeLanguage = this.changeLanguage.bind(this);
-    this.handleTableCellClick = handleTableCellClick.bind(this);
-    this.onExpandedChange = this.onExpandedChange.bind(this);
-    this.clearExpanded = this.clearExpanded.bind(this);
-    this.openAfter = this.openAfter.bind(this);
-    this.headerData = this.headerData.bind(this);
-    this.getDashboardData = this.getDashboardData.bind(this);
-    this.showValidateDataModal = this.showValidateDataModal.bind(this);
-    this.menuToggle = this.menuToggle.bind(this);
   }
 
   getInitialState(props) {
@@ -110,8 +96,9 @@ class DashboardOne extends React.Component {
       selectedHour: props.search.hr,
       dateFromData: false,
       shifts: {},
-      timezone: this.props.user.timezone,
-      currentHour: hour
+      timezone: props.user.timezone,
+      currentHour: hour,
+      summary: props.summary
     }
   }
 
@@ -126,7 +113,7 @@ class DashboardOne extends React.Component {
       shiftByHour = '3rd Shift';
     }
     return {
-      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift'),
+      shiftText: props.summary ? props.t('All Shifts') : (props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift')),
       partNumberText: props.t('Part Number'),
       idealText: props.t('Ideal'),
       targetText: props.t('Target'),
@@ -137,21 +124,6 @@ class DashboardOne extends React.Component {
       commentsActionText: props.t('Comments And Actions Taken'),
       operatorText: props.t('Operator'),
       supervisorText: props.t('Supervisor')
-    }
-  }
-
-  getShiftHeader(props) {
-    var hour = moment(getCurrentTime()).hours();
-    let shiftByHour;
-    if (hour >= 7 && hour < 15) {
-      shiftByHour = '1st Shift';
-    } else if (hour >= 15 && hour < 23) {
-      shiftByHour = '2nd Shift';
-    } else {
-      shiftByHour = '3rd Shift';
-    }
-    return {
-      shiftText: props.search.sf ? props.t(props.search.sf) : shiftByHour !== 'Select Shift' ? props.t(shiftByHour) : props.t('First Shift'),
     }
   }
 
@@ -170,8 +142,8 @@ class DashboardOne extends React.Component {
   }
 
   openModal(type, val, extraParam) {
-    let value = ''
-    let modalType = ''
+    let value = '';
+    let modalType = '';
     if (type === 'order') {
       this.setState({
         modal_order_IsOpen: true,
@@ -295,7 +267,7 @@ class DashboardOne extends React.Component {
     }
   }
 
-  closeModal() {
+  closeModal = () => {
     this.setState({
       modal_authorize_IsOpen: false,
       modal_comments_IsOpen: false,
@@ -419,18 +391,16 @@ class DashboardOne extends React.Component {
     }
   }
 
-  changeLanguageBrowser = () => {
-    let currentLanguage = this.state.currentLanguage.toLowerCase();
-    currentLanguage = currentLanguage.replace('-', '_');
-    i18next.changeLanguage(currentLanguage);
+  fetchData(data) {
+    if (this.state.summary) {
+      this.loadDataAllShift(data);
+    } else {
+      this.loadDataCurrentShift(data);
+    }
   }
 
-  async fetchData(data) {
-    // fetch data call
-    this.getDashboardData(data);
-  }
+  loadDataAllShift(filter) {
 
-  async getDashboardData(filter) {
     const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
@@ -456,6 +426,97 @@ class DashboardOne extends React.Component {
     }
 
     if (filter && filter[0]) {
+
+      const parameters1 = {
+        params: {
+          mc: filter[0],
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 06:00'
+        }
+      }
+      const parameters2 = {
+        params: {
+          mc: filter[0],
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 08:00'
+        }
+      }
+      const parameters3 = {
+        params: {
+          mc: filter[0],
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 16:00'
+        }
+      }
+
+
+      const parameters = {
+        params: {
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: mapShift(filter[2]),
+          hr: filter[3]
+        }
+      }
+
+
+
+      let requestData = [
+        BuildGet(`${API}/data`, parameters1),
+        BuildGet(`${API}/data`, parameters2),
+        BuildGet(`${API}/data`, parameters3),
+        BuildGet(`${API}/intershift_communication`, parameters)
+      ];
+
+      let _this = this;
+
+      axios.all(requestData).then(
+        axios.spread((responseData1, responseData2, responseData3, responseIntershift) => {
+
+          let data = _.concat(responseData1.data, responseData2.data, responseData3.data);
+          let comments = responseIntershift.data;
+
+          if (data instanceof Object) {
+            data = _.orderBy(data, ['hour_interval_start', 'start_time']);
+            selectedShift = mapShiftReverse(filter[2]);
+            selectedDate = filter[1];
+          }
+
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments });
+
+        })
+      ).catch(function (error) {
+        console.log(error);
+      });
+    }
+
+  }
+
+  loadDataCurrentShift(filter) {
+    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    var minutes = moment().minutes();
+
+    let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
+    let errorModal = false;
+    let errorMessage = '';
+    let selectedShift = '';
+    let selectedDate = '';
+
+    if (logoffHour === config['second_signoff_reminder']) {
+      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
+        errorModal = true;
+        errorMessage = 'Please sign off for the previous hour';
+      }
+    }
+    var tz = this.state.commonParams.value !== null ? this.state.commonParams.value : 'America/New_York';
+    var est = moment().tz(tz).hours();
+    if (minutes > 6 && localStorage.getItem("currentHour")) {
+      if (localStorage.getItem("currentHour") !== est) {
+        localStorage.removeItem("signoff");
+        localStorage.removeItem("currentHour");
+      }
+    }
+
+    if (filter && filter[0]) {
+
+
       const parameters = {
         params: {
           mc: filter[0],
@@ -490,7 +551,6 @@ class DashboardOne extends React.Component {
         console.log(error);
       });
     }
-
   }
 
   changeDate(e) {
@@ -621,7 +681,7 @@ class DashboardOne extends React.Component {
 
   renderAggregatedSignOff(cellInfo, prop, role) {
     if (cellInfo.subRows[0]._original[prop] !== null && cellInfo.subRows[0]._original[prop] !== '') {
-      return <span className="react-table-click-text table-click" onClick={() => isComponentValid(this.props.user.role, role) ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
+      return <span className="react-table-click-text table-click" onClick={() => isComponentValid(this.props.user.role, role) && !this.state.summary ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
         {cellInfo.subRows[0]._original[prop]}
       </span>
     } else {
@@ -630,7 +690,7 @@ class DashboardOne extends React.Component {
           { paddingRight: '90%', cursor: 'pointer' } :
           { paddingRight: '80%', cursor: 'pointer' }}
         className={'empty-field'} onClick={() =>
-          isComponentValid(this.props.user.role, role) ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
+          isComponentValid(this.props.user.role, role) && !this.state.summary ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
         {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
           this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
       </span>;
@@ -818,10 +878,6 @@ class DashboardOne extends React.Component {
             shifts={this.state.shifts}
           /> : null}
         <div className="wrapper-main">
-          {/*
-          {isComponentValid(this.props.user.role, 'import') ?
-            <Button variant="outline-primary" className="query-button"><Link to={importUrl}>{'Import Page'} <FontAwesome name="fas fa-arrow-circle-up" /></Link></Button>
-          : null}*/}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
@@ -841,7 +897,7 @@ class DashboardOne extends React.Component {
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  defaultPageSize={8}
+                  defaultPageSize={this.state.summary ? 24 : 8}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}
@@ -866,6 +922,7 @@ class DashboardOne extends React.Component {
             Refresh={this.getDashboardData}
             parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
             timezone={this.state.timezone}
+            readOnly={this.state.summary}
           />
         </div>
         <ValueModal
@@ -883,6 +940,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           timezone={this.state.timezone}
+          readOnly={this.state.summary}
         />
         <CommentsModal
           isOpen={this.state.modal_comments_IsOpen}
@@ -897,7 +955,7 @@ class DashboardOne extends React.Component {
           Refresh={this.getDashboardData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
-          IsEditable={this.state.comments_IsEditable}
+          IsEditable={this.state.comments_IsEditable && !this.state.summary}
           timezone={this.state.timezone}
         />
         <TimelossModal
@@ -914,7 +972,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          isEditable={this.state.timelost_IsEditable}
+          isEditable={this.state.timelost_IsEditable && !this.state.summary}
           timezone={this.state.timezone}
         />
         <SignoffModal
@@ -949,7 +1007,7 @@ class DashboardOne extends React.Component {
         />
         <ManualEntryModal
           isOpen={this.state.modal_manualentry_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
+          //onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
           contentLabel="Example Modal"
@@ -964,7 +1022,7 @@ class DashboardOne extends React.Component {
         />
         <ErrorModal
           isOpen={this.state.errorModal}
-          //  onAfterOpen={this.afterOpenModal}
+          //onAfterOpen={this.afterOpenModal}
           onRequestClose={a => {
             obj.setState({ logoffHourCheck: false })
             this.closeModal();

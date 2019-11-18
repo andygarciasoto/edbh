@@ -115,13 +115,13 @@ class Comments extends React.Component {
                                 <tr>
                                     <td style={{ width: '20%' }}><span>{`${lastComment.first_name} ${lastComment.last_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
                                     <td style={{ width: '80%' }} className={"intershift-comment"}><div>{lastComment.comment}</div>
-                                        {this.state.commentLen > 1 ? 
-                                        <span className="intershift-read-more" 
-                                        onClick={this.openModal}>{`${t('Read More')}
+                                        {this.state.commentLen > 1 ?
+                                            <span className="intershift-read-more"
+                                                onClick={this.openModal}>{`${t('Read More')}
                                         (${this.state.commentLen})`}
-                                        <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
-                                        </span> : null
-                                    }</td>
+                                                <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
+                                            </span> : null
+                                        }</td>
                                 </tr>
                             </React.Fragment> : <tr><td ><Spinner /></td><td className={"intershift-comment"}><Spinner /></td></tr> :
                                 <tr><td colSpan={2}>{t('No intershift communications for this shift')}.</td></tr> :
@@ -131,9 +131,9 @@ class Comments extends React.Component {
                 </div>
                 <span className="dashboard-modal-field-group">
                     <p>{t('Enter new communication')}:</p>
-                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} onChange={(e) => this.setState({ value: e.target.value })}></Form.Control>
+                    <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={this.props.readOnly} onChange={(e) => this.setState({ value: e.target.value })}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.enterCommunication}>{t('Submit')}</Button>
+                <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.enterCommunication}>{t('Submit')}</Button>
                 <ThreadModal
                     isOpen={this.state.modal_thread_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}

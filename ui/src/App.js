@@ -60,7 +60,7 @@ function App(propsApp) {
           : null
         }
         <Route exact path="/summary" render={(props) =>
-          <Summary
+          <DashboardOne
             user={propsApp.user}
             t={t}
             defaultAsset={machine}
