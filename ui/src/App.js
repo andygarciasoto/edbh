@@ -5,7 +5,6 @@ import SignIn from './SignIn';
 import Login from './Login';
 import Import from './Dashboard/Import';
 import DashboardOne from './Dashboard/DashboardOne';
-import Summary from './Dashboard/Summary';
 import Header1 from './Layout/Header1';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
