@@ -29,8 +29,7 @@ import {
   getCurrentTime,
   formatNumber,
   getStationAsset,
-  BuildGet,
-  getCurrentTimeOnly
+  BuildGet
 } from '../Utils/Requests';
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -432,7 +431,7 @@ class DashboardOne extends React.Component {
 
     if (filter && filter[0]) {
 
-      let hr = getCurrentTimeOnly(this.props.user.timezone);
+      let hr = moment().tz(this.props.user.timezone).hours();
 
       const parameters1 = {
         params: {
@@ -558,7 +557,7 @@ class DashboardOne extends React.Component {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
           sf: mapShift(filter[2]),
-          hr: getCurrentTimeOnly(this.props.user.timezone)
+          hr: moment().tz(this.props.user.timezone).hours()
         }
       }
       let requestData = [
