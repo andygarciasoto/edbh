@@ -274,7 +274,9 @@ class DashboardOne extends React.Component {
       modal_manualentry_IsOpen: false,
       errorModal: false,
     });
-    this.props.closeOrderModal(false);
+    if (!this.state.summary) {
+      this.props.closeOrderModal(false);
+    }
   }
 
   menuToggle(flag) {
