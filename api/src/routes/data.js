@@ -90,7 +90,7 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined) {
+    if (params.dt == undefined || params.mc == undefined || params.hr == undefined) {
         return res.status(400).send("Missing parameters");
     }
     const hour = moment(new Date(params.dt)).hours();
@@ -104,7 +104,7 @@ router.get('/data', async function (req, res) {
             const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
             const objectWithLatestComment = utils.createLatestComment(mappedObject);
             const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-            const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, hour);
+            const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, params.hr);
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
