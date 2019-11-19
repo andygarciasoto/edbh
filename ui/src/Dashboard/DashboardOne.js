@@ -29,7 +29,8 @@ import {
   getCurrentTime,
   formatNumber,
   getStationAsset,
-  BuildGet
+  BuildGet,
+  getCurrentTimeOnly
 } from '../Utils/Requests';
 import classNames from "classnames";
 import matchSorter from "match-sorter";
@@ -431,22 +432,27 @@ class DashboardOne extends React.Component {
 
     if (filter && filter[0]) {
 
+      let hr = getCurrentTimeOnly(this.props.user.timezone);
+
       const parameters1 = {
         params: {
           mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 06:00'
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 06:00',
+          hr: hr
         }
       }
       const parameters2 = {
         params: {
           mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 08:00'
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 08:00',
+          hr: hr
         }
       }
       const parameters3 = {
         params: {
           mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 16:00'
+          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 16:00',
+          hr: hr
         }
       }
 
@@ -456,7 +462,7 @@ class DashboardOne extends React.Component {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
           sf: mapShift(filter[2]),
-          hr: filter[3]
+          hr: hr
         }
       }
 
@@ -552,7 +558,7 @@ class DashboardOne extends React.Component {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
           sf: mapShift(filter[2]),
-          hr: filter[3]
+          hr: getCurrentTimeOnly(this.props.user.timezone)
         }
       }
       let requestData = [
