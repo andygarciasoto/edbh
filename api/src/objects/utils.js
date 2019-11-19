@@ -121,8 +121,8 @@ function createUnallocatedTime(obj, tz, dt) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = tz;
-        var day = moment(new Date(dt)).date();
-        var today = moment(new Date()).date();
+        var day = moment(dt, 'YYYYMMDD').format('YYYYMMDD');
+        var today = moment().format('YYYYMMDD');
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
         var totalTime = lunch_setup ? 60 - lunch_setup : 60;
         if (totalTime < 0) {
@@ -135,7 +135,7 @@ function createUnallocatedTime(obj, tz, dt) {
         var minutes = moment().minutes();
 
         if ((item.production_id === '') || item.production_id === undefined) {
-            item['unallocated_time'] = base == current ? minutes : totalTime + lunch_setup;
+            item['unallocated_time'] = base == current && today == day ? minutes : totalTime + lunch_setup;
         }
         else if (item.summary_actual >= item.summary_ideal) {
             item['unallocated_time'] = 0;
