@@ -395,7 +395,7 @@ class DashboardOne extends React.Component {
     }
   }
 
-  fetchData(data) {
+  fetchData = (data) => {
     if (this.state.summary) {
       this.loadDataAllShift(data);
     } else {
