@@ -994,7 +994,7 @@ class DashboardOne extends React.Component {
             selectedDate={this.state.selectedDate}
             comments={this.state.comments}
             dxh_parent={dxh_parent ? dxh_parent : null}
-            Refresh={this.getDashboardData}
+            Refresh={this.fetchData}
             parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
             timezone={this.state.timezone}
             readOnly={this.state.summary}
@@ -1012,7 +1012,7 @@ class DashboardOne extends React.Component {
           t={t}
           user={this.props.user}
           currentRow={this.state.currentRow}
-          Refresh={this.getDashboardData}
+          Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           timezone={this.state.timezone}
           readOnly={this.state.summary}
@@ -1027,7 +1027,7 @@ class DashboardOne extends React.Component {
           comments={this.state.current_display_comments}
           currentRow={this.state.currentRow}
           user={this.props.user}
-          Refresh={this.getDashboardData}
+          Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
           IsEditable={this.state.comments_IsEditable && !this.state.summary}
@@ -1058,7 +1058,7 @@ class DashboardOne extends React.Component {
           t={this.props.t}
           currentRow={this.state.currentRow}
           user={this.props.user}
-          Refresh={this.getDashboardData}
+          Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           signOffRole={this.state.signOffRole}
           timezone={this.state.timezone}
@@ -1075,7 +1075,7 @@ class DashboardOne extends React.Component {
           t={t}
           label={'Scan Order Number'}
           user={this.props.user}
-          Refresh={this.getDashboardData}
+          Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           showValidateDataModal={this.showValidateDataModal}
           timezone={this.state.timezone}
