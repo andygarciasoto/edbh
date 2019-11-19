@@ -117,10 +117,12 @@ function structureMachines(obj) {
     return JSON.parse(machineStruct);
 }
 
-function createUnallocatedTime(obj, tz) {
+function createUnallocatedTime(obj, tz, dt) {
     obj.map((item, index) => {
         var base = moment(item.hour_interval_start).hours();
         var current = tz;
+        var day = moment(new Date(dt)).date();
+        var today = moment(new Date()).date();
         var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
         var totalTime = lunch_setup ? 60 - lunch_setup : 60;
         if (totalTime < 0) {
@@ -133,12 +135,12 @@ function createUnallocatedTime(obj, tz) {
         var minutes = moment().minutes();
 
         if ((item.production_id === '') || item.production_id === undefined) {
-            item['unallocated_time'] = base === current ? minutes : totalTime + lunch_setup;
+            item['unallocated_time'] = base == current ? minutes : totalTime + lunch_setup;
         }
         else if (item.summary_actual >= item.summary_ideal) {
             item['unallocated_time'] = 0;
         }
-        else if (base === current) {
+        else if (base == current && day == today) {
             if (minutes > lunch_setup) {
                 newIdeal = item.summary_ideal * ((minutes - lunch_setup) / (totalTime));
                 if (item.summary_actual < newIdeal) {

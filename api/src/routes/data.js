@@ -94,6 +94,7 @@ router.get('/data', async function (req, res) {
         return res.status(400).send("Missing parameters");
     }
     const hour = moment(new Date(params.dt)).hours();
+    var date = params.dt;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     function structureShiftdata(query) {
         try {
@@ -104,7 +105,7 @@ router.get('/data', async function (req, res) {
             const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
             const objectWithLatestComment = utils.createLatestComment(mappedObject);
             const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-            const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, params.hr);
+            const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, params.hr, date);
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
