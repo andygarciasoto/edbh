@@ -752,7 +752,6 @@ class DashboardOne extends React.Component {
         Header: this.getHeader(this.state.shiftText),
         accessor: 'hour_interval',
         minWidth: 130,
-        //style: this.getStyle(true, 'left'),
         Pivot: (row) => {
           let rowValid = row ? (row.subRows ? row.subRows[0] : row.row) : null;
           if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
@@ -774,16 +773,13 @@ class DashboardOne extends React.Component {
           style1.style = style.style;
           return style1;
         }
-        //getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
       }, {
         Header: this.getHeader(this.state.partNumberText),
         minWidth: 180,
         accessor: 'product_code',
         Cell: c => this.renderCell(c, 'product_code', '', true, false, 'manualentry'),
         Aggregated: a => this.renderAggregated(a, 'summary_product_code', '', true, true, 'manualentry'),
-        //style: this.getStyle(false, 'center'),
         PivotValue: <span>{''}</span>,
-        //getProps: (state, rowInfo, column) => this.getStyleHeaderRow(state, rowInfo, column)
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.idealText),
@@ -791,7 +787,6 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => this.renderCell(c, 'ideal', '0', true, true, 'values', c.original),
         Aggregated: a => this.renderAggregated(a, 'summary_ideal', '', false, false),
-        //style: this.getStyle(false, 'center')
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.targetText),
@@ -799,8 +794,6 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
         Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        //style: this.getStyle(true, 'center'),
-        //getProps: (state, rowInfo, column) => this.getStyleHeaderRow(state, rowInfo, column)
         getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.actualText),
@@ -810,18 +803,11 @@ class DashboardOne extends React.Component {
         Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
-        Header: this.getHeader('Scrap'),
-        accessor: 'scrap',
-        minWidth: 90,
-        Aggregated: a => this.renderAggregated(a, 'scrap', 25, false, false),
-        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      }, {
         Header: this.getHeader(this.state.cumulativeTargetText),
         accessor: 'cumulative_target_pcs',
         minWidth: 90,
         Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
         Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        //style: this.getStyle(true, 'center'),
         getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.cumulativeActualText),
@@ -842,7 +828,6 @@ class DashboardOne extends React.Component {
         accessor: 'latest_comment',
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregated(a, '', this.getCommentsToSet(a), false, true, 'comments'),
-        //style: this.getStyle(false, 'center')
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }
     ];
@@ -854,7 +839,6 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'oper_id', 'operator_signoff', 'signoff', 'operator'),
-        //style: this.getStyle(false, 'center')
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       });
       columns.push({
@@ -863,7 +847,6 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'superv_id', 'supervisor_signoff', 'signoff', 'supervisor'),
-        //style: this.getStyle(false, 'center')
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       });
     }
