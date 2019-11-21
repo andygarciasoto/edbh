@@ -27,21 +27,12 @@ class Header1 extends React.Component {
 
     getInitialState(props) {
         let search = qs.parse(props.history.location.search);
-        var hour = moment(getCurrentTime()).hours();
-        let shiftByHour;
-        if (hour >= 7 && hour < 15) {
-            shiftByHour = '1st Shift';
-        } else if (hour >= 15 && hour < 23) {
-            shiftByHour = '2nd Shift';
-        } else {
-            shiftByHour = '3rd Shift';
-        }
         return {
             megaMenuToggle: 'dropdown-content',
-            mc: search.mc,
-            tp: search.tp,
+            mc: search.mc || props.machineData.asset_code,
+            tp: search.tp || props.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
-            sf: search.sf || shiftByHour,
+            sf: search.sf || props.user.current_shift,
             ln: search.ln || config['language']
         };
     }
@@ -52,20 +43,11 @@ class Header1 extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         let search = qs.parse(nextProps.history.location.search);
-        var hour = moment(getCurrentTime()).hours();
-        let shiftByHour;
-        if (hour >= 7 && hour < 15) {
-            shiftByHour = '1st Shift';
-        } else if (hour >= 15 && hour < 23) {
-            shiftByHour = '2nd Shift';
-        } else {
-            shiftByHour = '3rd Shift';
-        }
         this.setState({
             mc: search.mc,
             tp: search.tp,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
-            sf: search.sf || shiftByHour,
+            sf: search.sf || nextProps.user.current_shift,
             ln: search.ln || config['language']
         });
     }
@@ -155,6 +137,7 @@ class Header1 extends React.Component {
                                 </Nav.Link>
                                 : null : null
                         }
+                        {/* {isComponentValid(this.props.user.role, 'menu') && this.props.history.location.pathname !== '/summary' ? */}
                         {isComponentValid(this.props.user.role, 'menu') ?
                             <Dropdown className="customToogle">
                                 <Dropdown.Toggle as={customToogle} id="dropdown-basic">

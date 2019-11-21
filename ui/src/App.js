@@ -16,7 +16,6 @@ function App(propsApp) {
   // set default machine and type
   let [showModal, displayModal] = useState(false);
   const { t } = useTranslation();
-  const machine = localStorage.getItem('machine_name');
   return (
     <Router>
       <Helmet>
@@ -25,19 +24,30 @@ function App(propsApp) {
         <meta name="theme-color" content="#ccc" />
       </Helmet>
       <Suspense fallback={<Spinner />}>
-        <Route path="/" render={(props) => (props.location.pathname !== "/" && props.location.pathname !== "/login") && <Header1 history={props.history} t={t} user={propsApp.user} openModal={displayModal} />} />
+        <Route path="/"
+          render={(props) =>
+            (props.location.pathname !== "/" && props.location.pathname !== "/login") &&
+            <Header1
+              history={props.history}
+              t={t}
+              user={propsApp.user}
+              defaultAsset={propsApp.defaultAsset}
+              machineData={propsApp.machineData}
+              openModal={displayModal} />}
+        />
         <Route
           path="/dashboard"
           render={function (props) {
             return (
               <DashboardOne
-                user={propsApp.user} t={t}
-                defaultAsset={machine}
+                user={propsApp.user}
+                t={t}
                 history={props.history}
                 search={qs.parse(props.history.location.search)}
                 showNewOrderModal={showModal}
                 closeOrderModal={displayModal}
-              />
+                defaultAsset={propsApp.defaultAsset}
+                machineData={propsApp.machineData} />
             )
           }
           } />
@@ -65,11 +75,11 @@ function App(propsApp) {
           <DashboardOne
             user={propsApp.user}
             t={t}
-            defaultAsset={machine}
             history={props.history}
             search={qs.parse(props.history.location.search)}
             summary={true}
-          />}
+            defaultAsset={propsApp.defaultAsset}
+            machineData={propsApp.machineData} />}
         />
       </Suspense>
     </Router>
