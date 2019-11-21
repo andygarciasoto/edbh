@@ -90,6 +90,7 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
+    console.log(params.mc);
     if (params.dt == undefined || params.mc == undefined || params.hr == undefined) {
         return res.status(400).send("Missing parameters");
     }
@@ -675,6 +676,9 @@ router.put('/supervisor_sign_off', async function (req, res) {
 router.put('/production_data', async function (req, res) {
     let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const actual = req.body.actual ? req.body.actual != "signoff" ? parseFloat(req.body.actual) : 0 : undefined;
+    const setup_scrap = req.body.setup_scrap ? req.body.setup_scrap != "signoff" ? parseFloat(req.body.setup_scrap) : 0 : undefined;
+    const other_scrap = req.body.other_scrap ? req.body.other_scrap != "signoff" ? parseFloat(req.body.other_scrap) : 0 : undefined;
+    const adjusted_actual = req.body.adjusted_actual ? req.body.adjusted_actual != "signoff" ? parseFloat(req.body.adjusted_actual) : 0 : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -683,8 +687,8 @@ router.put('/production_data', async function (req, res) {
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
 
-    if (actual === undefined) {
-        return res.status(400).json({ message: "Bad Request - Missing actual parameter - Actual Undefined" });
+    if (actual === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters - Actual, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
     }
     if (!clocknumber) {
         if (!(first_name || last_name)) {
@@ -706,7 +710,7 @@ router.put('/production_data', async function (req, res) {
                     let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                     dxh_data_id = response[0].dxhdata_id;
                     if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -716,7 +720,7 @@ router.put('/production_data', async function (req, res) {
                                 responsePostPut(response, req, res);
                             });
                     } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                             (err, response) => {
                                 if (err) {
                                     console.log(err);
@@ -730,7 +734,7 @@ router.put('/production_data', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
@@ -740,7 +744,7 @@ router.put('/production_data', async function (req, res) {
                     responsePostPut(response, req, res);
                 });
         } else {
-            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
