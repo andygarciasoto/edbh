@@ -11,11 +11,19 @@ import queryString from 'query-string';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
+let search = window.location.search;
+let params = queryString.parse(search);
+if (search !== "") {
+    if (params.st) {
+        localStorage.setItem('machine_name', params.st);
+    }
+}
+
 if (window.location.pathname === '/' || window.location.pathname === '/login') {
-    let url = window.location.search;
-    let params = queryString.parse(url);
-    const machineName = params.st;
-    localStorage.setItem('machine_name', machineName);
+    let machineName = params.st;
+    if (machineName) {
+        machineName = localStorage.getItem('machine_name');
+    }
     ReactDOM.render(
         <App defaultAsset={machineName} />
         , document.getElementById('root'));
@@ -75,24 +83,23 @@ function init() {
         return response;
     }, function (error) {
         // Redirect to login on 401 status code
-        const station = localStorage.getItem('machine_name');
-        console.log(station);
+        // const station = localStorage.getItem('machine_name');
+        const station = params.st || localStorage.getItem('machine_name');
+        // console.log(station);
         if (error.response && error.response.status === 401) {
-            const loginUrl = configuration['root'] + `?st=${station}`;
+            const loginUrl = configuration['root'] + (station ? `?st=${station}` : '');
             // Redirect to login
             window.location.replace(loginUrl);
             return;
         }
         return Promise.reject(error);
     });
-    let url = window.location.search;
-    let params = queryString.parse(url);
-    let machine = params.st;
+
     axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
         .then(function (response) {
             return response;
         })
-        .then(function (json) {
+        .then(async function (json) {
             const user = {
                 first_name: json.data[0]['First Name'],
                 last_name: json.data[0]['Last Name'],
@@ -102,10 +109,29 @@ function init() {
                 clock_number: json.data[0].Badge,
                 site: json.data[0].Site,
                 site_name: json.data[0].SiteName,
-                timezone: json.data[0].Timezone
+                timezone: json.data[0].Timezone,
+                current_shift: json.data[0].ShiftName
             }
+
+            let station = params.st || localStorage.getItem('machine_name');
+            let machine = null;
+            await axios.get(`${API}/asset_display_system?st=${station}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } })
+                .then(function (response) {
+                    const machineValues = response.data[0].AssetDisplaySystem;
+                    machine = {
+                        asset_code: machineValues.asset_code,
+                        asset_level: machineValues.asset_level,
+                        automation_level: machineValues.automation_level,
+                        display_name: machineValues.displaysystem_name,
+                        asset_description: machineValues.asset_description
+                    }
+                    return machine;
+                }).catch((e) => {
+                    console.log(e)
+                });
+
             ReactDOM.render(
-                <App user={user} defaultAsset={machine} />, document.getElementById('root'));
+                <App user={user} defaultAsset={station} machineData={machine} />, document.getElementById('root'));
         });
 };
 
