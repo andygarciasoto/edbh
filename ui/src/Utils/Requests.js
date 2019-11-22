@@ -268,7 +268,8 @@ function isComponentValid(user_role, name) {
       'pagination',
       'neworder',
       'manualentry',
-      'import'
+      'import',
+      'scrap'
     ],
     supervisor: [
       'megamenu',

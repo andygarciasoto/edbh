@@ -16,6 +16,7 @@ import Spinner from '../Spinner';
 import Comments from './Comments';
 import ErrorModal from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
+import ScrapModal from '../Layout/ScrapModal';
 import openSocket from 'socket.io-client';
 import FontAwesome from 'react-fontawesome';
 import {
@@ -60,6 +61,7 @@ class DashboardOne extends React.Component {
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
       modal_manualentry_IsOpen: false,
+      modal_scrap_IsOpen: false,
       isMenuOpen: false,
       valid_barcode: false,
       signoff_reminder: false,
@@ -212,6 +214,18 @@ class DashboardOne extends React.Component {
         }
       }
     }
+    if (type === 'scrap') {
+      if (val) {
+        const allowed = isFieldAllowed(this.props.user.role, val);
+        if (isComponentValid(this.props.user.role, 'scrap')) {
+          this.setState({
+            modal_scrap_IsOpen: allowed,
+            modalType: 'number',
+            currentRow: val
+          })
+        }
+      }
+    }
     if (type === 'signoff') {
       if (val) {
         if (((val.oper_id === null) && (extraParam === 'operator')) ||
@@ -253,6 +267,7 @@ class DashboardOne extends React.Component {
       modal_order_IsOpen: false,
       modal_order_two_IsOpen: false,
       modal_manualentry_IsOpen: false,
+      modal_scrap_IsOpen: false,
       errorModal: false,
     });
     if (!this.state.summary) {
@@ -303,9 +318,8 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && this.props.search.mc) {
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && !this.state.modal_scrap_IsOpen && this.props.search.mc) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
-          } else {
           }
         }
       });
@@ -803,6 +817,17 @@ class DashboardOne extends React.Component {
         Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
+        Header: this.getHeader('Scrap'),
+        accessor: 'scrap',
+        minWidth: 90,
+        Cell: c => this.renderCell(c, 'summary_setup_scrap', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'scrap', 'actual_pcs'),
+        Aggregated: a => {
+          let defaultValue = a.subRows.length > 1 ? _.sumBy(a.subRows, '_original.summary_setup_scrap')
+            : !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null;
+          return this.renderAggregated(a, a.subRows.length > 1 ? '' : 'summary_setup_scrap', defaultValue, false, a.subRows.length === 1, 'scrap', 'summary_actual')
+        },
+        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
+      }, {
         Header: this.getHeader(this.state.cumulativeTargetText),
         accessor: 'cumulative_target_pcs',
         minWidth: 90,
@@ -897,7 +922,6 @@ class DashboardOne extends React.Component {
                   {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ?
                     moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL') :
                     moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
-                {/* {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col> */}
               </Row>
               {!_.isEmpty(data) ?
                 <ReactTable
@@ -1033,6 +1057,20 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+          timezone={this.state.timezone}
+        />
+        <ScrapModal
+          isOpen={this.state.modal_scrap_IsOpen}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+          formType={this.state.modalType}
+          style={this.state.modalStyle}
+          t={t}
+          currentRow={this.state.currentRow}
+          user={this.props.user}
+          Refresh={this.fetchData}
+          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+          IsEditable={this.state.summary}
           timezone={this.state.timezone}
         />
         <ErrorModal
