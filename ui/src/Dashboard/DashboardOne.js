@@ -96,6 +96,7 @@ class DashboardOne extends React.Component {
       idealText: props.t('Ideal'),
       targetText: props.t('Target'),
       actualText: props.t('Actual'),
+      scrapText: props.t('Scrap'),
       cumulativeTargetText: props.t('Cumulative Target'),
       cumulativeActualText: props.t('Cumulative Actual'),
       timeLostText: props.t('Time Lost (Total Mins.)'),
@@ -442,21 +443,21 @@ class DashboardOne extends React.Component {
 
           let shift3 = {
             'hour_interval': this.props.t('3rd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
 
           let shift1 = {
             'hour_interval': this.props.t('1st Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
 
           let shift2 = {
             'hour_interval': this.props.t('2nd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
@@ -817,7 +818,7 @@ class DashboardOne extends React.Component {
         Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
-        Header: this.getHeader('Scrap'),
+        Header: this.getHeader(this.state.scrapText),
         accessor: 'scrap',
         minWidth: 90,
         Cell: c => this.renderCell(c, 'summary_setup_scrap', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'scrap', 'actual_pcs'),
