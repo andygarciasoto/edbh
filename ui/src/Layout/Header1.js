@@ -44,8 +44,8 @@ class Header1 extends React.Component {
     componentWillReceiveProps(nextProps) {
         let search = qs.parse(nextProps.history.location.search);
         this.setState({
-            mc: search.mc,
-            tp: search.tp,
+            mc: search.mc || nextProps.machineData.asset_code,
+            tp: search.tp || nextProps.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
             sf: search.sf || nextProps.user.current_shift,
             ln: search.ln || config['language']
@@ -144,9 +144,9 @@ class Header1 extends React.Component {
                                     {this.props.t('Menu')}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    {this.props.history.location.pathname !== '/dashboard' ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
-                                    {this.props.history.location.pathname !== '/import' ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import')}</Dropdown.Item> : null}
-                                    {this.props.history.location.pathname !== '/summary' ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/dashboard' && isComponentValid(this.props.user.role, 'menu-dashbaord') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/import' && isComponentValid(this.props.user.role, 'menu-import') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/summary' && isComponentValid(this.props.user.role, 'menu-summary') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
                                 </Dropdown.Menu>
                             </Dropdown>
                             : null}

@@ -821,11 +821,16 @@ class DashboardOne extends React.Component {
         Header: this.getHeader(this.state.scrapText),
         accessor: 'scrap',
         minWidth: 90,
-        Cell: c => this.renderCell(c, 'summary_setup_scrap', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'scrap', 'actual_pcs'),
+        Cell: c => {
+          let defaultValue = !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ?
+            parseInt(c.original.summary_setup_scrap || 0, 10) + parseInt(c.original.summary_other_scrap || 0, 10) : null;
+          return this.renderCell(c, '', defaultValue, true, true, 'scrap')
+        },
         Aggregated: a => {
-          let defaultValue = a.subRows.length > 1 ? _.sumBy(a.subRows, '_original.summary_setup_scrap')
-            : !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null;
-          return this.renderAggregated(a, a.subRows.length > 1 ? '' : 'summary_setup_scrap', defaultValue, false, a.subRows.length === 1, 'scrap', 'summary_actual')
+          let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
+            (a.subRows.length > 1 ? _.sumBy(a.subRows, item => parseInt(item._original.summary_setup_scrap || 0, 10) + parseInt(item._original.summary_other_scrap || 0, 10)) :
+              parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
+          return this.renderAggregated(a, '', defaultValue, false, a.subRows.length === 1, 'scrap')
         },
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
@@ -855,27 +860,22 @@ class DashboardOne extends React.Component {
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregated(a, '', this.getCommentsToSet(a), false, true, 'comments'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      }
-    ];
-
-    if (!this.state.summary) {
-      columns.push({
+      }, {
         Header: this.getHeader(this.state.operatorText),
         accessor: 'oper_id',
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'oper_id', 'operator_signoff', 'signoff', 'operator'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      });
-      columns.push({
+      }, {
         Header: this.getHeader(this.state.supervisorText),
         accessor: 'superv_id',
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
         Aggregated: a => this.renderAggregatedSignOff(a, 'superv_id', 'supervisor_signoff', 'signoff', 'supervisor'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      });
-    }
+      }
+    ];
 
     this.setState({ columns });
   }

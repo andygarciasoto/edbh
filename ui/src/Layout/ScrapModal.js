@@ -44,10 +44,11 @@ class ScrapModal extends React.Component {
         let _this = this;
         e.target.value = e.target.value < 0 && e.target.value !== '' ? 0 : e.target.value;
         let otherName = name === 'setup_scrap' ? 'other_scrap' : 'setup_scrap';
-        if (e.target.value === '' || parseInt(e.target.value, 10) + parseInt(this.state[otherName], 10) <= this.state.actualRow.actual_pcs) {
+        if (e.target.value === '' || (parseInt(e.target.value === '' ? 0 : e.target.value, 10) + parseInt(this.state[otherName] === '' ? 0 : this.state[otherName], 10) <= this.state.actualRow.actual_pcs)) {
             this.setState({ [name]: e.target.value }, () => {
                 _this.setState({
-                    adjusted_actual: _this.state.actualRow.actual_pcs - (parseInt(_this.state.setup_scrap, 10) + parseInt(_this.state.other_scrap, 10))
+                    adjusted_actual: _this.state.actualRow.actual_pcs -
+                        (parseInt(_this.state.setup_scrap === '' ? 0 : _this.state.setup_scrap, 10) + parseInt(_this.state.other_scrap === '' ? 0 : _this.state.other_scrap, 10))
                 });
             });
         }
