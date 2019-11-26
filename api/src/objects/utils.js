@@ -36,6 +36,9 @@ function restructureSQLObjectByContent(obj) {
                 newItem['ideal'] = prod.ideal;
                 newItem['target'] = prod.target;
                 newItem['actual'] = prod.actual;
+                newItem['setup_scrap'] = prod.setup_scrap;
+                newItem['other_scrap'] = prod.other_scrap;
+                newItem['adjusted_actual'] = prod.adjusted_actual;
                 newItem['order_number'] = prod.order_number;
                 newItem['start_time'] = prod.start_time;
                 newItem['routed_cycle_time'] = prod.routed_cycle_time;
@@ -73,6 +76,9 @@ var nameMapping = {
     ideal: "ideal",
     target: "target_pcs",
     actual: "actual_pcs",
+    setup_scrap: "setup_scrap",
+    other_scrap: "other_scrap",
+    adjusted_actual: "adjusted_actual",
     cumulative_target: "cumulative_target_pcs",
     cumulative_actual: "cumulative_pcs",
     timelost: "timelost", // get the latest time lost or calculate the total

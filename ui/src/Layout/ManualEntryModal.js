@@ -12,8 +12,6 @@ import {
     getUOMS
 } from '../Utils/Requests';
 
-
-
 class ManualEntryModal extends React.Component {
     constructor(props) {
         super(props);

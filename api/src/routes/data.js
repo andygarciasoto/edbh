@@ -90,7 +90,6 @@ function proccessToken(token) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    console.log(params.mc);
     if (params.dt == undefined || params.mc == undefined || params.hr == undefined) {
         return res.status(400).send("Missing parameters");
     }
@@ -827,13 +826,10 @@ router.get("/order_assembly", async function (req, res) {
                         res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
                         return;
                     }
-                        console.log("exitoso");
-                        console.log(response);
                         res.status(200).json(response);
                         return;
                 });
             } else {
-                console.log(response);
                 res.status(200).json(response);
                 return;
             }
