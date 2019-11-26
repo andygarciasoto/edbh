@@ -255,6 +255,9 @@ function isComponentValid(user_role, name) {
   const componentStructure = {
     administrator: [
       'menu',
+      'menu-dashbaord',
+      'menu-import',
+      'menu-summary',
       'megamenu',
       'actual',
       'partnumber',
@@ -268,9 +271,13 @@ function isComponentValid(user_role, name) {
       'pagination',
       'neworder',
       'manualentry',
-      'import'
+      'import',
+      'scrap'
     ],
     supervisor: [
+      'menu',
+      'menu-dashbaord',
+      'menu-summary',
       'megamenu',
       'actual',
       'timelost',

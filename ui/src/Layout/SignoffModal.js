@@ -60,6 +60,9 @@ class SignoffModal extends React.Component {
         const data = {
             dxh_data_id: rowData ? rowData.dxhdata_id : null,
             actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
+            setup_scrap: rowData.summary_setup_scrap || 'signoff',
+            other_scrap: rowData.summary_other_scrap || 'signoff',
+            adjusted_actual: rowData.summary_adjusted_actual || 'signoff',
             clocknumber: number,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
@@ -117,7 +120,10 @@ class SignoffModal extends React.Component {
         if (this.state.signOffRole === 'operator') {
             const data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
-                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "zero",
+                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
+                setup_scrap: rowData.summary_setup_scrap || 'signoff',
+                other_scrap: rowData.summary_other_scrap || 'signoff',
+                adjusted_actual: rowData.summary_adjusted_actual || 'signoff',
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
@@ -195,6 +201,7 @@ class SignoffModal extends React.Component {
             isred = (row.actual_pcs === '') ? 'red' : 'black';
             isgreen = row.actual_pcs > row.target_pcs ? 'green' : 'black';
         }
+
         return (
             <React.Fragment>
                 {row ? <Modal
@@ -210,8 +217,12 @@ class SignoffModal extends React.Component {
                             <li><p className={'signoff-list'}>{'Ideal: '}</p><p className={'signoff-list'}>{row.ideal === '' ? 0 : row.ideal}</p></li>
                             <li><p className={'signoff-list'}>{'Target: '}</p><p className={'signoff-list'}>
                                 {row.target_pcs === '' ? 0 : row.target_pcs}</p></li>
-                            <li><p className={'signoff-list'}>{'Actual: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{'Actual Recorded: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
                                 {row.actual_pcs === '' ? 0 : row.actual_pcs}</p></li>
+                            <li><p className={'signoff-list'}>{'Scrap: '}</p><p className={'signoff-list'}>
+                                {parseInt(row.summary_setup_scrap || 0, 10) + parseInt(row.summary_other_scrap || 0, 10)}</p></li>
+                            <li><p className={'signoff-list'}>{'Adjusted Actual: '}</p><p className={'signoff-list'}>
+                                {parseInt(row.summary_adjusted_actual || 0, 10)}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
                         <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }}
