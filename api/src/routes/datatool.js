@@ -4,6 +4,7 @@ var sqlQuery = require('../objects/sqlConnection');
 var constants = require('../objects/constants');
 import config from '../../config.json';
 import cors from 'cors';
+import moment from 'moment-timezone';
 var request = require('request');
 var localStorage = require('localStorage');
 const Excel = require('exceljs');
@@ -21,11 +22,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 function getDataType(table, value, position) {
+  let hour = '';
+  let minutes = '';
+  let seconds = '';
   if (value === 'NULL' || value === null) {
     value = null;
     return value;
   }
-  if (table === 'asset') {
+  if (table === 'asset' || table === 'tag') {
     if (position === 10) {
       return value;
     } else {
@@ -33,11 +37,36 @@ function getDataType(table, value, position) {
       return value;
     }
   }
-  if (table === 'dtreason') {
+  if (table === 'dtreason' || table === 'uom') {
     value = `'` + value + `'`;
     return value;
   }
+  if (table === 'shift') {
+    if (position === 5 || position === 8 || position === 13) {
+      return value;
+    } else {
+      if (position === 6 || position === 7){
+       value = new Date(value).toISOString();
+       value = value.substring(11, 19);
+      }
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
+  if (table === 'unavailable') {
+    if (position === 7) {
+      return value;
+    } else {
+      if (position === 5 || position === 6){
+       value = new Date(value).toISOString();
+       value = value.substring(11, 19);
+      }
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
 }
+
 function getForeignKey(table, validation) {
   if (table === 'asset') {
     validation = 'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']' + ' AND ' +
@@ -46,6 +75,25 @@ function getForeignKey(table, validation) {
   }
   if (table === 'dtreason') {
     validation = 'source.[' + 'dtreason_code' + ']' + ' = ' + 'target.[' + 'dtreason_code' + ']' + ' AND ' +
+      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+    return validation;
+  }
+  if (table === 'shift') {
+    validation = 'source.[' + 'shift_code' + ']' + ' = ' + 'target.[' + 'shift_code' + ']' + ' AND ' +
+      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+    return validation;
+  }
+  if (table === 'tag') {
+    validation = 'source.[' + 'tag_code' + ']' + ' = ' + 'target.[' + 'tag_code' + ']' + ' AND ' +
+      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+    return validation;
+  }
+  if (table === 'uom') {
+    validation = 'source.[' + 'uom_code' + ']' + ' = ' + 'target.[' + 'uom_code' + ']';
+    return validation;
+  }
+  if (table === 'unavailable') {
+    validation = 'source.[' + 'unavailable_code' + ']' + ' = ' + 'target.[' + 'unavailable_code' + ']' + ' AND ' +
       'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
     return validation;
   }
@@ -76,8 +124,8 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
   var workbook = new Excel.Workbook();
   workbook.xlsx.readFile(file[0].path)
     .then(function () {
-      var worksheet = workbook.getWorksheet(1);
-      if (worksheet.name !== 'dtreason') {
+      var worksheet = workbook.getWorksheet(7);
+      if (worksheet.name !== 'unavailable') {
         return res.status(400).json({ message: "Bad Request - Please review that the Excel sheets are in place" });
       }
       // Iterate over all rows that have values in a worksheet
@@ -118,7 +166,7 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
         WHEN NOT MATCHED THEN
         INSERT (${target})
         VALUES (${insert});`;
-
+        console.log(query);
       sqlQuery(query,
         (err, response) => {
           if (err) {
