@@ -938,7 +938,6 @@ router.put('/create_order_data', async function (req, res) {
             `exec dbo.spLocal_EY_DxH_Create_OrderData ${responseProm[0].Asset.asset_id}, '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
                     ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`;
 
-        console.log(queryCreateOrder);
         try {
             await sqlQuery(query,
                 async (err, response) => {
