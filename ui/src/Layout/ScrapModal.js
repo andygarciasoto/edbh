@@ -33,9 +33,9 @@ class ScrapModal extends React.Component {
             this.setState({
                 isOpen: nextProps.isOpen,
                 actualRow: nextProps.currentRow,
-                setup_scrap: nextProps.currentRow.summary_setup_scrap || 0,
-                other_scrap: nextProps.currentRow.summary_other_scrap || 0,
-                adjusted_actual: nextProps.currentRow.summary_adjusted_actual || nextProps.currentRow.actual_pcs
+                setup_scrap: nextProps.currentRow.setup_scrap || 0,
+                other_scrap: nextProps.currentRow.other_scrap || 0,
+                adjusted_actual: nextProps.currentRow.adjusted_actual || nextProps.currentRow.actual_pcs
             });
         }
     }
@@ -45,7 +45,7 @@ class ScrapModal extends React.Component {
         e.target.value = e.target.value < 0 && e.target.value !== '' ? 0 : e.target.value;
         let otherName = name === 'setup_scrap' ? 'other_scrap' : 'setup_scrap';
         if (e.target.value === '' || (parseInt(e.target.value === '' ? 0 : e.target.value, 10) + parseInt(this.state[otherName] === '' ? 0 : this.state[otherName], 10) <= this.state.actualRow.actual_pcs)) {
-            this.setState({ [name]: e.target.value }, () => {
+            this.setState({ [name]: e.target.value !== '' ? parseInt(e.target.value) : 0 }, () => {
                 _this.setState({
                     adjusted_actual: _this.state.actualRow.actual_pcs -
                         (parseInt(_this.state.setup_scrap === '' ? 0 : _this.state.setup_scrap, 10) + parseInt(_this.state.other_scrap === '' ? 0 : _this.state.other_scrap, 10))
@@ -77,10 +77,10 @@ class ScrapModal extends React.Component {
                 if (res !== 200 || !res) {
                     this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
                 } else {
-                    this.setState({ request_status: res, modal_loading_IsOpen: false })
+                    this.setState({ request_status: res, modal_loading_IsOpen: false });
+                    this.props.Refresh(this.props.parentData);
+                    this.props.onRequestClose();
                 }
-                this.props.Refresh(this.props.parentData);
-                this.props.onRequestClose();
             })
         })
     }

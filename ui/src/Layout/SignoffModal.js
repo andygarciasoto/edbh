@@ -121,9 +121,9 @@ class SignoffModal extends React.Component {
             const data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
                 actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
-                setup_scrap: rowData.summary_setup_scrap || 'signoff',
-                other_scrap: rowData.summary_other_scrap || 'signoff',
-                adjusted_actual: rowData.summary_adjusted_actual || 'signoff',
+                setup_scrap: rowData.setup_scrap || 'signoff',
+                other_scrap: rowData.other_scrap || 'signoff',
+                adjusted_actual: rowData.adjusted_actual || 'signoff',
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,

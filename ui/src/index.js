@@ -119,7 +119,7 @@ function init() {
                 .then(function (response) {
                     const machineValues = response.data[0].AssetDisplaySystem;
                     machine = {
-                        asset_code: machineValues.asset_code,
+                        asset_code: machineValues.asset_code || machineValues.message,
                         asset_level: machineValues.asset_level,
                         automation_level: machineValues.automation_level,
                         display_name: machineValues.displaysystem_name,
