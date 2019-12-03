@@ -29,9 +29,9 @@ class ValueModal extends React.Component {
         const data = {
             dxh_data_id: this.props.currentRow && this.props.currentRow.dxhdata_id ? this.props.currentRow.dxhdata_id : undefined,
             actual: this.state.newValue ? formatNumber(parseInt(this.state.newValue)) : null,
-            setup_scrap: this.props.currentRow.summary_setup_scrap || 'signoff',
-            other_scrap: this.props.currentRow.summary_other_scrap || 'signoff',
-            adjusted_actual: this.props.currentRow.summary_adjusted_actual || 'signoff',
+            setup_scrap: this.props.currentRow.setup_scrap || 'signoff',
+            other_scrap: this.props.currentRow.other_scrap || 'signoff',
+            adjusted_actual: this.props.currentRow.adjusted_actual || 'signoff',
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,

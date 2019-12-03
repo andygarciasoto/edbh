@@ -51,6 +51,9 @@ function restructureSQLObjectByContent(obj) {
             item['ideal'] = '';
             item['target'] = '';
             item['actual'] = '';
+            item['setup_scrap'] = 0;
+            item['other_scrap'] = 0;
+            item['adjusted_actual'] = 0;
             item['order_number'] = '';
             delete item.production;
             newArray.push(item);

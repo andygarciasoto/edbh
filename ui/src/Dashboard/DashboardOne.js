@@ -823,13 +823,12 @@ class DashboardOne extends React.Component {
         minWidth: 90,
         Cell: c => {
           let defaultValue = !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ?
-            parseInt(c.original.summary_setup_scrap || 0, 10) + parseInt(c.original.summary_other_scrap || 0, 10) : null;
+            parseInt(c.original.setup_scrap || 0, 10) + parseInt(c.original.other_scrap || 0, 10) : null;
           return this.renderCell(c, '', defaultValue, true, true, 'scrap')
         },
         Aggregated: a => {
           let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
-            (a.subRows.length > 1 ? _.sumBy(a.subRows, item => parseInt(item._original.summary_setup_scrap || 0, 10) + parseInt(item._original.summary_other_scrap || 0, 10)) :
-              parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
+            (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
           return this.renderAggregated(a, '', defaultValue, false, a.subRows.length === 1, 'scrap')
         },
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)

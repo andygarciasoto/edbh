@@ -88,11 +88,22 @@ function proccessToken(token) {
     });
 }
 
+function getAssetInfoPromise(asset_code) {
+    return new Promise((resolve, reject) => {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Asset_By_Code '${asset_code}';`,
+            (err, response) => {
+                if (err) { return reject(err); }
+                resolve(utils.structureMachines(response));
+            })
+    });
+}
+
 router.get('/data', async function (req, res) {
     const params = req.query;
     if (params.dt == undefined || params.mc == undefined || params.hr == undefined) {
         return res.status(400).send("Missing parameters");
     }
+
     const hour = moment(new Date(params.dt)).hours();
     var date = params.dt;
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
@@ -109,15 +120,18 @@ router.get('/data', async function (req, res) {
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data '${params.mc}','${params.dt}',${hour};`,
-        (err, response) => {
-            if (err) {
-                console.log(err);
-                res.status(500).send({ message: 'Error', database_error: err });
-                return;
-            }
-            structureShiftdata(response);
-        })
+
+    getAssetInfoPromise(params.mc).then(responseProm => {
+        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${hour};`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                structureShiftdata(response);
+            })
+    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e }); });
 });
 
 
@@ -130,15 +144,15 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Asset 'Cell','All',${params.site};`, 
+    sqlQuery(`exec spLocal_EY_DxH_Get_Asset 'Cell','All',${params.site};`,
         (err, response) => {
-        if (err) {
-            console.log(err)
-            res.status(500).send({ message: 'Error', database_error: err });
-            return;
-        }
-        structureMachines(response);
-    });
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            structureMachines(response);
+        });
 });
 
 router.get('/me', async function (req, res) {
@@ -197,7 +211,7 @@ router.get('/me', async function (req, res) {
 
 router.get('/shifts', async function (req, res) {
     const site = req.query.site;
-    if (!site){
+    if (!site) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
     sqlQuery(`exec sp_getshifts ${site}`,
@@ -215,18 +229,23 @@ router.get('/intershift_communication', async function (req, res) {
     const asset_code = req.query.mc;
     const production_day = moment(new Date(req.query.dt)).format('YYYY-MM-DD');
     const shift_code = req.query.sf;
-    if (asset_code === undefined || production_day === undefined || shift_code === undefined){
+    if (asset_code === undefined || production_day === undefined || shift_code === undefined) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData '${asset_code}', '${production_day}', '${shift_code}';`,
-        (err, response) => {
-            if (err) {
-                console.log(err);
-                res.status(500).send({ message: 'Error', database_error: err });
-                return;
-            }
-            responseGet(response, req, res, 'InterShiftData');
-        });
+
+    getAssetInfoPromise(asset_code).then(responseProm => {
+        sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData ${responseProm[0].Asset.asset_id}, '${production_day}', '${shift_code}';`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                responseGet(response, req, res, 'InterShiftData');
+            });
+    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e }); });
+
+
 });
 
 router.post('/dxh_new_comment', async function (req, res) {
@@ -249,37 +268,39 @@ router.post('/dxh_new_comment', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                (err, data) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
-                        return;
-                    }
-                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    let dxh_data_id = response[0].dxhdata_id;
-                    if (params.clocknumber) {
-                        sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${timestamp}', ${update}`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    } else {
-                        sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${timestamp}', ${update}`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    }
-                });
+            getAssetInfoPromise(asset_code).then(responseProm => {
+                sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                    (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send({ message: 'Error', database_error: err });
+                            return;
+                        }
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        let dxh_data_id = response[0].dxhdata_id;
+                        if (params.clocknumber) {
+                            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', '${params.clocknumber}', Null, Null, '${timestamp}', ${update}`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        } else {
+                            sqlQuery(`Exec spLocal_EY_DxH_Put_CommentData ${dxh_data_id}, '${params.comment}', Null, '${params.first_name}', '${params.last_name}', '${timestamp}', ${update}`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        }
+                    });
+            });
         }
     } else {
         if (params.clocknumber) {
@@ -310,17 +331,19 @@ router.get('/timelost_reasons', async function (req, res) {
     if (!req.query.mc) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    if (req.query.mc !== 'No Data'){    
-    const machine = req.query.mc;
-    sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason '${machine}';`, (err, response) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send({ message: 'Error', database_error: err });
-            return;
-        }
-        responseGet(response, req, res, 'DTReason');
-    }
-    )};
+    if (req.query.mc !== 'No Data') {
+        getAssetInfoPromise(req.query.mc).then(responseProm => {
+            sqlQuery(`Exec spLocal_EY_DxH_Get_DTReason ${responseProm[0].Asset.asset_id};`, (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                responseGet(response, req, res, 'DTReason');
+            }
+            )
+        });
+    };
 });
 
 router.get('/dxh_data_id', async function (req, res) {
@@ -331,15 +354,18 @@ router.get('/dxh_data_id', async function (req, res) {
     if (asset_code == undefined || timestamp == undefined) {
         return res.status(400).send("Missing parameters");
     }
-    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${timestamp}', ${require_order_create};`,
-        (err, response) => {
-            if (err) {
-                console.log(err)
-                res.status(500).send({ message: 'Error', database_error: err });
-                return;
-            }
-            responseGet(response, req, res, 'GetDxHDataId');
-        });
+
+    getAssetInfoPromise(asset_code).then(responseProm => {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${timestamp}', ${require_order_create};`,
+            (err, response) => {
+                if (err) {
+                    console.log(err)
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                responseGet(response, req, res, 'GetDxHDataId');
+            });
+    });
 });
 
 router.put('/dt_data', async function (req, res) {
@@ -367,31 +393,33 @@ router.put('/dt_data', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                (err, data) => {
-                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dxh_data_id = response[0].dxhdata_id;
-                    if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                } responsePostPut(response, req, res);
-                            });
-                    }
-                });
+            getAssetInfoPromise(asset_code).then(responseProm => {
+                sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                    (err, data) => {
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        if (clocknumber) {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        } else {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    } responsePostPut(response, req, res);
+                                });
+                        }
+                    });
+            });
         }
     } else {
         if (clocknumber) {
@@ -428,10 +456,10 @@ router.put('/intershift_communication', async function (req, res) {
     const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
     const row_timestamp = req.body.row_timestamp;
 
-    if (comment === undefined){
+    if (comment === undefined) {
         return res.status(400).send("Missing parameters");
     }
-        if (!clocknumber) {
+    if (!clocknumber) {
         if (!(first_name || last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
@@ -440,37 +468,39 @@ router.put('/intershift_communication', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                (err, data) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
-                        return;
-                    }
-                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dxh_data_id = response[0].dxhdata_id;
-                    if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    }
-                });
+            getAssetInfoPromise(asset_code).then(responseProm => {
+                sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                    (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send({ message: 'Error', database_error: err });
+                            return;
+                        }
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        if (clocknumber) {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        } else {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_InterShiftData ${dxh_data_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        }
+                    });
+            });
         }
     } else {
         if (clocknumber) {
@@ -517,37 +547,39 @@ router.put('/operator_sign_off', async function (req, res) {
         if (asset_code === undefined || asset_code === 'No Data') {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                (err, data) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
-                        return;
-                    }
-                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dxh_data_id = response[0].dxhdata_id;
-                    if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    }
-                });
+            getAssetInfoPromise(asset_code).then(responseProm => {
+                sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                    (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send({ message: 'Error', database_error: err });
+                            return;
+                        }
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        if (clocknumber) {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        } else {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        }
+                    });
+            });
         }
     } else {
         if (clocknumber) {
@@ -610,37 +642,39 @@ router.put('/supervisor_sign_off', async function (req, res) {
                     if (asset_code === undefined || asset_code === 'No Data') {
                         return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
                     } else {
-                        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                            (err, data) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                                dxh_data_id = response[0].dxhdata_id;
-                                if (clocknumber) {
-                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
-                                        (err, response) => {
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500).send({ message: 'Error', database_error: err });
-                                                return;
-                                            }
-                                            responsePostPut(response, req, res);
-                                        });
-                                } else {
-                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
-                                        (err, response) => {
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500).send({ message: 'Error', database_error: err });
-                                                return;
-                                            }
-                                            responsePostPut(response, req, res);
-                                        });
-                                }
-                            });
+                        getAssetInfoPromise(asset_code).then(responseProm => {
+                            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                                (err, data) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                                    dxh_data_id = response[0].dxhdata_id;
+                                    if (clocknumber) {
+                                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                                            (err, response) => {
+                                                if (err) {
+                                                    console.log(err);
+                                                    res.status(500).send({ message: 'Error', database_error: err });
+                                                    return;
+                                                }
+                                                responsePostPut(response, req, res);
+                                            });
+                                    } else {
+                                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                                            (err, response) => {
+                                                if (err) {
+                                                    console.log(err);
+                                                    res.status(500).send({ message: 'Error', database_error: err });
+                                                    return;
+                                                }
+                                                responsePostPut(response, req, res);
+                                            });
+                                    }
+                                });
+                        });
                     }
                 } else {
                     if (clocknumber) {
@@ -699,37 +733,39 @@ router.put('/production_data', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
-            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId '${asset_code}', '${row_timestamp}', 0;`,
-                (err, data) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send({ message: 'Error', database_error: err });
-                        return;
-                    }
-                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                    dxh_data_id = response[0].dxhdata_id;
-                    if (clocknumber) {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    } else {
-                        sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
-                            (err, response) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.status(500).send({ message: 'Error', database_error: err });
-                                    return;
-                                }
-                                responsePostPut(response, req, res);
-                            });
-                    }
-                });
+            getAssetInfoPromise(asset_code).then(responseProm => {
+                sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                    (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send({ message: 'Error', database_error: err });
+                            return;
+                        }
+                        let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                        dxh_data_id = response[0].dxhdata_id;
+                        if (clocknumber) {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        } else {
+                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        res.status(500).send({ message: 'Error', database_error: err });
+                                        return;
+                                    }
+                                    responsePostPut(response, req, res);
+                                });
+                        }
+                    });
+            });
         }
     } else {
         if (clocknumber) {
@@ -763,15 +799,18 @@ router.get('/order_data', async function (req, res) {
     if (asset_code == undefined || order_number == undefined) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_OrderData '${asset_code}', '${order_number}', ${is_current_order};`,
-        (err, response) => {
-            if (err) {
-                console.log(err);
-                res.status(500).send({ message: 'Error', database_error: err });
-                return;
-            }
-            responseGet(response, req, res, 'OrderData');
-        });
+
+    getAssetInfoPromise(asset_code).then(responseProm => {
+        sqlQuery(`exec spLocal_EY_DxH_Get_OrderData ${responseProm[0].Asset.asset_id}, '${order_number}', ${is_current_order};`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                responseGet(response, req, res, 'OrderData');
+            });
+    });
 });
 
 router.get('/common_parameters', async function (req, res) {
@@ -795,45 +834,47 @@ router.get("/order_assembly", async function (req, res) {
     if (params.order_number === undefined || params.asset_code === undefined || params.timestamp === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData'${params.asset_code}','${params.order_number}', 0`,
-        (err, data) => {
-            if (err) {
-                console.log(err);
-                res.status(500).send({ message: 'Error', database_error: err });
-                return;
-            }
-            let response = JSON.parse(Object.values(data)[0].OrderData);
-            const orderId = response[0].OrderData.order_id;
-            if (orderId === null || orderId === undefined) {
-                var assembly = {
-                    order_number: params.order_number,
-                    asset_code: params.asset_code,
-                    timestamp: params.timestamp,
-                    message_source: "assembly"
-                };
-                request({
-                    url: "http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder",
-                    method: "POST",
-                    json: true,
-                    body: assembly,
-                    timeout: 10000
-                }, function (error, resp, body) {
-                    if (error || body) {
-                        res.status(500).send({ message: 'Error', jtrax_error: error });
-                        return;
-                    }
-                    if (resp.statusCode >= 400) {
-                        res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
-                        return;
-                    }
+    getAssetInfoPromise(asset_code).then(responseProm => {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData${responseProm[0].Asset.asset_id},'${params.order_number}', 0`,
+            (err, data) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                let response = JSON.parse(Object.values(data)[0].OrderData);
+                const orderId = response[0].OrderData.order_id;
+                if (orderId === null || orderId === undefined) {
+                    var assembly = {
+                        order_number: params.order_number,
+                        asset_code: params.asset_code,
+                        timestamp: params.timestamp,
+                        message_source: "assembly"
+                    };
+                    request({
+                        url: "http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder",
+                        method: "POST",
+                        json: true,
+                        body: assembly,
+                        timeout: 10000
+                    }, function (error, resp, body) {
+                        if (error || body) {
+                            res.status(500).send({ message: 'Error', jtrax_error: error });
+                            return;
+                        }
+                        if (resp.statusCode >= 400) {
+                            res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
+                            return;
+                        }
                         res.status(200).json(response);
                         return;
-                });
-            } else {
-                res.status(200).json(response);
-                return;
-            }
-        });
+                    });
+                } else {
+                    res.status(200).json(response);
+                    return;
+                }
+            });
+    });
 });
 
 router.get('/uom', async function (req, res) {
@@ -884,58 +925,60 @@ router.put('/create_order_data', async function (req, res) {
         }
     }
 
-    const query = "select [product_id], [product_code], [product_name], [product_description], [product_family], [value_stream], " +
-        "[grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], " +
-        "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
+    getAssetInfoPromise(asset_code).then(async responseProm => {
+        const query = "select [product_id], [product_code], [product_name], [product_description], [product_family], [value_stream], " +
+            "[grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], " +
+            "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
 
-    const queryInsertNewProduct = `exec dbo.sp_importproducts '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
+        const queryInsertNewProduct = `exec dbo.sp_importproducts '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
         '', '', '', 'Active', 'SQL manual entry', '${moment.utc().format('YYYY-MM-DD HH:MM')}';`;
 
-    const queryCreateOrder = clocknumber ? `exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', 
+        const queryCreateOrder = clocknumber ? `exec dbo.spLocal_EY_DxH_Create_OrderData ${responseProm[0].Asset.asset_id}, '${part_number}', ${order_quantity}, '${uom_code}', 
         ${routed_cycle_time}, ${setup_time}, ${target}, '${production_status}', '${clocknumber}', Null, Null;` :
-        `exec dbo.spLocal_EY_DxH_Create_OrderData '${asset_code}', '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
+            `exec dbo.spLocal_EY_DxH_Create_OrderData ${responseProm[0].Asset.asset_id}, '${part_number}', ${order_quantity}, '${uom_code}', ${routed_cycle_time}, ${setup_time}, 
                     ${target}, '${production_status}', Null, '${first_name}', '${last_name}';`;
 
-    try {
-        await sqlQuery(query,
-            async (err, response) => {
-                if (err) {
-                    res.status(500).send({ message: 'Error', database_error: err });
-                    return;
-                }
-                let result = Object.values(response);
-                if (result[0] === undefined) {
-                    await sqlQuery(queryInsertNewProduct,
-                        async (err, response) => {
-                            if (err) {
-                                console.log(err);
-                                res.status(500).send({ message: 'Error', database_error: err });
-                                return;
-                            }
-                            await sqlQuery(queryCreateOrder,
-                                (err, response) => {
-                                    if (err) {
-                                        console.log(err);
-                                        res.status(500).send({ message: 'Error', database_error: err });
-                                        return;
-                                    }
-                                    responsePostPut(response, req, res);
-                                });
-                        });
-                } else {
-                    await sqlQuery(queryCreateOrder,
-                        (err, response) => {
-                            if (err) {
-                                res.status(500).send({ message: 'Error', database_error: err });
-                                return;
-                            }
-                            responsePostPut(response, req, res);
-                        });
-                }
-            });
-    } catch (e) {
-        res.status(500).send({ message: 'Error', api_error: e });
-    }
+        try {
+            await sqlQuery(query,
+                async (err, response) => {
+                    if (err) {
+                        res.status(500).send({ message: 'Error', database_error: err });
+                        return;
+                    }
+                    let result = Object.values(response);
+                    if (result[0] === undefined) {
+                        await sqlQuery(queryInsertNewProduct,
+                            async (err, response) => {
+                                if (err) {
+                                    console.log(err);
+                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    return;
+                                }
+                                await sqlQuery(queryCreateOrder,
+                                    (err, response) => {
+                                        if (err) {
+                                            console.log(err);
+                                            res.status(500).send({ message: 'Error', database_error: err });
+                                            return;
+                                        }
+                                        responsePostPut(response, req, res);
+                                    });
+                            });
+                    } else {
+                        await sqlQuery(queryCreateOrder,
+                            (err, response) => {
+                                if (err) {
+                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    return;
+                                }
+                                responsePostPut(response, req, res);
+                            });
+                    }
+                });
+        } catch (e) {
+            res.status(500).send({ message: 'Error', api_error: e });
+        }
+    });
 
 });
 
@@ -943,9 +986,8 @@ router.get('/asset_display_system', async function (req, res) {
     let display_system_name = req.query.st;
     if (!display_system_name) {
         // return res.status(400).json({ message: "Bad Request - Missing Parameters" });
-        display_system_name = 'CR2080435W1'; 
+        display_system_name = 'CR2080435W1';
     }
-
     sqlQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem '${display_system_name}';`,
         (err, response) => {
             if (err) {

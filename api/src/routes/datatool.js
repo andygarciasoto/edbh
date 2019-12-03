@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var sqlQuery = require('../objects/sqlConnection');
+var constants = require('../objects/constants');
 import config from '../../config.json';
 import cors from 'cors';
 import moment from 'moment-timezone';
@@ -116,7 +117,6 @@ function responsePostPut(response, req, res) {
   } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: response }); }
 };
 
-
 router.put('/import_asset', cors(), upload.any(), function (req, res) {
   var assetValues = ``;
   var source = "";
@@ -186,6 +186,51 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
       // use workbook
     });
   return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
+});
+
+function getPromise(sqlSentence, table) {
+  return new Promise((resolve, reject) => {
+    sqlQuery(sqlSentence,
+      (err, response) => {
+        if (err) return reject(err);
+        resolve({ 'response': response, 'table': table });
+      })
+  });
+}
+
+router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
+
+  let site_name = req.query.site_name;
+
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
+
+  let workbook = new Excel.Workbook();
+
+  let promiseArray = [];
+  promiseArray.push(getPromise(constants.DTReasonSQL(site_name), 'DTReason'));
+  promiseArray.push(getPromise(constants.AssetSQL(site_name), 'Asset'));
+  promiseArray.push(getPromise(constants.ShiftSQL(site_name), 'Shift'));
+  promiseArray.push(getPromise(constants.TagSQL(site_name), 'Tag'));
+  promiseArray.push(getPromise(constants.CommonParametersSQL, 'CommonParameters'));
+  promiseArray.push(getPromise(constants.UOMSQL, 'UOM'));
+  promiseArray.push(getPromise(constants.UnavailableSQL(site_name), 'Unavailable'));
+
+  Promise.all(promiseArray).then(responseAll => {
+    responseAll.forEach(responsePromise => {
+      console.log(responsePromise.table);
+      var worksheet = workbook.addWorksheet(responsePromise.table);
+      worksheet.columns = constants[responsePromise.table];
+      responsePromise.response.forEach(element => {
+        worksheet.addRow(element);
+      });
+    });
+    workbook.xlsx.write(res)
+      .then(() => {
+        res.end();
+        console.log('File write done........');
+      });
+  });
 });
 
 module.exports = router;
