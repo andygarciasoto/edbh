@@ -36,7 +36,15 @@ function getDataType(table, value, position) {
       return value;
     }
   }
-  if (table === 'dtreason' || table === 'uom') {
+  if (table === 'dtreason') {
+    if (position === 14){
+      return value;
+    }else {
+    value = `'` + value + `'`;
+    return value;
+    }
+  }
+  if (table === 'uom'){
     value = `'` + value + `'`;
     return value;
   }
