@@ -218,7 +218,6 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
 
   Promise.all(promiseArray).then(responseAll => {
     responseAll.forEach(responsePromise => {
-      console.log(responsePromise.table);
       var worksheet = workbook.addWorksheet(responsePromise.table);
       worksheet.columns = constants[responsePromise.table];
       responsePromise.response.forEach(element => {

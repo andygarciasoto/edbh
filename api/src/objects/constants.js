@@ -15,9 +15,9 @@ module.exports = Object.freeze({
     ],
     DTReasonSQL: (site_name) => {
         return `SELECT [DTReason].[dtreason_code],[DTReason].[dtreason_name],[DTReason].[dtreason_description],[DTReason].[dtreason_category],
-            [DTReason].[asset_code],[DTReason].[reason1],[DTReason].[reason2],[DTReason].[status],[DTReason].[entered_by],[DTReason].[entered_on],
-            [DTReason].[last_modified_by],[DTReason].[last_modified_on] FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_code] = [Asset].[asset_code]
-            WHERE [Asset].[site_code] = '${site_name}'`;
+        [Asset].[asset_code],[DTReason].[reason1],[DTReason].[reason2],[DTReason].[status],[DTReason].[entered_by],[DTReason].[entered_on],
+        [DTReason].[last_modified_by],[DTReason].[last_modified_on] FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_id] = [Asset].[asset_id]
+        WHERE [Asset].[site_code] = '${site_name}'`;
     },
     Asset: [
         { header: 'code', key: 'asset_code', width: 14 },
@@ -66,9 +66,10 @@ module.exports = Object.freeze({
         { header: 'last_modified_on', key: 'last_modified_on', width: 17 }
     ],
     ShiftSQL: (site_name) => {
-        return `SELECT [shift_code],[shift_name],[shift_description],[shift_sequence],[start_time],[end_time],[duration_in_minutes],[valid_from],
-        [valid_to],[asset_code],[team_code],[is_first_shift_of_day],[status],[entered_by],[entered_on],[last_modified_by],[last_modified_on]
-        FROM [dbo].[Shift] WHERE [asset_code] = '${site_name}';`
+        return `SELECT [Shift].[shift_code],[Shift].[shift_name],[Shift].[shift_description],[Shift].[shift_sequence],[Shift].[start_time],[Shift].[end_time],
+        [Shift].[duration_in_minutes],[Shift].[valid_from],[Shift].[valid_to],[Asset].[asset_code],[Shift].[team_code],[Shift].[is_first_shift_of_day],
+        [Shift].[status],[Shift].[entered_by],[Shift].[entered_on],[Shift].[last_modified_by],[Shift].[last_modified_on]
+        FROM [dbo].[Shift] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [Shift].[asset_id] WHERE [Asset].[site_code] = '${site_name}';`
     },
     Tag: [
         { header: 'code', key: 'tag_code', width: 88 },
@@ -88,9 +89,9 @@ module.exports = Object.freeze({
         { header: 'last_modified_on', key: 'last_modified_on', width: 17 }
     ],
     TagSQL: (site_name) => {
-        return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Tag].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
-            [Tag].[UOM_code],[Tag].[rollover_point],[Tag].[aggregation],[Tag].[status],[Tag].[entered_by],[Tag].[entered_on],[Tag].[last_modified_by],
-            [Tag].[last_modified_on] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_code] = [Asset].[asset_code] WHERE [Asset].[site_code] = '${site_name}';`
+        return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
+        [Tag].[UOM_code],[Tag].[rollover_point],[Tag].[aggregation],[Tag].[status],[Tag].[entered_by],[Tag].[entered_on],[Tag].[last_modified_by],
+        [Tag].[last_modified_on] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = '${site_name}';`
     },
     CommonParameters: [
         { header: 'code', key: 'parameter_code', width: 34 },
@@ -136,8 +137,8 @@ module.exports = Object.freeze({
     ],
     UnavailableSQL: (site_name) => {
         return `SELECT [Unavailable].[unavailable_code],[Unavailable].[unavailable_name],[Unavailable].[unavailable_description],[Unavailable].[start_time],
-        [Unavailable].[end_time],[Unavailable].[duration_in_minutes],[Unavailable].[valid_from],[Unavailable].[valid_to],[Unavailable].[asset_code],
+        [Unavailable].[end_time],[Unavailable].[duration_in_minutes],[Unavailable].[valid_from],[Unavailable].[valid_to],[Asset].[asset_code],
         [Unavailable].[status],[Unavailable].[entered_by],[Unavailable].[entered_on],[Unavailable].[last_modified_by],[Unavailable].[last_modified_on]
-        FROM [dbo].[Unavailable] JOIN [dbo].[Asset] ON [Unavailable].[asset_code] = [Asset].[asset_code] WHERE [Asset].[site_code] = '${site_name}';`;
+        FROM [dbo].[Unavailable] JOIN [dbo].[Asset] ON [Unavailable].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = '${site_name}';`;
     }
 })
