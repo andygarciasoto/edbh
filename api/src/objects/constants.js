@@ -94,19 +94,33 @@ module.exports = Object.freeze({
         [Tag].[last_modified_on] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = '${site_name}';`
     },
     CommonParameters: [
-        { header: 'code', key: 'parameter_code', width: 34 },
-        { header: 'name', key: 'parameter_name', width: 33 },
-        { header: 'description', key: 'parameter_description', width: 27 },
-        { header: 'value', key: 'value', width: 24 },
+        { header: 'code', key: 'asset_code', width: 15 },
+        { header: 'name', key: 'site_name', width: 15 },
+        { header: 'production_day_offset_minutes', key: 'production_day_offset_minutes', width: 31 },
+        { header: 'site_timezone', key: 'site_timezone', width: 24 },
+        { header: 'ui_timezone', key: 'ui_timezone', width: 24 },
+        { header: 'escalation_level1_minutes', key: 'escalation_level1_minutes', width: 26 },
+        { header: 'escalation_level2_minutes', key: 'escalation_level2_minutes', width: 26 },
+        { header: 'default_target_percent_of_ideal', key: 'default_target_percent_of_ideal', width: 32 },
+        { header: 'default_setup_minutes', key: 'default_setup_minutes', width: 23 },
+        { header: 'default_routed_cycle_time', key: 'default_routed_cycle_time', width: 26 },
+        { header: 'setup_lookback_minutes', key: 'setup_lookback_minutes', width: 25 },
+        { header: 'inactive_timeout_minutes', key: 'inactive_timeout_minutes', width: 26 },
+        { header: 'language', key: 'language', width: 13 },
         { header: 'status', key: 'status' },
         { header: 'entered_by', key: 'entered_by', width: 19 },
         { header: 'entered_on', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', key: 'last_modified_on', width: 17 }
     ],
-    CommonParametersSQL: 'SELECT [CommonParameters].[parameter_code],[CommonParameters].[parameter_name],[CommonParameters].[parameter_description],' +
-        '[CommonParameters].[value],[CommonParameters].[status],[CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],' +
-        '[CommonParameters].[last_modified_on] FROM [dbo].[CommonParameters];',
+    CommonParametersSQL: (site_name) =>  {
+        return `SELECT [Asset].[asset_code],[CommonParametersTest].[site_name],[CommonParametersTest].[production_day_offset_minutes],[CommonParametersTest].[site_timezone],
+        [CommonParametersTest].[ui_timezone],[CommonParametersTest].[escalation_level1_minutes],[CommonParametersTest].[escalation_level2_minutes],
+        [CommonParametersTest].[default_target_percent_of_ideal],[CommonParametersTest].[default_setup_minutes],[CommonParametersTest].[default_routed_cycle_time],
+        [CommonParametersTest].[setup_lookback_minutes],[CommonParametersTest].[inactive_timeout_minutes],[CommonParametersTest].[language],[CommonParametersTest].[status],
+        [CommonParametersTest].[entered_by],[CommonParametersTest].[entered_on],[CommonParametersTest].[last_modified_by],[CommonParametersTest].[last_modified_on]
+        FROM [dbo].[CommonParametersTest] JOIN [dbo].[Asset] ON [CommonParametersTest].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_code] = '${site_name}';`;
+    },
     UOM: [
         { header: 'code', key: 'UOM_code', width: 14 },
         { header: 'name', key: 'UOM_name', width: 16 },

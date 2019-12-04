@@ -38,14 +38,14 @@ function getDataType(table, value, position) {
     }
   }
   if (table === 'dtreason') {
-    if (position === 14){
+    if (position === 14) {
       return value;
-    }else {
-    value = `'` + value + `'`;
-    return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
     }
   }
-  if (table === 'uom'){
+  if (table === 'uom') {
     value = `'` + value + `'`;
     return value;
   }
@@ -53,9 +53,9 @@ function getDataType(table, value, position) {
     if (position === 5 || position === 8 || position === 13) {
       return value;
     } else {
-      if (position === 6 || position === 7){
-       value = new Date(value).toISOString();
-       value = value.substring(11, 19);
+      if (position === 6 || position === 7) {
+        value = new Date(value).toISOString();
+        value = value.substring(11, 19);
       }
       value = `'` + value + `'`;
       return value;
@@ -65,9 +65,9 @@ function getDataType(table, value, position) {
     if (position === 7) {
       return value;
     } else {
-      if (position === 5 || position === 6){
-       value = new Date(value).toISOString();
-       value = value.substring(11, 19);
+      if (position === 5 || position === 6) {
+        value = new Date(value).toISOString();
+        value = value.substring(11, 19);
       }
       value = `'` + value + `'`;
       return value;
@@ -174,7 +174,7 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
         WHEN NOT MATCHED THEN
         INSERT (${target})
         VALUES (${insert});`;
-        console.log(query);
+      console.log(query);
       sqlQuery(query,
         (err, response) => {
           if (err) {
@@ -212,7 +212,7 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
   promiseArray.push(getPromise(constants.AssetSQL(site_name), 'Asset'));
   promiseArray.push(getPromise(constants.ShiftSQL(site_name), 'Shift'));
   promiseArray.push(getPromise(constants.TagSQL(site_name), 'Tag'));
-  promiseArray.push(getPromise(constants.CommonParametersSQL, 'CommonParameters'));
+  promiseArray.push(getPromise(constants.CommonParametersSQL(site_name), 'CommonParameters'));
   promiseArray.push(getPromise(constants.UOMSQL, 'UOM'));
   promiseArray.push(getPromise(constants.UnavailableSQL(site_name), 'Unavailable'));
 
