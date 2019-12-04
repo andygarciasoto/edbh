@@ -139,7 +139,7 @@ module.exports = Object.freeze({
         { header: 'description', key: 'unavailable_description', width: 27 },
         { header: 'start_time', key: 'start_time', width: 16 },
         { header: 'end_time', key: 'end_time', width: 27 },
-        { header: 'duration_in_minutes', key: 'duration_in_minutes', width: 14 },
+        { header: 'duration_in_minutes', key: 'duration_in_minutes', width: 21 },
         { header: 'valid_from', key: 'valid_from', width: 16 },
         { header: 'valid_to', key: 'valid_to', width: 27 },
         { header: 'code', key: 'asset_code', width: 14 },
