@@ -1,4 +1,4 @@
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Create_OrderData]    Script Date: 3/12/2019 10:13:49 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Create_OrderData]    Script Date: 4/12/2019 15:13:55 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -119,16 +119,18 @@ Declare
 	@Production_Start_Time		Datetime,
 	@Order_Number				Varchar(100),
 	@site_code					Varchar(100),
-	@timezone_parameter			Varchar(100)
+	@Site_Id					Int
 
 SET @site_code = (SELECT site_code
 				FROM dbo.Asset		
 				WHERE asset_id = @asset_id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+SET @site_id = (SELECT site_id 
+				FROM dbo.CommonParametersTest
+				WHERE site_name = @site_code)
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cp with (nolock)
+Where site_id = @site_id
 	And cp.status = 'Active'
 
 Select @Timestamp = getutcdate() at time zone 'UTC' at time zone @Site_Timezone
@@ -168,25 +170,25 @@ End
 
 If IsNull(@Routed_Cycle_Time,0) <= 0
 Begin
-	Select @Routed_Cycle_Time = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Routed_Cycle_Time'
+	Select @Routed_Cycle_Time = convert(float, default_routed_cycle_time)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
 If IsNull(@Minutes_Allowed_Per_Setup,0) <= 0
 Begin
-	Select @Minutes_Allowed_Per_Setup = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Setup_Minutes'
+	Select @Minutes_Allowed_Per_Setup = convert(float, default_setup_minutes)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
 If IsNull(@Target_Percent_Of_Ideal,0) <= 0
 Begin
-	Select @Target_Percent_Of_Ideal = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Target_Percent_Of_Ideal'
+	Select @Target_Percent_Of_Ideal = convert(float, default_target_percent_of_ideal)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
@@ -426,8 +428,7 @@ Return
 END
 
 
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Edit_ProductionData]    Script Date: 3/12/2019 10:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Edit_ProductionData]    Script Date: 4/12/2019 15:14:15 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -480,7 +481,8 @@ GO
 -- Modification Change History:
 --------------------------------------------------------------------------------
 --	20190828		C00V00 - Intial code created		
---	20191203		C00V01 - Change Asset_Code for Asset_Id		
+--	20191203		C00V01 - Change Asset_Code for Asset_Id
+--	20191204		C00V02 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Edit_ProductionData 3, 3, '1 1/2L4MNS PS', 18,14,11, '23456', Null,'2477', Null, Null, '2019-07-25 01:02:03'
@@ -602,7 +604,8 @@ Declare
 	@Production_Day_Offset_Minutes	Int,	
 	@IsFirst						Bit,
 	@Calendar_Day_Start				Datetime,
-	@Shift_Sequence					Int
+	@Shift_Sequence					Int,
+	@Site_Id						Int
 
 If not exists (Select dxhdata_id From dbo.DxHData with (nolock) Where dxhdata_id = IsNull(@DxHData_Id,-1))
 Begin
@@ -807,28 +810,28 @@ Begin
 
 	--Compute Ideal and target	
 	-- 
+
+	SELECT @Site_Id = asset_id FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
+
 	If IsNull(@Routed_Cycle_Time,-1) < 0
 	Begin
-		Select @Routed_Cycle_Time = convert(float,value)
-		From dbo.CommonParameters cp with (nolock)
-		Where parameter_code = 'Default_Routed_Cycle_Time'
-			And cp.status = 'Active'
+		Select @Routed_Cycle_Time = convert(float,default_routed_cycle_time)
+		From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id;
 	End
 
 	If IsNull(@Target_Percent_Of_Ideal,-1) < 0
 	Begin
-		Select @Target_Percent_Of_Ideal = convert(float,value)
-		From dbo.CommonParameters cp with (nolock)
-		Where parameter_code = 'Default_Target_Percent_Of_Ideal'
-			And cp.status = 'Active'
+		Select @Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
+		From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id;
 	End
 
 	-- Remaining Quantity is Order Quantity - Produced
 	-- Don't look back to the beginning of time, but this needs to cover the longest time an order can run
-	Select @Setup_Lookback_Minutes = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Setup_Lookback_Minutes'
-		And cp.status = 'Active'
+	Select @Setup_Lookback_Minutes = convert(float,setup_lookback_minutes)
+	From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id;
 
 	Select @Produced_Quantity = sum(Actual)
 	From dbo.ProductionData pd with (nolock)
@@ -854,10 +857,9 @@ Begin
 	Where shift_code = @Shift_Code
 		And status = 'Active'
 
-	Select @Production_Day_Offset_Minutes = convert(Int, value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Production_Day_Offset_Minutes'
-		And cp.status = 'Active'
+	Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+	From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id;
 
 	--Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -1092,14 +1094,11 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 3/12/2019 10:31:01 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 4/12/2019 15:14:37 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
 GO
-
-
-
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -1290,7 +1289,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]    Script Date: 3/12/2019 10:32:54 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]    Script Date: 4/12/2019 15:15:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -1451,7 +1450,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]    Script Date: 3/12/2019 10:34:06 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]    Script Date: 4/12/2019 15:15:23 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -1627,7 +1626,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_CommonParameters]    Script Date: 3/12/2019 10:36:13 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_CommonParameters]    Script Date: 4/12/2019 15:15:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -1799,7 +1798,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 3/12/2019 10:37:13 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 4/12/2019 15:16:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -1940,7 +1939,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DxHDataId]    Script Date: 3/12/2019 10:43:13 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DxHDataId]    Script Date: 4/12/2019 15:16:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -1993,7 +1992,8 @@ GO
 --------------------------------------------------------------------------------
 --	20190807		C00V00 - Intial code created		
 --	20190822		C00V01 - Tweaked Hour_Interval via TSHourStart and End fix
---  20191203		C00V01 - Change Asset_Code for Asset_Id
+--  20191203		C00V02 - Change Asset_Code for Asset_Id
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- Exec dbo.spLocal_EY_DxH_Get_DxHDataId 40, '2019-07-25 02:23', 0
@@ -2051,12 +2051,15 @@ Declare
 	@Shift_End_Hour						Int,
 	@Hour_Interval						Varchar(100),
 	@TSHourStart						Datetime,
-	@TSHourEnd							Datetime
+	@TSHourEnd							Datetime,
+	@Site_id							Int
 
-Select @Production_Day_Offset_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Production_Day_Offset_Minutes'
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
+
+Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 Set @Timestamp_Hour = datepart(hour,@Timestamp)
 Set @Row = @Timestamp_Hour 
@@ -2303,8 +2306,7 @@ Return
 END
 
 
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_InterShiftData]    Script Date: 3/12/2019 10:54:28 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_InterShiftData]    Script Date: 4/12/2019 15:17:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -2352,6 +2354,7 @@ GO
 --	20190731		C00V00 - Intial code created		
 --	20190822		C00V01 - Adjusted output of datetimes to site_timezone
 --  20191203		C00V02 - Change Asset_Code for Asset_Id
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_InterShiftData 40,'2019-10-12','2'
@@ -2411,23 +2414,18 @@ Declare
 	@Row								Int,
 	@Rows								Int,
 	@Previous_Shifts_To_Include			Int,
-	@site_code							Varchar(100),
-	@timezone_parameter					Varchar(100)
+	@Site_Id							Int
 
-SET @site_code = (SELECT site_code
-				FROM dbo.Asset		
-				WHERE asset_id = @Asset_Id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
 
-Select @Production_Day_Offset_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Production_Day_Offset_Minutes'
-	And cp.status = 'Active'
+Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 Select @MaxShiftSequence = max(shift_sequence)
 From dbo.Shift with (nolock)
@@ -2675,7 +2673,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_OrderData]    Script Date: 3/12/2019 10:56:56 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_OrderData]    Script Date: 4/12/2019 15:17:29 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -2940,7 +2938,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Product]    Script Date: 3/12/2019 10:58:18 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Product]    Script Date: 4/12/2019 15:17:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -3077,7 +3075,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_ProductionDay_Data]    Script Date: 3/12/2019 15:52:02 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_ProductionDay_Data]    Script Date: 4/12/2019 15:18:15 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -3121,6 +3119,7 @@ GO
 --------------------------------------------------------------------------------
 --	20190826		C00V00 - Intial code created
 --  20191203		C00V01 - Change Asset_Code for Asset_Id
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_ProductionDay_Data 40,'2019-07-25'
@@ -3306,28 +3305,22 @@ Declare
 	@MaxShift_Sequence					Int,
 	@Setup_Lookback_Minutes				Int,
 	@Current_Order_Id					Int,
-	@site_code							Varchar(100),
-	@timezone_parameter					Varchar(100)
+	@Site_Id							Int
 
-Select @Setup_Lookback_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Setup_Lookback_Minutes'
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
 
-Select @Production_Day_Offset_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Production_Day_Offset_Minutes'
-	And cp.status = 'Active'
+Select @Setup_Lookback_Minutes = convert(Int, setup_lookback_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
-SET @site_code = (SELECT site_code
-				FROM dbo.Asset		
-				WHERE asset_id = @Asset_Id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 --Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -3663,10 +3656,9 @@ Order by
 
 If @Prediction_Routed_Cycle_Time is Null
 Begin
-	Select @Prediction_Routed_Cycle_Time = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Default_Routed_Cycle_Time'
-		And status = 'Active'
+	Select @Prediction_Routed_Cycle_Time = convert(float,default_routed_cycle_time)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id;
 End
 
 If @Prediction_Routed_Cycle_Time is Null
@@ -3676,10 +3668,9 @@ End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
 Begin
-	Select @Prediction_Target_Percent_Of_Ideal = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Default_Target_Percent_Of_Ideal'
-		And status = 'Active'
+	Select @Prediction_Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id;
 End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
@@ -4409,7 +4400,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 3/12/2019 15:52:54 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 4/12/2019 15:19:33 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -4463,6 +4454,7 @@ GO
 --	20190917		C00V06 - relocated BreakLunch_Details section
 --	20190918		C00V07 - setup time for orders without production now uses started, ended, or spanned current hour
 --  20191203		C00V08 - Change Asset_Code for Asset_Id
+--	20191204		C00V09 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data 40,'2019-11-12','2'
@@ -4670,7 +4662,7 @@ Declare
 	@Shift2								Int,
 	@Shift3								Int,
 	@site_code							Varchar(100),
-	@timezone_parameter					Varchar(100)
+	@Site_Id							Int
 
 SET @site_code = (SELECT site_code
 				FROM dbo.Asset		
@@ -4705,24 +4697,22 @@ Select
 	@IsFirst = is_first_shift_of_day 
 From dbo.Shift with (nolock)
 Where shift_code = @Shift_Code
-	And status = 'Active'
+	And status = 'Active';
 
-Select @Setup_Lookback_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Setup_Lookback_Minutes'
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@asset_id);
 
-Select @Production_Day_Offset_Minutes = convert(Int, value)
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = 'Production_Day_Offset_Minutes'
-	And cp.status = 'Active'
+Select @Setup_Lookback_Minutes = convert(Int, setup_lookback_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 --Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -5156,10 +5146,9 @@ Order by
 
 If @Prediction_Routed_Cycle_Time is Null
 Begin
-	Select @Prediction_Routed_Cycle_Time = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Default_Routed_Cycle_Time'
-		And status = 'Active'
+	Select @Prediction_Routed_Cycle_Time = convert(float,default_routed_cycle_time)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id;
 End
 
 If @Prediction_Routed_Cycle_Time is Null
@@ -5169,10 +5158,9 @@ End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
 Begin
-	Select @Prediction_Target_Percent_Of_Ideal = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Default_Target_Percent_Of_Ideal'
-		And status = 'Active'
+	Select @Prediction_Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id;
 End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
@@ -5891,7 +5879,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_UOM]    Script Date: 3/12/2019 15:57:00 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_UOM]    Script Date: 4/12/2019 15:20:34 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -6018,7 +6006,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 3/12/2019 16:01:15 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 4/12/2019 15:20:54 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -6179,7 +6167,7 @@ END
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_AssetDisplaySystem]    Script Date: 3/12/2019 16:05:20 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_AssetDisplaySystem]    Script Date: 4/12/2019 15:21:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -6380,7 +6368,8 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_CommentData]    Script Date: 3/12/2019 16:10:05 ******/
+
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_CommentData]    Script Date: 4/12/2019 15:22:29 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -6434,7 +6423,8 @@ GO
 --------------------------------------------------------------------------------
 --	20190808		C00V00 - Intial code created		
 --	20190818		C00V01 - Validated Timestamp and used it for entered_on for inserts		
---	20190822		C00V02 - Timestamp adjusted to UTC to be used as entered_on 
+--	20190822		C00V02 - Timestamp adjusted to UTC to be used as entered_on
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_CommentData 3, 'Any ole comment', '2136', Null, Null, '2019-07-25 00:00:00.000', 0
@@ -6481,21 +6471,18 @@ Declare
 	@Site_Timezone		Varchar(100),
 	@Timestamp_UTC		Datetime,
 	@asset_id			INT,
-	@site_code			Varchar(100),
-	@timezone_parameter	Varchar(100)
+	@Site_Id			INT
 
 SET @asset_id = (SELECT asset_id 
                   FROM DxHData
                  WHERE dxhdata_id = @DxHData_Id)
-SET @site_code = (SELECT site_code
-				FROM dbo.Asset		
-				WHERE asset_id = @asset_id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@asset_id);
+
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -6657,7 +6644,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_DTData]    Script Date: 3/12/2019 16:12:36 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_DTData]    Script Date: 4/12/2019 15:24:50 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -6715,6 +6702,7 @@ GO
 --	20190814		C00V00 - Intial code created		
 --	20190820		C00V01 - Timestamp used as entered_on for inserts		
 --	20190822		C00V02 - Timestamp adjusted to UTC to be used as entered_on 
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null
@@ -6769,21 +6757,18 @@ Declare
 	@Site_Timezone			Varchar(100),
 	@Timestamp_UTC			Datetime,
 	@asset_id				INT,
-	@site_code				Varchar(100),
-	@timezone_parameter		Varchar(100)
+	@Site_Id				INT
 
 SET @asset_id = (SELECT asset_id 
                   FROM dbo.DxHData
-                 WHERE dxhdata_id = @DxHData_Id)
-SET @site_code = (SELECT site_code
-				FROM dbo.Asset		
-				WHERE asset_id = @asset_id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+                 WHERE dxhdata_id = @DxHData_Id);
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@asset_id);
+
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id;
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -6971,13 +6956,12 @@ Return
 
 END
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_InterShiftData]    Script Date: 3/12/2019 16:39:55 ******/
+
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_InterShiftData]    Script Date: 4/12/2019 15:25:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
 GO
-
-
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -7027,7 +7011,8 @@ GO
 --------------------------------------------------------------------------------
 --	20190809		C00V00 - Intial code created		
 --	20190818		C00V01 - Validated Timestamp and used it as entered_on for inserts		
---	20190822		C00V02 - Timestamp adjusted to UTC to be used as entered_on 
+--	20190822		C00V02 - Timestamp adjusted to UTC to be used as entered_on
+--	20191204		C00V03 - Change CommonParameters to CommonParametersTest
 --		
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0
@@ -7078,21 +7063,19 @@ Declare
 	@Site_Timezone		Varchar(100),
 	@Timestamp_UTC		Datetime,
 	@asset_id			INT,
-	@site_code			Varchar(100),
-	@timezone_parameter	Varchar(100)
+	@Site_Id			INT
 
 SET @asset_id = (SELECT asset_id 
                   FROM dbo.DxHData
-                 WHERE dxhdata_id = @DxHData_Id)
-SET @site_code = (SELECT site_code
-				FROM dbo.Asset		
-				WHERE asset_id = @asset_id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+                 WHERE dxhdata_id = @DxHData_Id);
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
-	And cp.status = 'Active'
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@asset_id);
+
+
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cpt with (nolock)
+Where site_id = @Site_Id
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -7262,7 +7245,7 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_OperatorSignOff]    Script Date: 3/12/2019 16:42:06 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_OperatorSignOff]    Script Date: 4/12/2019 15:25:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
@@ -7443,15 +7426,11 @@ Return
 END
 
 
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_ProductionData]    Script Date: 3/12/2019 16:42:52 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_ProductionData]    Script Date: 4/12/2019 15:26:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
 GO
-
-
-
-
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -7500,9 +7479,10 @@ GO
 -- Modification Change History:
 --------------------------------------------------------------------------------
 --	20190809		C00V00 - Intial code created		
+--	20191204		C00V01 - Change CommonParameters to CommonParametersTest		
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Put_ProductionData 261042, 30, 10, 2, 18, '123456789123', Null, Null, '2019/11/26 12:18', 17015
+-- exec spLocal_EY_DxH_Put_ProductionData 261042, 30, 10, 2, 18, '123456789123', Null, Null, '2019/11/26 12:18', 1, 17015
 --
 ALTER PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData]
 --Declare
@@ -7586,6 +7566,7 @@ Declare
 	@ReturnStatus					Int,
 	@ReturnMessage					Varchar(1000),
 	@Asset_Id						INT,
+	@Site_Id						INT,
 	@OrderNumber					Varchar(100),
 	@Order_Id						Int,
 	@Product_Code					Varchar(100),
@@ -7762,6 +7743,11 @@ Begin
 		Goto ErrExit
 End
 
+
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
+
+
 -- Now to decide if it is an insert or some kind of update
 -- If there is a productiondata row for this hour and order, then it is an update (increment or override)
 -- If not, it is an insert
@@ -7856,26 +7842,23 @@ Begin
 	-- 
 	If IsNull(@Routed_Cycle_Time,-1) < 0
 	Begin
-		Select @Routed_Cycle_Time = convert(float,value)
-		From dbo.CommonParameters cp with (nolock)
-		Where parameter_code = 'Default_Routed_Cycle_Time'
-			And cp.status = 'Active'
+		Select @Routed_Cycle_Time = convert(float,default_routed_cycle_time)
+		From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id
 	End
 
 	If IsNull(@Target_Percent_Of_Ideal,-1) < 0
 	Begin
-		Select @Target_Percent_Of_Ideal = convert(float,value)
-		From dbo.CommonParameters cp with (nolock)
-		Where parameter_code = 'Default_Target_Percent_Of_Ideal'
-			And cp.status = 'Active'
+		Select @Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
+		From dbo.CommonParametersTest cpt with (nolock)
+		Where site_id = @Site_Id
 	End
 
 	-- Remaining Quantity is Order Quantity - Produced
 	-- Don't look back to the beginning of time, but this needs to cover the longest time an order can run
-	Select @Setup_Lookback_Minutes = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Setup_Lookback_Minutes'
-		And cp.status = 'Active'
+	Select @Setup_Lookback_Minutes = convert(float,setup_lookback_minutes)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id
 
 	Select @Produced_Quantity = sum(Actual)
 	From dbo.ProductionData pd with (nolock)
@@ -7904,10 +7887,9 @@ Begin
 	Where shift_code = @Shift_Code
 		And status = 'Active'
 
-	Select @Production_Day_Offset_Minutes = convert(Int, value)
-	From dbo.CommonParameters cp with (nolock)
-	Where parameter_code = 'Production_Day_Offset_Minutes'
-		And cp.status = 'Active'
+	Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
+	From dbo.CommonParametersTest cpt with (nolock)
+	Where site_id = @Site_Id
 
 	--Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -8144,8 +8126,7 @@ Return
 
 END
 
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_SupervisorSignOff]    Script Date: 3/12/2019 16:43:28 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_SupervisorSignOff]    Script Date: 4/12/2019 15:26:28 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER OFF
