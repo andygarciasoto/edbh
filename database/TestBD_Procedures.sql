@@ -1,4 +1,4 @@
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Create_OrderData]    Script Date: 3/12/2019 10:13:49 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Create_OrderData]    Script Date: 4/12/2019 13:19:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -119,16 +119,18 @@ Declare
 	@Production_Start_Time		Datetime,
 	@Order_Number				Varchar(100),
 	@site_code					Varchar(100),
-	@timezone_parameter			Varchar(100)
+	@Site_Id					Int
 
 SET @site_code = (SELECT site_code
 				FROM dbo.Asset		
 				WHERE asset_id = @asset_id)
-SET @timezone_parameter = (Select concat(@site_code, '_Site_Timezone'))
+SET @site_id = (SELECT site_id 
+				FROM dbo.CommonParametersTest
+				WHERE site_name = @site_code)
 
-Select @Site_Timezone = value
-From dbo.CommonParameters cp with (nolock)
-Where parameter_code = @timezone_parameter
+Select @Site_Timezone = site_timezone
+From dbo.CommonParametersTest cp with (nolock)
+Where site_id = @site_id
 	And cp.status = 'Active'
 
 Select @Timestamp = getutcdate() at time zone 'UTC' at time zone @Site_Timezone
@@ -168,25 +170,25 @@ End
 
 If IsNull(@Routed_Cycle_Time,0) <= 0
 Begin
-	Select @Routed_Cycle_Time = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Routed_Cycle_Time'
+	Select @Routed_Cycle_Time = convert(float, default_routed_cycle_time)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
 If IsNull(@Minutes_Allowed_Per_Setup,0) <= 0
 Begin
-	Select @Minutes_Allowed_Per_Setup = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Setup_Minutes'
+	Select @Minutes_Allowed_Per_Setup = convert(float, default_setup_minutes)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
 If IsNull(@Target_Percent_Of_Ideal,0) <= 0
 Begin
-	Select @Target_Percent_Of_Ideal = convert(float,value)
-	From dbo.CommonParameters cp with (nolock)
-	Where cp.parameter_code = 'Default_Target_Percent_Of_Ideal'
+	Select @Target_Percent_Of_Ideal = convert(float, default_target_percent_of_ideal)
+	From dbo.CommonParametersTest cp with (nolock)
+	Where cp.site_id = @site_id
 		And status = 'Active'
 End
 
@@ -8324,3 +8326,638 @@ ErrExit:
 Return
 
 END
+
+---------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[sp_clocknumberlogin]    Script Date: 4/12/2019 08:58:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+--exec sp_clocknumberlogin '47132'
+
+ ALTER     PROCEDURE [dbo].[sp_clocknumberlogin] (@badge as VARCHAR(100))
+
+  AS  BEGIN 
+ DECLARE
+ @json_out							nVarchar(max),
+ @site								Int,
+ @name								Varchar(100),
+ @timezone							Varchar(100),
+ @time								Datetime,
+ @timezone2							Varchar(100),
+ @hour								Int,
+ @Shift1							Int,
+ @Shift2							Int,
+ @Shift3							Int,
+ @Shift_Name						Varchar(100)
+
+IF EXISTS (SELECT * FROM dbo.TFDUsers
+WHERE
+badge = @badge)
+BEGIN
+SET @site = (SELECT site FROM dbo.TFDUsers where badge = @badge)
+SET @name = (SELECT asset_code FROM dbo.Asset where asset_id = @site)
+SET @timezone = (SELECT ui_timezone FROM dbo.CommonParametersTest where site_id = @site)
+SET @timezone2 = (SELECT site_timezone FROM dbo.CommonParametersTest where site_id = @site)
+SET @time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone2)
+SET @hour = datepart(hour,@time)
+Set @Shift1 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 2 and asset_id = @site)
+Set @Shift2 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 3 and asset_id = @site)
+Set @Shift3 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 1 and asset_id = @site)
+
+
+If @Hour >= @Shift1 and @Hour < @Shift2
+Begin
+Set @Shift_Name = '1st Shift'
+End
+If @Hour >= @Shift2 and @Hour < @Shift3
+Begin
+Set @Shift_Name = '2nd Shift'
+End
+If @Hour >= @Shift3 or @Hour < @Shift1
+Begin
+Set @Shift_Name = '3rd Shift'
+End
+SET @json_out = (SELECT *, @name as SiteName, @timezone as Timezone, @Shift_Name as ShiftName FROM dbo.TFDUsers where badge = @badge for JSON AUTO, INCLUDE_NULL_VALUES)
+END
+
+SELECT @json_out as 'GetDataByClockNumber'
+END
+
+---------------------------------------------------------------------------------
+/****** Object:  StoredProcedure [dbo].[sp_getshifts]    Script Date: 4/12/2019 09:25:25 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ ALTER       PROCEDURE [dbo].[sp_getshifts] (@Site as int)
+
+ AS  BEGIN 
+ DECLARE
+ @json_out							nVarchar(max),
+ @site_code							Varchar(100)
+
+Set @site_code = (Select site_code from dbo.Asset where asset_id = @Site)
+
+IF EXISTS (Select shift_code, shift_name, shift_sequence, asset_id as Site, datepart(hour, start_time) as hour 
+From [dbo].[Shift] 
+Where status = 'Active' and asset_id = @site)
+BEGIN
+SET @json_out = (Select shift_code, shift_name, shift_sequence, datepart(hour, start_time) as hour 
+From [dbo].[Shift] 
+Where status = 'Active' and asset_id = @site order by shift_sequence for JSON AUTO, INCLUDE_NULL_VALUES)
+END
+
+SELECT @json_out as 'GetShiftsBySite'
+END
+
+---------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[sp_importorders]    Script Date: 4/12/2019 09:26:30 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[sp_importorders] (@order_number AS VARCHAR(100),
+@asset_code AS varchar(100),
+@product_code AS varchar(100),
+@order_quantity  AS float,
+@UOM_code AS VARCHAR(100),
+@routed_cycle_time AS float,
+@minutes_allowed_per_setup AS float,
+@ideal AS float,
+@target_percent_of_ideal AS float,
+@production_status AS varchar(100),
+@start_time as datetime,
+@entered_by as varchar(100),
+@entered_on as datetime
+)
+
+AS  BEGIN 
+DECLARE
+@TableVariable TABLE (GetDxHDataID NVARCHAR(MAX));
+DECLARE
+@DxHDataTemp TABLE (asset_id int,
+timestamp datetime,
+dxhdata_id int,
+production_day datetime,
+shift_code varchar(100),
+hour_interval varchar(100),
+message varchar(100))
+DECLARE 
+@setup_start_time as datetime, 
+@setup_end_time as datetime, 
+@production_start_time as datetime, 
+@production_end_time as datetime,
+@bandera as bit,
+@json AS NVARCHAR(MAX),
+@dxhdata_id int,
+@site_code as varchar(100),
+@site_id as int,
+@timezone as varchar(100),
+@asset_id as int
+
+SET @site_code = (Select site_code from Asset where asset_code = @asset_code)
+SET @site_id = (Select asset_id from Asset where asset_code = @site_code)
+SET @timezone = (Select site_timezone from CommonParametersTest where site_id = @site_id)
+SET @asset_id = (Select asset_id from Asset where asset_code = @asset_code)
+
+IF @production_status = 'production'
+BEGIN
+SET @setup_start_time = null
+SET @setup_end_time = null
+SET @production_start_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+SET @production_end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+END
+ELSE
+BEGIN
+SET @setup_start_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+SET @setup_end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+SET @production_start_time = null
+SET @production_end_time = null
+END
+
+IF @order_quantity = 0 
+BEGIN
+SET @order_quantity = null
+END
+IF @UOM_code = ''
+BEGIN
+SET @UOM_code= null
+END
+IF @routed_cycle_time = 0 
+BEGIN
+SET @routed_cycle_time = null
+END
+IF @minutes_allowed_per_setup = 0 
+BEGIN
+SET @minutes_allowed_per_setup= null
+END
+IF @ideal = 0 
+BEGIN
+SET @ideal= null
+END
+IF @target_percent_of_ideal = 0 
+BEGIN
+SET @target_percent_of_ideal = null
+END
+
+SET @start_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+SET @bandera = 0
+
+INSERT into @TableVariable exec dbo.spLocal_EY_DxH_Get_DxHDataId @asset_id, @start_time, 0
+set @json =(select GetDxHDataID from @TableVariable)
+INSERT INTO @DxHDataTemp SELECT *  
+FROM OPENJSON(@json)  
+  WITH (asset_id int '$.asset_id',  
+        timestamp datetime '$.timestamp', dxhdata_id int '$.dxhdata_id',  
+        production_day datetime '$.production_day', shift_code varchar(100) '$.shift_code', 
+		hour_interval varchar(100) '$.hour_interval', message varchar(100) '$.message')
+SET @dxhdata_id = (SELECT dxhdata_id from @DxHDataTemp)
+
+If exists (Select * From dbo.Asset Where asset_id = @asset_id)
+BEGIN
+
+IF exists (Select * from dbo.OrderData where asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'setup' AND @production_status = 'production' AND @bandera = 0)
+BEGIN
+SET @bandera = 1
+UPDATE dbo.OrderData SET
+			       order_quantity = @order_quantity,
+				   UOM_code = @UOM_code,
+				   routed_cycle_time = @routed_cycle_time,
+				   minutes_allowed_per_setup = @minutes_allowed_per_setup,
+				   ideal = @ideal,
+				   target_percent_of_ideal = @target_percent_of_ideal,  
+				   production_status = @production_status,
+                   setup_end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+				   production_start_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+				   last_modified_by = @entered_by,
+				   last_modified_on = @entered_on
+				   WHERE  asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'setup' and @production_status = 'production'
+END
+
+IF exists (Select * from dbo.OrderData where asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'setup' AND @production_status = 'setup' AND @bandera = 0)
+BEGIN
+SET @bandera = 1
+UPDATE dbo.OrderData SET
+			       order_quantity = @order_quantity,
+				   UOM_code = @UOM_code,
+				   routed_cycle_time = @routed_cycle_time,
+				   minutes_allowed_per_setup = @minutes_allowed_per_setup,
+				   ideal = @ideal,
+				   target_percent_of_ideal = @target_percent_of_ideal,  
+				   production_status = @production_status,
+				   last_modified_by = @entered_by,
+				   last_modified_on = @entered_on
+				   WHERE asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'setup' and @production_status = 'setup'
+END
+
+IF exists (Select * from dbo.OrderData where asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'production' AND @production_status = 'production' AND @bandera = 0)
+BEGIN
+SET @bandera = 1
+UPDATE dbo.OrderData SET
+			       order_quantity = @order_quantity,
+				   UOM_code = @UOM_code,
+				   routed_cycle_time = @routed_cycle_time,
+				   minutes_allowed_per_setup = @minutes_allowed_per_setup,
+				   ideal = @ideal,
+				   target_percent_of_ideal = @target_percent_of_ideal,  
+				   production_status = @production_status,
+				   last_modified_by = @entered_by,
+				   last_modified_on = @entered_on
+				   WHERE asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'production' and @production_status = 'production'
+END
+
+IF exists (Select * from dbo.OrderData where asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'production' AND @production_status = 'setup' AND @bandera = 0)
+BEGIN
+SET @bandera = 1
+BEGIN
+UPDATE dbo.OrderData SET
+			       order_quantity = @order_quantity,
+				   is_current_order = 0,
+				   end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+				   UOM_code = @UOM_code,
+				   routed_cycle_time = @routed_cycle_time,
+				   minutes_allowed_per_setup = @minutes_allowed_per_setup,
+				   ideal = @ideal,
+				   target_percent_of_ideal = @target_percent_of_ideal,  
+				   production_end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+				   last_modified_by = @entered_by,
+				   last_modified_on = @entered_on
+				   WHERE asset_id = @asset_id and order_number = @order_number and is_current_order = 1 and production_status = 'production' and @production_status = 'setup'
+END
+INSERT INTO dbo.OrderData (
+order_number,
+product_code,
+order_quantity,
+UOM_code,
+routed_cycle_time,
+minutes_allowed_per_setup,
+ideal,
+target_percent_of_ideal,
+production_status,
+setup_start_time,
+setup_end_time,
+production_start_time,
+production_end_time,
+start_time,
+end_time,
+is_current_order,
+entered_by,
+entered_on,
+last_modified_by, 
+last_modified_on,
+asset_id
+)
+VALUES(
+@order_number,
+@product_code,
+@order_quantity,
+@UOM_code,
+@routed_cycle_time,
+@minutes_allowed_per_setup,
+@ideal,
+@target_percent_of_ideal,
+@production_status,
+(Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+null,
+null,
+null,
+(Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+null,
+1,
+@entered_by,
+@entered_on,
+@entered_by,
+@entered_on,
+@asset_id)
+exec spLocal_EY_DxH_Put_ProductionData @dxhdata_id, 0, 0, 0, 0, null, 'T', 'D', @start_time, 0
+END
+
+IF EXISTS (SELECT * FROM dbo.OrderData 
+WHERE
+asset_id = @asset_id AND @bandera = 0)
+BEGIN
+IF EXISTS (SELECT * FROM dbo.OrderData 
+WHERE
+asset_id = @asset_id AND is_current_order = 1 AND @bandera = 0)
+BEGIN
+SET @bandera = 1
+UPDATE dbo.OrderData SET 
+				   is_current_order = 0, 
+                   end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone), 
+				   production_end_time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone),
+				   last_modified_by = @entered_by,
+				   last_modified_on = @entered_on
+				   WHERE asset_id = @asset_id AND is_current_order = 1
+END
+INSERT INTO dbo.OrderData (
+order_number,
+product_code,
+order_quantity,
+UOM_code,
+routed_cycle_time,
+minutes_allowed_per_setup,
+ideal,
+target_percent_of_ideal,
+production_status,
+setup_start_time,
+setup_end_time,
+production_start_time,
+production_end_time,
+start_time,
+end_time,
+is_current_order,
+entered_by,
+entered_on,
+last_modified_by, 
+last_modified_on,
+asset_id
+)
+VALUES(
+@order_number,
+@product_code,
+@order_quantity,
+@UOM_code,
+@routed_cycle_time,
+@minutes_allowed_per_setup,
+@ideal,
+@target_percent_of_ideal,
+@production_status,
+@setup_start_time,
+null,
+@production_start_time,
+null,
+(Select GETUTCDATE() at time zone 'UTC' at time zone @timezone), 
+null,
+1,
+@entered_by,
+@entered_on,
+@entered_by,
+@entered_on,
+@asset_id)
+exec spLocal_EY_DxH_Put_ProductionData @dxhdata_id, 0, 0, 0, 0, null, 'T', 'D', @start_time, 0
+END
+
+IF NOT EXISTS (SELECT * FROM dbo.OrderData 
+WHERE
+asset_id = @asset_id)
+BEGIN
+INSERT INTO dbo.OrderData (
+order_number,
+product_code,
+order_quantity,
+UOM_code,
+routed_cycle_time,
+minutes_allowed_per_setup,
+ideal,
+target_percent_of_ideal,
+production_status,
+setup_start_time,
+setup_end_time,
+production_start_time,
+production_end_time,
+start_time,
+end_time,
+is_current_order,
+entered_by,
+entered_on,
+last_modified_by, 
+last_modified_on,
+asset_id
+)
+VALUES(
+@order_number,
+@product_code,
+@order_quantity,
+@UOM_code,
+@routed_cycle_time,
+@minutes_allowed_per_setup,
+@ideal,
+@target_percent_of_ideal,
+@production_status,
+@setup_start_time,
+null,
+@production_start_time,
+null,
+(Select GETUTCDATE() at time zone 'UTC' at time zone @timezone), 
+null,
+1,
+@entered_by,
+@entered_on,
+@entered_by,
+@entered_on,
+@asset_id)
+exec spLocal_EY_DxH_Put_ProductionData @dxhdata_id, 0, 0, 0, 0, null, 'T', 'D', @start_time, 0
+END
+END
+END
+
+---------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[sp_importtagdata]    Script Date: 4/12/2019 12:43:09 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER       PROCEDURE [dbo].[sp_importtagdata] (@tag_name AS VARCHAR(200),
+@tagdata_value AS varchar(256),
+@entered_by as varchar(100),
+@entered_on as datetime
+)
+
+AS  BEGIN 
+DECLARE
+@TableVariable TABLE (GetDxHDataID NVARCHAR(MAX));
+DECLARE
+@TagComparation TABLE (tagdata_id INT,
+current_value int,
+previous_value int)
+DECLARE
+@DxHDataTemp TABLE (asset_id int,
+timestamp datetime,
+dxhdata_id int,
+production_day datetime,
+shift_code varchar(100),
+hour_interval varchar(100),
+message varchar(100))
+DECLARE
+@json AS NVARCHAR(MAX),
+@asset_id int,
+@dxhdata_id int,
+@site_timezone datetime,
+@current_value int,
+@previous_value int,
+@productiondata_id as VARCHAR(100),
+@value int,
+@actual int,
+@site_code as varchar(100),
+@timezone as varchar(100),
+@setup_scrap as float,
+@other_scrap as float,
+@adjusted_actual as float
+
+IF @tagdata_value = '' 
+BEGIN
+SET @tagdata_value = null
+END
+
+SET @asset_id = (SELECT asset_id
+                  FROM dbo.Tag
+                 WHERE tag_name = @tag_name)
+SET @site_code = (SELECT site_code
+				FROM dbo.Asset		
+				WHERE asset_id = @asset_id)
+SET @timezone = (Select site_timezone from CommonParametersTest where site_name = @site_code)
+SET @site_timezone = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone)
+
+INSERT INTO dbo.TagData (
+tag_name,
+tagdata_value,
+entered_by,
+entered_on,
+last_modified_by, 
+last_modified_on
+)
+VALUES(
+@tag_name,
+@tagdata_value,
+@entered_by,
+@entered_on,
+@entered_by,
+@entered_on)
+
+BEGIN
+
+INSERT into @TableVariable exec dbo.spLocal_EY_DxH_Get_DxHDataId @asset_id, @site_timezone, 0
+set @json =(select GetDxHDataID from @TableVariable)
+INSERT INTO @DxHDataTemp SELECT *  
+FROM OPENJSON(@json)  
+  WITH (asset_id int '$.asset_id',  
+        timestamp datetime '$.timestamp', dxhdata_id int '$.dxhdata_id',  
+        production_day datetime '$.production_day', shift_code varchar(100) '$.shift_code', 
+		hour_interval varchar(100) '$.hour_interval', message varchar(100) '$.message')
+SET @dxhdata_id = (SELECT dxhdata_id from @DxHDataTemp)
+BEGIN
+INSERT INTO @TagComparation Select top 1
+       td.tagdata_id,
+       td.tagdata_value As [Current value],
+       Lag(td.tagdata_value,1,0) OVER (ORDER BY td.tagdata_id) AS [Previous value]
+From dbo.TagData td
+Where tag_name = @tag_name 
+order by tagdata_id desc
+
+SET @previous_value = (SELECT previous_value from @TagComparation)
+SET @current_value = (SELECT current_value from @TagComparation)
+
+If @previous_value != @current_value
+BEGIN
+IF exists (Select top 1 productiondata_id from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+BEGIN
+Select top 1 productiondata_id from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc
+SET @actual = (Select top 1 actual from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+SET @setup_scrap = (Select top 1 setup_scrap from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+SET @other_scrap = (Select top 1 other_scrap from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+SET @adjusted_actual = (Select top 1 adjusted_actual from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+SET @value = @actual + (@current_value - @previous_value)
+SET @productiondata_id = (SELECT top 1 productiondata_id from ProductionData where dxhdata_id = @dxhdata_id order by start_time desc)
+exec spLocal_EY_DxH_Put_ProductionData @dxhdata_id, @value, @setup_scrap, @other_scrap, @adjusted_actual, null, 'T', 'D', @site_timezone, @productiondata_id
+END
+ELSE
+BEGIN
+exec spLocal_EY_DxH_Put_ProductionData @dxhdata_id, 0, 0, 0, 0, null, 'T', 'D', @site_timezone, 0
+END
+END
+END
+END
+END
+
+----------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[sp_orderassembly]    Script Date: 4/12/2019 12:53:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER     PROCEDURE [dbo].[sp_orderassembly] (@order_number as VARCHAR(100),
+@asset_code as VARCHAR(100))
+
+ AS  BEGIN 
+ DECLARE
+ @json_out							nVarchar(max),
+ @asset_id							int
+ SET @asset_id = (SELECT asset_id from Asset where asset_code = @asset_code)
+IF EXISTS (SELECT * FROM dbo.OrderData
+WHERE
+order_number = @order_number and asset_id = @asset_id and is_current_order = 1)
+BEGIN
+SET @json_out = (SELECT * FROM dbo.OrderData where 
+order_number = @order_number and asset_id = @asset_id and is_current_order = 1 for JSON AUTO, INCLUDE_NULL_VALUES)
+END
+
+SELECT @json_out as 'GetOrderAssembly'
+END
+
+---------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[sp_usernamelogin]    Script Date: 4/12/2019 12:55:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+--exec sp_usernamelogin 'administrator'
+ ALTER     PROCEDURE [dbo].[sp_usernamelogin] (@username as VARCHAR(100))
+
+  AS  BEGIN 
+ DECLARE
+ @json_out							nVarchar(max),
+ @site								int,
+ @name								Varchar(100),
+ @timezone							Varchar(100),
+ @time								Datetime,
+ @timezone2							Varchar(100),
+ @hour								Int,
+ @Shift1							Int,
+ @Shift2							Int,
+ @Shift3							Int,
+ @Shift_Name						Varchar(100)
+IF EXISTS (SELECT * FROM dbo.TFDUsers
+WHERE
+username = @username)
+BEGIN
+SET @site = (SELECT site FROM dbo.TFDUsers where username = @username)
+SET @name = (SELECT asset_code FROM dbo.Asset where asset_id = @site)
+SET @timezone = (SELECT ui_timezone FROM dbo.CommonParametersTest where site_id = @site)
+SET @timezone2 = (SELECT site_timezone FROM dbo.CommonParametersTest where site_id = @site)
+SET @time = (Select GETUTCDATE() at time zone 'UTC' at time zone @timezone2)
+SET @hour = datepart(hour,@time)
+Set @Shift1 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 2 and asset_id = @site)
+Set @Shift2 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 3 and asset_id = @site)
+Set @Shift3 = (Select datepart(hour, start_time) from dbo.Shift where shift_sequence = 1 and asset_id = @site)
+
+If @Hour >= @Shift1 and @Hour < @Shift2
+Begin
+Set @Shift_Name = '1st Shift'
+End
+If @Hour >= @Shift2 and @Hour < @Shift3
+Begin
+Set @Shift_Name = '2nd Shift'
+End
+If @Hour >= @Shift3 or @Hour < @Shift1
+Begin
+Set @Shift_Name = '3rd Shift'
+End
+SET @json_out = (SELECT *, @name as SiteName, @timezone as Timezone, @Shift_Name as ShiftName FROM dbo.TFDUsers where username = @username for JSON AUTO, INCLUDE_NULL_VALUES)
+END
+
+SELECT @json_out as 'GetDataByUsername'
+END
+
