@@ -259,6 +259,7 @@ function isComponentValid(user_role, name) {
       'menu-import',
       'menu-summary',
       'megamenu',
+      'sitename',
       'actual',
       'partnumber',
       'timelost',

@@ -229,7 +229,7 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
         res.end();
         console.log('File write done........');
       });
-  });
+  }).catch(e => res.status(500).send({ message: 'Error', database_error: e }));
 });
 
 module.exports = router;

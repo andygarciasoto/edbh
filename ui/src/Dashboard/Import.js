@@ -19,7 +19,9 @@ class Import extends React.Component {
             isLoading: false,
             isExporting: false,
             showActionMessage: false,
-            error: false
+            error: false,
+            showActionMessageExport: false,
+            errorExport: false
         };
     }
 
@@ -33,7 +35,9 @@ class Import extends React.Component {
             successImportMessage: props.t('Configuration Imported Successfully'),
             warningImportMessage: props.t('Fail, Configuration not Imported'),
             exportText: props.t('Export Excel'),
-            exportingText: props.t('Exporting...')
+            exportingText: props.t('Exporting...'),
+            successExportMessage: props.t('Configuration Exported Successfully'),
+            warningExportMessage: props.t('Fail, Configuration not Exported'),
         };
     }
 
@@ -68,12 +72,19 @@ class Import extends React.Component {
 
     exportEvent = async () => {
         let _this = this;
-        this.setState({ isExporting: true }, () => {
+        this.setState({ isExporting: true, errorExport: false, showActionMessageExport: false }, () => {
             fetch(`${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_name=${this.props.user.site_name}`)
-                .then(response => response.blob())
-                .then(blob => {
-                    saveAs(blob, 'Result.xlsx');
-                    _this.setState({ isExporting: false });
+                .then(response => {
+                    if (response.status === 500) return response;
+                    return response.blob()
+                })
+                .then(response => {
+                    if (!response.status && response.status !== 500) {
+                        saveAs(response, 'Result.xlsx');
+                        _this.setState({ isExporting: false, errorExport: false, showActionMessageExport: true });
+                    } else {
+                        _this.setState({ isExporting: false, errorExport: true, showActionMessageExport: true });
+                    }
                 });
         })
     }
@@ -130,6 +141,7 @@ The user will update all these configuration tables from the database:
                                 {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                             </button>
                             {this.state.isExporting ? <Spinner /> : ''}
+                            <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
                         </Tab>
                     </Tabs>
                 </div>

@@ -19,7 +19,7 @@ class Header1 extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = Object.assign(this.getInitialState(props));
+        this.state = Object.assign(this.getInitialState(props), this.getTextState(props));
         if (this.state.ln) {
             this.changeLanguageBrowser();
         }
@@ -35,6 +35,12 @@ class Header1 extends React.Component {
             sf: search.sf || props.user.current_shift,
             ln: search.ln || config['language']
         };
+    }
+
+    getTextState(props) {
+        return {
+            siteText: props.t('Site')
+        }
     }
 
     componentDidMount() {
@@ -92,6 +98,9 @@ class Header1 extends React.Component {
                     <Navbar.Brand><img src={logo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
+                        {isComponentValid(this.props.user.role, 'sitename') ?
+                            <Nav.Link>{this.state.siteText + ': ' + this.props.user.site_name}</Nav.Link>
+                            : null}
                         {isComponentValid(this.props.user.role, 'megamenu') ?
                             <span>
                                 <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
@@ -137,7 +146,6 @@ class Header1 extends React.Component {
                                 </Nav.Link>
                                 : null : null
                         }
-                        {/* {isComponentValid(this.props.user.role, 'menu') && this.props.history.location.pathname !== '/summary' ? */}
                         {isComponentValid(this.props.user.role, 'menu') ?
                             <Dropdown className="customToogle">
                                 <Dropdown.Toggle as={customToogle} id="dropdown-basic">
@@ -145,7 +153,7 @@ class Header1 extends React.Component {
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {this.props.history.location.pathname !== '/dashboard' && isComponentValid(this.props.user.role, 'menu-dashbaord') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
-                                    {this.props.history.location.pathname !== '/import' && isComponentValid(this.props.user.role, 'menu-import') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Data Tool')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/import' && isComponentValid(this.props.user.role, 'menu-import') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import/Export')}</Dropdown.Item> : null}
                                     {this.props.history.location.pathname !== '/summary' && isComponentValid(this.props.user.role, 'menu-summary') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
                                 </Dropdown.Menu>
                             </Dropdown>
