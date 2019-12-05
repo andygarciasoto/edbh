@@ -126,7 +126,8 @@ SET @site_code = (SELECT site_code
 				WHERE asset_id = @asset_id)
 SET @site_id = (SELECT site_id 
 				FROM dbo.CommonParametersTest
-				WHERE site_name = @site_code)
+				WHERE site_name = @site_code
+				AND status = 'Active')
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cp with (nolock)
@@ -817,21 +818,21 @@ Begin
 	Begin
 		Select @Routed_Cycle_Time = convert(float,default_routed_cycle_time)
 		From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id;
+		Where site_id = @Site_Id AND status = 'Active';
 	End
 
 	If IsNull(@Target_Percent_Of_Ideal,-1) < 0
 	Begin
 		Select @Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
 		From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id;
+		Where site_id = @Site_Id AND status = 'Active';
 	End
 
 	-- Remaining Quantity is Order Quantity - Produced
 	-- Don't look back to the beginning of time, but this needs to cover the longest time an order can run
 	Select @Setup_Lookback_Minutes = convert(float,setup_lookback_minutes)
 	From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id;
+		Where site_id = @Site_Id AND status = 'Active';
 
 	Select @Produced_Quantity = sum(Actual)
 	From dbo.ProductionData pd with (nolock)
@@ -859,7 +860,7 @@ Begin
 
 	Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 	From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id;
+		Where site_id = @Site_Id AND status = 'Active';
 
 	--Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -1717,7 +1718,7 @@ If
 	(
 	IsNull(@Site_Id,'') <> ''
 	And
-	not exists (Select site_id From dbo.CommonParametersTest with (nolock) Where site_id = IsNull(@Site_Id,0))
+	not exists (Select site_id From dbo.CommonParametersTest with (nolock) Where site_id = IsNull(@Site_Id,0) AND status = 'Active')
 	)
 Begin
 	Select 
@@ -1743,7 +1744,7 @@ End
 			language,
 			Null
 		From dbo.CommonParametersTest with (nolock)
-		Where site_id = IsNull(@Site_Id,site_id)
+		Where site_id = IsNull(@Site_Id,site_id) AND status = 'Active'
 
 ErrExit:
 
@@ -2059,7 +2060,7 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Set @Timestamp_Hour = datepart(hour,@Timestamp)
 Set @Row = @Timestamp_Hour 
@@ -2421,11 +2422,11 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @MaxShiftSequence = max(shift_sequence)
 From dbo.Shift with (nolock)
@@ -3312,15 +3313,15 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Setup_Lookback_Minutes = convert(Int, setup_lookback_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 --Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -3658,7 +3659,7 @@ If @Prediction_Routed_Cycle_Time is Null
 Begin
 	Select @Prediction_Routed_Cycle_Time = convert(float,default_routed_cycle_time)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id;
+	Where site_id = @Site_Id AND status = 'Active';
 End
 
 If @Prediction_Routed_Cycle_Time is Null
@@ -3670,7 +3671,7 @@ If @Prediction_Target_Percent_Of_Ideal is Null
 Begin
 	Select @Prediction_Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id;
+	Where site_id = @Site_Id AND status = 'Active';
 End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
@@ -4704,15 +4705,15 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Setup_Lookback_Minutes = convert(Int, setup_lookback_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 --Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -5148,7 +5149,7 @@ If @Prediction_Routed_Cycle_Time is Null
 Begin
 	Select @Prediction_Routed_Cycle_Time = convert(float,default_routed_cycle_time)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id;
+	Where site_id = @Site_Id AND status = 'Active';
 End
 
 If @Prediction_Routed_Cycle_Time is Null
@@ -5160,7 +5161,7 @@ If @Prediction_Target_Percent_Of_Ideal is Null
 Begin
 	Select @Prediction_Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id;
+	Where site_id = @Site_Id AND status = 'Active';
 End
 
 If @Prediction_Target_Percent_Of_Ideal is Null
@@ -6482,7 +6483,7 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -6768,7 +6769,7 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id;
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -7075,7 +7076,7 @@ FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code 
 
 Select @Site_Timezone = site_timezone
 From dbo.CommonParametersTest cpt with (nolock)
-Where site_id = @Site_Id
+Where site_id = @Site_Id AND status = 'Active';
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
@@ -7844,21 +7845,21 @@ Begin
 	Begin
 		Select @Routed_Cycle_Time = convert(float,default_routed_cycle_time)
 		From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id
+		Where site_id = @Site_Id AND status = 'Active';
 	End
 
 	If IsNull(@Target_Percent_Of_Ideal,-1) < 0
 	Begin
 		Select @Target_Percent_Of_Ideal = convert(float,default_target_percent_of_ideal)
 		From dbo.CommonParametersTest cpt with (nolock)
-		Where site_id = @Site_Id
+		Where site_id = @Site_Id AND status = 'Active';
 	End
 
 	-- Remaining Quantity is Order Quantity - Produced
 	-- Don't look back to the beginning of time, but this needs to cover the longest time an order can run
 	Select @Setup_Lookback_Minutes = convert(float,setup_lookback_minutes)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id
+	Where site_id = @Site_Id AND status = 'Active';
 
 	Select @Produced_Quantity = sum(Actual)
 	From dbo.ProductionData pd with (nolock)
@@ -7889,7 +7890,7 @@ Begin
 
 	Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 	From dbo.CommonParametersTest cpt with (nolock)
-	Where site_id = @Site_Id
+	Where site_id = @Site_Id AND status = 'Active';
 
 	--Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
