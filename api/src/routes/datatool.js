@@ -29,7 +29,7 @@ function getDataType(table, value, position) {
     value = null;
     return value;
   }
-  if (table === 'asset' || table === 'tag') {
+  if (table === 'asset' || table === 'uom') {
     if (position === 10) {
       return value;
     } else {
@@ -37,20 +37,24 @@ function getDataType(table, value, position) {
       return value;
     }
   }
+  if (table === 'tag') {
+    if (position === 9 || position === 16 || position === 17) {
+      return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
   if (table === 'dtreason') {
-    if (position === 14){
+    if (position === 13){
       return value;
     }else {
     value = `'` + value + `'`;
     return value;
     }
   }
-  if (table === 'uom'){
-    value = `'` + value + `'`;
-    return value;
-  }
   if (table === 'shift') {
-    if (position === 5 || position === 8 || position === 13) {
+    if (position === 5 || position === 8 || position === 12 || position === 18) {
       return value;
     } else {
       if (position === 6 || position === 7){
@@ -62,7 +66,7 @@ function getDataType(table, value, position) {
     }
   }
   if (table === 'unavailable') {
-    if (position === 7) {
+    if (position === 7 || position === 15 || position === 16) {
       return value;
     } else {
       if (position === 5 || position === 6){
@@ -83,17 +87,17 @@ function getForeignKey(table, validation) {
   }
   if (table === 'dtreason') {
     validation = 'source.[' + 'dtreason_code' + ']' + ' = ' + 'target.[' + 'dtreason_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'shift') {
     validation = 'source.[' + 'shift_code' + ']' + ' = ' + 'target.[' + 'shift_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'tag') {
     validation = 'source.[' + 'tag_code' + ']' + ' = ' + 'target.[' + 'tag_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'uom') {
@@ -102,7 +106,7 @@ function getForeignKey(table, validation) {
   }
   if (table === 'unavailable') {
     validation = 'source.[' + 'unavailable_code' + ']' + ' = ' + 'target.[' + 'unavailable_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
 }
