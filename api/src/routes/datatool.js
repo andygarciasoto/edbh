@@ -213,7 +213,7 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
   promiseArray.push(getPromise(constants.ShiftSQL(site_name), 'Shift'));
   promiseArray.push(getPromise(constants.TagSQL(site_name), 'Tag'));
   promiseArray.push(getPromise(constants.CommonParametersSQL(site_name), 'CommonParameters'));
-  promiseArray.push(getPromise(constants.UOMSQL, 'UOM'));
+  promiseArray.push(getPromise(constants.UOMSQL(site_name), 'UOM'));
   promiseArray.push(getPromise(constants.UnavailableSQL(site_name), 'Unavailable'));
 
   Promise.all(promiseArray).then(responseAll => {

@@ -125,14 +125,17 @@ module.exports = Object.freeze({
         { header: 'code', key: 'UOM_code', width: 14 },
         { header: 'name', key: 'UOM_name', width: 16 },
         { header: 'description', key: 'UOM_description', width: 27 },
+        { header: 'site_code', key: 'site_code', width: 14 },
         { header: 'status', key: 'status' },
         { header: 'entered_by', key: 'entered_by', width: 19 },
         { header: 'entered_on', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', key: 'last_modified_on', width: 17 }
     ],
-    UOMSQL: 'SELECT [UOM].[UOM_code],[UOM].[UOM_name],[UOM].[UOM_description],[UOM].[status],[UOM].[entered_by],[UOM].[entered_on],[UOM].[last_modified_by],' +
-        '[UOM].[last_modified_on] FROM [dbo].[UOM];',
+    UOMSQL: (site_name) => {
+        return `SELECT [UOM].[UOM_code],[UOM].[UOM_name],[UOM].[UOM_description],[Asset].[site_code],[UOM].[status],[UOM].[entered_by],[UOM].[entered_on],[UOM].[last_modified_by],
+        [UOM].[last_modified_on] FROM [dbo].[UOM] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [UOM].[site_id] WHERE [Asset].[site_code] = '${site_name}';`;
+    },
     Unavailable: [
         { header: 'code', key: 'unavailable_code', width: 24 },
         { header: 'name', key: 'unavailable_name', width: 21 },
