@@ -82,5 +82,15 @@
     "Cancel": "Cancel",
     "New Order": "New Order",
     "No intershift communications for this shift": "No intershift communications for this shift",
-    "Parameters": "Parameters"
+    "Parameters": "Parameters",
+    "Site": "Site",
+    "Import": "Import",
+    "Importing": "Importing",
+    "Export": "Export",
+    "Exporting": "Exporting",
+    "Scrap": "Scrap",
+    "Recorded Actual": "Recorded Actual",
+    "Setup Scrap": "Setup Scrap",
+    "Other Scrap": "Other Scrap",
+    "Adjusted Actual": "Adjusted Actual"
 }

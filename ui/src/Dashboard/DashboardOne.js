@@ -395,27 +395,19 @@ class DashboardOne extends React.Component {
 
       let hr = moment().tz(this.props.user.timezone).hours();
 
-      const parameters1 = {
-        params: {
-          mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 06:00',
-          hr: hr
+      let requestArray = [];
+
+      _.forEach(this.props.user.shifts, shift => {
+        let param = {
+          params: {
+            mc: filter[0],
+            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+            sf: shift.shift_id,
+            hr: hr
+          }
         }
-      }
-      const parameters2 = {
-        params: {
-          mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 08:00',
-          hr: hr
-        }
-      }
-      const parameters3 = {
-        params: {
-          mc: filter[0],
-          dt: moment(filter[1]).format('YYYY/MM/DD') + ' 16:00',
-          hr: hr
-        }
-      }
+        requestArray.push(BuildGet(`${API}/data`, param));
+      });
 
 
       const parameters = {
@@ -425,39 +417,31 @@ class DashboardOne extends React.Component {
           sf: mapShift(filter[2]),
           hr: hr
         }
-      }
-
-
-
-      let requestData = [
-        BuildGet(`${API}/data`, parameters1),
-        BuildGet(`${API}/data`, parameters2),
-        BuildGet(`${API}/data`, parameters3),
-        BuildGet(`${API}/intershift_communication`, parameters)
-      ];
+      };
+      requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
 
       let _this = this;
 
-      axios.all(requestData).then(
+      axios.all(requestArray).then(
         axios.spread((responseData1, responseData2, responseData3, responseIntershift) => {
 
           let shift3 = {
             'hour_interval': this.props.t('3rd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
 
           let shift1 = {
             'hour_interval': this.props.t('1st Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
 
           let shift2 = {
             'hour_interval': this.props.t('2nd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'summary_setup_scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
             'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
             'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
           };
@@ -513,12 +497,14 @@ class DashboardOne extends React.Component {
 
     if (filter && filter[0]) {
 
+      let sf = _.find(this.props.user.shifts, 'shift_name', filter[2]);
+      console.log(sf);
 
       const parameters = {
         params: {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
-          sf: mapShift(filter[2]),
+          sf: sf.shift_id,
           hr: moment().tz(this.props.user.timezone).hours()
         }
       }
@@ -829,7 +815,7 @@ class DashboardOne extends React.Component {
         Aggregated: a => {
           let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
             (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
-          return this.renderAggregated(a, '', defaultValue, false, a.subRows.length === 1, 'scrap')
+          return this.renderAggregated(a, 'scrap', defaultValue, false, a.subRows.length === 1, 'scrap')
         },
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {

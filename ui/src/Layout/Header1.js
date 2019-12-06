@@ -19,7 +19,7 @@ class Header1 extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = Object.assign(this.getInitialState(props), this.getTextState(props));
+        this.state = Object.assign(this.getInitialState(props));
         if (this.state.ln) {
             this.changeLanguageBrowser();
         }
@@ -35,12 +35,6 @@ class Header1 extends React.Component {
             sf: search.sf || props.user.current_shift,
             ln: search.ln || config['language']
         };
-    }
-
-    getTextState(props) {
-        return {
-            siteText: props.t('Site')
-        }
     }
 
     componentDidMount() {
@@ -99,7 +93,7 @@ class Header1 extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
                         {isComponentValid(this.props.user.role, 'sitename') ?
-                            <Nav.Link>{this.state.siteText + ': ' + this.props.user.site_name}</Nav.Link>
+                            <Nav.Link>{this.props.t('Site') + ': ' + this.props.user.site_name}</Nav.Link>
                             : null}
                         {isComponentValid(this.props.user.role, 'megamenu') ?
                             <span>

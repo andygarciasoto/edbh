@@ -100,7 +100,7 @@ function getAssetInfoPromise(asset_code) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined || params.hr == undefined) {
+    if (params.dt == undefined || params.mc == undefined || params.hr == undefined || params.sf == undefined) {
         return res.status(400).send("Missing parameters");
     }
 
@@ -122,7 +122,8 @@ router.get('/data', async function (req, res) {
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
-        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${hour};`,
+        console.log(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf};`);
+        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf};`,
             (err, response) => {
                 if (err) {
                     console.log(err);

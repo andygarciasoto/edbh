@@ -8,6 +8,7 @@ import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
 import queryString from 'query-string';
+import { BuildGet } from './Utils/Requests';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
@@ -115,9 +116,20 @@ function init() {
 
             let station = params.st || localStorage.getItem('machine_name');
             let machine = null;
-            await axios.get(`${API}/asset_display_system?st=${station}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } })
-                .then(function (response) {
-                    const machineValues = response.data[0].AssetDisplaySystem;
+            const shift = {
+                params: {
+                    site: user.site
+                }
+            }
+
+            let requestData = [
+                BuildGet(`${API}/asset_display_system?st=${station}`),
+                BuildGet(`${API}/shifts`, shift)
+            ];
+
+            await axios.all(requestData).then(
+                axios.spread((responseAsset, responseShift) => {
+                    const machineValues = responseAsset.data[0].AssetDisplaySystem;
                     machine = {
                         asset_code: machineValues.asset_code || machineValues.message,
                         asset_level: machineValues.asset_level,
@@ -125,10 +137,11 @@ function init() {
                         display_name: machineValues.displaysystem_name,
                         asset_description: machineValues.asset_description
                     }
-                    return machine;
-                }).catch((e) => {
-                    console.log(e)
-                });
+                    user.shifts = responseShift.data;
+                })
+            ).catch(function (error) {
+                console.log(error);
+            });
 
             ReactDOM.render(
                 <App user={user} defaultAsset={station} machineData={machine} />, document.getElementById('root'));

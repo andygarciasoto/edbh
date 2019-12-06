@@ -31,11 +31,11 @@ class Import extends React.Component {
             dataToolText: props.t('Data Tool'),
             backText: props.t('Back'),
             importText: props.t('Import'),
-            importingText: props.t('Importing...'),
+            importingText: props.t('Importing'),
             successImportMessage: props.t('Configuration Imported Successfully'),
             warningImportMessage: props.t('Fail, Configuration not Imported'),
-            exportText: props.t('Export Excel'),
-            exportingText: props.t('Exporting...'),
+            exportText: props.t('Export'),
+            exportingText: props.t('Exporting'),
             successExportMessage: props.t('Configuration Exported Successfully'),
             warningExportMessage: props.t('Fail, Configuration not Exported'),
         };
@@ -47,6 +47,10 @@ class Import extends React.Component {
 
     componentWillUnmount() {
         this["_isMounted"] = false;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState(this.getTranslations(nextProps));
     }
 
     onFileChange = (event) => {
@@ -96,7 +100,7 @@ class Import extends React.Component {
                 <Row></Row>
                 <div className="import-wrapper">
                     <Tabs defaultActiveKey='import' id='uncontrolled-tab-example'>
-                        <Tab eventKey='import' title='Import'>
+                        <Tab eventKey='import' title={this.state.importText}>
                             <Col>
                                 <h4>Import Section</h4>
                                 <p>This section is to import a new configuration to the application. Always the data will be import it using the site of the user that made the request. This keeps the security of the information and changes only the necessary information of the actual user login in.
@@ -123,7 +127,7 @@ The user will update all these configuration tables from the database:
                                 </div>
                             </Col>
                         </Tab>
-                        <Tab eventKey='export' title='Export'>
+                        <Tab eventKey='export' title={this.state.exportText}>
                             <h4>Export Section</h4>
                             <p>This section is to export the actual configuration of the application. Always the data will be export it filtering the information by the site of the user that made the request. This keeps the security of the information and displays only the necessary information of the actual user login in.
     The user only has the possible to download all these configuration tables from the database:</p>
@@ -144,8 +148,8 @@ The user will update all these configuration tables from the database:
                             <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
                         </Tab>
                     </Tabs>
-                </div>
-            </div>)
+                </div >
+            </div >)
     }
 
 };

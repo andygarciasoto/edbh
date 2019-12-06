@@ -82,5 +82,15 @@
     "Cancel": "Cancelar",
     "New Order": "Nueva Orden",
     "No intershift communications for this shift": "No hay comunicación entre turnos para este turno",
-    "Parameters": "Parámetros"
+    "Parameters": "Parámetros",
+    "Site": "Planta",
+    "Import": "Importar",
+    "Importing": "Importando",
+    "Export": "Exportar",
+    "Exporting": "Exportando",
+    "Scrap": "Desperdicio",
+    "Recorded Actual": "Actual Registrado",
+    "Setup Scrap": "Desperdicio Configurado",
+    "Other Scrap": "Otros Desperdicios",
+    "Adjusted Actual": "Actual Ajustado"
 }
