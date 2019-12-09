@@ -423,37 +423,26 @@ class DashboardOne extends React.Component {
       let _this = this;
 
       axios.all(requestArray).then(
-        axios.spread((responseData1, responseData2, responseData3, responseIntershift) => {
+        axios.spread((...responses) => {
 
-          let shift3 = {
-            'hour_interval': this.props.t('3rd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
-            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
-          };
+          let data = [];
+          _.forEach(responses, (response, index) => {
+            if (index < (responses.length - 1)) {
+              let shift = {
+                'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+                'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
+                'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+                'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+              };
+              if (data === []) {
+                data = _.concat([shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
+              } else {
+                data = _.concat(data, [shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
+              }
+            }
+          });
 
-          let shift1 = {
-            'hour_interval': this.props.t('1st Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
-            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
-          };
-
-          let shift2 = {
-            'hour_interval': this.props.t('2nd Shift'), 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-            'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
-            'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-            'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
-          };
-
-          let data = _.concat(
-            [shift3],
-            _.orderBy(responseData1.data, ['hour_interval_start', 'start_time']),
-            [shift1],
-            _.orderBy(responseData2.data, ['hour_interval_start', 'start_time']),
-            [shift2],
-            _.orderBy(responseData3.data, ['hour_interval_start', 'start_time']));
-          let comments = responseIntershift.data;
+          let comments = responses[responses.length - 1].data;
 
           if (data instanceof Object) {
             selectedShift = mapShiftReverse(filter[2]);
@@ -497,7 +486,13 @@ class DashboardOne extends React.Component {
 
     if (filter && filter[0]) {
 
-      let sf = _.find(this.props.user.shifts, 'shift_name', filter[2]);
+      let sf = {};
+
+      _.forEach(this.props.user.shifts, shift => {
+        if (shift.shift_name === filter[2]) {
+          sf = shift;
+        }
+      });
 
       const parameters = {
         params: {
