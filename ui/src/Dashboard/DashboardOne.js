@@ -498,13 +498,12 @@ class DashboardOne extends React.Component {
     if (filter && filter[0]) {
 
       let sf = _.find(this.props.user.shifts, 'shift_name', filter[2]);
-      console.log(sf);
 
       const parameters = {
         params: {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
-          sf: sf.shift_id,
+          sf: sf.shift_id || this.props.user.shift_id,
           hr: moment().tz(this.props.user.timezone).hours()
         }
       }
