@@ -122,7 +122,6 @@ router.get('/data', async function (req, res) {
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
-        console.log(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf};`);
         sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf};`,
             (err, response) => {
                 if (err) {
@@ -229,13 +228,13 @@ router.get('/shifts', async function (req, res) {
 router.get('/intershift_communication', async function (req, res) {
     const asset_code = req.query.mc;
     const production_day = moment(new Date(req.query.dt)).format('YYYY-MM-DD');
-    const shift_code = req.query.sf;
-    if (asset_code === undefined || production_day === undefined || shift_code === undefined) {
+    const shift_id = req.query.sf;
+    if (asset_code === undefined || production_day === undefined || shift_id === undefined) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
 
     getAssetInfoPromise(asset_code).then(responseProm => {
-        sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData ${responseProm[0].Asset.asset_id}, '${production_day}', '${shift_code}';`,
+        sqlQuery(`exec spLocal_EY_DxH_Get_InterShiftData ${responseProm[0].Asset.asset_id}, '${production_day}', ${shift_id};`,
             (err, response) => {
                 if (err) {
                     console.log(err);
