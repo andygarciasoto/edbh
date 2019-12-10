@@ -797,22 +797,24 @@ class DashboardOne extends React.Component {
         Cell: c => this.renderCell(c, 'actual_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'values'),
         Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      }, {
-        Header: this.getHeader(this.state.scrapText),
-        accessor: 'scrap',
-        minWidth: 90,
-        Cell: c => {
-          let defaultValue = !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ?
-            parseInt(c.original.setup_scrap || 0, 10) + parseInt(c.original.other_scrap || 0, 10) : null;
-          return this.renderCell(c, '', defaultValue, true, true, 'scrap')
-        },
-        Aggregated: a => {
-          let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
-            (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
-          return this.renderAggregated(a, 'scrap', defaultValue, false, a.subRows.length === 1, 'scrap')
-        },
-        getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-      }, {
+      }
+      // , {
+      //   Header: this.getHeader(this.state.scrapText),
+      //   accessor: 'scrap',
+      //   minWidth: 90,
+      //   Cell: c => {
+      //     let defaultValue = !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ?
+      //       parseInt(c.original.setup_scrap || 0, 10) + parseInt(c.original.other_scrap || 0, 10) : null;
+      //     return this.renderCell(c, '', defaultValue, true, true, 'scrap')
+      //   },
+      //   Aggregated: a => {
+      //     let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
+      //       (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
+      //     return this.renderAggregated(a, 'scrap', defaultValue, false, a.subRows.length === 1, 'scrap')
+      //   },
+      //   getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
+      // }
+      , {
         Header: this.getHeader(this.state.cumulativeTargetText),
         accessor: 'cumulative_target_pcs',
         minWidth: 90,
