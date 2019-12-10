@@ -73,7 +73,7 @@ class DashboardOne extends React.Component {
       selectedMachine: props.search.mc || props.machineData.asset_code,
       selectedMachineType: props.search.tp || props.machineData.automation_level,
       station: props.search.st || '00000',
-      currentLanguage: props.search.ln || config['language'],
+      currentLanguage: props.search.ln || props.user.language,
       valueToEdit: '',
       cumulativepcs: '',
       modalType: '',

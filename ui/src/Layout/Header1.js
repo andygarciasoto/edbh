@@ -33,7 +33,7 @@ class Header1 extends React.Component {
             tp: search.tp || props.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
             sf: search.sf || props.user.current_shift,
-            ln: search.ln || config['language']
+            ln: search.ln || props.user.language
         };
     }
 
@@ -48,7 +48,7 @@ class Header1 extends React.Component {
             tp: search.tp || nextProps.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
             sf: search.sf || nextProps.user.current_shift,
-            ln: search.ln || config['language']
+            ln: search.ln || nextProps.user.language
         });
     }
 

@@ -112,7 +112,8 @@ function init() {
                 site_name: json.data[0].SiteName,
                 timezone: json.data[0].Timezone,
                 current_shift: json.data[0].ShiftName,
-                shift_id: json.data[0].ShiftId
+                shift_id: json.data[0].ShiftId,
+                language: json.data[0].language
             }
 
             let station = params.st || localStorage.getItem('machine_name');
