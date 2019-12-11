@@ -28,7 +28,7 @@ class ValueModal extends React.Component {
     submit(e) {
         const data = {
             dxh_data_id: this.props.currentRow && this.props.currentRow.dxhdata_id ? this.props.currentRow.dxhdata_id : undefined,
-            actual: this.state.newValue ? formatNumber(parseInt(this.state.newValue)) : null,
+            actual: this.state.newValue ? this.state.newValue : null,
             setup_scrap: this.props.currentRow.setup_scrap || 'signoff',
             other_scrap: this.props.currentRow.other_scrap || 'signoff',
             adjusted_actual: this.props.currentRow.adjusted_actual || 'signoff',

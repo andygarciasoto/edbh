@@ -630,7 +630,9 @@ class DashboardOne extends React.Component {
 
   renderCell(cellInfo, prop, defaultValue, displayClick, displayEmptyClick) {
     if (cellInfo.original !== undefined) {
-      return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>{cellInfo.original[prop] || defaultValue}</span>;
+      return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>
+        {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : Math.round(cellInfo.original[prop] * 10 + Number.EPSILON) / 10) : defaultValue}
+      </span>;
     } else {
       return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick && displayEmptyClick ? this.openModal(arguments[5], cellInfo, prop, cellInfo.subRows !== undefined) : {}}></span>;
     }
@@ -649,7 +651,9 @@ class DashboardOne extends React.Component {
     }
     if (newCellInfo.subRows[0] !== undefined && newCellInfo.subRows[0]._original[prop] !== '') {
       if (prop !== '' || defaultValue !== '') {
-        return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}>{newCellInfo.subRows[0]._original[prop] || defaultValue}</span>;
+        return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}>
+          {newCellInfo.subRows[0]._original[prop] ? (isNaN(newCellInfo.subRows[0]._original[prop]) ? newCellInfo.subRows[0]._original[prop] : Math.round(newCellInfo.subRows[0]._original[prop] * 10 + Number.EPSILON) / 10) : defaultValue}
+        </span>;
       } else {
         return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}></span>;
       }
