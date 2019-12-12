@@ -63,6 +63,7 @@ ALTER TABLE [dbo].[AssetDisplaySystem] DROP COLUMN [asset_code];
 DROP INDEX [dbo].[DTReason].[UIX_DTReason_DTReason_Code];
 DROP INDEX [dbo].[DTReason].[UIX_DTReason_DTReason_Name];
 DROP INDEX [dbo].[DTReason].[dtreason_index];
+DROP INDEX [dbo].[Shift].[UIX_Shift_Shift_Name];
 ALTER TABLE [dbo].[DTReason] DROP COLUMN [asset_code];
 
 DROP INDEX [dbo].[DxHData].[dxhdata_index];
@@ -82,4 +83,3 @@ ALTER TABLE [dbo].[Tag] DROP COLUMN [asset_code];
 DROP INDEX [dbo].[Unavailable].[UIX_Unavailable_Unavailable_Code];
 DROP INDEX [dbo].[Unavailable].[UIX_Unavailable_Unavailable_Name];
 ALTER TABLE [dbo].[Unavailable] DROP COLUMN [asset_code];
-

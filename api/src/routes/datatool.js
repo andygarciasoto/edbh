@@ -29,8 +29,24 @@ function getDataType(table, value, position) {
     value = null;
     return value;
   }
-  if (table === 'asset' || table === 'tag') {
+  if (table === 'asset') {
     if (position === 10) {
+      return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
+  if (table === 'uom') {
+    if (position === 12) {
+      return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
+  if (table === 'tag') {
+    if (position === 9 || position === 16 || position === 17) {
       return value;
     } else {
       value = `'` + value + `'`;
@@ -45,12 +61,8 @@ function getDataType(table, value, position) {
       return value;
     }
   }
-  if (table === 'uom') {
-    value = `'` + value + `'`;
-    return value;
-  }
   if (table === 'shift') {
-    if (position === 5 || position === 8 || position === 13) {
+    if (position === 5 || position === 8 || position === 12 || position === 18) {
       return value;
     } else {
       if (position === 6 || position === 7) {
@@ -62,7 +74,7 @@ function getDataType(table, value, position) {
     }
   }
   if (table === 'unavailable') {
-    if (position === 7) {
+    if (position === 7 || position === 15 || position === 16) {
       return value;
     } else {
       if (position === 5 || position === 6) {
@@ -73,7 +85,18 @@ function getDataType(table, value, position) {
       return value;
     }
   }
+  if (table === 'commonparameterstest') {
+    if (position === 2 || position === 4 || position === 7 || position === 8 || position === 9
+      || position === 10 || position === 11 || position === 12 || position === 13){
+      return value;
+    }else {
+    value = `'` + value + `'`;
+    return value;
+    }
+  }
 }
+
+
 
 function getForeignKey(table, validation) {
   if (table === 'asset') {
@@ -83,17 +106,17 @@ function getForeignKey(table, validation) {
   }
   if (table === 'dtreason') {
     validation = 'source.[' + 'dtreason_code' + ']' + ' = ' + 'target.[' + 'dtreason_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'shift') {
     validation = 'source.[' + 'shift_code' + ']' + ' = ' + 'target.[' + 'shift_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'tag') {
     validation = 'source.[' + 'tag_code' + ']' + ' = ' + 'target.[' + 'tag_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
     return validation;
   }
   if (table === 'uom') {
@@ -102,7 +125,11 @@ function getForeignKey(table, validation) {
   }
   if (table === 'unavailable') {
     validation = 'source.[' + 'unavailable_code' + ']' + ' = ' + 'target.[' + 'unavailable_code' + ']' + ' AND ' +
-      'source.[' + 'asset_code' + ']' + ' = ' + 'target.[' + 'asset_code' + ']';
+      'source.[' + 'asset_id' + ']' + ' = ' + 'target.[' + 'asset_id' + ']';
+    return validation;
+  }
+  if (table === 'commonparameterstest') {
+    validation = 'source.[' + 'site_id' + ']' + ' = ' + 'target.[' + 'site_id' + ']';
     return validation;
   }
 }
@@ -132,8 +159,8 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
   var workbook = new Excel.Workbook();
   workbook.xlsx.readFile(file[0].path)
     .then(function () {
-      var worksheet = workbook.getWorksheet(7);
-      if (worksheet.name !== 'unavailable') {
+      var worksheet = workbook.getWorksheet(6);
+      if (worksheet.name !== 'uom') {
         return res.status(400).json({ message: "Bad Request - Please review that the Excel sheets are in place" });
       }
       // Iterate over all rows that have values in a worksheet
