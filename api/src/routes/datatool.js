@@ -87,11 +87,11 @@ function getDataType(table, value, position) {
   }
   if (table === 'commonparameterstest') {
     if (position === 2 || position === 4 || position === 7 || position === 8 || position === 9
-      || position === 10 || position === 11 || position === 12 || position === 13){
+      || position === 10 || position === 11 || position === 12 || position === 13) {
       return value;
-    }else {
-    value = `'` + value + `'`;
-    return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
     }
   }
 }
@@ -228,6 +228,7 @@ function getPromise(sqlSentence, table) {
 router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
 
   let site_name = req.query.site_name;
+  let site_id = req.query.site_id;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
@@ -235,13 +236,14 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
   let workbook = new Excel.Workbook();
 
   let promiseArray = [];
-  promiseArray.push(getPromise(constants.DTReasonSQL(site_name), 'DTReason'));
-  promiseArray.push(getPromise(constants.AssetSQL(site_name), 'Asset'));
-  promiseArray.push(getPromise(constants.ShiftSQL(site_name), 'Shift'));
-  promiseArray.push(getPromise(constants.TagSQL(site_name), 'Tag'));
-  promiseArray.push(getPromise(constants.CommonParametersSQL(site_name), 'CommonParameters'));
-  promiseArray.push(getPromise(constants.UOMSQL(site_name), 'UOM'));
-  promiseArray.push(getPromise(constants.UnavailableSQL(site_name), 'Unavailable'));
+  promiseArray.push(getPromise(constants.DTReasonSQL(site_id), 'DTReason'));
+  promiseArray.push(getPromise(constants.AssetSQL(site_id), 'Asset'));
+  promiseArray.push(getPromise(constants.ShiftSQL(site_id), 'Shift'));
+  promiseArray.push(getPromise(constants.TagSQL(site_id), 'Tag'));
+  promiseArray.push(getPromise(constants.CommonParametersSQL(site_id), 'CommonParameters'));
+  promiseArray.push(getPromise(constants.UOMSQL(site_id), 'UOM'));
+  promiseArray.push(getPromise(constants.UnavailableSQL(site_id), 'Unavailable'));
+  promiseArray.push(getPromise(constants.TFDUsersSQL(site_id), 'TFDUsers'));
 
   Promise.all(promiseArray).then(responseAll => {
     responseAll.forEach(responsePromise => {

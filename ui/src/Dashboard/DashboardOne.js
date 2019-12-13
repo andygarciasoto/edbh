@@ -896,7 +896,7 @@ class DashboardOne extends React.Component {
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
+                <Col md={3}><h5>{t('Machine/Cell')}: {t(machine)}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}
