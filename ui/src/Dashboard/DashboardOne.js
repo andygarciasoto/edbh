@@ -611,7 +611,7 @@ class DashboardOne extends React.Component {
         'url("../arabesque.png")';
       style.color = 'white';
 
-    } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone ))) {
+    } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone))) {
       style.backgroundColor = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
@@ -899,7 +899,7 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
+                <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}
                   {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ?
                     moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL') :
                     moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
