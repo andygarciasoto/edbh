@@ -31,7 +31,6 @@ function App(propsApp) {
               history={props.history}
               t={t}
               user={propsApp.user}
-              defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
               openModal={displayModal} />}
         />
