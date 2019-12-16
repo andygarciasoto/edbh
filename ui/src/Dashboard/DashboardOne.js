@@ -383,7 +383,6 @@ class DashboardOne extends React.Component {
       }
     }
     var tz = this.state.commonParams ? this.state.commonParams.value : this.props.user.current_shift;
-    console.log(tz);
     var est = moment().tz(tz).hours();
     if (minutes > 6 && localStorage.getItem("currentHour")) {
       if (localStorage.getItem("currentHour") !== est) {
