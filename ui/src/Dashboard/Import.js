@@ -77,7 +77,7 @@ class Import extends React.Component {
     exportEvent = async () => {
         let _this = this;
         this.setState({ isExporting: true, errorExport: false, showActionMessageExport: false }, () => {
-            fetch(`${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_name=${this.props.user.site_name}`)
+            fetch(`${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_name=${this.props.user.site_name}&site_id=${this.props.user.site}`)
                 .then(response => {
                     if (response.status === 500) return response;
                     return response.blob()

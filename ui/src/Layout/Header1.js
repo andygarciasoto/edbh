@@ -13,7 +13,6 @@ import QueryButton from './QueryButton';
 import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
-import config from '../config.json';
 
 class Header1 extends React.Component {
 

@@ -101,7 +101,7 @@ function init() {
             return response;
         })
         .then(async function (json) {
-            const user = {
+            let user = {
                 first_name: json.data[0]['First Name'],
                 last_name: json.data[0]['Last Name'],
                 username: json.data[0].Username,
@@ -140,6 +140,10 @@ function init() {
                         asset_description: machineValues.asset_description
                     }
                     user.shifts = responseShift.data;
+                    if (!user.shift_id) {
+                        user.shift_id = user.shifts[user.shifts.length - 1].shift_id;
+                        user.current_shift = user.shifts[user.shifts.length - 1].shift_name;
+                    }
                 })
             ).catch(function (error) {
                 console.log(error);

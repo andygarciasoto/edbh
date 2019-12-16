@@ -47,7 +47,7 @@ class DashboardOne extends React.Component {
   }
 
   getInitialState(props) {
-    var hour = moment(getCurrentTime()).hours();
+    var hour = moment(getCurrentTime(this.props.user.timezone)).hours();
     return {
       data: [],
       columns: [],
@@ -68,7 +68,7 @@ class DashboardOne extends React.Component {
       logoffHourCheck: localStorage.getItem("signoff") === false ? localStorage.getItem("signoff") : true,
       barcode: 1001,
       dataCall: {},
-      selectedDate: props.search.dt || getCurrentTime(),
+      selectedDate: props.search.dt || getCurrentTime(this.props.user.timezone),
       selectedDateParsed: '',
       selectedMachine: props.search.mc || props.machineData.asset_code,
       selectedMachineType: props.search.tp || props.machineData.automation_level,
@@ -239,7 +239,7 @@ class DashboardOne extends React.Component {
           })
         } else if (((val.oper_id !== null) && (extraParam === 'operator')) ||
           ((val.superv_id !== null) && (extraParam === 'supervisor'))) {
-          if (moment(getCurrentTime()).isSame(val.hour_interval_start, 'hours')) {
+          if (moment(getCurrentTime(this.props.user.timezone)).isSame(val.hour_interval_start, 'hours')) {
             const allowed = isFieldAllowed(this.props.user.role, val);
             this.setState({
               modal_signoff_IsOpen: allowed,
@@ -343,7 +343,7 @@ class DashboardOne extends React.Component {
         }
 
         this.setState({
-          selectedDate: nextProps.search.dt || getCurrentTime(),
+          selectedDate: nextProps.search.dt || getCurrentTime(this.props.user.timezone),
           selectedMachine: nextProps.search.mc || this.state.selectedMachine,
           currentLanguage: nextProps.search.ln || this.state.currentLanguage,
           selectedShift: nextProps.search.sf || this.state.selectedShift,
@@ -367,7 +367,7 @@ class DashboardOne extends React.Component {
 
   loadDataAllShift(filter) {
 
-    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    const logoffHour = formatNumber(moment(getCurrentTime(this.props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
@@ -461,7 +461,7 @@ class DashboardOne extends React.Component {
   }
 
   loadDataCurrentShift(filter) {
-    const logoffHour = formatNumber(moment(getCurrentTime()).format('HH:mm').toString().slice(3, 5));
+    const logoffHour = formatNumber(moment(getCurrentTime(this.props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
@@ -605,13 +605,13 @@ class DashboardOne extends React.Component {
       style.borderRight = 'solid 1px rgb(219, 219, 219)';
       style.borderTop = 'solid 1px rgb(219, 219, 219)';
       style.backgroundColor = 'white';
-    } else if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime())) {
+    } else if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone))) {
       style.backgroundColor = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
       style.color = 'white';
 
-    } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime())) {
+    } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone))) {
       style.backgroundColor = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? '#b80600' : 'green';
       style.backgroundImage = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? 'url("../dark-circles.png")' :
         'url("../arabesque.png")';
@@ -664,8 +664,8 @@ class DashboardOne extends React.Component {
   }
 
   getTimeLostToSet(cellInfo) {
-    return moment(getCurrentTime()).isSame(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ||
-      !moment(getCurrentTime()).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
+    return moment(getCurrentTime(this.props.user.timezone)).isSame(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ||
+      !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
   }
 
   getCommentsToSet(cellInfo) {
@@ -680,12 +680,12 @@ class DashboardOne extends React.Component {
       </span>
     } else {
       return <span style={
-        (!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') && this.state.signoff_reminder) ?
+        (!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(this.props.user.timezone), 'hours') && this.state.signoff_reminder) ?
           { paddingRight: '90%', cursor: 'pointer' } :
           { paddingRight: '80%', cursor: 'pointer' }}
         className={'empty-field'} onClick={() =>
           isComponentValid(this.props.user.role, role) && !this.state.summary ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
-        {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime()).add(-1, 'hours'), 'hours') ? '' :
+        {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime(this.props.user.timezone)).add(-1, 'hours'), 'hours') ? '' :
           this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
       </span>;
     }
@@ -757,7 +757,7 @@ class DashboardOne extends React.Component {
           if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
             return <span className={'wordwrap'} data-tip={row.value}>{row.value}</span>
           } else {
-            return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(), 'hours') ? row.value + '*' : row.value}</span>
+            return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(this.props.user.timezone), 'hours') ? row.value + '*' : row.value}</span>
           }
         },
         disableExpander: false,
@@ -792,15 +792,15 @@ class DashboardOne extends React.Component {
         Header: this.getHeader(this.state.targetText),
         accessor: 'target_pcs',
         minWidth: 90,
-        Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+        Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
         getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.actualText),
         accessor: 'actual_pcs',
         minWidth: 90,
-        Cell: c => this.renderCell(c, 'actual_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, true, true, 'values'),
-        Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, true, 'values'),
+        Cell: c => this.renderCell(c, 'actual_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'values'),
+        Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, true, 'values'),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }
       // , {
@@ -823,15 +823,15 @@ class DashboardOne extends React.Component {
         Header: this.getHeader(this.state.cumulativeTargetText),
         accessor: 'cumulative_target_pcs',
         minWidth: 90,
-        Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
-        Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+        Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
         getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.cumulativeActualText),
         accessor: 'cumulative_pcs',
         minWidth: 90,
         Cell: c => this.renderCell(c, '', '', false, false),
-        Aggregated: a => this.renderAggregated(a, 'cumulative_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ? 0 : null, false, false),
+        Aggregated: a => this.renderAggregated(a, 'cumulative_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
         getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
       }, {
         Header: this.getHeader(this.state.timeLostText),
@@ -886,26 +886,20 @@ class DashboardOne extends React.Component {
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
           <Pagination
-            selectedShift={this.state.selectedShift}
-            selectedDate={this.state.selectedDate}
-            selectedMachine={this.state.selectedMachine}
-            timezone={this.state.timezone}
-            t={t}
             history={this.props.history}
-            search={this.props.search}
-            clearExpanded={this.clearExpanded}
-            currentHour={this.state.currentHour}
-            shifts={this.state.shifts}
+            user={this.props.user}
+            machineData={this.props.machineData}
+            t={t}
           /> : null}
         <div className="wrapper-main">
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                <Col md={3}><h5>{t('Machine/Cell')}: {machine}</h5></Col>
+                <Col md={3}><h5>{t('Machine/Cell')}: {t(machine)}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
-                <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{'Showing Data for: '}
+                <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}
                   {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ?
                     moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL') :
                     moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
@@ -923,7 +917,7 @@ class DashboardOne extends React.Component {
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  defaultPageSize={this.state.summary ? 27 : 8}
+                  defaultPageSize={this.state.summary ? (this.props.user.shifts.length * (this.props.user.shifts[0].duration_in_minutes / 60)) + this.props.user.shifts.length : (this.props.user.shifts[0].duration_in_minutes / 60)}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}

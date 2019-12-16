@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
-import { sendPut, getCurrentTime, formatDateWithTime, formatNumber } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 
 
