@@ -64,6 +64,7 @@ DROP INDEX [dbo].[DTReason].[UIX_DTReason_DTReason_Code];
 DROP INDEX [dbo].[DTReason].[UIX_DTReason_DTReason_Name];
 DROP INDEX [dbo].[DTReason].[dtreason_index];
 DROP INDEX [dbo].[Shift].[UIX_Shift_Shift_Name];
+DROP INDEX [dbo].[Shift].[UIX_UOM_UOM_Name];
 ALTER TABLE [dbo].[DTReason] DROP COLUMN [asset_code];
 
 DROP INDEX [dbo].[DxHData].[dxhdata_index];

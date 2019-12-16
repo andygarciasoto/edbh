@@ -94,9 +94,15 @@ function getDataType(table, value, position) {
     return value;
     }
   }
+  if (table === 'tfdusers') {
+    if (position === 7) {
+      return value;
+    } else {
+      value = `'` + value + `'`;
+      return value;
+    }
+  }
 }
-
-
 
 function getForeignKey(table, validation) {
   if (table === 'asset') {
@@ -132,6 +138,11 @@ function getForeignKey(table, validation) {
     validation = 'source.[' + 'site_id' + ']' + ' = ' + 'target.[' + 'site_id' + ']';
     return validation;
   }
+  if (table === 'tfdusers') {
+    validation = 'source.[' + 'site' + ']' + ' = ' + 'target.[' + 'site' + ']' + ' AND ' +
+      'source.[' + 'badge' + ']' + ' = ' + 'target.[' + 'badge' + ']';
+    return validation;
+  }
 }
 function responsePostPut(response, req, res) {
   try {
@@ -159,14 +170,17 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
   var workbook = new Excel.Workbook();
   workbook.xlsx.readFile(file[0].path)
     .then(function () {
-      var worksheet = workbook.getWorksheet(6);
-      if (worksheet.name !== 'uom') {
+      var worksheet = workbook.getWorksheet(8);
+      if (worksheet.name !== 'tfdusers') {
         return res.status(400).json({ message: "Bad Request - Please review that the Excel sheets are in place" });
       }
       // Iterate over all rows that have values in a worksheet
       worksheet.eachRow(function (row, rowNumber) {
         row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
-          if (colNumber !== 1) {
+          if (colNumber !== 1){
+            if (rowNumber === 2){
+              console.log(cell.value);
+            }
             if (rowNumber === 1) {
               if (cell.value === 'NULL') {
                 return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
