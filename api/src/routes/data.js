@@ -157,6 +157,7 @@ router.get('/machine', async function (req, res) {
 
 router.get('/me', async function (req, res) {
     let token = req.header('Authorization');
+    let badge = req.query.badge;
     if (token && token.startsWith('Bearer ')) {
         token = token.slice(7, token.length).trimLeft();
     }
@@ -172,21 +173,15 @@ router.get('/me', async function (req, res) {
             });
         }
         if (payload.body.sub) {
-            let user;
-            if (payload.body.oid) {
-                user = localStorage.getItem("username");
-                localStorage.removeItem("username");
-            } else {
-                user = payload.body.sub.substring(6);
-            }
-            sqlQuery(`exec dbo.sp_usernamelogin '${user}'`,
+            badge = payload.body.badge || badge;
+            sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}'`,
                 (err, data) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
-                    let response = JSON.parse(Object.values(data)[0].GetDataByUsername);
+                    let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
                     if (response === null) {
                         res.sendStatus(401);
                         return;

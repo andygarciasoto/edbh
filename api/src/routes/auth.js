@@ -49,10 +49,10 @@ router.get("/token", cors(), async function (req, res) {
         }
         var jwtx = nJwt.create(jsonwebtoken, config['signingKey']);
         var token = jwtx.compact();
-        if (localStorage.getItem("st")){
+        if (localStorage.getItem("st")) {
             var st = localStorage.getItem("st");
             localStorage.removeItem("st");
-            return res.redirect(302, config['loginURL'] + `?st=${st}` + `#token=${token}`);    
+            return res.redirect(302, config['loginURL'] + `?st=${st}` + `#token=${token}`);
         }
         return res.redirect(302, config['loginURL'] + `#token=${token}`);
     });
@@ -62,7 +62,7 @@ router.get("/badge", cors(), async function (req, res) {
     if (!params.badge) {
         return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
     }
-    if (params.st){
+    if (params.st) {
         localStorage.setItem("st", params.st);
     }
     sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
@@ -78,16 +78,15 @@ router.get("/badge", cors(), async function (req, res) {
                     res.sendStatus(401);
                     return;
                 }
-                let username = response[0].Username;
-                localStorage.setItem("username", username);
-                let role = response[0].Role;
+                let badge = response[0].badge;
+                let role = response[0].role;
 
                 if (role === 'Supervisor' || role === 'Administrator') {
                     const url = `https://login.microsoftonline.com/${config['tenant_id']}/oauth2/authorize?client_id=${config['client_id']}&response_type=code&scope=openid&redirect_uri=${config['redirect_uri']}`;
                     return res.redirect(302, url);
                 } else {
                     var claimsList = {
-                        user: { iss: config['URL'], sub: 'users/' + username, scope: role},
+                        user: { iss: config['URL'], sub: 'users/' + badge, scope: role, badge: badge },
                     }
                     var jwt = nJwt.create(claimsList.user, config['signingKey']);
                     jwt.setExpiration(new Date().getTime() + config['token_expiration']);
@@ -117,9 +116,10 @@ router.post("/", function (req, res) {
                 res.redirect(303, config['badLogin']);
                 return;
             }
-            let role = response[0].Role;
+            let role = response[0].role;
+            let badge = response[0].badge;
             var claimsList = {
-                user: { iss: config['URL'], sub: 'users/' + params.username, scope: role },
+                user: { iss: config['URL'], sub: 'users/' + badge, scope: role, badge: badge },
             }
 
             if (claimsList.user && params.password === 'parkerdxh2019') {

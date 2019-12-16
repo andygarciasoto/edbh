@@ -57,8 +57,9 @@ class BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    if (localStorage.getItem("machine_name")) {
-      var st = localStorage.getItem("machine_name");
+    localStorage.setItem('badge', code);
+    if (localStorage.getItem('machine_name')) {
+      var st = localStorage.getItem('machine_name');
       window.location.replace(`${AUTH}/badge?badge=${code}&st=${st}`);
     } else {
       window.location.replace(`${AUTH}/badge?badge=${code}`);
@@ -106,6 +107,7 @@ class BarcodeScanner extends Component {
           shouldCloseOnOverlayClick={false}
         />
         {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
+        {/* <button onClick={() => this.authorize('1886')}>Log in</button> */}
       </div>
     )
   }

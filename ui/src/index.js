@@ -96,23 +96,23 @@ function init() {
         return Promise.reject(error);
     });
 
-    axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
+    const badge = localStorage.getItem('badge');
+    axios(`${API}/me?badge=${badge}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
         .then(function (response) {
             return response;
         })
         .then(async function (json) {
             let user = {
-                first_name: json.data[0]['First Name'],
-                last_name: json.data[0]['Last Name'],
-                username: json.data[0].Username,
-                password: json.data[0].Password,
-                role: json.data[0].Role,
-                clock_number: json.data[0].Badge,
-                site: json.data[0].Site,
-                site_name: json.data[0].SiteName,
-                timezone: json.data[0].Timezone,
-                current_shift: json.data[0].ShiftName,
-                shift_id: json.data[0].ShiftId,
+                first_name: json.data[0].first_name,
+                last_name: json.data[0].last_name,
+                username: json.data[0].username,
+                role: json.data[0].role,
+                clock_number: json.data[0].badge,
+                site: json.data[0].site,
+                site_name: json.data[0].site_name,
+                timezone: json.data[0].timezone,
+                current_shift: json.data[0].shift_name,
+                shift_id: json.data[0].shift_id,
                 language: json.data[0].language
             }
 
