@@ -14,7 +14,7 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -55,7 +55,7 @@ router.use(function (req, res, next) {
         });
     }
 });
-
+*/
 function responsePostPut(response, req, res) {
     try {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
@@ -997,5 +997,23 @@ router.get('/asset_display_system', async function (req, res) {
             responseGet(response, req, res, 'AssetDisplaySystem');
         });
 });
+
+router.get('/uom_asset', async function (req, res) {
+    let params = req.query;
+    if (!params.asset_code) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    sqlQuery(`select top 1 a.asset_id, o.uom_code, u.decimals from asset a 
+    join orderdata o on a.asset_code = '${params.asset_code}' and a.asset_id = o.asset_id join uom u on o.uom_code = u.uom_code;`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            res.status(200).json(response);
+        });
+});
+
 
 module.exports = router;
