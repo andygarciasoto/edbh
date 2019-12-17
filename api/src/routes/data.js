@@ -157,8 +157,7 @@ router.get('/machine', async function (req, res) {
 
 router.get('/me', async function (req, res) {
     let token = req.header('Authorization');
-    let badge = req.query.badge;
-    const machine = req.query.machine ? req.query.machine : '0';
+
     if (token && token.startsWith('Bearer ')) {
         token = token.slice(7, token.length).trimLeft();
     }
@@ -174,7 +173,10 @@ router.get('/me', async function (req, res) {
             });
         }
         if (payload.body.sub) {
-            badge = payload.body.badge || badge;
+            let id = payload.body.user_id;
+            let badge = payload.body.user_badge;
+            let machine = payload.body.user_machine;
+            console.log(payload.body);
             sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}', '${machine}'`,
                 (err, data) => {
                     if (err) {
@@ -183,7 +185,7 @@ router.get('/me', async function (req, res) {
                         return;
                     }
                     let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
-                    if (response === null) {
+                    if (response === null || response[0].id != id) {
                         res.sendStatus(401);
                         return;
                     }
