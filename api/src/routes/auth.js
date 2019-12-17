@@ -59,13 +59,15 @@ router.get("/token", cors(), async function (req, res) {
 });
 router.get("/badge", cors(), async function (req, res) {
     const params = req.query;
+    const machine = '';
     if (!params.badge) {
         return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
     }
     if (params.st) {
         localStorage.setItem("st", params.st);
     }
-    sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}'`,
+    machine = params.machine ? params.machine : '0';
+    sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}', '${machine}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
@@ -101,10 +103,12 @@ router.get("/badge", cors(), async function (req, res) {
 
 router.post("/", function (req, res) {
     const params = req.body;
+    const machine = '';
     if (!params.username) {
         return res.status(400).json({ message: "Bad Request - Missing Username" });
     }
-    sqlQuery(`exec dbo.sp_usernamelogin '${params.username}'`,
+    machine = params.machine ? params.machine : '0';
+    sqlQuery(`exec dbo.sp_usernamelogin '${params.username}', '${machine}'`,
         (err, data) => {
             if (err) {
                 console.log(err);

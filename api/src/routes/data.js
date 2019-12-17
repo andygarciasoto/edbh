@@ -158,6 +158,7 @@ router.get('/machine', async function (req, res) {
 router.get('/me', async function (req, res) {
     let token = req.header('Authorization');
     let badge = req.query.badge;
+    const machine = req.query.machine ? req.query.machine : '0';
     if (token && token.startsWith('Bearer ')) {
         token = token.slice(7, token.length).trimLeft();
     }
@@ -174,7 +175,7 @@ router.get('/me', async function (req, res) {
         }
         if (payload.body.sub) {
             badge = payload.body.badge || badge;
-            sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}'`,
+            sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}', '${machine}'`,
                 (err, data) => {
                     if (err) {
                         console.log(err);
@@ -610,14 +611,15 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
     const asset_code = req.body.asset_code;
+    const machine = '';
 
     if (!clocknumber) {
         if (!(first_name || !last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-
-    sqlQuery(`exec dbo.sp_clocknumberlogin '${clocknumber}'`,
+    machine = req.body.machine ? req.body.machine : '0';
+    sqlQuery(`exec dbo.sp_clocknumberlogin '${clocknumber}', '${machine}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
