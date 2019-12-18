@@ -1015,7 +1015,7 @@ router.get('/uom_asset', async function (req, res) {
         });
 });
 
-router.get('/station_language', async function (req, res) {
+router.get('/language', async function (req, res) {
     let params = req.query;
     if (!params.st) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
