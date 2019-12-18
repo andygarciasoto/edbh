@@ -1,4 +1,13 @@
 module.exports = Object.freeze({
+    getPromise: (sqlSentence, table) => {
+        return new Promise((resolve, reject) => {
+            sqlQuery(sqlSentence,
+                (err, response) => {
+                    if (err) return reject(err);
+                    resolve({ 'response': response, 'table': table });
+                })
+        });
+    },
     DTReason: [
         { header: 'dtreason_code', key: 'dtreason_code' },
         { header: 'dtreason_name', key: 'dtreason_name', width: 34 },

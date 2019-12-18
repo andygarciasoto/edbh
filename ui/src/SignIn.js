@@ -31,7 +31,7 @@ class SignIn extends React.Component {
                 <div id="signIn">
                     <img src={logo} className="App-logo" alt="logo" />
                     <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
-                    <BarcodeScanner t={this.props.t} />
+                    <BarcodeScanner t={this.props.t} st={this.props.st} />
                 </div>
                 {this.props.search.err ? <div className="app-info"><FontAwesome name="warning" /><span>{this.state.errMessage}</span></div> : 'null'}
             </div>

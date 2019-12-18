@@ -40,6 +40,7 @@ class Login extends React.Component {
                         <Form.Control value={this.state.password} name={'password'} type="password" placeholder="Password" style={{width: '400px', float: 'right'}} onChange={(e) => 
                             {this.setState({password: e.target.value})}}/>
                     </Form.Group>
+                    <Form.Control value={this.props.st} name={'st'} type="hidden"/>
                     <Button type="submit" variant="outline-primary" style={{marginTop: '10px'}}>{'Submit'}</Button>
                     </Form>
                 </div>

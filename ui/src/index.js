@@ -22,7 +22,7 @@ if (search !== "") {
 
 if (window.location.pathname === '/' || window.location.pathname === '/login') {
     let machineName = params.st;
-    if (machineName) {
+    if (!machineName) {
         machineName = localStorage.getItem('machine_name');
     }
     ReactDOM.render(
@@ -95,9 +95,7 @@ function init() {
         }
         return Promise.reject(error);
     });
-
-    const badge = localStorage.getItem('badge');
-    axios(`${API}/me?badge=${badge}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
+    axios(`${API}/me`, { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
         .then(function (response) {
             return response;
         })
@@ -126,11 +124,12 @@ function init() {
 
             let requestData = [
                 BuildGet(`${API}/asset_display_system?st=${station}`),
-                BuildGet(`${API}/shifts`, shift)
+                BuildGet(`${API}/shifts`, shift),
+                BuildGet(`${API}/machine`, shift)
             ];
 
             await axios.all(requestData).then(
-                axios.spread((responseAsset, responseShift) => {
+                axios.spread((responseAsset, responseShift, responseMachine) => {
                     const machineValues = responseAsset.data[0].AssetDisplaySystem;
                     machine = {
                         asset_code: machineValues.asset_code || machineValues.message,
@@ -140,6 +139,7 @@ function init() {
                         asset_description: machineValues.asset_description
                     }
                     user.shifts = responseShift.data;
+                    user.machines = responseMachine.data;
                     if (!user.shift_id) {
                         user.shift_id = user.shifts[user.shifts.length - 1].shift_id;
                         user.current_shift = user.shifts[user.shifts.length - 1].shift_name;

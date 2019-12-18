@@ -54,12 +54,14 @@ function App(propsApp) {
           <Login t={t}
             history={props.history}
             search={qs.parse(props.history.location.search)}
+            st={propsApp.defaultAsset}
           />}
         />
         <Route exact path="/" render={(props) =>
           <SignIn t={t}
             history={props.history}
             search={qs.parse(props.history.location.search)}
+            st={propsApp.defaultAsset}
           />} />
         {propsApp.user && isComponentValid(propsApp.user.role, 'import') ?
           <Route exact path="/import" render={(props) =>

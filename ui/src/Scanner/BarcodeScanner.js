@@ -57,13 +57,7 @@ class BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    localStorage.setItem('badge', code);
-    if (localStorage.getItem('machine_name')) {
-      var st = localStorage.getItem('machine_name');
-      window.location.replace(`${AUTH}/badge?badge=${code}&st=${st}`);
-    } else {
-      window.location.replace(`${AUTH}/badge?badge=${code}`);
-    }
+    window.location.replace(`${AUTH}/badge?badge=${code}&st=${this.props.st}`);
   }
 
   handleError(err) {
@@ -83,12 +77,10 @@ class BarcodeScanner extends Component {
           onScan={this.handleScan}
           minLength={4}
         />
-        {/* <Form.Control className={'signin-code-field'} type="password" disabled={true} hidden={false}></Form.Control> */}
         <p style={{ display: 'inline' }} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots />
 
         <ErrorModal
           isOpen={this.state.modal_error_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           contentLabel="Example Modal"
           shouldCloseOnOverlayClick={false}
@@ -98,7 +90,6 @@ class BarcodeScanner extends Component {
 
         <LoadingModal
           isOpen={this.state.modal_load_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
           contentLabel="Example Modal"
@@ -106,8 +97,7 @@ class BarcodeScanner extends Component {
           t={this.props.t}
           shouldCloseOnOverlayClick={false}
         />
-        {/* <p onClick={this.handleLoad} style={{cursor: 'pointer'}}>error</p> */}
-        {/* <button onClick={() => this.authorize('1886')}>Log in</button> */}
+        {/* <button onClick={() => this.authorize('2266')}>Log in</button> */}
       </div>
     )
   }

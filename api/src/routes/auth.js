@@ -47,6 +47,14 @@ router.get("/token", cors(), async function (req, res) {
         if ((jsonwebtoken.exp + 5 * 60) * 1000 < Date.now()) {
             return res.status(400).json({ message: "Expired JWT" });
         }
+
+        jsonwebtoken.user_id = localStorage.getItem('user_id');
+        jsonwebtoken.user_badge = localStorage.getItem('user_badge');
+        jsonwebtoken.user_machine = localStorage.getItem('user_machine');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_badge');
+        localStorage.removeItem('user_machine');
+
         var jwtx = nJwt.create(jsonwebtoken, config['signingKey']);
         var token = jwtx.compact();
         if (localStorage.getItem("st")) {
@@ -57,16 +65,14 @@ router.get("/token", cors(), async function (req, res) {
         return res.redirect(302, config['loginURL'] + `#token=${token}`);
     });
 });
+
 router.get("/badge", cors(), async function (req, res) {
     const params = req.query;
-    const machine = '';
+    let machine = '';
     if (!params.badge) {
         return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
     }
-    if (params.st) {
-        localStorage.setItem("st", params.st);
-    }
-    machine = params.machine ? params.machine : '0';
+    machine = params.st == 'null' || params.st == 'undefined' ? 0 : params.st;
     sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}', '${machine}'`,
         (err, data) => {
             if (err) {
@@ -80,15 +86,25 @@ router.get("/badge", cors(), async function (req, res) {
                     res.sendStatus(401);
                     return;
                 }
-                let badge = response[0].badge;
+
                 let role = response[0].role;
 
                 if (role === 'Supervisor' || role === 'Administrator') {
+                    localStorage.setItem('user_id', response[0].id);
+                    localStorage.setItem('user_badge', response[0].badge);
+                    localStorage.setItem('user_machine', machine);
                     const url = `https://login.microsoftonline.com/${config['tenant_id']}/oauth2/authorize?client_id=${config['client_id']}&response_type=code&scope=openid&redirect_uri=${config['redirect_uri']}`;
                     return res.redirect(302, url);
                 } else {
                     var claimsList = {
-                        user: { iss: config['URL'], sub: 'users/' + badge, scope: role, badge: badge },
+                        user: {
+                            iss: config['URL'],
+                            sub: 'users/' + response[0].badge,
+                            scope: role,
+                            user_id: response[0].id,
+                            user_badge: response[0].badge,
+                            user_machine: machine
+                        },
                     }
                     var jwt = nJwt.create(claimsList.user, config['signingKey']);
                     jwt.setExpiration(new Date().getTime() + config['token_expiration']);
@@ -98,16 +114,21 @@ router.get("/badge", cors(), async function (req, res) {
             } catch (e) {
                 res.redirect(401, config['badLogin']);
             }
+        }).catch(e => {
+            console.log(e);
+            res.redirect(401, config['badLogin']);
         });
 });
 
 router.post("/", function (req, res) {
     const params = req.body;
-    const machine = '';
+    let machine = '';
     if (!params.username) {
         return res.status(400).json({ message: "Bad Request - Missing Username" });
     }
-    machine = params.machine ? params.machine : '0';
+
+    machine = params.st == 'null' || params.st == 'undefined' || params.st === '' ? 0 : params.st;
+
     sqlQuery(`exec dbo.sp_usernamelogin '${params.username}', '${machine}'`,
         (err, data) => {
             if (err) {
@@ -120,10 +141,19 @@ router.post("/", function (req, res) {
                 res.redirect(303, config['badLogin']);
                 return;
             }
+
+            console.log(response);
+
             let role = response[0].role;
-            let badge = response[0].badge;
             var claimsList = {
-                user: { iss: config['URL'], sub: 'users/' + badge, scope: role, badge: badge },
+                user: {
+                    iss: config['URL'],
+                    sub: 'users/' + response[0].badge,
+                    scope: role,
+                    user_id: response[0].id,
+                    user_badge: response[0].badge,
+                    user_machine: machine
+                },
             }
 
             if (claimsList.user && params.password === 'parkerdxh2019') {

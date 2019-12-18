@@ -32,10 +32,11 @@ import {
 } from '../Utils/Requests';
 import classNames from "classnames";
 import matchSorter from "match-sorter";
-import * as _ from 'lodash';
+import _ from 'lodash';
 import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
 import('moment/locale/es');
+import('moment/locale/it');
 const axios = require('axios');
 
 
@@ -85,13 +86,14 @@ class DashboardOne extends React.Component {
       shifts: {},
       timezone: props.user.timezone,
       currentHour: hour,
-      summary: props.summary
+      summary: props.summary,
+      uom_asset: null
     }
   }
 
   getTextTranslations(props) {
     return {
-      shiftText: props.summary ? props.t('All Shifts') : (props.search.sf ? props.t(props.search.sf) : props.user.current_shift),
+      shiftText: props.search.sf ? props.t(props.search.sf) : props.user.current_shift,
       partNumberText: props.t('Part Number'),
       idealText: props.t('Ideal'),
       targetText: props.t('Target'),
@@ -419,6 +421,7 @@ class DashboardOne extends React.Component {
         }
       };
       requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
+      requestArray.push(BuildGet(`${API}/uom_asset`, parameters));
 
       let _this = this;
 
@@ -442,14 +445,15 @@ class DashboardOne extends React.Component {
             }
           });
 
-          let comments = responses[responses.length - 1].data;
+          let comments = responses[responses.length - 2].data;
+          let uom_asset = responses[responses.length - 1].data;
 
           if (data instanceof Object) {
             selectedShift = mapShiftReverse(filter[2]);
             selectedDate = filter[1];
           }
 
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments });
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments, uom_asset });
 
         })
       ).catch(function (error) {
@@ -504,16 +508,18 @@ class DashboardOne extends React.Component {
       }
       let requestData = [
         BuildGet(`${API}/data`, parameters),
-        BuildGet(`${API}/intershift_communication`, parameters)
+        BuildGet(`${API}/intershift_communication`, parameters),
+        BuildGet(`${API}/uom_asset`, parameters)
       ];
 
       let _this = this;
 
       axios.all(requestData).then(
-        axios.spread((responseData, responseIntershift) => {
+        axios.spread((responseData, responseIntershift, responseAssetUOM) => {
 
           let data = responseData.data;
           let comments = responseIntershift.data;
+          let uom_asset = responseAssetUOM.data;
 
           if (data instanceof Object) {
             data = _.orderBy(data, ['hour_interval_start', 'start_time']);
@@ -521,7 +527,7 @@ class DashboardOne extends React.Component {
             selectedDate = filter[1];
           }
 
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments });
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments, uom_asset });
 
         })
       ).catch(function (error) {
@@ -630,8 +636,9 @@ class DashboardOne extends React.Component {
 
   renderCell(cellInfo, prop, defaultValue, displayClick, displayEmptyClick) {
     if (cellInfo.original !== undefined) {
+      console.log(cellInfo.original);
       return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>
-        {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : Math.round(cellInfo.original[prop] * 10 + Number.EPSILON) / 10) : defaultValue}
+        {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(cellInfo.original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(cellInfo.original[prop]))) : defaultValue}
       </span>;
     } else {
       return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick && displayEmptyClick ? this.openModal(arguments[5], cellInfo, prop, cellInfo.subRows !== undefined) : {}}></span>;
@@ -652,7 +659,8 @@ class DashboardOne extends React.Component {
     if (newCellInfo.subRows[0] !== undefined && newCellInfo.subRows[0]._original[prop] !== '') {
       if (prop !== '' || defaultValue !== '') {
         return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}>
-          {newCellInfo.subRows[0]._original[prop] ? (isNaN(newCellInfo.subRows[0]._original[prop]) ? newCellInfo.subRows[0]._original[prop] : Math.round(newCellInfo.subRows[0]._original[prop] * 10 + Number.EPSILON) / 10) : defaultValue}
+          {newCellInfo.subRows[0]._original[prop] ?
+            (isNaN(newCellInfo.subRows[0]._original[prop]) ? newCellInfo.subRows[0]._original[prop] : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(newCellInfo.subRows[0]._original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(newCellInfo.subRows[0]._original[prop]))) : defaultValue}
         </span>;
       } else {
         return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}></span>;
@@ -867,7 +875,13 @@ class DashboardOne extends React.Component {
 
   render() {
     const columns = this.state.columns;
-    const machine = this.state.selectedMachine;
+    let machineName = 'No Data';
+    _.forEach(this.props.user.machines, (machine) => {
+      if (machine.Asset.asset_code === this.state.selectedMachine) {
+        machineName = machine.Asset.asset_name;
+      }
+    });
+
     const data = this.state.data;
     // @DEV: *****************************
     // Always assign data to variable then 
@@ -895,7 +909,7 @@ class DashboardOne extends React.Component {
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                <Col md={3}><h5>{t('Machine/Cell')}: {t(machine)}</h5></Col>
+                <Col md={3}><h5>{t('Machine/Cell')}: {t(machineName)}</h5></Col>
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${this.props.user.role})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}

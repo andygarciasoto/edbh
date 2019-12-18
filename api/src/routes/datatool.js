@@ -177,8 +177,8 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
       // Iterate over all rows that have values in a worksheet
       worksheet.eachRow(function (row, rowNumber) {
         row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
-          if (colNumber !== 1){
-            if (rowNumber === 2){
+          if (colNumber !== 1) {
+            if (rowNumber === 2) {
               console.log(cell.value);
             }
             if (rowNumber === 1) {
@@ -229,16 +229,6 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
   return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
 });
 
-function getPromise(sqlSentence, table) {
-  return new Promise((resolve, reject) => {
-    sqlQuery(sqlSentence,
-      (err, response) => {
-        if (err) return reject(err);
-        resolve({ 'response': response, 'table': table });
-      })
-  });
-}
-
 router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
 
   let site_name = req.query.site_name;
@@ -250,14 +240,14 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
   let workbook = new Excel.Workbook();
 
   let promiseArray = [];
-  promiseArray.push(getPromise(constants.DTReasonSQL(site_id), 'DTReason'));
-  promiseArray.push(getPromise(constants.AssetSQL(site_id), 'Asset'));
-  promiseArray.push(getPromise(constants.ShiftSQL(site_id), 'Shift'));
-  promiseArray.push(getPromise(constants.TagSQL(site_id), 'Tag'));
-  promiseArray.push(getPromise(constants.CommonParametersSQL(site_id), 'CommonParameters'));
-  promiseArray.push(getPromise(constants.UOMSQL(site_id), 'UOM'));
-  promiseArray.push(getPromise(constants.UnavailableSQL(site_id), 'Unavailable'));
-  promiseArray.push(getPromise(constants.TFDUsersSQL(site_id), 'TFDUsers'));
+  promiseArray.push(constants.getPromise(constants.DTReasonSQL(site_id), 'DTReason'));
+  promiseArray.push(constants.getPromise(constants.AssetSQL(site_id), 'Asset'));
+  promiseArray.push(constants.getPromise(constants.ShiftSQL(site_id), 'Shift'));
+  promiseArray.push(constants.getPromise(constants.TagSQL(site_id), 'Tag'));
+  promiseArray.push(constants.getPromise(constants.CommonParametersSQL(site_id), 'CommonParameters'));
+  promiseArray.push(constants.getPromise(constants.UOMSQL(site_id), 'UOM'));
+  promiseArray.push(constants.getPromise(constants.UnavailableSQL(site_id), 'Unavailable'));
+  promiseArray.push(constants.getPromise(constants.TFDUsersSQL(site_id), 'TFDUsers'));
 
   Promise.all(promiseArray).then(responseAll => {
     responseAll.forEach(responsePromise => {
