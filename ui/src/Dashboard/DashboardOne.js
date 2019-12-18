@@ -37,6 +37,7 @@ import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
 import('moment/locale/es');
 import('moment/locale/it');
+import('moment/locale/de');
 const axios = require('axios');
 
 
