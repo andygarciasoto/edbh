@@ -321,7 +321,8 @@ class DashboardOne extends React.Component {
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && !this.state.modal_scrap_IsOpen && this.props.search.mc) {
+          console.log('message from service worker', response);
+          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && !this.state.modal_scrap_IsOpen) {
             this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
           }
         }
@@ -636,7 +637,6 @@ class DashboardOne extends React.Component {
 
   renderCell(cellInfo, prop, defaultValue, displayClick, displayEmptyClick) {
     if (cellInfo.original !== undefined) {
-      console.log(cellInfo.original);
       return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>
         {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(cellInfo.original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(cellInfo.original[prop]))) : defaultValue}
       </span>;
