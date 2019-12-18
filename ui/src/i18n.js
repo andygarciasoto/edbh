@@ -2,7 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import english from './Utils/locale/EN-US.json';
 import spanish from './Utils/locale/ES.json';
-import italian from './Utils/locale/IT.json'
+import italian from './Utils/locale/IT.json';
+import german from './Utils/locale/DE.json';
 import moment from 'moment';
 
 // the translations
@@ -16,6 +17,9 @@ const resources = {
   },
   it: {
     translation: italian
+  },
+  de: {
+    translation: german
   }
 };
 
@@ -24,7 +28,7 @@ i18n
   .init({
     resources,
     lng: "en_us",
-    fallbackLng: ['en', 'es', 'it'],
+    fallbackLng: ['en', 'es', 'it', 'de'],
 
     keySeparator: false, // we do not use keys in form messages.welcome
 
