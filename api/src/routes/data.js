@@ -1015,5 +1015,23 @@ router.get('/uom_asset', async function (req, res) {
         });
 });
 
+router.get('/station_language', async function (req, res) {
+    let params = req.query;
+    if (!params.st) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    sqlQuery(`SELECT a.site_code, cp.language from AssetDisplaySystem ads
+    JOIN Asset a on ads.displaysystem_name = '${params.st}' and a.asset_id = ads.
+    JOIN CommonParametersTest cp on a.site_code = cp.site_name `,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            res.status(200).json(response);
+        });
+});
+
 
 module.exports = router;
