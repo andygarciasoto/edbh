@@ -431,7 +431,7 @@ class DashboardOne extends React.Component {
 
           let data = [];
           _.forEach(responses, (response, index) => {
-            if (index < (responses.length - 1)) {
+            if (index < (responses.length - 2)) {
               let shift = {
                 'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
@@ -675,9 +675,9 @@ class DashboardOne extends React.Component {
       !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
   }
 
-  getCommentsToSet(cellInfo) {
-    return cellInfo.subRows[0]._original.actions_comments ? cellInfo.subRows[0]._original.actions_comments.length > 1 ? cellInfo.subRows[0]._original.actions_comments[0].comment
-      + ` (${(cellInfo.subRows[0]._original.actions_comments.length - 1)}+ more)` : cellInfo.subRows[0]._original.actions_comments[0].comment : '';
+  getCommentsToSet(cellInfo) {  
+    return cellInfo.subRows[0]._original.actions_comments ? cellInfo.subRows[0]._original.actions_comments.length > 1 ? cellInfo.subRows[0]._original.latest_comment
+      + ` (${(cellInfo.subRows[0]._original.actions_comments.length - 1)}+ more)` : cellInfo.subRows[0]._original.latest_comment : '';
   }
 
   renderAggregatedSignOff(cellInfo, prop, role) {
@@ -1020,6 +1020,7 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           signOffRole={this.state.signOffRole}
           timezone={this.state.timezone}
+          uom_asset={this.state.uom_asset}
         />
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}

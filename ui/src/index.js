@@ -114,6 +114,8 @@ function init() {
                 language: json.data[0].language
             }
 
+            localStorage.setItem('language', json.data[0].language);
+
             let station = params.st || localStorage.getItem('machine_name');
             let machine = null;
             const shift = {

@@ -176,7 +176,6 @@ router.get('/me', async function (req, res) {
             let id = payload.body.user_id;
             let badge = payload.body.user_badge;
             let machine = payload.body.user_machine;
-            console.log(payload.body);
             sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}', '${machine}'`,
                 (err, data) => {
                     if (err) {
@@ -251,7 +250,7 @@ router.post('/dxh_new_comment', async function (req, res) {
     if (!params.comment) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    const asset_code = params.asset_code ? parseInt(params.asset_code) : undefined;
+    const asset_code = params.asset_code ? params.asset_code : undefined;
     const update = params.comment_id ? params.comment_id : 0;
     const timestamp = moment(new Date(params.timestamp)).format(format);
     const row_timestamp = params.row_timestamp;
@@ -345,7 +344,7 @@ router.get('/timelost_reasons', async function (req, res) {
 });
 
 router.get('/dxh_data_id', async function (req, res) {
-    const asset_code = req.query.asset_code ? parseInt(req.query.asset_code) : undefined;
+    const asset_code = req.query.asset_code ? req.query.asset_code : undefined;
     const timestamp = req.body.timestamp || moment().format('YYYY-MM-DD HH:MM:SS');
     const require_order_create = req.query.require_order_create ? 1 : 0;
 
@@ -375,7 +374,7 @@ router.put('/dt_data', async function (req, res) {
     const last_name = req.body.last_name;
     const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
-    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
 
     if (dt_reason_id === undefined || dt_minutes === undefined) {
@@ -451,7 +450,7 @@ router.put('/intershift_communication', async function (req, res) {
     const last_name = req.body.last_name;
     const timestamp = moment(new Date(req.body.timestamp)).format(format);
     const update = req.body.inter_shift_id ? parseInt(req.body.inter_shift_id) : 0;
-    const asset_code = req.body.asset_code ? parseInt(req.body.asset_code) : undefined;
+    const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
 
     if (comment === undefined) {
@@ -613,68 +612,67 @@ router.put('/supervisor_sign_off', async function (req, res) {
     const override = req.body.override ? req.body.override : 0;
     const row_timestamp = req.body.row_timestamp;
     const asset_code = req.body.asset_code;
-    const machine = '';
 
     if (!clocknumber) {
         if (!(first_name || !last_name)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-    machine = req.body.machine ? req.body.machine : '0';
-    sqlQuery(`exec dbo.sp_clocknumberlogin '${clocknumber}', '${machine}'`,
+
+    if (asset_code === undefined || asset_code === 'No Data') {
+        return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
+    }
+
+    sqlQuery(`exec dbo.sp_clocknumber_asset_login '${clocknumber}', '${asset_code}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
                 res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
-            let response = JSON.parse(Object.values(data)[0].GetDataByClockNumber);
+            let response = JSON.parse(Object.values(data)[0].GetDataByClockNumberAsset);
             if (response === undefined || response === null) {
                 var error = 'Incorrect Clocknumber'
                 console.log(error);
                 res.status(500).send({ message: 'Error', database_error: error });
                 return;
             }
-            const role = response[0].Role;
+            const role = response[0].role;
             if (role === 'Supervisor') {
                 if (dxh_data_id === undefined) {
-                    if (asset_code === undefined || asset_code === 'No Data') {
-                        return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
-                    } else {
-                        getAssetInfoPromise(asset_code).then(responseProm => {
-                            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
-                                (err, data) => {
-                                    if (err) {
-                                        console.log(err);
-                                        res.status(500).send({ message: 'Error', database_error: err });
-                                        return;
-                                    }
-                                    let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
-                                    dxh_data_id = response[0].dxhdata_id;
-                                    if (clocknumber) {
-                                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
-                                            (err, response) => {
-                                                if (err) {
-                                                    console.log(err);
-                                                    res.status(500).send({ message: 'Error', database_error: err });
-                                                    return;
-                                                }
-                                                responsePostPut(response, req, res);
-                                            });
-                                    } else {
-                                        sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
-                                            (err, response) => {
-                                                if (err) {
-                                                    console.log(err);
-                                                    res.status(500).send({ message: 'Error', database_error: err });
-                                                    return;
-                                                }
-                                                responsePostPut(response, req, res);
-                                            });
-                                    }
-                                });
-                        });
-                    }
+                    getAssetInfoPromise(asset_code).then(responseProm => {
+                        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
+                            (err, data) => {
+                                if (err) {
+                                    console.log(err);
+                                    res.status(500).send({ message: 'Error', database_error: err });
+                                    return;
+                                }
+                                let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
+                                dxh_data_id = response[0].dxhdata_id;
+                                if (clocknumber) {
+                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
+                                        (err, response) => {
+                                            if (err) {
+                                                console.log(err);
+                                                res.status(500).send({ message: 'Error', database_error: err });
+                                                return;
+                                            }
+                                            responsePostPut(response, req, res);
+                                        });
+                                } else {
+                                    sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}';`,
+                                        (err, response) => {
+                                            if (err) {
+                                                console.log(err);
+                                                res.status(500).send({ message: 'Error', database_error: err });
+                                                return;
+                                            }
+                                            responsePostPut(response, req, res);
+                                        });
+                                }
+                            });
+                    });
                 } else {
                     if (clocknumber) {
                         sqlQuery(`exec spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}';`,
