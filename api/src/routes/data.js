@@ -1013,23 +1013,37 @@ router.get('/uom_asset', async function (req, res) {
         });
 });
 
-router.get('/language', async function (req, res) {
+router.get('/user_sites', async function (req, res) {
     let params = req.query;
-    if (!params.st) {
+    if (!params.clock_number) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`SELECT a.site_code, cp.language from AssetDisplaySystem ads
-    JOIN Asset a on ads.displaysystem_name = '${params.st}' and a.asset_id = ads.
-    JOIN CommonParametersTest cp on a.site_code = cp.site_name `,
+    sqlQuery(`exec dbo.sp_get_users_by_badge '${params.clock_number}';`,
         (err, response) => {
             if (err) {
                 console.log(err);
                 res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
-            res.status(200).json(response);
+            responseGet(response, req, res, 'GetUsersByBadge');
         });
 });
 
+
+router.get('/user_info_login_by_site', async function (req, res) {
+    let params = req.query;
+    if (!params.user_id) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    sqlQuery(`exec dbo.sp_user_id_login ${params.user_id};`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            responseGet(response, req, res, 'GetDataById');
+        });
+});
 
 module.exports = router;

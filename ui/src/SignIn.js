@@ -4,7 +4,8 @@ import logo from './Parker_Hannifin.svg';
 import Background from './backdrop1.jpg';
 import FontAwesome from 'react-fontawesome';
 import './sass/SignIn.scss';
-// import i18next from 'i18next';
+import * as qs from 'query-string';
+import i18next from 'i18next';
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -13,16 +14,13 @@ class SignIn extends React.Component {
             style: {},
             errMessage: 'Incorrect Clocknumber, please try again with a different Clocknumber.'
         }
-        // let language = localStorage.getItem('language');
-        // if (!language) {
-        //     language = navigator.language || navigator.userLanguage;
-        // }
+        let search = qs.parse(props.history.location.search);
 
-        // if (language) {
-        //     let currentLanguage = language.toLowerCase();
-        //     currentLanguage = currentLanguage.replace('-', '_');
-        //     i18next.changeLanguage(currentLanguage);
-        // }
+        if (search.ln) {
+            let currentLanguage = search.ln.toLowerCase();
+            currentLanguage = currentLanguage.replace('-', '_');
+            i18next.changeLanguage(currentLanguage);
+        }
     }
 
     componentDidMount() {

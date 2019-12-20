@@ -13,6 +13,11 @@ import QueryButton from './QueryButton';
 import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
+import _ from 'lodash';
+import { BuildGet } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
+import axios from 'axios';
+
 
 class Header1 extends React.Component {
 
@@ -32,12 +37,17 @@ class Header1 extends React.Component {
             tp: search.tp || props.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
             sf: search.sf || props.user.current_shift,
-            ln: search.ln || props.user.language
+            ln: search.ln || props.user.language,
+            cs: search.cs || props.user.site
         };
     }
 
     componentDidMount() {
         window.addEventListener('scroll', this.onScroll);
+        if (this.state.cs !== this.props.user.site) {
+            let actualSite = _.find(this.props.user.sites, ['asset_id', parseInt(this.state.cs)]);
+            this.changeUserInformation(actualSite);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -47,7 +57,8 @@ class Header1 extends React.Component {
             tp: search.tp || nextProps.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
             sf: search.sf || nextProps.user.current_shift,
-            ln: search.ln || nextProps.user.language
+            ln: search.ln || nextProps.user.language,
+            cs: search.cs || nextProps.user.site
         });
     }
 
@@ -76,10 +87,65 @@ class Header1 extends React.Component {
         i18next.changeLanguage(currentLanguage);
     }
 
+    getSiteOptions() {
+        let options = [];
+        _.forEach(this.props.user.sites, site => {
+            options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.asset_id}>{site.asset_name}</Dropdown.Item>);
+        });
+
+        return options;
+    }
+
+    changeSite(site) {
+        if (this.state.cs !== site.asset_id) {
+            this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
+
+        }
+    }
+
+    async changeUserInformation(newSite) {
+        let user = this.props.user;
+        const parameters = {
+            params: {
+                site: newSite.asset_id,
+                user_id: newSite['dbo.TFDUsers'][0].ID
+            }
+        };
+
+        let requestData = [
+            BuildGet(`${API}/user_info_login_by_site`, parameters),
+            BuildGet(`${API}/shifts`, parameters),
+            BuildGet(`${API}/machine`, parameters)
+        ];
+
+        await axios.all(requestData).then(
+            axios.spread(async (responseUser, responseShift, responseMachine) => {
+                let newUserValues = responseUser.data[0];
+                user.role = newUserValues.role;
+                user.site = newUserValues.site;
+                user.site_name = newUserValues.site_name;
+                user.timezone = newUserValues.timezone;
+                user.current_shift = newUserValues.shift_name;
+                user.shift_id = newUserValues.shift_id;
+                user.language = newUserValues.language;
+                user.shifts = responseShift.data;
+                user.machines = responseMachine.data;
+                this.props.changeCurrentUser(user);
+                await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}`);
+            })
+        ).catch(function (error) {
+            console.log(error);
+        });
+    }
+
     render() {
 
         const customToogle = React.forwardRef(({ children, onClick }, ref) => (
             <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name='bars' /></a>
+        ));
+
+        const customToogleSite = React.forwardRef(({ children, onClick }, ref) => (
+            <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
         ));
 
         const station = localStorage.getItem('machine_name');
@@ -91,9 +157,18 @@ class Header1 extends React.Component {
                     <Navbar.Brand><img src={logo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
-                        {isComponentValid(this.props.user.role, 'sitename') ?
-                            <Nav.Link>{this.props.t('Site') + ': ' + this.props.user.site_name}</Nav.Link>
-                            : null}
+                        {/* {isComponentValid(this.props.user.role, 'sitename') ? */}
+                        <Dropdown className="customToogleSite">
+                            <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
+                                {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['asset_id', parseInt(this.state.cs)]).asset_name}
+                            </Dropdown.Toggle>
+                            {this.props.user.sites.length > 1 ?
+                                <Dropdown.Menu>
+                                    {this.getSiteOptions()}
+                                </Dropdown.Menu>
+                                : null}
+                        </Dropdown>
+                        {/* : null} */}
                         {isComponentValid(this.props.user.role, 'megamenu') ?
                             <span>
                                 <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />

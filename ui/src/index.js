@@ -120,18 +120,21 @@ function init() {
             let machine = null;
             const shift = {
                 params: {
-                    site: user.site
+                    st: station,
+                    site: user.site,
+                    clock_number: user.clock_number
                 }
             }
 
             let requestData = [
-                BuildGet(`${API}/asset_display_system?st=${station}`),
+                BuildGet(`${API}/asset_display_system`, shift),
                 BuildGet(`${API}/shifts`, shift),
-                BuildGet(`${API}/machine`, shift)
+                BuildGet(`${API}/machine`, shift),
+                BuildGet(`${API}/user_sites`, shift)
             ];
 
             await axios.all(requestData).then(
-                axios.spread((responseAsset, responseShift, responseMachine) => {
+                axios.spread((responseAsset, responseShift, responseMachine, responseLogins) => {
                     const machineValues = responseAsset.data[0].AssetDisplaySystem;
                     machine = {
                         asset_code: machineValues.asset_code || machineValues.message,
@@ -146,6 +149,7 @@ function init() {
                         user.shift_id = user.shifts[user.shifts.length - 1].shift_id;
                         user.current_shift = user.shifts[user.shifts.length - 1].shift_name;
                     }
+                    user.sites = responseLogins.data;
                 })
             ).catch(function (error) {
                 console.log(error);
