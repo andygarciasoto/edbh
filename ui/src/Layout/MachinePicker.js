@@ -8,29 +8,39 @@ class MachinePickerCustom extends React.Component {
         super(props);
         this.state = {
             machines: [],
-            value: {}
+            value: {},
+            site: props.user.site
         }
         this.onSelect = this.onSelect.bind(this);
     }
 
     componentDidMount() {
-        let machineArray = [];
-        _.forEach(this.props.user.machines, item => {
-            machineArray.push({ asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
-        });
+        let machineArray = this.getMachineArray(this.props.user.machines);
         this.setState({ machines: machineArray })
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.value) {
             let machineSelected = {};
-            _.forEach(this.props.user.machines, (machine) => {
+            _.forEach(nextProps.user.machines, (machine) => {
                 if (machine.Asset.asset_code === nextProps.value) {
                     machineSelected = machine.Asset;
                 }
             });
-            this.setState({ value: machineSelected });
+            let machineArray = this.state.machines;
+            if (nextProps.user.site !== this.state.site) {
+                machineArray = this.getMachineArray(nextProps.user.machines);
+            }
+            this.setState({ value: machineSelected, machines: machineArray, site: nextProps.user.site });
         }
+    }
+
+    getMachineArray(machines) {
+        let machineArray = [];
+        _.forEach(machines, item => {
+            machineArray.push({ asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
+        });
+        return machineArray;
     }
 
     onSelect(machine) {

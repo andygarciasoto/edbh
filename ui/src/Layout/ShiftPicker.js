@@ -11,27 +11,19 @@ class ShiftPickerCustom extends React.Component {
     super(props);
     this.state = {
       value: props.value,
-      shifts: []
+      shifts: props.user.shifts,
+      site: props.user.site
     }
-  }
-
-  componentDidMount() {
-    this.loadData(this.props);
-  }
-
-  loadData(props) {
-    const st = {
-      params: {
-        site: props.user.site
-      }
-    }
-    const shifts = getRequest('/shifts', st);
-    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) });
   }
 
   componentWillReceiveProps(nextProps) {
+    let newShifts = this.state.shifts;
+    if (this.state.site !== nextProps.user.site) {
+      newShifts = nextProps.user.shifts;
+    }
     this.setState({
-      value: nextProps.value
+      value: nextProps.value,
+      shifts: newShifts
     })
   }
 

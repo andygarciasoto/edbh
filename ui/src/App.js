@@ -15,6 +15,10 @@ import * as qs from 'query-string';
 function App(propsApp) {
   // set default machine and type
   let [showModal, displayModal] = useState(false);
+  let [currentUser, changeCurrentUser] = useState(propsApp.user);
+  const updateCurrentUser = (newUser) => {
+    changeCurrentUser({ ...currentUser, currentUser: newUser });
+  }
   const { t } = useTranslation();
   return (
     <Router>
@@ -30,23 +34,25 @@ function App(propsApp) {
             <Header1
               history={props.history}
               t={t}
-              user={propsApp.user}
+              user={currentUser}
               machineData={propsApp.machineData}
-              openModal={displayModal} />}
+              openModal={displayModal}
+              changeCurrentUser={updateCurrentUser} />}
         />
         <Route
           path="/dashboard"
           render={function (props) {
             return (
               <DashboardOne
-                user={propsApp.user}
+                user={currentUser}
                 t={t}
                 history={props.history}
                 search={qs.parse(props.history.location.search)}
                 showNewOrderModal={showModal}
                 closeOrderModal={displayModal}
                 defaultAsset={propsApp.defaultAsset}
-                machineData={propsApp.machineData} />
+                machineData={propsApp.machineData}
+              />
             )
           }
           } />
@@ -63,18 +69,18 @@ function App(propsApp) {
             search={qs.parse(props.history.location.search)}
             st={propsApp.defaultAsset}
           />} />
-        {propsApp.user && isComponentValid(propsApp.user.role, 'import') ?
+        {currentUser && isComponentValid(currentUser.role, 'import') ?
           <Route exact path="/import" render={(props) =>
             <Import t={t}
               history={props.history}
-              user={propsApp.user}
+              user={currentUser}
               search={qs.parse(props.history.location.search)}
             />} />
           : null
         }
         <Route exact path="/summary" render={(props) =>
           <DashboardOne
-            user={propsApp.user}
+            user={currentUser}
             t={t}
             history={props.history}
             search={qs.parse(props.history.location.search)}

@@ -21,6 +21,10 @@ class Pagination extends React.Component {
         let current_date = moment(getCurrentTime(props.timezone)).format('YYYY/MM/DD') + ' 00:00';
         const dt = search.dt ? selected_date : current_date;
         return {
+            mc: search.mc || props.machineData.asset_code,
+            tp: search.tp || props.machineData.automation_level,
+            ln: search.ln || props.user.language,
+            cs: search.cs || props.user.site,
             dt,
             sf: search.sf || props.user.current_shift,
             diffDays: moment.duration(moment(dt).diff(moment(current_date))).asDays(),
@@ -109,6 +113,9 @@ class Pagination extends React.Component {
         let queryItem = Object.assign({}, search);
         queryItem["dt"] = moment(object.dt).format('YYYY/MM/DD HH:mm');
         queryItem["sf"] = object.sf;
+        queryItem["mc"] = this.state.mc;
+        queryItem["ln"] = this.state.ln;
+        queryItem["tp"] = this.state.tp;
         let parameters = $.param(queryItem);
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
     }
