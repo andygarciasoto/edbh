@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import { getRequest, mapShift } from '../Utils/Requests';
+import { mapShift } from '../Utils/Requests';
 import moment from 'moment';
 import './ShiftPicker.scss';
 import _ from 'lodash';
