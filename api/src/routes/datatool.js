@@ -231,14 +231,12 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
 
 router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
 
-  let site_name = req.query.site_name;
   let site_id = req.query.site_id;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
 
   let workbook = new Excel.Workbook();
-
   let promiseArray = [];
   promiseArray.push(constants.getPromise(constants.DTReasonSQL(site_id), 'DTReason'));
   promiseArray.push(constants.getPromise(constants.AssetSQL(site_id), 'Asset'));
@@ -248,7 +246,7 @@ router.get('/export_data', cors(), upload.any(), async (req, res, next) => {
   promiseArray.push(constants.getPromise(constants.UOMSQL(site_id), 'UOM'));
   promiseArray.push(constants.getPromise(constants.UnavailableSQL(site_id), 'Unavailable'));
   promiseArray.push(constants.getPromise(constants.TFDUsersSQL(site_id), 'TFDUsers'));
-
+  
   Promise.all(promiseArray).then(responseAll => {
     responseAll.forEach(responsePromise => {
       var worksheet = workbook.addWorksheet(responsePromise.table);

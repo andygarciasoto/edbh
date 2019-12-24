@@ -1,9 +1,14 @@
+var sqlQuery = require('../objects/sqlConnection');
+
 module.exports = Object.freeze({
     getPromise: (sqlSentence, table) => {
         return new Promise((resolve, reject) => {
             sqlQuery(sqlSentence,
                 (err, response) => {
-                    if (err) return reject(err);
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
                     resolve({ 'response': response, 'table': table });
                 })
         });
@@ -123,12 +128,12 @@ module.exports = Object.freeze({
         { header: 'last_modified_on', key: 'last_modified_on', width: 17 }
     ],
     CommonParametersSQL: (site_id) => {
-        return `SELECT [Asset].[asset_code],[CommonParametersTest].[site_name],[CommonParametersTest].[production_day_offset_minutes],[CommonParametersTest].[site_timezone],
-        [CommonParametersTest].[ui_timezone],[CommonParametersTest].[escalation_level1_minutes],[CommonParametersTest].[escalation_level2_minutes],
-        [CommonParametersTest].[default_target_percent_of_ideal],[CommonParametersTest].[default_setup_minutes],[CommonParametersTest].[default_routed_cycle_time],
-        [CommonParametersTest].[setup_lookback_minutes],[CommonParametersTest].[inactive_timeout_minutes],[CommonParametersTest].[language],[CommonParametersTest].[status],
-        [CommonParametersTest].[entered_by],[CommonParametersTest].[entered_on],[CommonParametersTest].[last_modified_by],[CommonParametersTest].[last_modified_on]
-        FROM [dbo].[CommonParametersTest] JOIN [dbo].[Asset] ON [CommonParametersTest].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
+        return `SELECT [Asset].[asset_code],[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
+        [CommonParameters].[ui_timezone],[CommonParameters].[escalation_level1_minutes],[CommonParameters].[escalation_level2_minutes],
+        [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
+        [CommonParameters].[setup_lookback_minutes],[CommonParameters].[inactive_timeout_minutes],[CommonParameters].[language],[CommonParameters].[status],
+        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
+        FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
     },
     UOM: [
         { header: 'UOM_code', key: 'UOM_code', width: 14 },
