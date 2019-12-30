@@ -652,7 +652,7 @@ class DashboardOne extends React.Component {
       newCellInfo.subRows = newSubrows;
     }
     let rowValid = newCellInfo ? (newCellInfo.subRows ? newCellInfo.subRows[0] : newCellInfo.row) : null;
-    if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift'))) {
+    if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift') || rowValid.hour_interval === this.props.t('No Shift'))) {
       prop = arguments[5] === 'dropdown' ? 'timelost_summary' : arguments[5] === 'comments' ? 'latest_comment' : prop;
       return <span className={'wordwrap'} data-tip={newCellInfo.subRows[0]._original[prop]}>{newCellInfo.subRows[0]._original[prop]}</span>
     }
@@ -675,7 +675,7 @@ class DashboardOne extends React.Component {
       !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
   }
 
-  getCommentsToSet(cellInfo) {  
+  getCommentsToSet(cellInfo) {
     return cellInfo.subRows[0]._original.actions_comments ? cellInfo.subRows[0]._original.actions_comments.length > 1 ? cellInfo.subRows[0]._original.latest_comment
       + ` (${(cellInfo.subRows[0]._original.actions_comments.length - 1)}+ more)` : cellInfo.subRows[0]._original.latest_comment : '';
   }
