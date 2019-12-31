@@ -161,7 +161,6 @@ router.post("/", function (req, res) {
             if (claimsList.user && params.password === 'parkerdxh2019') {
                 var jwt = nJwt.create(claimsList.user, config['signingKey']);
                 jwt.setExpiration(new Date().getTime() + (response[0].inactive_timeout_minutes * 60000));
-                console.log(response[0].inactive_timeout_minutes * 60000);
                 var token = jwt.compact();
                 const url = `${config['URL']}/dashboard#token=${token}`;
                 res.redirect(302, url);

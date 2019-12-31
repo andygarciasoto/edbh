@@ -1,10 +1,11 @@
 import React from 'react';
 import { Row, Col, Tabs, Tab } from 'react-bootstrap';
 import '../Layout/Header.scss';
-import { sendPutDataTool } from '../Utils/Requests';
 import { DATATOOL } from '../Utils/Constants';
 import { saveAs } from 'file-saver';
 import Spinner from '../Spinner';
+import { post } from 'axios';
+const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 class Import extends React.Component {
     constructor(props) {
@@ -60,30 +61,38 @@ class Import extends React.Component {
 
     onSubmit = () => {
         let _this = this;
+        const url = `${DATATOOL}/import_asset`;
+        let formData = new FormData();
+        formData.append('file', _this.state.file);
+        const config = {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+                'Content-Type': 'multipart/form-data'
+            }
+        };
         this.setState({ isLoading: true }, () => {
-            const response = sendPutDataTool({
-                file: _this.state.file
-            }, '/import_asset')
-            response.then((res) => {
-                if (res !== 200 || !res) {
-                    _this.setState({ isLoading: false, showActionMessage: true, error: false })
-                } else {
+            post(url, formData, config).then((res) => {
+                if (res.status !== 200 || !res) {
                     _this.setState({ isLoading: false, showActionMessage: true, error: true })
+                } else {
+                    _this.setState({ isLoading: false, showActionMessage: true, error: false })
                 }
-            })
+            }).catch((e) => { _this.setState({ isLoading: false, showActionMessage: true, error: false }) });
         });
     }
 
     exportEvent = async () => {
         let _this = this;
         this.setState({ isExporting: true, errorExport: false, showActionMessageExport: false }, () => {
-            fetch(`${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_name=${this.props.user.site_name}&site_id=${this.props.user.site}`)
+            fetch(
+                `${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_id=${this.props.user.site}`,
+                { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
                 .then(response => {
-                    if (response.status === 500) return response;
+                    if (response.status !== 200) return response;
                     return response.blob()
                 })
                 .then(response => {
-                    if (!response.status && response.status !== 500) {
+                    if (!response.status) {
                         saveAs(response, 'Result.xlsx');
                         _this.setState({ isExporting: false, errorExport: false, showActionMessageExport: true });
                     } else {
