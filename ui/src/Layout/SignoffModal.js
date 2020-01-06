@@ -214,13 +214,13 @@ class SignoffModal extends React.Component {
                     <div className={"wrap-signoff"}>
                         <p style={{ fontWeight: 'bold' }} className="dashboard-modal-signoff-header">{this.state.headerMessage}</p>
                         <ul className={'signoff-list-parent'}>
-                            <li><p className={'signoff-list'}>{'Ideal: '}</p><p className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Ideal') + ': '}</p><p className={'signoff-list'}>
                                 {row.summary_ideal === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_ideal * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_ideal))}
                             </p></li>
-                            <li><p className={'signoff-list'}>{'Target: '}</p><p className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Target') + ': '}</p><p className={'signoff-list'}>
                                 {row.summary_target === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_target * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_target))}
                             </p></li>
-                            <li><p className={'signoff-list'}>{'Actual: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Actual') + ': '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
                                 {/* <li><p className={'signoff-list'}>{'Actual Recorded: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}> */}
                                 {row.summary_actual === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_actual * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_actual))}
                             </p></li>
@@ -248,6 +248,7 @@ class SignoffModal extends React.Component {
                     shouldCloseOnOverlayClick={false}
                     message={'Signoff was successful.'}
                     title={'Request Successful'}
+                    t={this.props.t}
                 />
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}

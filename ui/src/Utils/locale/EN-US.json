@@ -10,7 +10,9 @@
     "Part Number": "Part Number",
     "Ideal": "Ideal",
     "Target Pcs.": "Target Pcs.",
+    "Target": "Target",
     "Actual Pcs.": "Actual Pcs.",
+    "Actual": "Actual",
     "Cumulative Actual Pcs.": "Cumulative Actual Pcs.",
     "Cumulative Actual": "Cumulative Actual",
     "Cumulative Target": "Cumulative Target",
@@ -36,7 +38,6 @@
     "Shift 2": "Shift 2",
     "Shift 3": "Shift 3",
     "All Shifts": "All Shifts",
-    "Target": "Target",
     "Enter new communication": "Enter new communication",
     "Read More": "Read More",
     "Intershift Communication": "Intershift Communication",
@@ -75,6 +76,7 @@
     "operator": "Operator",
     "supervisor": "Supervisor",
     "administrator": "Administrator",
+    "Administrator": "Administrator",
     "operator Sign Off": "Operator Sign Off",
     "supervisor Sign Off": "Supervisor Sign Off",
     "Logged in as": "Logged in as",
@@ -96,5 +98,6 @@
     "Go Back To Current Shift": "Go Back To Current Shift",
     "Go To Current Shift": "Go To Current Shift",
     "Showing Data for": "Showing Data for",
-    "No Data": "No Data"
+    "No Data": "No Data",
+    "Please Wait": "Please Wait"
 }

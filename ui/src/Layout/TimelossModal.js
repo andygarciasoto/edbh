@@ -276,6 +276,7 @@ class TimelossModal extends React.Component {
                     shouldCloseOnOverlayClick={false}
                     message={'Timeloss was inserted.'}
                     title={'Request Successful'}
+                    t={this.props.t}
                 />
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}

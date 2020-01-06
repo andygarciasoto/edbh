@@ -9,7 +9,9 @@
 "Part Number":"Artikelnummer",
 "Ideal":"Ideal-Stückzahl",
 "Target Pcs.":"Soll-Stückzahl",
+"Target":"Ziel",
 "Actual Pcs.":"Ist-Stückzahl",
+"Actual":"Aktuell",
 "Cumulative Actual Pcs.":"Kumulierte Ist-Stückzahl",
 "Cumulative Actual":"Kumulierte Ist-Stückzahl",
 "Cumulative Target":"Kumulierte Soll-Stückzahl",
@@ -35,7 +37,6 @@
 "Shift 2":"2. Schicht",
 "Shift 3":"3. Schicht",
 "All Shifts":"Alle Schichten",
-"Target":"Ziel",
 "Enter new communication":"Einen neuen Kommentar eintragen",
 "Read More":"Mehr anzeigen",
 "Intershift Communication":"Schichtübergreifende Kommunikation",
@@ -74,6 +75,7 @@
 "operator":"Maschineneinrichter/-bediener",
 "supervisor":"Schichtkoordinator",
 "administrator":"Administrator",
+"Administrator":"Administrator",
 "operator Sign Off":"Maschineneinrichter/-bediener amgemeldet",
 "supervisor Sign Off":"Schichtkoordinator amgemeldet",
 "Logged in as":"Angemeldet als",
@@ -94,5 +96,6 @@
 "Adjusted Actual":"Angepasster Istwert",
 "Go Back To Current Shift":"Zurück zur aktuellen Schicht",
 "Go To Current Shift":"Aktuelle Schicht anzeigen",
-"Showing Data for":"Daten Anzeigen für"
+"Showing Data for":"Daten Anzeigen für",
+"Please Wait": "Bitte Warten"
 }

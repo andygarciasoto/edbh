@@ -86,6 +86,7 @@ class BarcodeScanner extends Component {
           shouldCloseOnOverlayClick={false}
           message={this.props.titleErr || 'Sign In attempt unsuccessful'}
           title={this.props.errMessage || 'Sign In Error'}
+          t={this.props.t}
         />
 
         <LoadingModal

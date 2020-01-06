@@ -1,4 +1,4 @@
-import React from  'react';
+import React from 'react';
 import Modal from 'react-modal';
 import './ErrorModal.scss';
 import Spinner from '../Spinner';
@@ -8,30 +8,31 @@ import { withRouter } from 'react-router-dom'
 
 class LoadingModal extends React.Component {
     constructor(props) {
-		super(props);
-		this.state = {
-            value : '',
+        super(props);
+        this.state = {
+            value: '',
             loadingMessage: this.props.t(this.props.message) || this.props.t('Loading'),
-            headerMessage: this.props.t('Please Wait'),
+            headerMessage: 'Please Wait',
             style: {
-                content : {
-                    top                   : '50%',
-                    left                  : '50%',
-                    right                 : 'auto',
-                    bottom                : 'auto',
-                    marginRight           : '-50%',
-                    transform             : 'translate(-50%, -50%)',
-                  },
-                  overlay : {
+                content: {
+                    top: '50%',
+                    left: '50%',
+                    right: 'auto',
+                    bottom: 'auto',
+                    marginRight: '-50%',
+                    transform: 'translate(-50%, -50%)',
+                },
+                overlay: {
                     backgroundColor: 'rgba(0,0,0, 0.6)'
                 }
             }
-        } 
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-            setTimeout(function(){
-                void(0)},
+        setTimeout(function () {
+            void (0)
+        },
             3000);
     }
 
@@ -48,8 +49,8 @@ class LoadingModal extends React.Component {
                 style={styles}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-loading-field-head">{this.state.headerMessage}</p>
-                <Spinner/>
+                <div><p className="dashboard-modal-loading-field-head">{this.props.t(this.state.headerMessage)}</p>
+                    <Spinner />
                 </div>
             </Modal>
         )

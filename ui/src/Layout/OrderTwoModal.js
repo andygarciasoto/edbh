@@ -91,6 +91,7 @@ class OrderTwoModal extends React.Component {
                         shouldCloseOnOverlayClick={false}
                         message={'Value was inserted.'}
                         title={'Request Successful'}
+                        t={this.props.t}
                     />
                     <LoadingModal
                         isOpen={this.state.modal_loading_IsOpen}

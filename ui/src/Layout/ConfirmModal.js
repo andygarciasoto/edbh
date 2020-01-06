@@ -1,4 +1,4 @@
-import React from  'react';
+import React from 'react';
 import Modal from 'react-modal';
 import { Button } from 'react-bootstrap';
 import './ErrorModal.scss';
@@ -6,30 +6,30 @@ import FontAwesome from 'react-fontawesome';
 
 class ConfirmModal extends React.Component {
     constructor(props) {
-		super(props);
-		this.state = {
-            value : '',
-        } 
+        super(props);
+        this.state = {
+            value: '',
+        }
         this.validateBarcode = this.validateBarcode.bind(this);
         this.onChange = this.onChange.bind(this);
     }
 
     componentDidMount() {
         const modalStyle = {
-            content : {
-              top                   : '50%',
-              left                  : '50%',
-              right                 : 'auto',
-              bottom                : 'auto',
-              marginRight           : '-50%',
-              transform             : 'translate(-50%, -50%)',
+            content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
             },
-            overlay : {
-              backgroundColor: 'rgba(0,0,0, 0.6)'
+            overlay: {
+                backgroundColor: 'rgba(0,0,0, 0.6)'
             }
-          };
-      
-          this.setState({style: modalStyle})
+        };
+
+        this.setState({ style: modalStyle })
     }
 
     validateBarcode(e) {
@@ -37,7 +37,7 @@ class ConfirmModal extends React.Component {
     }
 
     onChange(e) {
-        this.setState({value: e.target.value});
+        this.setState({ value: e.target.value });
     }
 
     render() {
@@ -50,11 +50,11 @@ class ConfirmModal extends React.Component {
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                 <div><p className="dashboard-modal-sucessr-field-head">{this.props.title}</p>
-                <div><FontAwesome className="success-message icon" name="check"/>&nbsp;&nbsp;
+                    <div><FontAwesome className="success-message icon" name="check" />&nbsp;&nbsp;
                 <p className="success-message">{this.props.message}</p></div>
                 </div>
-                <div style={{textAlign: 'center'}}>
-                    <Button variant="outline-success" style={{marginTop: '20px'}} className="success-button" onClick={this.props.onRequestClose}>Close</Button>
+                <div style={{ textAlign: 'center' }}>
+                    <Button variant="outline-success" style={{ marginTop: '20px' }} className="success-button" onClick={this.props.onRequestClose}>{this.props.t('Close')}</Button>
                 </div>
             </Modal>
         )

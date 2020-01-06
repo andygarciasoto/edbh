@@ -9,7 +9,9 @@
     "Part Number": "Numero Articolo",
     "Ideal": "Ideale",
     "Target Pcs.": "Target Pezzi/Metri",
+    "Target": "Target Pezzi/Metri",
     "Actual Pcs.": "Valore Attuale",
+    "Actual": "Valore Attuale",
     "Cumulative Actual Pcs.": "Cumulativo Attuale Pezzi/Metri",
     "Cumulative Actual": "Cumulativo Attuale",
     "Cumulative Target": "Target Cumulativo",
@@ -35,7 +37,6 @@
     "Shift 2": "Turno 2",
     "Shift 3": "Turno 3",
     "All Shifts": "Tutti i Turni",
-    "Target": "Target",
     "Enter new communication": "Inserisci nuova comunicazione",
     "Read More": "Leggi altro",
     "Intershift Communication": "Comunicazione Cambio Turno",
@@ -74,6 +75,7 @@
     "operator": "Operatore",
     "supervisor": "Supervisore",
     "administrator": "Amministratore",
+    "Administrator": "Amministratore",
     "operator Sign Off": "Scollega Operatore",
     "supervisor Sign Off": "Scollega Supervisore",
     "Logged in as": "Collegato come ",
@@ -95,5 +97,6 @@
     "Go Back To Current Shift": "Ritorna al Turno attuale",
     "Go To Current Shift": "Vai al turno attuale",
     "Showing Data for": "Evidenza dati per",
-    "No Data": "Nessun Dato"
+    "No Data": "Nessun Dato",
+    "Please Wait": "Attendi un momento"
 }
