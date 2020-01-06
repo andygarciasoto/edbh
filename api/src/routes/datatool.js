@@ -375,7 +375,7 @@ router.post('/import_asset', upload.single('file'), (req, res) => {
         WHEN NOT MATCHED BY TARGET 
         THEN INSERT 
         ${parameters.insertSentence};`;
-        //console.log(mergeQuery);//Query listo para ejecutarse llamar al metodo sqlQuery
+        console.log(mergeQuery);//Query listo para ejecutarse llamar al metodo sqlQuery
       });
       res.status(200).send('Excel File ' + file + ' Entered Succesfully');
       // var worksheet = workbook.getWorksheet(8);
