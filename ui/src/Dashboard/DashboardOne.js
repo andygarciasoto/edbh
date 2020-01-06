@@ -18,23 +18,20 @@ import ErrorModal from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
 import ScrapModal from '../Layout/ScrapModal';
 import openSocket from 'socket.io-client';
-import FontAwesome from 'react-fontawesome';
 import {
   getRequest,
   formatDate,
   isComponentValid,
   mapShiftReverse,
-  isFieldAllowed,
   mapShift,
   getCurrentTime,
   formatNumber,
   BuildGet
 } from '../Utils/Requests';
-import classNames from "classnames";
-import matchSorter from "match-sorter";
 import _ from 'lodash';
 import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
+import dashboardHelper from '../Utils/DashboardHelper';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
@@ -120,144 +117,6 @@ class DashboardOne extends React.Component {
       this.setState({
         modal_error_IsOpen: true,
       })
-    }
-  }
-
-  openModal(type, val, extraParam) {
-    let value = '';
-    let modalType = '';
-    if (type === 'order') {
-      this.setState({
-        modal_order_IsOpen: true,
-      })
-    }
-    if (type === 'values') {
-      if (val) {
-        if (isNaN(val[extraParam])) {
-          value = val[extraParam] === null ? undefined : val[extraParam];
-          modalType = 'text'
-        } else {
-          value = parseInt(val[extraParam])
-          modalType = 'number'
-        }
-        if (!arguments[3]) {
-          let allowed = false;
-          if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
-            allowed = isFieldAllowed(this.props.user.role, val);
-          }
-          this.setState({
-            modal_values_IsOpen: allowed,
-            modal_comments_IsOpen: false,
-            modal_dropdown_IsOpen: false,
-            valueToEdit: value,
-            cumulative_pcs: val.cumulative_pcs,
-            modalType,
-            currentRow: val ? val : undefined
-          })
-        }
-      } else {
-        let allowed;
-        if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
-          allowed = isFieldAllowed(this.props.user.role, val);
-        }
-        this.setState({
-          valueToEdit: value,
-          cumulative_pcs: val.cumulative_pcs,
-          modal_values_IsOpen: allowed,
-          modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: false,
-          currentRow: val ? val : undefined
-        })
-      }
-    }
-    if (type === 'comments') {
-      let current_display_comments = val && val.actions_comments ? _.sortBy(val.actions_comments, 'last_modified_on').reverse() : null;
-      let currentRow = val;
-      const allowed = isFieldAllowed(this.props.user.role, val);
-      this.setState({
-        modal_authorize_IsOpen: false,
-        modal_comments_IsOpen: true,
-        modal_values_IsOpen: false,
-        modal_dropdown_IsOpen: false,
-        modal_signoff_IsOpen: false,
-        modal_order_IsOpen: false,
-        modal_order_two_IsOpen: false,
-        comments_IsEditable: allowed,
-        current_display_comments,
-        currentRow
-      });
-    }
-    if (type === 'dropdown') {
-      if (val) {
-        const timelost = val.timelost;
-        const allowed = isFieldAllowed(this.props.user.role, val);
-        this.setState({
-          modal_values_IsOpen: false,
-          modal_comments_IsOpen: false,
-          modal_dropdown_IsOpen: true,
-          timelost_IsEditable: allowed,
-          current_display_timelost: timelost,
-          currentRow: val,
-
-        })
-      }
-    }
-    if (type === 'manualentry') {
-      if (val) {
-        const allowed = isFieldAllowed(this.props.user.role, val);
-        if (this.state.selectedMachineType === 'Manual') {
-          if (isComponentValid(this.props.user.role, 'manualentry')) {
-            this.setState({
-              modal_values_IsOpen: false,
-              modal_comments_IsOpen: false,
-              modal_dropdown_IsOpen: false,
-              modal_manualentry_IsOpen: allowed,
-              currentRow: val,
-            })
-          }
-        }
-      }
-    }
-    if (type === 'scrap') {
-      if (val) {
-        const allowed = isFieldAllowed(this.props.user.role, val);
-        if (isComponentValid(this.props.user.role, 'scrap')) {
-          this.setState({
-            modal_scrap_IsOpen: allowed,
-            modalType: 'number',
-            currentRow: val
-          })
-        }
-      }
-    }
-    if (type === 'signoff') {
-      if (val) {
-        if (((val.oper_id === null) && (extraParam === 'operator')) ||
-          ((val.superv_id === null) && (extraParam === 'supervisor'))) {
-          const allowed = isFieldAllowed(this.props.user.role, val);
-          this.setState({
-            modal_signoff_IsOpen: allowed,
-            currentRow: val,
-            signOffRole: extraParam ? extraParam : null,
-          })
-        } else if (((val.oper_id !== null) && (extraParam === 'operator')) ||
-          ((val.superv_id !== null) && (extraParam === 'supervisor'))) {
-          if (moment(getCurrentTime(this.props.user.timezone)).isSame(val.hour_interval_start, 'hours')) {
-            const allowed = isFieldAllowed(this.props.user.role, val);
-            this.setState({
-              modal_signoff_IsOpen: allowed,
-              currentRow: val,
-              signOffRole: extraParam ? extraParam : null,
-            })
-          }
-        }
-      } else {
-        const allowed = isFieldAllowed(this.props.user.role, val);
-        this.setState({
-          modal_signoff_IsOpen: allowed,
-          signOffRole: extraParam ? extraParam : null,
-        })
-      }
     }
   }
 
@@ -537,36 +396,12 @@ class DashboardOne extends React.Component {
     }
   }
 
-  changeDate(e) {
-    let _this = this;
-    const date = e;
-    const parsedDate = moment(date).locale(this.state.currentLanguage).format('YYYY/MM/DD HH:ss');
-    this.setState({ selectedDate: date, selectedDateParsed: parsedDate }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
-  }
-
-  changeMachine(e) {
-    let _this = this;
-    this.setState({ selectedMachine: e }, () => { _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]); });
-  }
-
   changeLanguage(e) {
     e = e.split('_')[0]
     const date = this.state.selectedDate ? this.state.selectedDate : new Date();
     let parsedDate = moment(date).locale(e).format('YYYY/MM/DD HH:ss');
     this.setState({ selectedDateParsed: parsedDate })
     this.fetchData();
-  }
-
-  onExpandedChange(newExpanded) {
-    this.setState({
-      expanded: newExpanded
-    });
-  }
-
-  clearExpanded = () => {
-    this.setState({
-      expanded: {}
-    });
   }
 
   openAfter(e) {
@@ -1083,5 +918,7 @@ class DashboardOne extends React.Component {
     );
   }
 };
+
+Object.assign(DashboardOne.prototype, dashboardHelper);
 
 export default DashboardOne;
