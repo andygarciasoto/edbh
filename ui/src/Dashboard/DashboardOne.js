@@ -693,7 +693,7 @@ class DashboardOne extends React.Component {
         className={'empty-field'} onClick={() =>
           isComponentValid(this.props.user.role, role) && !this.state.summary ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
         {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime(this.props.user.timezone)).add(-1, 'hours'), 'hours') ? '' :
-          this.state.signoff_reminder === true ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
+          this.state.signoff_reminder === true && role === 'operator_signoff' ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
       </span>;
     }
   }
