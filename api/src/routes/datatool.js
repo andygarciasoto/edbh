@@ -170,17 +170,14 @@ router.put('/import_asset', cors(), upload.any(), function (req, res) {
   var workbook = new Excel.Workbook();
   workbook.xlsx.readFile(file[0].path)
     .then(function () {
-      var worksheet = workbook.getWorksheet(8);
-      if (worksheet.name !== 'tfdusers') {
+      var worksheet = workbook.getWorksheet(2);
+      if (worksheet.name !== 'asset') {
         return res.status(400).json({ message: "Bad Request - Please review that the Excel sheets are in place" });
       }
       // Iterate over all rows that have values in a worksheet
       worksheet.eachRow(function (row, rowNumber) {
         row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
           if (colNumber !== 1) {
-            if (rowNumber === 2) {
-              console.log(cell.value);
-            }
             if (rowNumber === 1) {
               if (cell.value === 'NULL') {
                 return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
