@@ -51,11 +51,14 @@ router.get("/token", cors(), async function (req, res) {
         jsonwebtoken.user_id = localStorage.getItem('user_id');
         jsonwebtoken.user_badge = localStorage.getItem('user_badge');
         jsonwebtoken.user_machine = localStorage.getItem('user_machine');
+        const expirationToken = localStorage.getItem('inactive_timeout_minutes');
         localStorage.removeItem('user_id');
         localStorage.removeItem('user_badge');
         localStorage.removeItem('user_machine');
+        localStorage.removeItem('inactive_timeout_minutes');
 
         var jwtx = nJwt.create(jsonwebtoken, config['signingKey']);
+        jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
         var token = jwtx.compact();
         if (localStorage.getItem("st")) {
             var st = localStorage.getItem("st");
@@ -93,6 +96,7 @@ router.get("/badge", cors(), async function (req, res) {
                     localStorage.setItem('user_id', response[0].id);
                     localStorage.setItem('user_badge', response[0].badge);
                     localStorage.setItem('user_machine', machine);
+                    localStorage.setItem('inactive_timeout_minutes', response[0].inactive_timeout_minutes);
                     const url = `https://login.microsoftonline.com/${config['tenant_id']}/oauth2/authorize?client_id=${config['client_id']}&response_type=code&scope=openid&redirect_uri=${config['redirect_uri']}`;
                     return res.redirect(302, url);
                 } else {
@@ -107,7 +111,7 @@ router.get("/badge", cors(), async function (req, res) {
                         },
                     }
                     var jwt = nJwt.create(claimsList.user, config['signingKey']);
-                    jwt.setExpiration(new Date().getTime() + config['token_expiration']);
+                    jwt.setExpiration(new Date().getTime() + (response[0].inactive_timeout_minutes * 60000));
                     var token = jwt.compact();
                     return res.redirect(302, config['loginURL'] + `#token=${token}`);
                 }
@@ -142,8 +146,6 @@ router.post("/", function (req, res) {
                 return;
             }
 
-            console.log(response);
-
             let role = response[0].role;
             var claimsList = {
                 user: {
@@ -158,7 +160,7 @@ router.post("/", function (req, res) {
 
             if (claimsList.user && params.password === 'parkerdxh2019') {
                 var jwt = nJwt.create(claimsList.user, config['signingKey']);
-                jwt.setExpiration(new Date().getTime() + config['token_expiration']);
+                jwt.setExpiration(new Date().getTime() + (response[0].inactive_timeout_minutes * 60000));
                 var token = jwt.compact();
                 const url = `${config['URL']}/dashboard#token=${token}`;
                 res.redirect(302, url);
