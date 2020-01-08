@@ -64,7 +64,7 @@ function responsePostPut(response, req, res) {
         } else {
             res.status(500).send({ message: 'Error', database_error: response });
         }
-    } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: response }); }
+    } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: response }); }
 };
 
 function responseGet(data, req, res, listName) {
@@ -76,7 +76,7 @@ function responseGet(data, req, res, listName) {
             response = data;
         }
         res.status(200).json(response);
-    } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: data }); }
+    } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: data }); }
 };
 
 function proccessToken(token) {
@@ -118,7 +118,7 @@ router.get('/data', async function (req, res) {
             const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
             const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, params.hr, date);
             res.status(200).json(objectWithUnallocatedTime);
-        } catch (e) { res.status(500).send({ message: 'Error', api_error: e, database_response: query }); }
+        } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: query }); }
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
@@ -131,7 +131,7 @@ router.get('/data', async function (req, res) {
                 }
                 structureShiftdata(response);
             })
-    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e }); });
+    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e.message }); });
 });
 
 
@@ -148,7 +148,7 @@ router.get('/machine', async function (req, res) {
         (err, response) => {
             if (err) {
                 console.log(err)
-                res.status(500).send({ message: 'Error', database_error: err });
+                res.status(500).send({ message: 'Error', database_error: err.message });
                 return;
             }
             structureMachines(response);
@@ -169,7 +169,7 @@ router.get('/me', async function (req, res) {
             res.status(401);
             return res.json({
                 success: false,
-                message: e
+                message: e.message
             });
         }
         if (payload.body.sub) {
@@ -240,7 +240,7 @@ router.get('/intershift_communication', async function (req, res) {
                 }
                 responseGet(response, req, res, 'InterShiftData');
             });
-    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e }); });
+    }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e.message }); });
 
 
 });
@@ -973,7 +973,7 @@ router.put('/create_order_data', async function (req, res) {
                     }
                 });
         } catch (e) {
-            res.status(500).send({ message: 'Error', api_error: e });
+            res.status(500).send({ message: 'Error', api_error: e.message });
         }
     });
 

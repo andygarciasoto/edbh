@@ -444,9 +444,7 @@ class DashboardOne extends React.Component {
                 <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
                   `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${t(this.props.user.role)})`}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}
-                  {!_.isEmpty(this.state.data) ? this.state.selectedShift === '3rd Shift' ?
-                    moment(this.state.selectedDate).add(1, 'days').locale(this.state.currentLanguage).format('LL') :
-                    moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
+                  {!_.isEmpty(this.state.data) ? moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
               </Row>
               {!_.isEmpty(data) ?
                 <ReactTable

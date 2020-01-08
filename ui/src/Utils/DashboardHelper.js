@@ -91,7 +91,7 @@ const helpers = {
             if (prop !== '' || defaultValue !== '') {
                 return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}>
                     {newCellInfo.subRows[0]._original[prop] ?
-                        (isNaN(newCellInfo.subRows[0]._original[prop]) ? newCellInfo.subRows[0]._original[prop] : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(newCellInfo.subRows[0]._original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(newCellInfo.subRows[0]._original[prop]))) : defaultValue}
+                        (isNaN(newCellInfo.subRows[0]._original[prop]) ? this.props.t(newCellInfo.subRows[0]._original[prop]) : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(newCellInfo.subRows[0]._original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(newCellInfo.subRows[0]._original[prop]))) : defaultValue}
                 </span>;
             } else {
                 return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.subRows[0]._original, prop, cellInfo.subRows.length > 1) : {}}></span>;
