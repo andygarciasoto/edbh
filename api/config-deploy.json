@@ -31,6 +31,6 @@
     "badLogin": "https://edxhdev.us.parker.corp?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "https://edxhdev.us.parker.corp/dashboard",
-    "socket_timeout": 30000,
+    "socket_timeout": 60000,
     "token_expiration": 14400000
 }

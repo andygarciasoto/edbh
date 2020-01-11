@@ -201,18 +201,23 @@ class DashboardOne extends React.Component {
           }); // -> returns a Promise
         }
         if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
-          _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns())
+          this.setState(Object.assign(this.getTextTranslations(nextProps)), () => this.getTableColumns())
         }
 
+        let selectedDate = nextProps.search.dt || getCurrentTime(this.props.user.timezone);
+        let selectedMachine = nextProps.search.mc || this.state.selectedMachine;
+        let selectedShift = nextProps.search.sf || this.state.selectedShift;
+        this.fetchData([selectedMachine, selectedDate, selectedShift]);
         this.setState({
-          selectedDate: nextProps.search.dt || getCurrentTime(this.props.user.timezone),
-          selectedMachine: nextProps.search.mc || this.state.selectedMachine,
+          selectedDate: selectedDate,
+          selectedMachine: selectedMachine,
           currentLanguage: nextProps.search.ln || this.state.currentLanguage,
-          selectedShift: nextProps.search.sf || this.state.selectedShift,
+          selectedShift: selectedShift,
           selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
           selectedHour: nextProps.search.hr,
-          expanded: {},
-        }, async () => { await _this.fetchData([_this.state.selectedMachine, _this.state.selectedDate, _this.state.selectedShift]) });
+          expanded: {}
+        });
+
       }
     } else {
       this.openModal('order');
@@ -220,6 +225,15 @@ class DashboardOne extends React.Component {
   }
 
   fetchData = (data) => {
+    //validation for date if we need to load next day data
+    if (!this.props.search.dt) {
+      let start_time_first_shift = moment(data[1].split(' ')[0] + ' ' + this.props.user.shifts[0].hour + ':00').tz(this.props.user.timezone);
+      let start_time_last_shift = moment(data[1].split(' ')[0] + ' ' + this.props.user.shifts[this.props.user.shifts.length - 1].hour + ':00').tz(this.props.user.timezone);
+      let current_time = moment(getCurrentTime(this.props.user.timezone));
+      if (current_time.isSameOrAfter(start_time_first_shift) && current_time.isAfter(start_time_last_shift)) {
+        data[1] = moment(data[1]).tz(this.props.user.timezone).add(1, 'days').format('YYYY/MM/DD HH:mm');
+      }
+    }
     if (this.state.summary) {
       this.loadDataAllShift(data);
     } else {
@@ -235,8 +249,6 @@ class DashboardOne extends React.Component {
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
     let errorModal = false;
     let errorMessage = '';
-    let selectedShift = '';
-    let selectedDate = '';
 
     if (logoffHour === config['second_signoff_reminder']) {
       if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
@@ -308,12 +320,7 @@ class DashboardOne extends React.Component {
           let comments = responses[responses.length - 2].data;
           let uom_asset = responses[responses.length - 1].data;
 
-          if (data instanceof Object) {
-            selectedShift = mapShiftReverse(filter[2]);
-            selectedDate = filter[1];
-          }
-
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments, uom_asset });
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
 
         })
       ).catch(function (error) {
@@ -330,8 +337,6 @@ class DashboardOne extends React.Component {
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
     let errorModal = false;
     let errorMessage = '';
-    let selectedShift = '';
-    let selectedDate = '';
 
     if (logoffHour === config['second_signoff_reminder']) {
       if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
@@ -368,26 +373,37 @@ class DashboardOne extends React.Component {
       }
       let requestData = [
         BuildGet(`${API}/data`, parameters),
-        BuildGet(`${API}/intershift_communication`, parameters),
         BuildGet(`${API}/uom_asset`, parameters)
       ];
+
+      let requestIntershift = [
+        BuildGet(`${API}/intershift_communication`, parameters)];
 
       let _this = this;
 
       axios.all(requestData).then(
-        axios.spread((responseData, responseIntershift, responseAssetUOM) => {
+        axios.spread((responseData, responseAssetUOM) => {
 
           let data = responseData.data;
-          let comments = responseIntershift.data;
           let uom_asset = responseAssetUOM.data;
 
           if (data instanceof Object) {
             data = _.orderBy(data, ['hour_interval_start', 'start_time']);
-            selectedShift = mapShiftReverse(filter[2]);
-            selectedDate = filter[1];
           }
 
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, selectedShift, selectedDate, comments, uom_asset });
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset });
+
+        })
+      ).catch(function (error) {
+        console.log(error);
+      });
+
+      axios.all(requestIntershift).then(
+        axios.spread((responseIntershift) => {
+
+          let comments = responseIntershift.data;
+
+          _this.setState({ comments });
 
         })
       ).catch(function (error) {
