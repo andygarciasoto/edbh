@@ -228,7 +228,7 @@ class DashboardOne extends React.Component {
   }
 
   loadDataAllShift(filter) {
-
+    console.log("this is the filter: " ,filter);
     const logoffHour = formatNumber(moment(getCurrentTime(this.props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
