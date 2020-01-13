@@ -4,8 +4,8 @@ import config from '../../config.json';
 
 var poolConfig = {
   log: true,
-  min: 10,
-  max: 50
+  min: 40,
+  max: 80
 };
 
 var connectionConfig = {
