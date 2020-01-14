@@ -1065,4 +1065,21 @@ router.get('/timelost_dxh_data', async function (req, res) {
     };
 });
 
+router.get('/comments_dxh_data', async function (req, res) {
+    if (!req.query.dxh_data_id) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    if (req.query.dxh_data_id) {
+        sqlQuery(`Exec spLocal_EY_DxH_Get_CommentData_By_DxHData_Id ${req.query.dxh_data_id};`, (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            res.status(200).json(response);
+        }
+        )
+    };
+});
+
 module.exports = router;
