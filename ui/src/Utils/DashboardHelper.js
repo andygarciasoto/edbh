@@ -42,15 +42,15 @@ const helpers = {
             style.borderRight = 'solid 1px rgb(219, 219, 219)';
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
             style.backgroundColor = 'white';
-        } else if (rowValid && column.id === 'actual_pcs' && !moment(rowValid._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? '#b80600' : 'green';
-            style.backgroundImage = (Number(rowValid.actual_pcs) === 0 && Number(rowValid.target_pcs) === 0) || (Number(rowValid.actual_pcs) < Number(rowValid.target_pcs)) ? 'url("../dark-circles.png")' :
+        } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
+            style.backgroundColor = (Number(rowValid.actual) === 0 && Number(rowValid.target) === 0) || (Number(rowValid.actual) < Number(rowValid.target)) ? '#b80600' : 'green';
+            style.backgroundImage = (Number(rowValid.actual) === 0 && Number(rowValid.target) === 0) || (Number(rowValid.actual) < Number(rowValid.target)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'cumulative_pcs' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? '#b80600' : 'green';
-            style.backgroundImage = (Number(rowValid.cumulative_pcs) === 0) || (Number(rowValid.cumulative_pcs) < Number(rowValid.cumulative_target_pcs)) ? 'url("../dark-circles.png")' :
+        } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
+            style.backgroundColor = (Number(rowValid.cumulative_actual) === 0) || (Number(rowValid.cumulative_actual) < Number(rowValid.cumulative_target)) ? '#b80600' : 'green';
+            style.backgroundImage = (Number(rowValid.cumulative_actual) === 0) || (Number(rowValid.cumulative_actual) < Number(rowValid.cumulative_target)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
@@ -102,13 +102,13 @@ const helpers = {
     },
 
     getTimeLostToSet(cellInfo) {
-        return moment(getCurrentTime(this.props.user.timezone)).isSame(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ||
-            !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(cellInfo.subRows[0]._original.hour_interval_start), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
+        return moment(getCurrentTime(this.props.user.timezone)).isSame(moment(cellInfo.subRows[0]._original.started_on_chunck), 'hours') ||
+            !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(cellInfo.subRows[0]._original.started_on_chunck), 'hours') ? formatNumber(cellInfo.subRows[0]._original.unallocated_time) : null;
     },
 
     getCommentsToSet(cellInfo) {
-        return cellInfo.subRows[0]._original.actions_comments ? cellInfo.subRows[0]._original.actions_comments.length > 1 ? cellInfo.subRows[0]._original.latest_comment
-            + ` (${(cellInfo.subRows[0]._original.actions_comments.length - 1)}+ more)` : cellInfo.subRows[0]._original.latest_comment : '';
+        return cellInfo.subRows[0]._original.comment ? cellInfo.subRows[0]._original.total_comments > 1 ? cellInfo.subRows[0]._original.comment
+            + ` (${(cellInfo.subRows[0]._original.total_comments - 1)}+ more)` : cellInfo.subRows[0]._original.comment : '';
     },
 
     renderAggregatedSignOff(cellInfo, prop, role) {
@@ -118,12 +118,12 @@ const helpers = {
             </span>
         } else {
             return <span style={
-                (!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(this.props.user.timezone), 'hours') && this.state.signoff_reminder) ?
+                (!moment(cellInfo.subRows[0]._original.started_on_chunck).isSame(getCurrentTime(this.props.user.timezone), 'hours') && this.state.signoff_reminder) ?
                     { paddingRight: '90%', cursor: 'pointer' } :
                     { paddingRight: '80%', cursor: 'pointer' }}
                 className={'empty-field'} onClick={() =>
                     isComponentValid(this.props.user.role, role) && !this.state.summary ? this.openModal(arguments[3], cellInfo.subRows[0]._original, arguments[4], cellInfo.subRows.length > 1) : void (0)}>
-                {!moment(cellInfo.subRows[0]._original.hour_interval_start).isSame(moment(getCurrentTime(this.props.user.timezone)).add(-1, 'hours'), 'hours') ? '' :
+                {!moment(cellInfo.subRows[0]._original.started_on_chunck).isSame(moment(getCurrentTime(this.props.user.timezone)).add(-1, 'hours'), 'hours') ? '' :
                     this.state.signoff_reminder && role === 'operator_signoff' ? <span style={{ textAlign: 'center' }}><FontAwesome name="warning" className={'signoff-reminder-icon'} /></span> : null}
             </span>;
         }
@@ -195,7 +195,7 @@ const helpers = {
                     if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift') || rowValid.hour_interval === this.props.t('No Shift'))) {
                         return <span className={'wordwrap'} data-tip={row.value}>{row.value}</span>
                     } else {
-                        return <span>{moment(row.subRows[0]._original.hour_interval_start).isSame(getCurrentTime(this.props.user.timezone), 'hours') ? row.value + '*' : row.value}</span>
+                        return <span>{moment(row.subRows[0]._original.started_on_chunck).isSame(moment(getCurrentTime(this.props.user.timezone)), 'hours') ? row.value + '*' : row.value}</span>
                     }
                 },
                 disableExpander: false,
@@ -228,17 +228,17 @@ const helpers = {
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.targetText),
-                accessor: 'target_pcs',
+                accessor: 'target',
                 minWidth: 90,
-                Cell: c => this.renderCell(c, 'target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
-                Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Cell: c => this.renderCell(c, 'target', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.actualText),
-                accessor: 'actual_pcs',
+                accessor: 'actual',
                 minWidth: 90,
-                Cell: c => this.renderCell(c, 'actual_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'values'),
-                Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, true, 'values'),
+                Cell: c => this.renderCell(c, 'actual', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'values'),
+                Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, true, 'values'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }
             // , {
@@ -246,12 +246,12 @@ const helpers = {
             //   accessor: 'scrap',
             //   minWidth: 90,
             //   Cell: c => {
-            //     let defaultValue = !moment(c.original.hour_interval_start).isAfter(getCurrentTime()) ?
+            //     let defaultValue = !moment(c.original.started_on_chunck).isAfter(getCurrentTime()) ?
             //       parseInt(c.original.setup_scrap || 0, 10) + parseInt(c.original.other_scrap || 0, 10) : null;
             //     return this.renderCell(c, '', defaultValue, true, true, 'scrap')
             //   },
             //   Aggregated: a => {
-            //     let defaultValue = !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime()) ?
+            //     let defaultValue = !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime()) ?
             //       (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
             //     return this.renderAggregated(a, 'scrap', defaultValue, false, a.subRows.length === 1, 'scrap')
             //   },
@@ -259,17 +259,17 @@ const helpers = {
             // }
             , {
                 Header: this.getHeader(this.state.cumulativeTargetText),
-                accessor: 'cumulative_target_pcs',
+                accessor: 'cumulative_target',
                 minWidth: 90,
-                Cell: c => this.renderCell(c, 'cumulative_target_pcs', !moment(c.original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
-                Aggregated: a => this.renderAggregated(a, 'cumulative_target_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Cell: c => this.renderCell(c, 'cumulative_target', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Aggregated: a => this.renderAggregated(a, 'cumulative_target', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.cumulativeActualText),
-                accessor: 'cumulative_pcs',
+                accessor: 'cumulative_actual',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
-                Aggregated: a => this.renderAggregated(a, 'cumulative_pcs', !moment(a.subRows[0]._original.hour_interval_start).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Aggregated: a => this.renderAggregated(a, 'cumulative_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.timeLostText),
@@ -423,7 +423,7 @@ const helpers = {
                     })
                 } else if (((val.oper_id !== null) && (extraParam === 'operator')) ||
                     ((val.superv_id !== null) && (extraParam === 'supervisor'))) {
-                    if (moment(getCurrentTime(this.props.user.timezone)).isSame(val.hour_interval_start, 'hours')) {
+                    if (moment(getCurrentTime(this.props.user.timezone)).isSame(val.started_on_chunck, 'hours')) {
                         const allowed = isFieldAllowed(this.props.user.role, val);
                         this.setState({
                             modal_signoff_IsOpen: allowed,

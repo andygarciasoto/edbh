@@ -22,7 +22,6 @@ import {
   getRequest,
   formatDate,
   isComponentValid,
-  mapShiftReverse,
   mapShift,
   getCurrentTime,
   formatNumber,
@@ -305,8 +304,8 @@ class DashboardOne extends React.Component {
             if (index < (responses.length - 2)) {
               let shift = {
                 'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-                'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target_pcs': this.state.cumulativeTargetText,
-                'cumulative_pcs': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+                'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
+                'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
                 'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
               };
               if (data === []) {
@@ -388,7 +387,7 @@ class DashboardOne extends React.Component {
           let uom_asset = responseAssetUOM.data;
 
           if (data instanceof Object) {
-            data = _.orderBy(data, ['hour_interval_start', 'start_time']);
+            data = _.orderBy(data, ['started_on_chunck', 'start_time']);
           }
 
           _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset });
