@@ -9,13 +9,13 @@ import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
 import {
-    timelossGetReasons as getReasons,
     formatDateWithTime,
     getCurrentTime,
-    formatNumber
+    formatNumber,
+    BuildGet
 } from '../Utils/Requests';
-
-
+import { API } from '../Utils/Constants';
+const axios = require('axios');
 
 class TimelossModal extends React.Component {
     constructor(props) {
@@ -28,7 +28,10 @@ class TimelossModal extends React.Component {
             validationMessage: '',
             time_to_allocate: 0,
             unallocated_time: 0,
+            allocated_time: 0,
             allowSubmit: true,
+            timelost: [],
+            currentRow: {},
             new_tl_reason: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
@@ -41,6 +44,12 @@ class TimelossModal extends React.Component {
         this.closeModal = this.closeModal.bind(this);
         this.validate = this.validate.bind(this);
         this.closeTimeloss = this.closeTimeloss.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.currentRow && nextProps.isOpen) {
+            this.loadData(nextProps);
+        }
     }
 
     submit(e) {
@@ -74,40 +83,48 @@ class TimelossModal extends React.Component {
         this.setState({ newValue: e.target.value });
     }
 
-
-    componentWillMount() {
-        if (this.props.machine) {
-            const reasons = getReasons(this.props.machine);
-            reasons.then((res) => this.setState({
-                reasons: res,
-                timelost: this.props.timelost,
-            }))
+    loadData(props) {
+        let time = 0;
+        if (this.state.changed === false) {
+            time = props.currentRow.allocated_time
+        } else {
+            time = this.state.time_to_allocate
         }
-    }
 
-    async componentWillReceiveProps(nextProps) {
-        if (nextProps.currentRow) {
-            const total = nextProps.currentRow.allocated_time;
-            let time = 0;
-            if (this.state.changed === false) {
-                time = nextProps.currentRow.allocated_time
-            } else {
-                time = this.state.time_to_allocate
+        const parameters = {
+            params: {
+                mc: props.machine,
+                dxh_data_id: props.currentRow.dxhdata_id
             }
-            this.setState({
-                timelost: nextProps.timelost,
-                allocated_time: total,
-                unallocated_time: nextProps.currentRow.unallocated_time,
-                time_to_allocate: time,
-                setup_time: nextProps.currentRow.summary_setup_minutes || 0,
-                break_time: nextProps.currentRow.summary_breakandlunch_minutes || 0
-            })
-            const reasons = await getReasons(nextProps.machine);
-            this.setState({
-                reasons
-            });
         }
+        let requestData = [
+            BuildGet(`${API}/timelost_reasons`, parameters),
+            BuildGet(`${API}/timelost_dxh_data`, parameters)
+        ];
+
+        let _this = this;
+
+        this.setState({ modal_loading_IsOpen: true }, () => {
+            axios.all(requestData).then(
+                axios.spread((responseReasons, responseTimeLost) => {
+                    _this.setState({
+                        modal_loading_IsOpen: false,
+                        timelost: responseTimeLost.data,
+                        allocated_time: props.currentRow.allocated_time,
+                        unallocated_time: props.currentRow.unallocated_time,
+                        time_to_allocate: time,
+                        setup_time: props.currentRow.summary_setup_minutes || 0,
+                        break_time: props.currentRow.summary_breakandlunch_minutes || 0,
+                        reasons: responseReasons.data,
+                        currentRow: props.currentRow
+                    });
+                })
+            ).catch(function (error) {
+                console.log(error);
+            });
+        });
     }
+
     closeTimeloss() {
         this.setState({
             validationMessage: '',
@@ -202,7 +219,7 @@ class TimelossModal extends React.Component {
                             </thead>
                             <tbody>
                                 {
-                                    this.state.timelost ? this.state.timelost.map((item, index) => {
+                                    this.state.timelost.length > 0 ? this.state.timelost.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{item.dtminutes}</td>
