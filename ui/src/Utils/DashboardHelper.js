@@ -324,7 +324,7 @@ const helpers = {
                 if (!arguments[3]) {
                     let allowed = false;
                     if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
-                        allowed = isFieldAllowed(this.props.user.role, val);
+                        allowed = isFieldAllowed(this.props.user.role, val) && this.state.selectedMachineType === 'Manual';
                     }
                     this.setState({
                         modal_values_IsOpen: allowed,
@@ -339,7 +339,7 @@ const helpers = {
             } else {
                 let allowed;
                 if (extraParam === 'actual_pcs' || extraParam === 'summary_actual') {
-                    allowed = isFieldAllowed(this.props.user.role, val);
+                    allowed = isFieldAllowed(this.props.user.role, val) && this.state.selectedMachineType === 'Manual';
                 }
                 this.setState({
                     valueToEdit: value,
