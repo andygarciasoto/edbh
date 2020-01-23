@@ -147,8 +147,8 @@ class Comments extends React.Component {
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
-                    message={'Intershift Communication was not inserted in the database.'}
-                    title={'Database Error - Bad Request'}
+                    message={'Intershift Communication was not inserted'}
+                    title={'Bad Request'}
                     t={t}
                 />
                 <ConfirmModal
@@ -156,7 +156,7 @@ class Comments extends React.Component {
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
-                    message={'Intershift Communication was inserted.'}
+                    message={'Intershift Communication was inserted'}
                     title={'Request Successful'}
                     t={t}
                 />

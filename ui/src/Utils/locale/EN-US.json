@@ -100,5 +100,15 @@
     "Showing Data for": "Showing Data for",
     "No Data": "No Data",
     "Please Wait": "Please Wait",
-    "multiple": "multiple"
+    "multiple": "multiple",
+    "Request Successful": "Request Successful",
+    "Intershift Communication was inserted": "Intershift Communication was inserted",
+    "Bad Request": "Bad Request",
+    "Intershift Communication was not inserted": "Intershift Communication was not inserted",
+    "Intershift Communications": "Intershift Communications",
+    "Comment was inserted": "Comment was inserted",
+    "Manual Entry Succesfully Inserted": "handmatige invoer succesvol ingevoerd",
+    "Value was inserted": "Value was inserted",
+    "Signoff was inserted": "Signoff was inserted",
+    "Tmeloss was inserted": "Signoff was inserted"
 }

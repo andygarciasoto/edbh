@@ -70,7 +70,7 @@
     "Enter Description": "Inserire descrizione",
     "Close": "Chiudi",
     "Time Lost (Total Mins.)": "Tempo Perso (Min.Tot.)",
-    "Comments This Hour:": "Commenti ora attuale",
+    "Comments This Hour": "Commenti ora attuale",
     "By clicking 'Accept' you confirm that all the values for this hour are correct": "Clicca Accetta'  per confermare che i valori di questa ora sono corretti",
     "operator": "Operatore",
     "supervisor": "Supervisore",
@@ -99,5 +99,15 @@
     "Showing Data for": "Evidenza dati per",
     "No Data": "Nessun Dato",
     "Please Wait": "Attendi un momento",
-    "multiple": "più"
+    "multiple": "più",
+    "Request Successful":"Richiesta Riuscita",
+    "Intershift Communication was inserted": "Comunicazione è stata inserita",
+    "Bad Request": "Brutta Richiesta",
+    "Intershift Communication was not inserted": "Comunicazione non è stata inserita",
+    "Intershift Communications": "Comunicazione",
+    "Comment was inserted": "Il Commento è stato inserito",
+    "Manual Entry Succesfully Inserted": "Inserimento Manuale Inserito Correttamente",
+    "Value was inserted": "Il Valore è stato inserito",
+    "Signoff was inserted": "Approva è stato inserito",
+    "Tmeloss was inserted": "Tempo Perso è stato inserito"
 }

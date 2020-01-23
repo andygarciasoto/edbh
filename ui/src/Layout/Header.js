@@ -1,79 +1,141 @@
 import React from 'react';
 import './Header.scss';
-import logo from '../Parker_Hannifin.svg';
-import { Nav, Navbar, Row, Dropdown } from 'react-bootstrap';
+import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
+import logo from '../Parker_Hannifin.svg';
+import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';
+import MachinePickerCustom from './MachinePicker';
 import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
-import MachinePickerCustom from './MachinePicker';
 import LanguagePickerCustom from './LanguagePicker';
-import moment from 'moment';
 import QueryButton from './QueryButton';
-import { isComponentValid } from '../Utils/Requests';
-import { Link } from 'react-router-dom';
-import $ from 'jquery';
+import * as qs from 'query-string';
+import moment from 'moment';
+import i18next from 'i18next';
+import _ from 'lodash';
+import { BuildGet } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
+import axios from 'axios';
 
 
 class Header extends React.Component {
+
     constructor(props) {
         super(props);
-        this.state = {
-            megaMenuToggle: 'dropdown-content',
-            machineValue: props.selectedMachine || props.t('Select Machine'),
-            machineType: props.machineType,
-            dateValue: new Date(moment(props.selectedDate).format('YYYY/MM/DD HH:mm')),
-            shiftValue: props.selectedShift || props.t('Select Shift'),
-            languageValue: props.selectedLanguage || props.t('Select Language'),
-            newOrder_value: ''
+        this.state = Object.assign(this.getInitialState(props));
+        if (this.state.ln) {
+            this.changeLanguageBrowser();
         }
-        this.openMenu = this.openMenu.bind(this);
-        this.onScroll = this.onScroll.bind(this);
     }
 
-    collectInputs = (value, type) => {
-        this.setState({ [type]: value });
+    getInitialState(props) {
+        let search = qs.parse(props.history.location.search);
+        return {
+            megaMenuToggle: 'dropdown-content',
+            mc: search.mc || props.machineData.asset_code,
+            tp: search.tp || props.machineData.automation_level,
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            sf: search.sf || props.user.current_shift,
+            ln: search.ln || props.user.language,
+            cs: search.cs || props.user.site
+        };
     }
 
-    openMenu() {
-        this.state.megaMenuToggle === 'dropdown-content' ?
-            this.props.sendMenuToggle(true) :
-            this.props.sendMenuToggle(false);
+    componentDidMount() {
+        window.addEventListener('scroll', this.onScroll);
+        if (this.state.cs !== this.props.user.site) {
+            let actualSite = _.find(this.props.user.sites, ['asset_id', parseInt(this.state.cs)]);
+            this.changeUserInformation(actualSite);
+        }
+    }
 
+    componentWillReceiveProps(nextProps) {
+        let search = qs.parse(nextProps.history.location.search);
+        this.setState({
+            mc: search.mc || nextProps.machineData.asset_code,
+            tp: search.tp || nextProps.machineData.automation_level,
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            sf: search.sf || nextProps.user.current_shift,
+            ln: search.ln || nextProps.user.language,
+            cs: search.cs || nextProps.user.site
+        });
+    }
+
+    redirectTo = (page) => {
+        this.props.history.push(`${page}${this.props.history.location.search}`);
+    }
+
+    openMenu = (e) => {
         isComponentValid(this.props.user.role, 'megamenu') ?
             this.state.megaMenuToggle === 'dropdown-content opened' ?
                 this.setState({ megaMenuToggle: 'dropdown-content' }) :
                 this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void (0);
     }
 
-    componentDidMount() {
-        window.addEventListener('scroll', this.onScroll)
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            machineValue: nextProps.selectedMachine || nextProps.t('Select Machine'),
-            dateValue: new Date(new Date(moment(nextProps.selectedDate).format('YYYY/MM/DD HH:mm'))),
-            shiftValue: nextProps.selectedShift || nextProps.t('Select Shift'),
-            languageValue: nextProps.selectedLanguage || nextProps.t('Select Language'),
-            machineType: nextProps.machineType
-        })
-    }
-
-    onScroll() {
+    onScroll = () => {
         this.setState({ megaMenuToggle: 'dropdown-content' });
     }
 
-    redirectTo = (page) => {
-        let { search } = this.props;
-        let queryItem = Object.assign({}, search);
-        queryItem["mc"] = this.state.machine;
-        queryItem["dt"] = moment(this.state.date).format('YYYY/MM/DD HH:mm');
-        queryItem["sf"] = this.state.shift;
-        queryItem["ln"] = this.state.language;
-        queryItem["tp"] = this.state.machine_type;
-        let parameters = $.param(queryItem);
-        this.props.history.push(`${page}?${parameters}`);
+    collectInputs = (value, type) => {
+        this.setState({ [type]: value });
+    }
+
+    changeLanguageBrowser = () => {
+        let currentLanguage = this.state.ln.toLowerCase();
+        currentLanguage = currentLanguage.replace('-', '_');
+        i18next.changeLanguage(currentLanguage);
+    }
+
+    getSiteOptions() {
+        let options = [];
+        _.forEach(this.props.user.sites, site => {
+            options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.asset_id}>{site.asset_name}</Dropdown.Item>);
+        });
+
+        return options;
+    }
+
+    changeSite(site) {
+        if (this.state.cs !== site.asset_id) {
+            this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
+
+        }
+    }
+
+    async changeUserInformation(newSite) {
+        let user = this.props.user;
+        const parameters = {
+            params: {
+                site: newSite.asset_id,
+                user_id: newSite['dbo.TFDUsers'][0].ID
+            }
+        };
+
+        let requestData = [
+            BuildGet(`${API}/user_info_login_by_site`, parameters),
+            BuildGet(`${API}/shifts`, parameters),
+            BuildGet(`${API}/machine`, parameters)
+        ];
+
+        await axios.all(requestData).then(
+            axios.spread(async (responseUser, responseShift, responseMachine) => {
+                let newUserValues = responseUser.data[0];
+                user.role = newUserValues.role;
+                user.site = newUserValues.site;
+                user.site_name = newUserValues.site_name;
+                user.timezone = newUserValues.timezone;
+                user.current_shift = newUserValues.shift_name;
+                user.shift_id = newUserValues.shift_id;
+                user.language = newUserValues.language;
+                user.shifts = responseShift.data;
+                user.machines = responseMachine.data;
+                this.props.changeCurrentUser(user);
+                await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}`);
+            })
+        ).catch(function (error) {
+            console.log(error);
+        });
     }
 
     render() {
@@ -82,91 +144,94 @@ class Header extends React.Component {
             <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name='bars' /></a>
         ));
 
-        const t = this.props.t;
+        const customToogleSite = React.forwardRef(({ children, onClick }, ref) => (
+            <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
+        ));
+
         const station = localStorage.getItem('machine_name');
-        const loginUrl = `/?st=${station}`
+        const loginUrl = `/?st=${station}`;
+
         return (
             <Navbar>
                 <Row>
                     <Navbar.Brand><img src={logo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
-
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
+                        {/* {isComponentValid(this.props.user.role, 'sitename') ? */}
+                        <Dropdown className="customToogleSite">
+                            <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
+                                {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['asset_id', parseInt(this.state.cs)]).asset_name}
+                            </Dropdown.Toggle>
+                            {this.props.user.sites.length > 1 ?
+                                <Dropdown.Menu>
+                                    {this.getSiteOptions()}
+                                </Dropdown.Menu>
+                                : null}
+                        </Dropdown>
+                        {/* : null} */}
                         {isComponentValid(this.props.user.role, 'megamenu') ?
-                            <span className="header-item" href="#" id="mega-menu"><span className="header-elem" onClick={(e) => this.openMenu(e)}>{t('Parameters')}&nbsp;</span>
-                                <FontAwesome
-                                    onClick={(e) => this.openMenu(e)}
-                                    name="filter" />
-                                <MegaMenu toggle={this.state.megaMenuToggle} t={t}>
+                            <span>
+                                <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
+                                </Nav.Link>
+                                <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history}>
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
-                                        t={t}
+                                        t={this.props.t}
                                         user={this.props.user}
-                                        value={this.state.machineValue} />
+                                        value={this.state.mc} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
-                                        value={this.state.dateValue}
-                                        search={this.props.search}
+                                        value={this.state.dt}
                                     />
-                                    <ShiftPickerCustom
-                                        collectInput={this.collectInputs}
-                                        t={t}
-                                        value={this.state.shiftValue}
-                                        date={this.state.dateValue}
-                                        commonParams={this.props.commonParams}
-                                        shifts={this.props.shifts}
-                                    />
+                                    {this.props.history.location.pathname !== '/summary' ?
+                                        <ShiftPickerCustom
+                                            collectInput={this.collectInputs}
+                                            t={this.props.t}
+                                            value={this.state.sf}
+                                            date={this.state.dt}
+                                            user={this.props.user}
+                                        />
+                                        : null}
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
-                                        value={this.state.languageValue} />
+                                        value={this.state.ln} />
                                     <QueryButton
-                                        machine={this.state.machineValue}
-                                        date={this.state.dateValue}
-                                        shift={this.state.shiftValue}
-                                        machine_type={this.state.machineType}
-                                        language={this.state.languageValue}
-                                        changeLanguageBrowser={this.props.changeLanguageBrowser}
+                                        machine={this.state.mc}
+                                        date={this.state.dt}
+                                        shift={this.state.sf}
+                                        machine_type={this.state.tp}
+                                        language={this.state.ln}
                                         openMenu={this.openMenu}
-                                        search={this.props.search}
                                         history={this.props.history}
-                                        t={t}
-                                        clearExpanded={this.props.clearExpanded}
-                                    />
+                                        t={this.props.t}
+                                        changeLanguageBrowser={this.changeLanguageBrowser} />
                                 </MegaMenu>
                             </span>
                             : null}
-                        {isComponentValid(this.props.user.role, 'neworder') ?
-                            ((this.state.machineType) && (this.state.machineType) !== '' && (this.state.machineType !== 'Automated')) ?
-                                <span
-                                    className="header-item"
-                                    href="#"
-                                    id="mega-menu">
-                                    <span className="header-elem"
-                                        value={this.state.newOrder_value}
-                                        onClick={(e) => this.props.openModal('order')}>
-                                        {t('New Order')}&nbsp;</span>
-                                    <FontAwesome
-                                        onClick={(e) => this.props.openModal('order')}
-                                        name="file-text" /></span> : null : null
+                        {isComponentValid(this.props.user.role, 'neworder') && this.props.history.location.pathname !== '/summary' ?
+                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp !== 'Automated')) ?
+                                <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
+                                </Nav.Link>
+                                : null : null
                         }
-                        {isComponentValid(this.props.user.role, 'import') ?
+                        {isComponentValid(this.props.user.role, 'menu') ?
                             <Dropdown className="customToogle">
                                 <Dropdown.Toggle as={customToogle} id="dropdown-basic">
-                                    {t('Menu')}
+                                    {this.props.t('Menu')}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{t('Dashboard')}</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => this.redirectTo('import')}>{t('Import')}</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => this.redirectTo('summary')}>{t('Summary Dashoard')}</Dropdown.Item>
+                                    {this.props.history.location.pathname !== '/dashboard' && isComponentValid(this.props.user.role, 'menu-dashbaord') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/import' && isComponentValid(this.props.user.role, 'menu-import') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import/Export')}</Dropdown.Item> : null}
+                                    {this.props.history.location.pathname !== '/summary' && isComponentValid(this.props.user.role, 'menu-summary') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
                                 </Dropdown.Menu>
                             </Dropdown>
                             : null}
-                        <Nav.Link href={loginUrl}>{t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
+                        <Nav.Link href={loginUrl}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
                     </Navbar.Collapse>
                 </Row>
             </Navbar>
-        );
+        )
     }
-};
+}
 
 export default Header;

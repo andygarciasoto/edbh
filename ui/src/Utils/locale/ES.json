@@ -100,5 +100,15 @@
     "Showing Data for": "Mostrando datos para",
     "No Data": "Sin Dato",
     "Please Wait": "Por favor espere",
-    "multiple": "múltiples"
+    "multiple": "múltiples",
+    "Request Successful": "Solicitud Éxitosa",
+    "Intershift Communication was inserted": "Comunicación insertada",
+    "Bad Request": "Fallo en la Solicitud",
+    "Intershift Communication was not inserted": "Comunicación no ingresada",
+    "Intershift Communications": "Communicación",
+    "Comment was inserted": "Comentario ingresado",
+    "Manual Entry Succesfully Inserted": "Entrada Manual Insertada Correctamente",
+    "Value was inserted": "Valor insertado",
+    "Signoff was inserted": "Aprobación ingresada",
+    "Tmeloss was inserted": "Tiempo Perdido ingresado"
 }

@@ -145,7 +145,7 @@ class CommentsModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
-                    message={'Comment was inserted.'}
+                    message={'Comment was inserted'}
                     title={'Request Successful'}
                     t={this.props.t}
                 />

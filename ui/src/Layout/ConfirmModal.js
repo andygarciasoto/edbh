@@ -49,9 +49,9 @@ class ConfirmModal extends React.Component {
                 style={this.state.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p className="dashboard-modal-sucessr-field-head">{this.props.title}</p>
+                <div><p className="dashboard-modal-sucessr-field-head">{this.props.t(this.props.title)}</p>
                     <div><FontAwesome className="success-message icon" name="check" />&nbsp;&nbsp;
-                <p className="success-message">{this.props.message}</p></div>
+                <p className="success-message">{this.props.t(this.props.message)}</p></div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
                     <Button variant="outline-success" style={{ marginTop: '20px' }} className="success-button" onClick={this.props.onRequestClose}>{this.props.t('Close')}</Button>

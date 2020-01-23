@@ -5,7 +5,7 @@ import SignIn from './SignIn';
 import Login from './Login';
 import Import from './Dashboard/Import';
 import DashboardOne from './Dashboard/DashboardOne';
-import Header1 from './Layout/Header1';
+import Header from './Layout/Header';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -31,7 +31,7 @@ function App(propsApp) {
         <Route path="/"
           render={(props) =>
             (props.location.pathname !== "/" && props.location.pathname !== "/login") &&
-            <Header1
+            <Header
               history={props.history}
               t={t}
               user={currentUser}

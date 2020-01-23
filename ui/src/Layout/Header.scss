@@ -1,63 +1,9 @@
-.navbar {
-    height: 10vh; 
-    background-color: rgb(31, 31, 31);
-    .links {
-        padding-bottom: 10px !important;
-    }
-    .App-logo {
-        height: 90%;
-         width: auto; 
-        }
-
-    // .col {border: solid red;}
-    .row {width: 100%}
-
-    .header-item, #mega-menu {
-        display: inline-block; 
-        padding: 10px 10px 10px 10px;
-         color: rgb(255, 185, 29); 
-         float: right;
-        }
-
-    .header-item:hover {
-        background-color: rgb(81, 81, 81);
-        text-decoration: none;
-    }
-    .header-elem {cursor: pointer;}
-}
-
 .import-wrapper {
     margin: 100px 75px 0px 75px;
     padding: 50px;
     border: solid lightgray 1px;
 }
 
-.title {
-color: #fff;
-    float: left;
-    vertical-align: middle;
-    margin-left: 0px;
-    float: left;
-    height: 50px;
-    padding: 15px 15px;
-    font-size: 25px;
-    line-height: 30px;
-}
-
-.customToogle:hover {
-    background-color: rgb(81, 81, 81);
-    text-decoration: none;   
-}
-
 .dropdown-toggle::after {
     display: none;
-}
-
-a:hover {
-    background-color: rgb(81, 81, 81);
-    text-decoration: none;   
-}
-
-.navbar-brand{
-    padding-left: 15px;
 }

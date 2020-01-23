@@ -286,17 +286,17 @@ const helpers = {
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.operatorText),
-                accessor: 'oper_id',
+                accessor: 'operator_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
-                Aggregated: a => this.renderAggregatedSignOff(a, 'oper_id', 'operator_signoff', 'signoff', 'operator'),
+                Aggregated: a => this.renderAggregatedSignOff(a, 'operator_signoff', 'operator_signoff', 'signoff', 'operator'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.supervisorText),
-                accessor: 'superv_id',
+                accessor: 'supervisor_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
-                Aggregated: a => this.renderAggregatedSignOff(a, 'superv_id', 'supervisor_signoff', 'signoff', 'supervisor'),
+                Aggregated: a => this.renderAggregatedSignOff(a, 'supervisor_signoff', 'supervisor_signoff', 'signoff', 'supervisor'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }
         ];
@@ -412,17 +412,18 @@ const helpers = {
             }
         }
         if (type === 'signoff') {
+            console.log(val);
             if (val) {
-                if (((val.oper_id === null) && (extraParam === 'operator')) ||
-                    ((val.superv_id === null) && (extraParam === 'supervisor'))) {
+                if (((val.operator_signoff === null) && (extraParam === 'operator')) ||
+                    ((val.supervisor_signoff === null) && (extraParam === 'supervisor'))) {
                     const allowed = isFieldAllowed(this.props.user.role, val);
                     this.setState({
                         modal_signoff_IsOpen: allowed,
                         currentRow: val,
                         signOffRole: extraParam ? extraParam : null,
                     })
-                } else if (((val.oper_id !== null) && (extraParam === 'operator')) ||
-                    ((val.superv_id !== null) && (extraParam === 'supervisor'))) {
+                } else if (((val.operator_signoff !== null) && (extraParam === 'operator')) ||
+                    ((val.supervisor_signoff !== null) && (extraParam === 'supervisor'))) {
                     if (moment(getCurrentTime(this.props.user.timezone)).isSame(val.started_on_chunck, 'hours')) {
                         const allowed = isFieldAllowed(this.props.user.role, val);
                         this.setState({

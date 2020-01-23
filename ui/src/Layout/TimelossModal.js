@@ -291,7 +291,7 @@ class TimelossModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
-                    message={'Timeloss was inserted.'}
+                    message={'Timeloss was inserted'}
                     title={'Request Successful'}
                     t={this.props.t}
                 />
