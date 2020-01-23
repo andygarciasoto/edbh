@@ -36,7 +36,8 @@ class TimelossModal extends React.Component {
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
-            changed: false
+            changed: false,
+            actualDxH_Id: null
         }
         this.submit = this.submit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -104,7 +105,7 @@ class TimelossModal extends React.Component {
 
         let _this = this;
 
-        this.setState({ modal_loading_IsOpen: true }, () => {
+        this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
             axios.all(requestData).then(
                 axios.spread((responseReasons, responseTimeLost) => {
                     _this.setState({
@@ -116,11 +117,12 @@ class TimelossModal extends React.Component {
                         setup_time: props.currentRow.summary_setup_minutes || 0,
                         break_time: props.currentRow.summary_breakandlunch_minutes || 0,
                         reasons: responseReasons.data,
-                        currentRow: props.currentRow
+                        currentRow: props.currentRow,
+                        actualDxH_Id: props.currentRow.dxhdata_id
                     });
                 })
             ).catch(function (error) {
-                console.log(error);
+                _this.setState({ timelost: [], modal_loading_IsOpen: false })
             });
         });
     }

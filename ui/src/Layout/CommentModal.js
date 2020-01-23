@@ -16,6 +16,7 @@ class CommentsModal extends React.Component {
         this.state = {
             value: '',
             comments: [],
+            actualDxH_Id: null,
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
@@ -40,11 +41,11 @@ class CommentsModal extends React.Component {
         let requestData = BuildGet(`${API}/comments_dxh_data`, parameters);
         let _this = this;
 
-        this.setState({ modal_loading_IsOpen: true }, () => {
+        this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
             requestData.then((response) => {
-                _this.setState({ comments: response.data, modal_loading_IsOpen: false })
+                _this.setState({ comments: response.data, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
             }).catch(function (error) {
-                console.log(error);
+                _this.setState({ comments: [], modal_loading_IsOpen: false })
             });
         });
     }
