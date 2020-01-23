@@ -276,7 +276,8 @@ class DashboardOne extends React.Component {
             mc: filter[0],
             dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
             sf: shift.shift_id,
-            hr: hr
+            hr: hr,
+            st: this.props.user.site
           }
         }
         requestArray.push(BuildGet(`${API}/data`, param));
@@ -367,7 +368,8 @@ class DashboardOne extends React.Component {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
           sf: sf.shift_id || this.props.user.shift_id,
-          hr: moment().tz(this.props.user.timezone).hours()
+          hr: moment().tz(this.props.user.timezone).hours(),
+          st: this.props.user.site
         }
       }
       let requestData = [

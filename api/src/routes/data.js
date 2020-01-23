@@ -100,7 +100,7 @@ function getAssetInfoPromise(asset_code) {
 
 router.get('/data', async function (req, res) {
     const params = req.query;
-    if (params.dt == undefined || params.mc == undefined || params.hr == undefined || params.sf == undefined) {
+    if (params.dt == undefined || params.mc == undefined || params.hr == undefined || params.sf == undefined || params.st == undefined) {
         return res.status(400).send("Missing parameters");
     }
 
@@ -109,22 +109,13 @@ router.get('/data', async function (req, res) {
     params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
     function structureShiftdata(query) {
         try {
-            //const response = JSON.parse(Object.values(query)[0].Shift_Data);
-            //const structuredObject = utils.restructureSQLObject(response, 'shift');
-            //const structuredByContent = utils.restructureSQLObjectByContent(structuredObject);
-            //const nameMapping = utils.nameMapping;
-            //const mappedObject = utils.replaceFieldNames(structuredByContent, nameMapping);
-            //const processJson = utils.restructureTableToJson(query);
-            //const objectWithLatestComment = utils.createLatestComment(processJson);
-            //const objectWithTimelossSummary = utils.createTimelossSummary(objectWithLatestComment);
-            //const objectWithUnallocatedTime = utils.createUnallocatedTime(objectWithTimelossSummary, params.hr, date);
             const objectWithUnallocatedTime = utils.createUnallocatedTime2(query, params.hr, date);
             res.status(200).json(objectWithUnallocatedTime);
         } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: query }); }
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
-        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_new_2 ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, 1;`,
+        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_new_2 ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, ${params.st};`,
             (err, response) => {
                 if (err) {
                     console.log(err);

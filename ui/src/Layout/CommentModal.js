@@ -8,7 +8,6 @@ import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
 import { sendPost, getCurrentTime, formatDateWithTime, BuildGet } from '../Utils/Requests';
-const axios = require('axios');
 
 
 class CommentsModal extends React.Component {
