@@ -70,7 +70,7 @@
 "Enter Description":"Beschreibung eingeben",
 "Close":"Schließen",
 "Time Lost (Total Mins.)":"Ausfallzeit (Gesamt in Minuten)",
-"Comments This Hour:":"Kommentare zu dieser Stunde:",
+"Comments This Hour":"Kommentare zu dieser Stunde:",
 "By clicking 'Accept' you confirm that all the values for this hour are correct":"Durch das Bestätigen versichern Sie, dass alle eingegebenen Werte für diese Stunde korrekt sind.",
 "operator":"Maschineneinrichter/-bediener",
 "supervisor":"Schichtkoordinator",
@@ -98,5 +98,15 @@
 "Go To Current Shift":"Aktuelle Schicht anzeigen",
 "Showing Data for":"Daten Anzeigen für",
 "Please Wait": "Bitte Warten",
-"multiple": "mehrere"
+"multiple": "mehrere",
+"Request Successful": "Aanvraag Succesvol",
+"Intershift Communication was inserted": "Kommunikation is ingevoegd",
+"Bad Request": "Foute Aanvraag",
+"Intershift Communication was not inserted": "Kommunikation is niet ingevoerd",
+"Intershift Communications": "Kommunikation",
+"Comment was inserted": "Reactie is ingevoegd",
+"Manual Entry Succesfully Inserted": "Handmatige Invoer Succesvol Ingevoerd",
+"Value was inserted": "Waarde is ingevoegd",
+"Signoff was inserted": "Afmelding is ingevoegd",
+"Tmeloss was inserted": "Tijdverlies werd ingevoegd"
 }

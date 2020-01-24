@@ -228,8 +228,7 @@ function createUnallocatedTime2(obj, tz, dt) {
                 } else {
                     actualUnallocatedTime = 0;
                 }
-            }
-            else {
+            } else {
                 if (item.summary_actual === 0) {
                     actualUnallocatedTime = totalTime;
                 } else {

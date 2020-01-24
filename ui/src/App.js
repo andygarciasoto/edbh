@@ -5,7 +5,7 @@ import SignIn from './SignIn';
 import Login from './Login';
 import Import from './Dashboard/Import';
 import DashboardOne from './Dashboard/DashboardOne';
-import Header1 from './Layout/Header1';
+import Header from './Layout/Header';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -31,7 +31,7 @@ function App(propsApp) {
         <Route path="/"
           render={(props) =>
             (props.location.pathname !== "/" && props.location.pathname !== "/login") &&
-            <Header1
+            <Header
               history={props.history}
               t={t}
               user={currentUser}
@@ -39,23 +39,26 @@ function App(propsApp) {
               openModal={displayModal}
               changeCurrentUser={updateCurrentUser} />}
         />
-        <Route
-          path="/dashboard"
-          render={function (props) {
-            return (
-              <DashboardOne
-                user={currentUser}
-                t={t}
-                history={props.history}
-                search={qs.parse(props.history.location.search)}
-                showNewOrderModal={showModal}
-                closeOrderModal={displayModal}
-                defaultAsset={propsApp.defaultAsset}
-                machineData={propsApp.machineData}
-              />
-            )
-          }
-          } />
+        {currentUser && isComponentValid(currentUser.role, 'dashboardOne') ?
+          <Route
+            path="/dashboard"
+            render={function (props) {
+              return (
+                <DashboardOne
+                  user={currentUser}
+                  t={t}
+                  history={props.history}
+                  search={qs.parse(props.history.location.search)}
+                  showNewOrderModal={showModal}
+                  closeOrderModal={displayModal}
+                  defaultAsset={propsApp.defaultAsset}
+                  machineData={propsApp.machineData}
+                />
+              )
+            }
+            } />
+          : null
+        }
         <Route exact path="/login" render={(props) =>
           <Login t={t}
             history={props.history}
@@ -78,16 +81,19 @@ function App(propsApp) {
             />} />
           : null
         }
-        <Route exact path="/summary" render={(props) =>
-          <DashboardOne
-            user={currentUser}
-            t={t}
-            history={props.history}
-            search={qs.parse(props.history.location.search)}
-            summary={true}
-            defaultAsset={propsApp.defaultAsset}
-            machineData={propsApp.machineData} />}
-        />
+        {currentUser && isComponentValid(currentUser.role, 'summary') ?
+          <Route exact path="/summary" render={(props) =>
+            <DashboardOne
+              user={currentUser}
+              t={t}
+              history={props.history}
+              search={qs.parse(props.history.location.search)}
+              summary={true}
+              defaultAsset={propsApp.defaultAsset}
+              machineData={propsApp.machineData} />}
+          />
+          : null
+        }
       </Suspense>
     </Router>
   );

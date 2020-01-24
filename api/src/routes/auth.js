@@ -160,9 +160,9 @@ router.post("/", function (req, res) {
 
             if (claimsList.user && params.password === 'parkerdxh2019') {
                 var jwt = nJwt.create(claimsList.user, config['signingKey']);
-                jwt.setExpiration(new Date().getTime() + (response[0].inactive_timeout_minutes * 60000));
+                jwt.setExpiration(new Date().getTime() + ((response[0].role === 'Summary' ? response[0].summary_timeout : response[0].inactive_timeout_minutes) * 60000));
                 var token = jwt.compact();
-                const url = `${config['URL']}/dashboard#token=${token}`;
+                const url = `${config['URL']}/${response[0].role === 'Summary' ? 'summary' : 'dashboard'}#token=${token}`;
                 res.redirect(302, url);
                 return;
             }

@@ -276,7 +276,8 @@ class DashboardOne extends React.Component {
             mc: filter[0],
             dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
             sf: shift.shift_id,
-            hr: hr
+            hr: hr,
+            st: this.props.user.site
           }
         }
         requestArray.push(BuildGet(`${API}/data`, param));
@@ -306,7 +307,7 @@ class DashboardOne extends React.Component {
                 'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                 'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
               };
               if (data === []) {
                 data = _.concat([shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
@@ -367,7 +368,8 @@ class DashboardOne extends React.Component {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
           sf: sf.shift_id || this.props.user.shift_id,
-          hr: moment().tz(this.props.user.timezone).hours()
+          hr: moment().tz(this.props.user.timezone).hours(),
+          st: this.props.user.site
         }
       }
       let requestData = [

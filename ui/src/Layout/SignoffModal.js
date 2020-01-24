@@ -246,7 +246,7 @@ class SignoffModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
-                    message={'Signoff was successful.'}
+                    message={'Signoff was successful'}
                     title={'Request Successful'}
                     t={this.props.t}
                 />

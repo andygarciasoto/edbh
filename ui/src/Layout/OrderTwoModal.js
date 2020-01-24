@@ -89,7 +89,7 @@ class OrderTwoModal extends React.Component {
                         onRequestClose={this.closeModal}
                         contentLabel="Example Modal"
                         shouldCloseOnOverlayClick={false}
-                        message={'Value was inserted.'}
+                        message={'Value was inserted'}
                         title={'Request Successful'}
                         t={this.props.t}
                     />
