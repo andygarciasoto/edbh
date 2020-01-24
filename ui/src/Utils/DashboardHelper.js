@@ -223,8 +223,8 @@ const helpers = {
                 Header: this.getHeader(this.state.idealText),
                 accessor: 'ideal',
                 minWidth: 90,
-                Cell: c => this.renderCell(c, 'ideal', '0', true, true, 'values', c.original),
-                Aggregated: a => this.renderAggregated(a, 'summary_ideal', '', false, false),
+                Cell: c => this.renderCell(c, 'ideal', 0, true, true, 'values', c.original),
+                Aggregated: a => this.renderAggregated(a, 'summary_ideal', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(this.state.targetText),

@@ -307,7 +307,7 @@ class DashboardOne extends React.Component {
                 'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                 'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                'oper_id': this.state.operatorText, 'superv_id': this.state.supervisorText
+                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
               };
               if (data === []) {
                 data = _.concat([shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));

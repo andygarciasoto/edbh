@@ -39,23 +39,26 @@ function App(propsApp) {
               openModal={displayModal}
               changeCurrentUser={updateCurrentUser} />}
         />
-        <Route
-          path="/dashboard"
-          render={function (props) {
-            return (
-              <DashboardOne
-                user={currentUser}
-                t={t}
-                history={props.history}
-                search={qs.parse(props.history.location.search)}
-                showNewOrderModal={showModal}
-                closeOrderModal={displayModal}
-                defaultAsset={propsApp.defaultAsset}
-                machineData={propsApp.machineData}
-              />
-            )
-          }
-          } />
+        {currentUser && isComponentValid(currentUser.role, 'dashboardOne') ?
+          <Route
+            path="/dashboard"
+            render={function (props) {
+              return (
+                <DashboardOne
+                  user={currentUser}
+                  t={t}
+                  history={props.history}
+                  search={qs.parse(props.history.location.search)}
+                  showNewOrderModal={showModal}
+                  closeOrderModal={displayModal}
+                  defaultAsset={propsApp.defaultAsset}
+                  machineData={propsApp.machineData}
+                />
+              )
+            }
+            } />
+          : null
+        }
         <Route exact path="/login" render={(props) =>
           <Login t={t}
             history={props.history}
@@ -78,16 +81,19 @@ function App(propsApp) {
             />} />
           : null
         }
-        <Route exact path="/summary" render={(props) =>
-          <DashboardOne
-            user={currentUser}
-            t={t}
-            history={props.history}
-            search={qs.parse(props.history.location.search)}
-            summary={true}
-            defaultAsset={propsApp.defaultAsset}
-            machineData={propsApp.machineData} />}
-        />
+        {currentUser && isComponentValid(currentUser.role, 'summary') ?
+          <Route exact path="/summary" render={(props) =>
+            <DashboardOne
+              user={currentUser}
+              t={t}
+              history={props.history}
+              search={qs.parse(props.history.location.search)}
+              summary={true}
+              defaultAsset={propsApp.defaultAsset}
+              machineData={propsApp.machineData} />}
+          />
+          : null
+        }
       </Suspense>
     </Router>
   );

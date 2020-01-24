@@ -252,6 +252,7 @@ function isComponentValid(user_role, name) {
   if (user_role) {
     role = user_role.toLowerCase();
   }
+  console.log(role);
   const componentStructure = {
     administrator: [
       'menu',
@@ -273,7 +274,9 @@ function isComponentValid(user_role, name) {
       'neworder',
       'manualentry',
       'import',
-      'scrap'
+      'scrap',
+      'dashboardOne',
+      'summary'
     ],
     supervisor: [
       'menu',
@@ -289,20 +292,29 @@ function isComponentValid(user_role, name) {
       'pagination',
       'neworder',
       'manualentry',
+      'dashboardOne',
+      'summary'
     ],
     operator: [
-      'actual',
       'timelost',
       'comments',
       'pagination',
       'operator_signoff',
       'intershifts',
       'supervisor_signoff',
-      'neworder'
+      'neworder',
+      'dashboardOne'
+    ],
+    summary: [
+      'megamenu',
+      'timelost',
+      'comments',
+      'intershifts',
+      'summary'
     ]
   }
 
-  if (!['administrator', 'supervisor', 'operator'].includes(role)) {
+  if (!['administrator', 'supervisor', 'operator','summary'].includes(role)) {
     return false;
   }
   if (!componentStructure.administrator.includes(name)) {
