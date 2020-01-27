@@ -6,7 +6,8 @@ import {
     getCurrentTime,
     isFieldAllowed,
     isComponentValid,
-    formatNumber
+    formatNumber,
+    convertNumber
 } from '../Utils/Requests';
 import _ from 'lodash';
 import FontAwesome from 'react-fontawesome';
@@ -43,14 +44,14 @@ const helpers = {
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (Number(rowValid.actual) === 0 && Number(rowValid.target) === 0) || (Number(rowValid.actual) < Number(rowValid.target)) ? '#b80600' : 'green';
-            style.backgroundImage = (Number(rowValid.actual) === 0 && Number(rowValid.target) === 0) || (Number(rowValid.actual) < Number(rowValid.target)) ? 'url("../dark-circles.png")' :
+            style.backgroundColor = (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? '#b80600' : 'green';
+            style.backgroundImage = (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
         } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (Number(rowValid.cumulative_actual) === 0) || (Number(rowValid.cumulative_actual) < Number(rowValid.cumulative_target)) ? '#b80600' : 'green';
-            style.backgroundImage = (Number(rowValid.cumulative_actual) === 0) || (Number(rowValid.cumulative_actual) < Number(rowValid.cumulative_target)) ? 'url("../dark-circles.png")' :
+            style.backgroundColor = (convertNumber(rowValid.cumulative_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid.cumulative_actual, this.state.uom_asset) < convertNumber(rowValid.cumulative_target, this.state.uom_asset)) ? '#b80600' : 'green';
+            style.backgroundImage = (convertNumber(rowValid.cumulative_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid.cumulative_actual, this.state.uom_asset) < convertNumber(rowValid.cumulative_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
@@ -69,7 +70,7 @@ const helpers = {
     renderCell(cellInfo, prop, defaultValue, displayClick, displayEmptyClick) {
         if (cellInfo.original !== undefined) {
             return <span className="react-table-click-text table-click" onClick={() => displayClick ? this.openModal(arguments[5], cellInfo.original, prop, cellInfo.subRows !== undefined) : {}}>
-                {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : (this.state.uom_asset && this.state.uom_asset.decimals ? (Math.round(cellInfo.original[prop] * 10 + Number.EPSILON) / 10) : Math.floor(cellInfo.original[prop]))) : defaultValue}
+                {cellInfo.original[prop] ? (isNaN(cellInfo.original[prop]) ? cellInfo.original[prop] : convertNumber(cellInfo.original[prop], this.state.uom_asset)) : defaultValue}
             </span>;
         } else {
             return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => displayClick && displayEmptyClick ? this.openModal(arguments[5], cellInfo, prop, cellInfo.subRows !== undefined) : {}}></span>;
