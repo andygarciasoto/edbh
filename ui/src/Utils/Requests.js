@@ -252,7 +252,6 @@ function isComponentValid(user_role, name) {
   if (user_role) {
     role = user_role.toLowerCase();
   }
-  console.log(role);
   const componentStructure = {
     administrator: [
       'menu',
@@ -314,7 +313,7 @@ function isComponentValid(user_role, name) {
     ]
   }
 
-  if (!['administrator', 'supervisor', 'operator','summary'].includes(role)) {
+  if (!['administrator', 'supervisor', 'operator', 'summary'].includes(role)) {
     return false;
   }
   if (!componentStructure.administrator.includes(name)) {
@@ -377,6 +376,17 @@ function getStationAsset(station) {
   }
 }
 
+function convertNumber(num, uom_asset) {
+  let result = 0;
+  if (uom_asset && uom_asset.decimals) {
+    result = (Math.round(num * 10 + Number.EPSILON) / 10);
+  } else {
+    result = Math.floor(num);
+  }
+
+  return result;
+}
+
 export {
   getRequestData,
   getIntershift,
@@ -399,5 +409,6 @@ export {
   formatNumber,
   getStationAsset,
   getCurrentTimeOnly,
-  BuildGet
+  BuildGet,
+  convertNumber
 }
