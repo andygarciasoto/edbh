@@ -156,7 +156,11 @@ function createUnallocatedTime(obj, tz, dt) {
                     var idealTimeForPart = totalTime / item.summary_ideal;
                     var minimumTime = newIdeal * idealTimeForPart;
                     var actualTimeForPart = item.summary_actual * idealTimeForPart;
+                    if (Math.round(minimumTime - actualTimeForPart) > minutes){
+                        item['unallocated_time'] = minutes;    
+                    }else{
                     item['unallocated_time'] = Math.round(minimumTime - actualTimeForPart);
+                }
                 } else {
                     item['unallocated_time'] = 0;
                 }
