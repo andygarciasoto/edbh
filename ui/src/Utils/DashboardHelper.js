@@ -44,8 +44,8 @@ const helpers = {
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? '#b80600' : 'green';
-            style.backgroundImage = (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+            style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? '#b80600' : 'green';
+            style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
