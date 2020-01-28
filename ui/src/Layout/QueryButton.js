@@ -39,9 +39,9 @@ class QueryButton extends React.Component {
         queryItem["ln"] = this.state.language;
         queryItem["tp"] = this.state.machine_type;
         let parameters = $.param(queryItem);
+        this.props.changeLanguageBrowser();
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
         this.props.openMenu();
-        this.props.changeLanguageBrowser();
     }
 
     render() {

@@ -31,6 +31,7 @@ class Header extends React.Component {
 
     getInitialState(props) {
         let search = qs.parse(props.history.location.search);
+        console.log()
         return {
             megaMenuToggle: 'dropdown-content',
             mc: search.mc || props.machineData.asset_code,
@@ -108,7 +109,7 @@ class Header extends React.Component {
         const parameters = {
             params: {
                 site: newSite.asset_id,
-                user_id: newSite['dbo.TFDUsers'][0].ID
+                user_id: newSite['dbo.TFDUsers'][0].id
             }
         };
 

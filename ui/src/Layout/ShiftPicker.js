@@ -17,10 +17,7 @@ class ShiftPickerCustom extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let newShifts = this.state.shifts;
-    if (this.state.site !== nextProps.user.site) {
-      newShifts = nextProps.user.shifts;
-    }
+    let newShifts = nextProps.user.shifts;
     this.setState({
       value: nextProps.value,
       shifts: newShifts

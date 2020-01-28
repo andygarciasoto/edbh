@@ -9,6 +9,7 @@ import configuration from './config.json';
 import { API } from './Utils/Constants';
 import queryString from 'query-string';
 import { BuildGet } from './Utils/Requests';
+import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
@@ -117,11 +118,12 @@ function init() {
             localStorage.setItem('language', json.data[0].language);
 
             let station = params.st || localStorage.getItem('machine_name');
+            let site = params.cs;
             let machine = null;
             const shift = {
                 params: {
                     st: station,
-                    site: user.site,
+                    site: site || user.site,
                     clock_number: user.clock_number
                 }
             }
@@ -154,6 +156,35 @@ function init() {
             ).catch(function (error) {
                 console.log(error);
             });
+
+            if (site && user.site !== site) {
+
+                const parameters = {
+                    params: {
+                        user_id: _.find(user.sites, ['asset_id', parseInt(site)])['dbo.TFDUsers'][0].id
+                    }
+                };
+
+                let updateUserRequest = [
+                    BuildGet(`${API}/user_info_login_by_site`, parameters)
+                ];
+
+                await axios.all(updateUserRequest).then(
+                    axios.spread(async (responseUser) => {
+                        let newUserValues = responseUser.data[0];
+                        user.role = newUserValues.role;
+                        user.site = newUserValues.site;
+                        user.site_name = newUserValues.site_name;
+                        user.timezone = newUserValues.timezone;
+                        user.current_shift = newUserValues.shift_name;
+                        user.shift_id = newUserValues.shift_id;
+                        user.language = newUserValues.language;
+                    })
+                ).catch(function (error) {
+                    console.log(error);
+                });
+
+            }
 
             ReactDOM.render(
                 <App user={user} defaultAsset={station} machineData={machine} />, document.getElementById('root'));

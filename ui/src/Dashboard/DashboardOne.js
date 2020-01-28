@@ -3,7 +3,6 @@ import './dashboard.scss';
 import '../sass/tooltip.scss';
 import { Row, Col } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import i18next from 'i18next';
 import 'react-table/react-table.css';
 import moment from 'moment';
 import CommentsModal from '../Layout/CommentModal';
@@ -19,7 +18,6 @@ import Pagination from '../Layout/Pagination';
 import ScrapModal from '../Layout/ScrapModal';
 import openSocket from 'socket.io-client';
 import {
-  getRequest,
   formatDate,
   isComponentValid,
   mapShift,
@@ -36,12 +34,28 @@ import('moment/locale/it');
 import('moment/locale/de');
 const axios = require('axios');
 
+const modalStyle = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0,0,0, 0.6)'
+  }
+};
+
 
 class DashboardOne extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = Object.assign(this.getInitialState(props));
+    let temporalState = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
+
+    this.state = Object.assign(temporalState, this.getTableColumns(temporalState));
   }
 
   getInitialState(props) {
@@ -49,7 +63,7 @@ class DashboardOne extends React.Component {
     return {
       data: [],
       columns: [],
-      modalStyle: {},
+      modalStyle: modalStyle,
       errorModal: false,
       ErrorMessage: '',
       modal_values_IsOpen: false,
@@ -72,6 +86,7 @@ class DashboardOne extends React.Component {
       selectedMachineType: props.search.tp || props.machineData.automation_level,
       station: props.search.st || '00000',
       currentLanguage: props.search.ln || props.user.language,
+      site: props.search.cs || props.user.site,
       valueToEdit: '',
       cumulativepcs: '',
       modalType: '',
@@ -80,7 +95,7 @@ class DashboardOne extends React.Component {
       selectedShift: props.search.sf || props.user.current_shift,
       selectedHour: props.search.hr,
       dateFromData: false,
-      shifts: {},
+      shifts: props.user.shifts,
       timezone: props.user.timezone,
       currentHour: hour,
       summary: props.summary,
@@ -144,36 +159,7 @@ class DashboardOne extends React.Component {
   }
 
   async componentDidMount() {
-    const st = {
-      params: {
-        site: this.props.user.site
-      }
-    }
-    const shifts = getRequest('/shifts', st);
-    shifts.then(shiftObj => { this.setState({ shifts: shiftObj }) });
-
-    let currentLanguage = this.state.currentLanguage.toLowerCase();
-    currentLanguage = currentLanguage.replace('-', '_');
-    let _this = this;
-    i18next.changeLanguage(currentLanguage, () => {
-      _this.setState(Object.assign(_this.getTextTranslations(_this.props)), () => _this.getTableColumns());
-    }); // -> returns a Promise
-    const modalStyle = {
-      content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-      },
-      overlay: {
-        backgroundColor: 'rgba(0,0,0, 0.6)'
-      }
-    };
-    const x = moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL');
-    this.setState({ modalStyle, selectedDateParsed: x })
-    this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+    this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
     const socket = openSocket.connect(SOCKET);
     socket.on('connect', () => console.log('Connected to the Websocket Service'));
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
@@ -181,7 +167,7 @@ class DashboardOne extends React.Component {
       socket.on('message', response => {
         if (response.message === true) {
           if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_values_IsOpen && !this.state.modal_scrap_IsOpen) {
-            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]);
+            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
           }
         }
       });
@@ -193,20 +179,28 @@ class DashboardOne extends React.Component {
       if (!_.isEqual(nextProps.search, this.props.search)) {
         let _this = this;
         if (nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) {
-          let currentLanguage = nextProps.search.ln.toLowerCase();
-          currentLanguage = currentLanguage.replace('-', '_');
-          i18next.changeLanguage(currentLanguage, () => {
-            _this.setState(Object.assign(_this.getTextTranslations(nextProps)), () => _this.getTableColumns());
-          }); // -> returns a Promise
+          let temporalState = Object.assign(_this.getTextTranslations(nextProps));
+          this.setState(Object.assign(temporalState, this.getTableColumns(temporalState)));
         }
         if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
-          this.setState(Object.assign(this.getTextTranslations(nextProps)), () => this.getTableColumns())
+          let temporalState = Object.assign(_this.getTextTranslations(nextProps));
+          this.setState(Object.assign(temporalState, this.getTableColumns(temporalState)));
         }
 
-        let selectedDate = nextProps.search.dt || getCurrentTime(this.props.user.timezone);
-        let selectedMachine = nextProps.search.mc || this.state.selectedMachine;
-        let selectedShift = nextProps.search.sf || this.state.selectedShift;
-        this.fetchData([selectedMachine, selectedDate, selectedShift]);
+        let selectedDate;
+        let selectedMachine;
+        let selectedShift;
+        if (nextProps.user.site === this.state.site) {
+          selectedDate = nextProps.search.dt || getCurrentTime(this.props.user.timezone);
+          selectedMachine = nextProps.search.mc || this.state.selectedMachine;
+          selectedShift = nextProps.search.sf || this.state.selectedShift;
+        } else {
+          selectedDate = getCurrentTime(nextProps.user.timezone);
+          selectedMachine = nextProps.machineData.asset_code;
+          selectedShift = nextProps.user.current_shift;
+        }
+
+        this.fetchData([selectedMachine, selectedDate, selectedShift], nextProps);
         this.setState({
           selectedDate: selectedDate,
           selectedMachine: selectedMachine,
@@ -214,6 +208,8 @@ class DashboardOne extends React.Component {
           selectedShift: selectedShift,
           selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
           selectedHour: nextProps.search.hr,
+          site: nextProps.user.site === this.state.site ? this.state.site : nextProps.user.site,
+          shifts: nextProps.user.shifts,
           expanded: {}
         });
 
@@ -223,26 +219,27 @@ class DashboardOne extends React.Component {
     }
   }
 
-  fetchData = (data) => {
+  fetchData = (data, props) => {
+    props = props ? props : this.props;
     //validation for date if we need to load next day data
-    if (!this.props.search.dt) {
-      let start_time_first_shift = moment(data[1].split(' ')[0] + ' ' + this.props.user.shifts[0].hour + ':00').tz(this.props.user.timezone);
-      let start_time_last_shift = moment(data[1].split(' ')[0] + ' ' + this.props.user.shifts[this.props.user.shifts.length - 1].hour + ':00').tz(this.props.user.timezone);
-      let current_time = moment(getCurrentTime(this.props.user.timezone));
+    if (!props.search.dt) {
+      let start_time_first_shift = moment(data[1].split(' ')[0] + ' ' + props.user.shifts[0].hour + ':00').tz(props.user.timezone);
+      let start_time_last_shift = moment(data[1].split(' ')[0] + ' ' + props.user.shifts[props.user.shifts.length - 1].hour + ':00').tz(props.user.timezone);
+      let current_time = moment(getCurrentTime(props.user.timezone));
       if (current_time.isSameOrAfter(start_time_first_shift) && current_time.isAfter(start_time_last_shift)) {
-        data[1] = moment(data[1]).tz(this.props.user.timezone).add(1, 'days').format('YYYY/MM/DD HH:mm');
+        data[1] = moment(data[1]).tz(props.user.timezone).add(1, 'days').format('YYYY/MM/DD HH:mm');
       }
     }
     if (this.state.summary) {
-      this.loadDataAllShift(data);
+      this.loadDataAllShift(data, props);
     } else {
-      this.loadDataCurrentShift(data);
+      this.loadDataCurrentShift(data, props);
     }
   }
 
-  loadDataAllShift(filter) {
-    console.log("this is the filter: " ,filter);
-    const logoffHour = formatNumber(moment(getCurrentTime(this.props.user.timezone)).format('HH:mm').toString().slice(3, 5));
+  loadDataAllShift(filter, props) {
+
+    const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
@@ -250,12 +247,12 @@ class DashboardOne extends React.Component {
     let errorMessage = '';
 
     if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
+      if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
         errorModal = true;
         errorMessage = 'Please sign off for the previous hour';
       }
     }
-    var tz = this.state.commonParams ? this.state.commonParams.value : this.props.user.current_shift;
+    var tz = this.state.commonParams ? this.state.commonParams.value : props.user.current_shift;
     var est = moment().tz(tz).hours();
     if (minutes > 6 && localStorage.getItem("currentHour")) {
       if (localStorage.getItem("currentHour") !== est) {
@@ -266,18 +263,18 @@ class DashboardOne extends React.Component {
 
     if (filter && filter[0]) {
 
-      let hr = moment().tz(this.props.user.timezone).hours();
+      let hr = moment().tz(props.user.timezone).hours();
 
       let requestArray = [];
 
-      _.forEach(this.props.user.shifts, shift => {
+      _.forEach(props.user.shifts, shift => {
         let param = {
           params: {
             mc: filter[0],
             dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
             sf: shift.shift_id,
             hr: hr,
-            st: this.props.user.site
+            st: props.user.site
           }
         }
         requestArray.push(BuildGet(`${API}/data`, param));
@@ -304,7 +301,7 @@ class DashboardOne extends React.Component {
           _.forEach(responses, (response, index) => {
             if (index < (responses.length - 2)) {
               let shift = {
-                'hour_interval': this.props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                 'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
                 'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
@@ -330,8 +327,8 @@ class DashboardOne extends React.Component {
 
   }
 
-  loadDataCurrentShift(filter) {
-    const logoffHour = formatNumber(moment(getCurrentTime(this.props.user.timezone)).format('HH:mm').toString().slice(3, 5));
+  loadDataCurrentShift(filter, props) {
+    const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
     let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
@@ -339,12 +336,12 @@ class DashboardOne extends React.Component {
     let errorMessage = '';
 
     if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true && this.props.user.role === 'Operator') {
+      if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
         errorModal = true;
         errorMessage = 'Please sign off for the previous hour';
       }
     }
-    var tz = this.state.commonParams ? this.state.commonParams.value : this.props.user.timezone;
+    var tz = this.state.commonParams ? this.state.commonParams.value : props.user.timezone;
     var est = moment().tz(tz).hours();
     if (minutes > 6 && localStorage.getItem("currentHour")) {
       if (localStorage.getItem("currentHour") !== est) {
@@ -357,7 +354,7 @@ class DashboardOne extends React.Component {
 
       let sf = {};
 
-      _.forEach(this.props.user.shifts, shift => {
+      _.forEach(props.user.shifts, shift => {
         if (shift.shift_name === filter[2]) {
           sf = shift;
         }
@@ -367,9 +364,9 @@ class DashboardOne extends React.Component {
         params: {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
-          sf: sf.shift_id || this.props.user.shift_id,
-          hr: moment().tz(this.props.user.timezone).hours(),
-          st: this.props.user.site
+          sf: sf.shift_id || props.user.shift_id,
+          hr: moment().tz(props.user.timezone).hours(),
+          st: props.user.site
         }
       }
       let requestData = [
@@ -413,15 +410,9 @@ class DashboardOne extends React.Component {
     }
   }
 
-  changeLanguage(e) {
-    e = e.split('_')[0]
-    const date = this.state.selectedDate ? this.state.selectedDate : new Date();
-    let parsedDate = moment(date).locale(e).format('YYYY/MM/DD HH:ss');
-    this.setState({ selectedDateParsed: parsedDate })
-    this.fetchData();
-  }
-
   render() {
+    console.log(this.state);
+    console.log((this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length);
     const columns = this.state.columns;
     let machineName = 'No Data';
     _.forEach(this.props.user.machines, (machine) => {
@@ -476,7 +467,7 @@ class DashboardOne extends React.Component {
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  defaultPageSize={this.state.summary ? (this.props.user.shifts.length * (this.props.user.shifts[0].duration_in_minutes / 60)) + this.props.user.shifts.length : (this.props.user.shifts[0].duration_in_minutes / 60)}
+                  pageSize={this.state.summary ? (this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length : (this.state.shifts[0].duration_in_minutes / 60)}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}

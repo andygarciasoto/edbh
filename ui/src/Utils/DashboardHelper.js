@@ -164,7 +164,7 @@ const helpers = {
         };
     },
 
-    getTableColumns() {
+    getTableColumns(state) {
         let columns = [
             {
                 Header: "",
@@ -188,7 +188,7 @@ const helpers = {
             },
             { pivot: true },
             {
-                Header: this.getHeader(this.state.shiftText),
+                Header: this.getHeader(state.shiftText),
                 accessor: 'hour_interval',
                 minWidth: 130,
                 Pivot: (row) => {
@@ -213,7 +213,7 @@ const helpers = {
                     return style1;
                 }
             }, {
-                Header: this.getHeader(this.state.partNumberText),
+                Header: this.getHeader(state.partNumberText),
                 minWidth: 180,
                 accessor: 'product_code',
                 Cell: c => this.renderCell(c, 'product_code', '', true, false, 'manualentry'),
@@ -221,21 +221,21 @@ const helpers = {
                 PivotValue: <span>{''}</span>,
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.idealText),
+                Header: this.getHeader(state.idealText),
                 accessor: 'ideal',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, 'ideal', 0, true, true, 'values', c.original),
                 Aggregated: a => this.renderAggregated(a, 'summary_ideal', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.targetText),
+                Header: this.getHeader(state.targetText),
                 accessor: 'target',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, 'target', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 Aggregated: a => this.renderAggregated(a, 'summary_target', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.actualText),
+                Header: this.getHeader(state.actualText),
                 accessor: 'actual',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, 'actual', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'values'),
@@ -243,7 +243,7 @@ const helpers = {
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }
             // , {
-            //   Header: this.getHeader(this.state.scrapText),
+            //   Header: this.getHeader(state.scrapText),
             //   accessor: 'scrap',
             //   minWidth: 90,
             //   Cell: c => {
@@ -259,41 +259,41 @@ const helpers = {
             //   getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             // }
             , {
-                Header: this.getHeader(this.state.cumulativeTargetText),
+                Header: this.getHeader(state.cumulativeTargetText),
                 accessor: 'cumulative_target',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, 'cumulative_target', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 Aggregated: a => this.renderAggregated(a, 'cumulative_target', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.cumulativeActualText),
+                Header: this.getHeader(state.cumulativeActualText),
                 accessor: 'cumulative_actual',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
                 Aggregated: a => this.renderAggregated(a, 'cumulative_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.timeLostText),
+                Header: this.getHeader(state.timeLostText),
                 accessor: 'timelost_summary',
                 minWidth: 100,
                 Cell: c => this.renderCell(c, '', '', false, false),
                 Aggregated: a => this.renderAggregated(a, '', this.getTimeLostToSet(a), false, true, 'dropdown'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.commentsActionText),
+                Header: this.getHeader(state.commentsActionText),
                 accessor: 'latest_comment',
                 Cell: c => this.renderCell(c, '', '', false, false),
                 Aggregated: a => this.renderAggregated(a, '', this.getCommentsToSet(a), false, true, 'comments'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.operatorText),
+                Header: this.getHeader(state.operatorText),
                 accessor: 'operator_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
                 Aggregated: a => this.renderAggregatedSignOff(a, 'operator_signoff', 'operator_signoff', 'signoff', 'operator'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
-                Header: this.getHeader(this.state.supervisorText),
+                Header: this.getHeader(state.supervisorText),
                 accessor: 'supervisor_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
@@ -302,7 +302,7 @@ const helpers = {
             }
         ];
 
-        this.setState({ columns });
+        return { columns };
     },
 
     openModal(type, val, extraParam) {
