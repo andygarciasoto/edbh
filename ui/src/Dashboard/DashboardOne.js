@@ -23,12 +23,14 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  BuildGet
+  BuildGet,
+  getDateAccordingToShifts
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
 import dashboardHelper from '../Utils/DashboardHelper';
+import $ from 'jquery';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
@@ -54,12 +56,11 @@ class DashboardOne extends React.Component {
     super(props);
 
     let temporalState = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
-
     this.state = Object.assign(temporalState, this.getTableColumns(temporalState));
   }
 
   getInitialState(props) {
-    var hour = moment(getCurrentTime(this.props.user.timezone)).hours();
+    var hour = moment(getCurrentTime(props.user.timezone)).hours();
     return {
       data: [],
       columns: [],
@@ -80,7 +81,7 @@ class DashboardOne extends React.Component {
       logoffHourCheck: localStorage.getItem("signoff") === false ? localStorage.getItem("signoff") : true,
       barcode: 1001,
       dataCall: {},
-      selectedDate: props.search.dt || getCurrentTime(this.props.user.timezone),
+      selectedDate: props.search.dt || getCurrentTime(props.user.timezone),
       selectedDateParsed: '',
       selectedMachine: props.search.mc || props.machineData.asset_code,
       selectedMachineType: props.search.tp || props.machineData.automation_level,
@@ -195,7 +196,7 @@ class DashboardOne extends React.Component {
           selectedMachine = nextProps.search.mc || this.state.selectedMachine;
           selectedShift = nextProps.search.sf || this.state.selectedShift;
         } else {
-          selectedDate = getCurrentTime(nextProps.user.timezone);
+          selectedDate = nextProps.search.dt || getCurrentTime(nextProps.user.timezone);
           selectedMachine = nextProps.machineData.asset_code;
           selectedShift = nextProps.user.current_shift;
         }
@@ -221,15 +222,6 @@ class DashboardOne extends React.Component {
 
   fetchData = (data, props) => {
     props = props ? props : this.props;
-    //validation for date if we need to load next day data
-    if (!props.search.dt) {
-      let start_time_first_shift = moment(data[1].split(' ')[0] + ' ' + props.user.shifts[0].hour + ':00').tz(props.user.timezone);
-      let start_time_last_shift = moment(data[1].split(' ')[0] + ' ' + props.user.shifts[props.user.shifts.length - 1].hour + ':00').tz(props.user.timezone);
-      let current_time = moment(getCurrentTime(props.user.timezone));
-      if (current_time.isSameOrAfter(start_time_first_shift) && current_time.isAfter(start_time_last_shift)) {
-        data[1] = moment(data[1]).tz(props.user.timezone).add(1, 'days').format('YYYY/MM/DD HH:mm');
-      }
-    }
     if (this.state.summary) {
       this.loadDataAllShift(data, props);
     } else {
@@ -239,90 +231,102 @@ class DashboardOne extends React.Component {
 
   loadDataAllShift(filter, props) {
 
-    const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
-    var minutes = moment().minutes();
+    let newDate = getDateAccordingToShifts(filter[1], props.user);
 
-    let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
-    let errorModal = false;
-    let errorMessage = '';
+    console.log(newDate);
+    console.log(filter[1]);
+    if (newDate === filter[1]) {
+      const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
+      var minutes = moment().minutes();
 
-    if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
-        errorModal = true;
-        errorMessage = 'Please sign off for the previous hour';
+      let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
+      let errorModal = false;
+      let errorMessage = '';
+
+      if (logoffHour === config['second_signoff_reminder']) {
+        if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
+          errorModal = true;
+          errorMessage = 'Please sign off for the previous hour';
+        }
       }
-    }
-    var tz = this.state.commonParams ? this.state.commonParams.value : props.user.current_shift;
-    var est = moment().tz(tz).hours();
-    if (minutes > 6 && localStorage.getItem("currentHour")) {
-      if (localStorage.getItem("currentHour") !== est) {
-        localStorage.removeItem("signoff");
-        localStorage.removeItem("currentHour");
+      var est = moment().tz(props.user.timezone).hours();
+      if (minutes > 6 && localStorage.getItem("currentHour")) {
+        if (localStorage.getItem("currentHour") !== est) {
+          localStorage.removeItem("signoff");
+          localStorage.removeItem("currentHour");
+        }
       }
-    }
 
-    if (filter && filter[0]) {
+      if (filter && filter[0]) {
 
-      let hr = moment().tz(props.user.timezone).hours();
+        let hr = moment().tz(props.user.timezone).hours();
 
-      let requestArray = [];
+        let requestArray = [];
 
-      _.forEach(props.user.shifts, shift => {
-        let param = {
+        _.forEach(props.user.shifts, shift => {
+          let param = {
+            params: {
+              mc: filter[0],
+              dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+              sf: shift.shift_id,
+              hr: hr,
+              st: props.user.site
+            }
+          }
+          requestArray.push(BuildGet(`${API}/data`, param));
+        });
+
+
+        const parameters = {
           params: {
             mc: filter[0],
-            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-            sf: shift.shift_id,
-            hr: hr,
-            st: props.user.site
+            dt: formatDate(filter[1]).split("-").join(""),
+            sf: mapShift(filter[2]),
+            hr: hr
           }
-        }
-        requestArray.push(BuildGet(`${API}/data`, param));
-      });
+        };
+        requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
+        requestArray.push(BuildGet(`${API}/uom_asset`, parameters));
 
+        let _this = this;
 
-      const parameters = {
-        params: {
-          mc: filter[0],
-          dt: formatDate(filter[1]).split("-").join(""),
-          sf: mapShift(filter[2]),
-          hr: hr
-        }
-      };
-      requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
-      requestArray.push(BuildGet(`${API}/uom_asset`, parameters));
+        axios.all(requestArray).then(
+          axios.spread((...responses) => {
 
-      let _this = this;
-
-      axios.all(requestArray).then(
-        axios.spread((...responses) => {
-
-          let data = [];
-          _.forEach(responses, (response, index) => {
-            if (index < (responses.length - 2)) {
-              let shift = {
-                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-                'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
-                'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
-              };
-              if (data === []) {
-                data = _.concat([shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
-              } else {
-                data = _.concat(data, [shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
+            let data = [];
+            _.forEach(responses, (response, index) => {
+              if (index < (responses.length - 2)) {
+                let shift = {
+                  'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+                  'summary_target': this.state.targetText, 'summary_actual': this.state.actualText, 'scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
+                  'cumulative_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+                  'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
+                };
+                if (data === []) {
+                  data = _.concat([shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
+                } else {
+                  data = _.concat(data, [shift], _.orderBy(response.data, ['hour_interval_start', 'start_time']));
+                }
               }
-            }
-          });
+            });
 
-          let comments = responses[responses.length - 2].data;
-          let uom_asset = responses[responses.length - 1].data;
+            let comments = responses[responses.length - 2].data;
+            let uom_asset = responses[responses.length - 1].data;
 
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
+            _this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
 
-        })
-      ).catch(function (error) {
-        console.log(error);
-      });
+          })
+        ).catch(function (error) {
+          console.log(error);
+        });
+      }
+    } else {
+      console.log('change date');
+      let queryItem = Object.assign({}, props.search);
+      // eslint-disable-next-line no-self-assign
+      queryItem["dt"] = newDate;
+      let parameters = $.param(queryItem);
+      props.history.push(`${props.history.location.pathname}?${parameters}`);
     }
 
   }
@@ -411,8 +415,6 @@ class DashboardOne extends React.Component {
   }
 
   render() {
-    console.log(this.state);
-    console.log((this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length);
     const columns = this.state.columns;
     let machineName = 'No Data';
     _.forEach(this.props.user.machines, (machine) => {

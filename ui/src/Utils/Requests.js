@@ -387,6 +387,23 @@ function convertNumber(num, uom_asset) {
   return result;
 }
 
+function getDateAccordingToShifts(filterDate, user) {
+  let newDate = moment(filterDate);
+  let currentDate = moment(getCurrentTime(user.timezone));
+  let startNewDate = moment(newDate.format('YYYY/MM/DD') + ' 00:00');
+  let startCurrentDate = moment(currentDate.format('YYYY/MM/DD') + ' 00:00');
+
+  if (startNewDate.isSame(startCurrentDate)) {
+    let lastShiftDate = moment(user.shifts[user.shifts.length - 1].end_date_time_today);
+    if (currentDate.isAfter(lastShiftDate)) {
+      console.log('actual datetime is more than the last shift for today');
+      newDate = startNewDate.add(1, 'days');
+    }
+  }
+
+  return newDate.format('YYYY/MM/DD HH:mm');
+}
+
 export {
   getRequestData,
   getIntershift,
@@ -410,5 +427,6 @@ export {
   getStationAsset,
   getCurrentTimeOnly,
   BuildGet,
-  convertNumber
+  convertNumber,
+  getDateAccordingToShifts
 }

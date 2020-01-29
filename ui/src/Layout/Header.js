@@ -131,6 +131,8 @@ class Header extends React.Component {
                 user.language = newUserValues.language;
                 user.shifts = responseShift.data;
                 user.machines = responseMachine.data;
+                user.date_of_shift = newUserValues.date_of_shift;
+                user.current_date_time = newUserValues.current_date_time
                 this.props.changeCurrentUser(user);
                 await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}`);
             })
