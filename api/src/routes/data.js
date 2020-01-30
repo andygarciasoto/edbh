@@ -56,6 +56,18 @@ router.use(function (req, res, next) {
     }
 });
 
+function responsePostPutNoJSON(response, req, res) {
+    try {
+        const resBD = response[0].ReturnStatus;
+        console.log(resBD);
+        if (resBD === 0) {
+            res.status(200).send('Message Entered Succesfully');
+        } else {
+            res.status(500).send({ message: 'Error', database_error: response });
+        }
+    } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: response }); }
+};
+
 function responsePostPut(response, req, res) {
     try {
         const resBD = JSON.parse(Object.values(Object.values(response)[0])[0])[0].Return.Status;
@@ -115,7 +127,7 @@ router.get('/data', async function (req, res) {
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
-        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_new_2 ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, ${params.st};`,
+        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_new_3 ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, ${params.st};`,
             (err, response) => {
                 if (err) {
                     console.log(err);
@@ -1071,6 +1083,49 @@ router.get('/comments_dxh_data', async function (req, res) {
         }
         )
     };
+});
+
+router.put('/scrap_values', function (req, res) {
+    const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
+    const setup_scrap = req.body.setup_scrap ? parseFloat(req.body.setup_scrap) : undefined;
+    const other_scrap = req.body.other_scrap ? parseFloat(req.body.other_scrap) : undefined;
+    const adjusted_actual = req.body.adjusted_actual ? parseFloat(req.body.adjusted_actual) : undefined;
+    const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+
+    if (dxh_data_id === undefined || productiondata_id === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters - dxh_data_id,productiondata_id, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
+    }
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
+        }
+    }
+
+    if (clocknumber) {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', NULL, NULL;`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                };
+                responsePostPutNoJSON(response, req, res);
+            });
+    } else {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}';`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                };
+                responsePostPutNoJSON(response, req, res);
+            });
+    }
+
 });
 
 module.exports = router;

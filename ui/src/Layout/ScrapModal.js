@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { sendPut } from '../Utils/Requests';
 import './CommentsModal.scss';
 
 class ScrapModal extends React.Component {
@@ -56,23 +56,19 @@ class ScrapModal extends React.Component {
 
     submit = (e) => {
         const data = {
-            dxh_data_id: this.state.actualRow && this.state.actualRow.dxhdata_id ? this.state.actualRow.dxhdata_id : undefined,
-            actual: this.state.actualRow && this.state.actualRow.actual ? this.state.actualRow.actual : 'signoff',
-            setup_scrap: this.state.setup_scrap || 'signoff',
-            other_scrap: this.state.other_scrap || 'signoff',
-            adjusted_actual: this.state.adjusted_actual || 'signoff',
+            dxh_data_id: this.state.actualRow.dxhdata_id,
+            productiondata_id: this.state.actualRow.productiondata_id,
+            setup_scrap: this.state.setup_scrap,
+            other_scrap: this.state.other_scrap,
+            adjusted_actual: this.state.adjusted_actual,
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
-            last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-            override: this.state.actualRow && this.state.actualRow.production_id ? parseInt(this.state.actualRow.production_id) : 0,
-            row_timestamp: formatDateWithTime(this.state.actualRow.hour_interval_start),
-            timestamp: getCurrentTime(this.props.timezone),
-            asset_code: this.props.parentData[0]
+            last_name: this.props.user.clock_number ? undefined : this.props.user.last_name
         }
         this.setState({ modal_loading_IsOpen: true }, () => {
             const response = sendPut({
                 ...data
-            }, '/production_data')
+            }, '/scrap_values')
             response.then((res) => {
                 if (res !== 200 || !res) {
                     this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
