@@ -1,5 +1,6 @@
 import { API, AUTH, DATATOOL } from './Constants';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 const axios = require('axios');
 
@@ -335,7 +336,7 @@ function isFieldAllowed(role, row, timezone) {
     return true;
   }
   if (row) {
-    let rowTime = moment(row.hour_interval_start);
+    let rowTime = moment(row.started_on_chunck);
     let actualSiteTime = timezone ? moment().tz(timezone) : moment();
     let diffHours = moment(actualSiteTime.format('YYYY-MM-DD HH')).diff(moment(rowTime.format('YYYY-MM-DD HH')), 'hours');
     let result;
@@ -403,6 +404,42 @@ function getDateAccordingToShifts(filterDate, user) {
   return newDate.format('YYYY/MM/DD HH:mm');
 }
 
+function getCurrentShift(shifts, current_date_time) {
+  let currentShift = {};
+  _.forEach(shifts, shift => {
+    if (moment(current_date_time).isSameOrAfter(moment(shift.start_date_time_today)) && moment(current_date_time).isBefore(moment(shift.end_date_time_today))) {
+      currentShift.current_shift = shift.shift_name;
+      currentShift.shift_id = shift.shift_id;
+      currentShift.date_of_shift = shift.end_date_time_today;
+    }
+    if (moment(current_date_time).isSameOrAfter(moment(shift.start_date_time_yesterday)) && moment(current_date_time).isBefore(moment(shift.end_date_time_yesterday))) {
+      currentShift.current_shift = shift.shift_name;
+      currentShift.shift_id = shift.shift_id;
+      currentShift.date_of_shift = shift.end_date_time_yesterday;
+    }
+    if (moment(current_date_time).isSameOrAfter(moment(shift.start_date_time_tomorrow)) && moment(current_date_time).isBefore(moment(shift.end_date_time_tomorrow))) {
+      currentShift.current_shift = shift.shift_name;
+      currentShift.shift_id = shift.shift_id;
+      currentShift.date_of_shift = shift.end_date_time_tomorrow;
+    }
+  });
+
+  if (!currentShift.shift_id) {
+    if (moment(current_date_time).isSameOrAfter(moment(shifts[shifts.length - 1].end_date_time_today))) {
+      currentShift.current_shift = shifts[0].shift_name;
+      currentShift.shift_id = shifts[0].shift_id;
+      currentShift.date_of_shift = shifts[0].end_date_time_tomorrow;
+    } else if (moment(current_date_time).isBefore(moment(shifts[0].start_date_time_today))) {
+      currentShift.current_shift = shifts[0].shift_name;
+      currentShift.shift_id = shifts[0].shift_id;
+      currentShift.date_of_shift = current_date_time;
+    }
+  }
+
+  console.log('use request to check current shift');
+  return currentShift;
+}
+
 export {
   getRequestData,
   getIntershift,
@@ -427,5 +464,6 @@ export {
   getCurrentTimeOnly,
   BuildGet,
   convertNumber,
-  getDateAccordingToShifts
+  getDateAccordingToShifts,
+  getCurrentShift
 }

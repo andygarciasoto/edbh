@@ -29,13 +29,13 @@ class ScrapModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.currentRow && nextProps.currentRow.dxhdata_id !== null) {
+        if (nextProps.currentRow && nextProps.currentRow.productiondata_id !== null) {
             this.setState({
                 isOpen: nextProps.isOpen,
                 actualRow: nextProps.currentRow,
                 setup_scrap: nextProps.currentRow.setup_scrap || 0,
                 other_scrap: nextProps.currentRow.other_scrap || 0,
-                adjusted_actual: nextProps.currentRow.adjusted_actual || nextProps.currentRow.actual_pcs
+                adjusted_actual: nextProps.currentRow.adjusted_actual || nextProps.currentRow.actual
             });
         }
     }
@@ -44,10 +44,10 @@ class ScrapModal extends React.Component {
         let _this = this;
         e.target.value = e.target.value < 0 && e.target.value !== '' ? 0 : e.target.value;
         let otherName = name === 'setup_scrap' ? 'other_scrap' : 'setup_scrap';
-        if (e.target.value === '' || (parseInt(e.target.value === '' ? 0 : e.target.value, 10) + parseInt(this.state[otherName] === '' ? 0 : this.state[otherName], 10) <= this.state.actualRow.actual_pcs)) {
+        if (e.target.value === '' || (parseInt(e.target.value === '' ? 0 : e.target.value, 10) + parseInt(this.state[otherName] === '' ? 0 : this.state[otherName], 10) <= this.state.actualRow.actual)) {
             this.setState({ [name]: e.target.value !== '' ? parseInt(e.target.value) : 0 }, () => {
                 _this.setState({
-                    adjusted_actual: _this.state.actualRow.actual_pcs -
+                    adjusted_actual: _this.state.actualRow.actual -
                         (parseInt(_this.state.setup_scrap === '' ? 0 : _this.state.setup_scrap, 10) + parseInt(_this.state.other_scrap === '' ? 0 : _this.state.other_scrap, 10))
                 });
             });
@@ -57,7 +57,7 @@ class ScrapModal extends React.Component {
     submit = (e) => {
         const data = {
             dxh_data_id: this.state.actualRow && this.state.actualRow.dxhdata_id ? this.state.actualRow.dxhdata_id : undefined,
-            actual: this.state.actualRow && this.state.actualRow.actual_pcs ? this.state.actualRow.actual_pcs : 'signoff',
+            actual: this.state.actualRow && this.state.actualRow.actual ? this.state.actualRow.actual : 'signoff',
             setup_scrap: this.state.setup_scrap || 'signoff',
             other_scrap: this.state.other_scrap || 'signoff',
             adjusted_actual: this.state.adjusted_actual || 'signoff',
@@ -113,7 +113,7 @@ class ScrapModal extends React.Component {
                                 style={{ paddingTop: '5px' }}
                                 type={this.props.formType}
                                 disabled={true}
-                                value={this.state.actualRow.actual_pcs || 0}>
+                                value={this.state.actualRow.actual || 0}>
                             </Form.Control>
                         </span>
                         <br />
@@ -141,7 +141,7 @@ class ScrapModal extends React.Component {
                         <br />
                         <span className="dashboard-modal-field-group"><p>{this.props.t('Adjusted Actual')}:</p>
                             <input
-                                value={this.state.adjusted_actual || 0}
+                                value={this.state.adjusted_actual || this.state.actualRow.actual || 0}
                                 type="number"
                                 className="form-control"
                                 style={{ paddingTop: '5px' }}

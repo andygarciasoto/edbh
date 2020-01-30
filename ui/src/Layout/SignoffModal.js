@@ -8,7 +8,7 @@ import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
 import ValidateModal from '../Layout/ValidateModal';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { sendPut, getCurrentTime, formatDateWithTime, convertNumber } from '../Utils/Requests';
 
 
 class SignoffModal extends React.Component {
@@ -215,23 +215,18 @@ class SignoffModal extends React.Component {
                         <p style={{ fontWeight: 'bold' }} className="dashboard-modal-signoff-header">{this.state.headerMessage}</p>
                         <ul className={'signoff-list-parent'}>
                             <li><p className={'signoff-list'}>{this.props.t('Ideal') + ': '}</p><p className={'signoff-list'}>
-                                {row.summary_ideal === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_ideal * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_ideal))}
+                                {row.summary_ideal === '' ? 0 : convertNumber(row.summary_ideal, this.props.uom_asset)}
                             </p></li>
                             <li><p className={'signoff-list'}>{this.props.t('Target') + ': '}</p><p className={'signoff-list'}>
-                                {row.summary_target === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_target * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_target))}
+                                {row.summary_target === '' ? 0 : convertNumber(row.summary_target, this.props.uom_asset)}
                             </p></li>
-                            <li><p className={'signoff-list'}>{this.props.t('Actual') + ': '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
-                                {/* <li><p className={'signoff-list'}>{'Actual Recorded: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}> */}
-                                {row.summary_actual === '' ? 0 : (this.props.uom_asset && this.props.uom_asset.decimals ? (Math.round(row.summary_actual * 10 + Number.EPSILON) / 10) : Math.floor(row.summary_actual))}
+                            <li><p className={'signoff-list'}>{'Actual Recorded: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
+                                {row.summary_actual === '' ? 0 : convertNumber(row.summary_actual, this.props.uom_asset)}
                             </p></li>
-                            {false ?
-                                <ul>
-                                    <li><p className={'signoff-list'}>{'Scrap: '}</p><p className={'signoff-list'}>
-                                        {parseInt(row.summary_setup_scrap || 0, 10) + parseInt(row.summary_other_scrap || 0, 10)}</p></li>
-                                    <li><p className={'signoff-list'}>{'Adjusted Actual: '}</p><p className={'signoff-list'}>
-                                        {parseInt(row.summary_adjusted_actual || 0, 10)}</p></li>
-                                </ul>
-                                : null}
+                            <li><p className={'signoff-list'}>{'Scrap: '}</p><p className={'signoff-list'}>
+                                {parseInt(row.summary_scrap || 0, 10)}</p></li>
+                            <li><p className={'signoff-list'}>{'Adjusted Actual: '}</p><p className={'signoff-list'}>
+                                {parseInt(row.summary_adjusted_actual || 0, 10)}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
                         <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }}

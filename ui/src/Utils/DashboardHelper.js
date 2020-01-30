@@ -241,24 +241,14 @@ const helpers = {
                 Cell: c => this.renderCell(c, 'actual', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'values'),
                 Aggregated: a => this.renderAggregated(a, 'summary_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, true, 'values'),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-            }
-            // , {
-            //   Header: this.getHeader(state.scrapText),
-            //   accessor: 'scrap',
-            //   minWidth: 90,
-            //   Cell: c => {
-            //     let defaultValue = !moment(c.original.started_on_chunck).isAfter(getCurrentTime()) ?
-            //       parseInt(c.original.setup_scrap || 0, 10) + parseInt(c.original.other_scrap || 0, 10) : null;
-            //     return this.renderCell(c, '', defaultValue, true, true, 'scrap')
-            //   },
-            //   Aggregated: a => {
-            //     let defaultValue = !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime()) ?
-            //       (parseInt(a.subRows[0]._original.summary_setup_scrap || 0, 10) + parseInt(a.subRows[0]._original.summary_other_scrap || 0, 10)) : null;
-            //     return this.renderAggregated(a, 'scrap', defaultValue, false, a.subRows.length === 1, 'scrap')
-            //   },
-            //   getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-            // }
-            , {
+            }, {
+                Header: this.getHeader(state.scrapText),
+                accessor: 'scrap',
+                minWidth: 90,
+                Cell: c => this.renderCell(c, 'scrap', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, true, 'scrap'),
+                Aggregated: a => this.renderAggregated(a, 'summary_scrap', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, a.subRows.length === 1, 'scrap'),
+                getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
+            }, {
                 Header: this.getHeader(state.cumulativeTargetText),
                 accessor: 'cumulative_target',
                 minWidth: 90,
@@ -413,7 +403,6 @@ const helpers = {
             }
         }
         if (type === 'signoff') {
-            console.log(val);
             if (val) {
                 if (((val.operator_signoff === null) && (extraParam === 'operator')) ||
                     ((val.supervisor_signoff === null) && (extraParam === 'supervisor'))) {
