@@ -57,8 +57,6 @@ class Pagination extends React.Component {
             }
         });
 
-        console.log('indexCurrentShift: ', indexCurrentShift);
-
         let lastShiftDate = moment(props.user.shifts[props.user.shifts.length - 1].end_date_time_today);
         let firstShiftDateTomorrow = moment(props.user.shifts[0].start_date_time_tomorrow);
         if (newState.diffDays === 0) {
