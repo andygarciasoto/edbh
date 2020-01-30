@@ -8,7 +8,7 @@ import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
 import queryString from 'query-string';
-import { BuildGet } from './Utils/Requests';
+import { BuildGet, getCurrentShift } from './Utils/Requests';
 import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
@@ -149,10 +149,6 @@ function init() {
                     }
                     user.shifts = responseShift.data;
                     user.machines = responseMachine.data;
-                    if (!user.shift_id) {
-                        user.shift_id = user.shifts[user.shifts.length - 1].shift_id;
-                        user.current_shift = user.shifts[user.shifts.length - 1].shift_name;
-                    }
                     user.sites = responseLogins.data;
                 })
             ).catch(function (error) {
@@ -187,7 +183,13 @@ function init() {
                 ).catch(function (error) {
                     console.log(error);
                 });
+            }
 
+            if (!user.shift_id) {
+                let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
+                user.date_of_shift = currentShiftInfo.date_of_shift;
+                user.current_shift = currentShiftInfo.current_shift;
+                user.shift_id = currentShiftInfo.shift_id;
             }
 
             ReactDOM.render(

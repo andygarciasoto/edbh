@@ -14,7 +14,7 @@ import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { BuildGet } from '../Utils/Requests';
+import { BuildGet, getCurrentShift } from '../Utils/Requests';
 import { API } from '../Utils/Constants';
 import axios from 'axios';
 
@@ -132,7 +132,15 @@ class Header extends React.Component {
                 user.shifts = responseShift.data;
                 user.machines = responseMachine.data;
                 user.date_of_shift = newUserValues.date_of_shift;
-                user.current_date_time = newUserValues.current_date_time
+                user.current_date_time = newUserValues.current_date_time;
+
+                if (!user.shift_id) {
+                    let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
+                    user.date_of_shift = currentShiftInfo.date_of_shift;
+                    user.current_shift = currentShiftInfo.current_shift;
+                    user.shift_id = currentShiftInfo.shift_id;
+                }
+
                 this.props.changeCurrentUser(user);
                 await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}`);
             })

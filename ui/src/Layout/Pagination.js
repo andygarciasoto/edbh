@@ -63,6 +63,13 @@ class Pagination extends React.Component {
             if (currentDate.isSameOrAfter(lastShiftDate)) {
                 newState.diffDays = -1;
                 indexCurrentShift = 1;
+            } else if (currentDate.isSameOrAfter(moment(props.user.shifts[props.user.shifts.length - 1].start_date_time_yesterday)) &&
+                currentDate.isBefore(moment(props.user.shifts[props.user.shifts.length - 1].end_date_time_yesterday))) {
+                console.log('date between yesterday shift');
+            } else if (currentDate.isBefore(moment(props.user.shifts[0].start_date_time_today))) {
+                console.log('date tome dont have shift start set first shift for today');
+                newState.diffDays = 0;
+                indexCurrentShift = 1;
             }
         }
 
