@@ -112,7 +112,9 @@ function init() {
                 timezone: json.data[0].timezone,
                 current_shift: json.data[0].shift_name,
                 shift_id: json.data[0].shift_id,
-                language: json.data[0].language
+                language: json.data[0].language,
+                date_of_shift: json.data[0].date_of_shift,
+                current_date_time: json.data[0].current_date_time
             }
 
             localStorage.setItem('language', json.data[0].language);
@@ -179,6 +181,8 @@ function init() {
                         user.current_shift = newUserValues.shift_name;
                         user.shift_id = newUserValues.shift_id;
                         user.language = newUserValues.language;
+                        user.date_of_shift = newUserValues.date_of_shift;
+                        user.current_date_time = newUserValues.current_date_time
                     })
                 ).catch(function (error) {
                     console.log(error);
