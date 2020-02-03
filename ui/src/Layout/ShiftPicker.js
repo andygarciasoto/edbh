@@ -1,10 +1,8 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import { mapShift } from '../Utils/Requests';
 import moment from 'moment';
 import './ShiftPicker.scss';
-import _ from 'lodash';
 
 class ShiftPickerCustom extends React.Component {
   constructor(props) {
@@ -24,26 +22,16 @@ class ShiftPickerCustom extends React.Component {
     })
   }
 
-  onSelect = (e) => {
-    let hour = '';
+  onSelect = (shift) => {
+    let hour = moment(shift.hour, 'HH').format('HH:mm');
     const date = this.props.date;
-    const shifts = _.orderBy(this.state.shifts, 'shift_code');
-    if (mapShift(e) === 1) {
-      hour = `${moment(shifts[0].hour, 'HH').format('HH:mm')}`;
-    }
-    if (mapShift(e) === 2) {
-      hour = `${moment(shifts[1].hour, 'HH').format('HH:mm')}`;
-    }
-    if (mapShift(e) === 3) {
-      hour = `${moment(shifts[2].hour, 'HH').format('HH:mm')}`;
-    }
     const newDate = moment(moment(date).format('YYYY/MM/DD') + ' ' + hour);
     this.props.collectInput(new Date(newDate), 'dt');
-    this.props.collectInput(e, 'sf');
+    this.props.collectInput(shift.shift_name, 'sf');
   }
 
   render() {
-    const t = this.props.t
+    const t = this.props.t;
     return (
       <DropdownButton
         alignleft="true"
@@ -53,7 +41,7 @@ class ShiftPickerCustom extends React.Component {
       >
         {
           (this.state.shifts && this.state.shifts.length > 0) ? this.state.shifts.map((shift, index) => {
-            return <Dropdown.Item key={shift.shift_code} eventKey={shift.shift_name} onSelect={(e) => this.onSelect(e)}>{t(shift.shift_name)}</Dropdown.Item>
+            return <Dropdown.Item key={shift.shift_id} eventKey={shift.shift_id} onSelect={() => this.onSelect(shift)}>{t(shift.shift_name)}</Dropdown.Item>
           }) : null
         }
       </DropdownButton>
