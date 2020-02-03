@@ -13,7 +13,8 @@ class QueryButton extends React.Component {
             date: props.date,
             shift: props.shift,
             language: props.language,
-            machine_type: props.machine_type
+            machine_type: props.machine_type,
+            site: props.site
         }
     }
     componentDidMount() {
@@ -25,7 +26,8 @@ class QueryButton extends React.Component {
             date: nextProps.date,
             shift: nextProps.shift,
             language: nextProps.language,
-            machine_type: nextProps.machine_type
+            machine_type: nextProps.machine_type,
+            site: nextProps.site
         })
     }
 
@@ -38,6 +40,7 @@ class QueryButton extends React.Component {
         queryItem["sf"] = this.state.shift;
         queryItem["ln"] = this.state.language;
         queryItem["tp"] = this.state.machine_type;
+        queryItem["cs"] = this.state.site;
         let parameters = $.param(queryItem);
         this.props.changeLanguageBrowser();
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);

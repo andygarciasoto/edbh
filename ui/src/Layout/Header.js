@@ -141,8 +141,11 @@ class Header extends React.Component {
                     user.shift_id = currentShiftInfo.shift_id;
                 }
 
+                let search = qs.parse(this.props.history.location.search);
+                let ln = search.ln;
+
                 this.props.changeCurrentUser(user);
-                await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}`);
+                await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
             })
         ).catch(function (error) {
             console.log(error);
@@ -212,6 +215,7 @@ class Header extends React.Component {
                                         shift={this.state.sf}
                                         machine_type={this.state.tp}
                                         language={this.state.ln}
+                                        site={this.state.cs}
                                         openMenu={this.openMenu}
                                         history={this.props.history}
                                         t={this.props.t}
