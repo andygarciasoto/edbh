@@ -94,23 +94,21 @@ class TimelossModal extends React.Component {
 
         const parameters = {
             params: {
-                mc: props.machine,
+                mc: props.machine === 'No Data' ? null : props.machine,
                 dxh_data_id: props.currentRow.dxhdata_id
             }
         }
-        let requestData = [
-            BuildGet(`${API}/timelost_reasons`, parameters),
-            BuildGet(`${API}/timelost_dxh_data`, parameters)
-        ];
+        let requestData = [BuildGet(`${API}/timelost_reasons`, parameters)];
+
+        let resquestData1 = [BuildGet(`${API}/timelost_dxh_data`, parameters)];
 
         let _this = this;
 
         this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
             axios.all(requestData).then(
-                axios.spread((responseReasons, responseTimeLost) => {
+                axios.spread((responseReasons) => {
                     _this.setState({
                         modal_loading_IsOpen: false,
-                        timelost: responseTimeLost.data,
                         allocated_time: props.currentRow.allocated_time,
                         unallocated_time: props.currentRow.unallocated_time,
                         time_to_allocate: time,
@@ -122,7 +120,17 @@ class TimelossModal extends React.Component {
                     });
                 })
             ).catch(function (error) {
-                _this.setState({ timelost: [], modal_loading_IsOpen: false })
+                _this.setState({ modal_loading_IsOpen: false });
+            });
+            axios.all(resquestData1).then(
+                axios.spread((responseTimeLost) => {
+                    _this.setState({
+                        modal_loading_IsOpen: false,
+                        timelost: responseTimeLost.data
+                    });
+                })
+            ).catch(function (error) {
+                _this.setState({ timelost: [], modal_loading_IsOpen: false });
             });
         });
     }
@@ -183,8 +191,9 @@ class TimelossModal extends React.Component {
         }
         const reasons = [];
         if (this.state.reasons) {
-            for (let reason of this.state.reasons)
-                reasons.push({ value: reason.DTReason.reason_code, label: `${reason.DTReason.reason_code} - ${reason.DTReason.dtreason_name}`, reason_id: reason.DTReason.dtreason_id })
+            _.forEach(this.state.reasons, reason => {
+                reasons.push({ value: reason.reason_code, label: `${reason.reason_code} - ${reason.dtreason_name}`, reason_id: reason.dtreason_id });
+            })
         }
         const t = this.props.t;
         return (

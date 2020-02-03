@@ -341,7 +341,7 @@ router.get('/timelost_reasons', async function (req, res) {
                     res.status(500).send({ message: 'Error', database_error: err });
                     return;
                 }
-                responseGet(response, req, res, 'DTReason');
+                res.status(200).json(response);
             }
             )
         });
