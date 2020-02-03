@@ -226,7 +226,7 @@ class SignoffModal extends React.Component {
                             <li><p className={'signoff-list'}>{'Scrap: '}</p><p className={'signoff-list'}>
                                 {parseInt(row.summary_scrap || 0, 10)}</p></li>
                             <li><p className={'signoff-list'}>{'Adjusted Actual: '}</p><p className={'signoff-list'}>
-                                {parseInt(row.summary_adjusted_actual || 0, 10)}</p></li>
+                                {parseInt(row.summary_adjusted_actual || row.summary_actual || 0, 10)}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
                         <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }}
