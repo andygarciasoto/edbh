@@ -31,7 +31,6 @@ class Header extends React.Component {
 
     getInitialState(props) {
         let search = qs.parse(props.history.location.search);
-        console.log()
         return {
             megaMenuToggle: 'dropdown-content',
             mc: search.mc || props.machineData.asset_code,
@@ -45,7 +44,7 @@ class Header extends React.Component {
 
     componentDidMount() {
         window.addEventListener('scroll', this.onScroll);
-        if (this.state.cs !== this.props.user.site) {
+        if (Number(this.state.cs) !== Number(this.props.user.site)) {
             let actualSite = _.find(this.props.user.sites, ['asset_id', parseInt(this.state.cs)]);
             this.changeUserInformation(actualSite);
         }
@@ -98,7 +97,7 @@ class Header extends React.Component {
     }
 
     changeSite(site) {
-        if (this.state.cs !== site.asset_id) {
+        if (Number(this.state.cs) !== Number(site.asset_id)) {
             this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
 
         }

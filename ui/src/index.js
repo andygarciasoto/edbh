@@ -155,7 +155,7 @@ function init() {
                 console.log(error);
             });
 
-            if (site && user.site !== site) {
+            if (site && Number(user.site) !== Number(site)) {
 
                 const parameters = {
                     params: {

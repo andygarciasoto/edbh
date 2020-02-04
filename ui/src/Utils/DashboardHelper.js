@@ -21,6 +21,12 @@ const helpers = {
     getStyle(applyGrey, align, rowInfo, column) {
         let style = {};
         let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
+        let useIndividualValues = rowInfo ? (rowInfo.subRows ? (rowInfo.subRows.length > 1 ? false : true) : true) : true;
+
+        if (column.id === 'actual') {
+            console.log('rowInfo: ', rowInfo);
+            console.log('useIndividualValues: ', useIndividualValues);
+        }
 
         if (applyGrey) {
             style = {
@@ -44,9 +50,23 @@ const helpers = {
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? '#b80600' : 'green';
-            style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) || (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
-                'url("../arabesque.png")';
+            if (useIndividualValues) {
+                style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? '#b80600' : 'green';
+                style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.actual, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.actual, this.state.uom_asset) < convertNumber(rowValid.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+                    'url("../arabesque.png")';
+            } else {
+                style.backgroundColor = (convertNumber(rowValid.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.summary_target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.summary_actual, this.state.uom_asset) === 0 && convertNumber(rowValid.summary_target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.summary_actual, this.state.uom_asset) < convertNumber(rowValid.summary_target, this.state.uom_asset)) ? '#b80600' : 'green';
+                style.backgroundImage = (convertNumber(rowValid.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.summary_target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.summaty_actual, this.state.uom_asset) === 0 && convertNumber(rowValid.summary_target, this.state.uom_asset) === 0) ||
+                    (convertNumber(rowValid.summary_actual, this.state.uom_asset) < convertNumber(rowValid.summary_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+                    'url("../arabesque.png")';
+            }
             style.color = 'white';
 
         } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
@@ -255,14 +275,14 @@ const helpers = {
                 accessor: 'cumulative_target',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, 'cumulative_target', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
-                Aggregated: a => this.renderAggregated(a, 'cumulative_target', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Aggregated: a => this.renderAggregated(a, !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 'cumulative_target' : '', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(true, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(state.cumulativeActualText),
                 accessor: 'cumulative_actual',
                 minWidth: 90,
                 Cell: c => this.renderCell(c, '', '', false, false),
-                Aggregated: a => this.renderAggregated(a, 'cumulative_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
+                Aggregated: a => this.renderAggregated(a, !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 'cumulative_actual' : '', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, false, false),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(state.timeLostText),
