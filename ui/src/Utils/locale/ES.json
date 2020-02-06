@@ -110,5 +110,11 @@
     "Manual Entry Succesfully Inserted": "Entrada Manual Insertada Correctamente",
     "Value was inserted": "Valor insertado",
     "Signoff was inserted": "Aprobación ingresada",
-    "Tmeloss was inserted": "Tiempo Perdido ingresado"
+    "Tmeloss was inserted": "Tiempo Perdido ingresado",
+    "Site Configuration Import/Export Tool": "Planta Herramienta De Importar/Exportar Configuración",
+    "Select an action": "Seleccione una acción",
+    "Please choose the Configuration Items to": "Por favor seleccione la Configuración de Items a",
+    "All Configuration Items": "Todos los Items de Configuración",
+    "Available Configuration Items": "Item de Configuración Disponibles",
+    "Selected Configuration Items to": "Items de Configuración seleccionados para"
 }

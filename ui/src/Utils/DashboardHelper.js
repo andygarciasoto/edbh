@@ -23,11 +23,6 @@ const helpers = {
         let rowValid = rowInfo ? (rowInfo.subRows ? rowInfo.subRows[0] : rowInfo.row) : null;
         let useIndividualValues = rowInfo ? (rowInfo.subRows ? (rowInfo.subRows.length > 1 ? false : true) : true) : true;
 
-        if (column.id === 'actual') {
-            console.log('rowInfo: ', rowInfo);
-            console.log('useIndividualValues: ', useIndividualValues);
-        }
-
         if (applyGrey) {
             style = {
                 backgroundColor: 'rgb(247, 247, 247)',
