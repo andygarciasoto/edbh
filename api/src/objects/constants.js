@@ -71,7 +71,6 @@ module.exports = Object.freeze({
         { header: 'valid_to', type: 'DATETIME', key: 'valid_to', width: 27 },
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
         { header: 'team_code', type: 'VARCHAR', key: 'team_code', width: 16 },
-        { header: 'asset_description', type: 'VARCHAR', key: 'asset_description', width: 27 },
         { header: 'is_first_shift_of_day', type: 'BIT', key: 'is_first_shift_of_day', width: 20 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
@@ -100,12 +99,13 @@ module.exports = Object.freeze({
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
+        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 },
     ],
     TagSQL: (site_id) => {
         return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
         [Tag].[UOM_code],[Tag].[rollover_point],[Tag].[aggregation],[Tag].[status],[Tag].[entered_by],[Tag].[entered_on],[Tag].[last_modified_by],
-        [Tag].[last_modified_on] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
+        [Tag].[last_modified_on],[Tag].[max_change] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
     },
     CommonParameters: [
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 15 },
@@ -125,14 +125,16 @@ module.exports = Object.freeze({
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
+        { header: 'summary_timeout', type: 'FLOAT', key: 'summary_timeout', width: 25 },
     ],
     CommonParametersSQL: (site_id) => {
         return `SELECT [Asset].[asset_code],[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
         [CommonParameters].[ui_timezone],[CommonParameters].[escalation_level1_minutes],[CommonParameters].[escalation_level2_minutes],
         [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
         [CommonParameters].[setup_lookback_minutes],[CommonParameters].[inactive_timeout_minutes],[CommonParameters].[language],[CommonParameters].[status],
-        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
+        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on],
+        [CommonParameters].[summary_timeout]
         FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
     },
     UOM: [

@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {
     res.status(401);
     res.json({ "message": err.name + ": " + err.message });
@@ -57,8 +57,8 @@ router.use(function (req, res, next) {
     });
   }
 });
-
-function getDataType(table, value, position) {
+*/
+/*function getDataType(table, value, position) {
   let hour = '';
   let minutes = '';
   let seconds = '';
@@ -191,7 +191,7 @@ function responsePostPut(response, req, res) {
     }
   } catch (e) { res.status(500).send({ message: 'Error', api_error: e.message, database_response: response }); }
 };
-
+*/
 function getValuesFromHeaderTable(headers, header, value) {
   let newValue = '';
   switch (header.type) {
@@ -266,12 +266,12 @@ function getParametersOfTable(tableName) {
       parametersObject.matchParameters = 's.tag_code = t.tag_code AND s.UOM_code = t.UOM_code AND s.asset_id = t.asset_id';//consultar columna con Andres
       parametersObject.updateSentence = `t.[tag_name] = s.[tag_name], t.[tag_description] = s.[tag_description], t.[tag_group] = s.[tag_group], t.[datatype] = s.[datatype], t.[tag_type] = s.[tag_type], 
       t.[rollover_point] = s.[rollover_point], t.[aggregation] = s.[aggregation], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[entered_on] = s.[entered_on], 
-      t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+      t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[max_change] = s.[max_change]`;
       parametersObject.insertSentence = `([tag_code], [tag_name], [tag_description], [tag_group], [datatype], [tag_type], [UOM_code], [rollover_point], [aggregation], [status], [entered_by], [entered_on], 
-      [last_modified_by], [last_modified_on], [asset_id]) 
+      [last_modified_by], [last_modified_on], [asset_id], [max_change]) 
       VALUES 
       (s.[tag_code], s.[tag_name], s.[tag_description], s.[tag_group], s.[datatype], s.[tag_type], s.[UOM_code], s.[rollover_point], s.[aggregation], s.[status], s.[entered_by], s.[entered_on], 
-        s.[last_modified_by], s.[last_modified_on], s.[asset_id])`;
+        s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[max_change])`;
       break;
     case 'CommonParameters':
       parametersObject.extraColumns = ', a.asset_id as site_id';
@@ -281,14 +281,14 @@ function getParametersOfTable(tableName) {
       t.[ui_timezone] = s.[ui_timezone], t.[escalation_level1_minutes] = s.[escalation_level1_minutes], t.[escalation_level2_minutes] = s.[escalation_level2_minutes], 
       t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], 
       t.[setup_lookback_minutes] = s.[setup_lookback_minutes], t.[inactive_timeout_minutes] = s.[inactive_timeout_minutes], t.[language] = s.[language], t.[status] = s.[status], t.[entered_by] = s.[entered_by], 
-      t.[entered_on] = s.[entered_on], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+      t.[entered_on] = s.[entered_on], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[summary_timeout] = s.[summary_timeout]`;
       parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], [escalation_level1_minutes], [escalation_level2_minutes], 
       [default_target_percent_of_ideal], [default_setup_minutes], [default_routed_cycle_time], [setup_lookback_minutes], [inactive_timeout_minutes], [language], [status], [entered_by], [entered_on], 
-      [last_modified_by], [last_modified_on]) 
+      [last_modified_by], [last_modified_on], [summary_timeout]) 
       VALUES 
       (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], s.[escalation_level1_minutes], s.[escalation_level2_minutes], 
       s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[setup_lookback_minutes], s.[inactive_timeout_minutes], s.[language], s.[status], s.[entered_by], s.[entered_on], 
-      s.[last_modified_by], s.[last_modified_on])`;
+      s.[last_modified_by], s.[last_modified_on], s.[summary_timeout])`;
       break;
     case 'UOM':
       parametersObject.extraColumns = ', a.asset_id as site_id';
@@ -342,8 +342,9 @@ router.post('/import_asset', upload.single('file'), (req, res) => {
   workbook.xlsx.readFile(file.path)
     .then(() => {
       workbook.eachSheet((worksheet, sheetId) => {
-        if (!constants[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid excel file" });
+        if (!constants[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
         let columns = constants[worksheet.name];
+        console.log(columns);
         let tableSourcesValues = [];
         let parameters = getParametersOfTable(worksheet.name);
         let mergeQuery = `MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
@@ -375,7 +376,7 @@ router.post('/import_asset', upload.single('file'), (req, res) => {
         WHEN NOT MATCHED BY TARGET 
         THEN INSERT 
         ${parameters.insertSentence};`;
-        console.log(mergeQuery);//Query listo para ejecutarse llamar al metodo sqlQuery
+        //console.log(mergeQuery);//Query listo para ejecutarse llamar al metodo sqlQuery
       });
       res.status(200).send('Excel File ' + file + ' Entered Succesfully');
       // var worksheet = workbook.getWorksheet(8);
