@@ -100,7 +100,7 @@
     "No Data": "Nessun Dato",
     "Please Wait": "Attendi un momento",
     "multiple": "più",
-    "Request Successful":"Richiesta Riuscita",
+    "Request Successful": "Richiesta Riuscita",
     "Intershift Communication was inserted": "Comunicazione è stata inserita",
     "Bad Request": "Brutta Richiesta",
     "Intershift Communication was not inserted": "Comunicazione non è stata inserita",
@@ -109,5 +109,11 @@
     "Manual Entry Succesfully Inserted": "Inserimento Manuale Inserito Correttamente",
     "Value was inserted": "Il Valore è stato inserito",
     "Signoff was inserted": "Approva è stato inserito",
-    "Tmeloss was inserted": "Tempo Perso è stato inserito"
+    "Tmeloss was inserted": "Tempo Perso è stato inserito",
+    "Site Configuration Import/Export Tool": "Sito Strumento Di Importa/Exporta Della Configurazione",
+    "Select an action": "Selezionare un'azione",
+    "Please choose the Configuration Items to": "Scegliere gli elementi di configurazione da",
+    "All Configuration Items": "Tutti gli elementi di configurazione",
+    "Available Configuration Items": "Elementi di configurazione disponibili",
+    "Selected Configuration Items to": "Elementi di configurazione selezionati per"
 }

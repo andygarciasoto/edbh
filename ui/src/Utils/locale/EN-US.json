@@ -110,5 +110,11 @@
     "Manual Entry Succesfully Inserted": "handmatige invoer succesvol ingevoerd",
     "Value was inserted": "Value was inserted",
     "Signoff was inserted": "Signoff was inserted",
-    "Tmeloss was inserted": "Signoff was inserted"
+    "Tmeloss was inserted": "Signoff was inserted",
+    "Site Configuration Import/Export Tool": "Site Configuration Import/Export Tool",
+    "Select an action": "Select an action",
+    "Please choose the Configuration Items to": "Please choose the Configuration Items to",
+    "All Configuration Items": "All Configuration Items",
+    "Available Configuration Items": "Available Configuration Items",
+    "Selected Configuration Items to": "Selected Configuration Items to"
 }

@@ -3,7 +3,7 @@ import './sass/App.scss';
 import Spinner from './Spinner';
 import SignIn from './SignIn';
 import Login from './Login';
-import Import from './Dashboard/Import';
+import Import from './Dashboard/Import1';
 import DashboardOne from './Dashboard/DashboardOne';
 import Header from './Layout/Header';
 import { useTranslation } from 'react-i18next';
