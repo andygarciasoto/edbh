@@ -100,7 +100,7 @@ module.exports = Object.freeze({
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 },
+        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 }
     ],
     TagSQL: (site_id) => {
         return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
@@ -126,7 +126,7 @@ module.exports = Object.freeze({
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'summary_timeout', type: 'FLOAT', key: 'summary_timeout', width: 25 },
+        { header: 'summary_timeout', type: 'FLOAT', key: 'summary_timeout', width: 25 }
     ],
     CommonParametersSQL: (site_id) => {
         return `SELECT [Asset].[asset_code],[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
