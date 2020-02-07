@@ -105,7 +105,7 @@ class Import extends React.Component {
         const url = `${DATATOOL}/import_asset`;
         let formData = new FormData();
         formData.append('file', _this.state.file);
-        formData.append('configurationItems', _this.state.selectedListTabs);
+        formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
         const config = {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
