@@ -17,14 +17,14 @@ let search = window.location.search;
 let params = queryString.parse(search);
 if (search !== "") {
     if (params.st) {
-        localStorage.setItem('machine_name', params.st);
+        localStorage.setItem('st', params.st);
     }
 }
 
 if (window.location.pathname === '/' || window.location.pathname === '/login') {
     let machineName = params.st;
     if (!machineName) {
-        machineName = localStorage.getItem('machine_name');
+        machineName = localStorage.getItem('st');
     }
     ReactDOM.render(
         <App defaultAsset={machineName} />
@@ -85,8 +85,7 @@ function init() {
         return response;
     }, function (error) {
         // Redirect to login on 401 status code
-        // const station = localStorage.getItem('machine_name');
-        const station = params.st || localStorage.getItem('machine_name');
+        const station = params.st || localStorage.getItem('st');
         // console.log(station);
         if (error.response && error.response.status === 401) {
             const loginUrl = configuration['root'] + (station ? `?st=${station}` : '');
@@ -117,9 +116,9 @@ function init() {
                 current_date_time: json.data[0].current_date_time
             }
 
-            localStorage.setItem('language', json.data[0].language);
+            localStorage.setItem('ln', json.data[0].language);
 
-            let station = params.st || localStorage.getItem('machine_name');
+            let station = params.st || localStorage.getItem('st');
             let site = params.cs;
             let machine = null;
             const shift = {

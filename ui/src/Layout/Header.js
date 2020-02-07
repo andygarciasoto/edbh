@@ -161,7 +161,7 @@ class Header extends React.Component {
             <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
         ));
 
-        const station = localStorage.getItem('machine_name');
+        const station = localStorage.getItem('st');
         const loginUrl = `/?st=${station}`;
 
         return (
