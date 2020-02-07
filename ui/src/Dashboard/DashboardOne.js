@@ -232,9 +232,7 @@ class DashboardOne extends React.Component {
   loadDataAllShift(filter, props) {
 
     let newDate = getDateAccordingToShifts(filter[1], props.user);
-
-    console.log(newDate);
-    console.log(filter[1]);
+    
     if (newDate === filter[1]) {
       const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
       var minutes = moment().minutes();

@@ -13,6 +13,7 @@ import datatool from './routes/datatool';
 var cors = require('cors');
 import config from '../config.json';
 const io = require('socket.io');
+var sqlQuery = require('./objects/sqlConnection');
 
 var whitelist = config['cors'];
 var corsOptions = {
@@ -60,14 +61,19 @@ const ioServer = io();
 
 ioServer.on('connection', function (socket) { })
 
-setInterval(
-  function () {
-    try {
-      ioServer.emit('message', { id: `All connected clients`, message: true });
-    } catch (ex) {
-      console.log(ex);
-    }
-  }, config['socket_timeout']);
+sqlQuery(`SELECT [socket_timeout] FROM [dbo].[GlobalParameters];`,
+  (err, response) => {
+    if (err) { console.log(err.message) }
+    console.log('working with refresh of ', response[0].socket_timeout);
+    setInterval(
+      function () {
+        try {
+          ioServer.emit('message', { id: `All connected clients`, message: true });
+        } catch (ex) {
+          console.log(ex);
+        }
+      }, response[0].socket_timeout);
+  });
 
 
 ioServer.attach(server, {

@@ -106,6 +106,7 @@ class Import extends React.Component {
         let formData = new FormData();
         formData.append('file', _this.state.file);
         formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
+        formData.append('site_id', JSON.stringify(_this.props.user.site));
         const config = {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),

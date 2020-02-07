@@ -29,7 +29,7 @@ class Pagination extends React.Component {
             sf: search.sf || props.user.current_shift,
             diffDays: moment.duration(moment(dt).diff(moment(current_date))).asDays(),
             actual_regresion: 0,
-            max_regresion: 3,
+            max_regresion: 2,
             display_next: false,
             display_go_current_shift: false,
             display_back: false,
