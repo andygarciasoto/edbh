@@ -113,7 +113,8 @@ function init() {
                 shift_id: json.data[0].shift_id,
                 language: json.data[0].language,
                 date_of_shift: json.data[0].date_of_shift,
-                current_date_time: json.data[0].current_date_time
+                current_date_time: json.data[0].current_date_time,
+                max_regression: json.data[0].max_regression
             }
 
             localStorage.setItem('ln', json.data[0].language);
