@@ -203,7 +203,7 @@ router.post('/import_asset', upload.single('file'), (req, res) => {
 
             //create merge sentence with the data extracted from the sheet
             mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-            console.log(mergeQuery);//Query listo para ejecutarse llamar al metodo sqlQuery 
+            //console.log(mergeQuery);
             sqlQuery(mergeQuery,
                 (err, response) => {
                     if (err) {
