@@ -64,7 +64,6 @@ ioServer.on('connection', function (socket) { })
 sqlQuery(`SELECT [socket_timeout] FROM [dbo].[GlobalParameters];`,
   (err, response) => {
     if (err) { console.log(err.message) }
-    console.log('working with refresh of ', response[0].socket_timeout);
     setInterval(
       function () {
         try {

@@ -100,7 +100,8 @@ module.exports = Object.freeze({
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 }
+        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 },
+        { header: 'site_id', type: 'FLOAT', key: 'site_id', width: 20 }
     ],
     TagSQL: (site_id) => {
         return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
@@ -119,22 +120,19 @@ module.exports = Object.freeze({
         { header: 'default_setup_minutes', type: 'FLOAT', key: 'default_setup_minutes', width: 23 },
         { header: 'default_routed_cycle_time', type: 'FLOAT', key: 'default_routed_cycle_time', width: 26 },
         { header: 'setup_lookback_minutes', type: 'FLOAT', key: 'setup_lookback_minutes', width: 25 },
-        { header: 'inactive_timeout_minutes', type: 'FLOAT', key: 'inactive_timeout_minutes', width: 26 },
         { header: 'language', type: 'VARCHAR', key: 'language', width: 13 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'summary_timeout', type: 'FLOAT', key: 'summary_timeout', width: 25 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
     ],
     CommonParametersSQL: (site_id) => {
         return `SELECT [Asset].[asset_code],[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
         [CommonParameters].[ui_timezone],[CommonParameters].[escalation_level1_minutes],[CommonParameters].[escalation_level2_minutes],
         [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
-        [CommonParameters].[setup_lookback_minutes],[CommonParameters].[inactive_timeout_minutes],[CommonParameters].[language],[CommonParameters].[status],
-        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on],
-        [CommonParameters].[summary_timeout]
+        [CommonParameters].[setup_lookback_minutes],[CommonParameters].[language],[CommonParameters].[status],
+        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
         FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
     },
     UOM: [
@@ -167,7 +165,8 @@ module.exports = Object.freeze({
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
+        { header: 'site_id', type: 'FLOAT', key: 'site_id', width: 20 }
     ],
     UnavailableSQL: (site_id) => {
         return `SELECT [Unavailable].[unavailable_code],[Unavailable].[unavailable_name],[Unavailable].[unavailable_description],[Unavailable].[start_time],
@@ -179,6 +178,7 @@ module.exports = Object.freeze({
         { header: 'Badge', type: 'VARCHAR', key: 'Badge', width: 14 },
         { header: 'Username', type: 'VARCHAR', key: 'Username', width: 14 },
         { header: 'First_Name', type: 'VARCHAR', key: 'First_Name', width: 14 },
+        { header: 'Last_Name', type: 'VARCHAR', key: 'Last_Name', width: 14 },
         { header: 'Role', type: 'VARCHAR', key: 'Role', width: 14 },
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 }
     ],
