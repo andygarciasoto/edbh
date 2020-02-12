@@ -157,7 +157,7 @@ class Pagination extends React.Component {
             <div id='semi-button-deck' style={{ height: 47 }}>
                 {this.state.display_back && !this.state.display_back_current_shift ?
                     <React.Fragment>
-                        {this.state.max_regresion - this.state.actual_regresion >= 2 ?
+                        {this.state.max_regresion - this.state.actual_regresion >= this.state.max_regresion ?
                             < FontAwesome
                                 name="angle-double-left"
                                 data-tip='shift'
@@ -194,7 +194,7 @@ class Pagination extends React.Component {
                                 name="caret-right fa-2"
                                 className="icon-arrow"
                                 onClick={() => this.goNextShift(1)} />
-                            {this.state.max_regresion - this.state.actual_regresion < 2 ?
+                            {this.state.max_regresion - this.state.actual_regresion <= (this.state.max_regresion - 2) ?
                                 <FontAwesome
                                     data-tip='shift'
                                     data-for='current-shift'
