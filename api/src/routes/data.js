@@ -127,7 +127,7 @@ router.get('/data', async function (req, res) {
     }
 
     getAssetInfoPromise(params.mc).then(responseProm => {
-        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data_new_3 ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, ${params.st};`,
+        sqlQuery(`exec spLocal_EY_DxH_Get_Shift_Data ${responseProm[0].Asset.asset_id},'${params.dt}',${params.sf}, ${params.st};`,
             (err, response) => {
                 if (err) {
                     console.log(err);

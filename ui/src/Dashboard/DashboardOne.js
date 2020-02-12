@@ -232,7 +232,7 @@ class DashboardOne extends React.Component {
   loadDataAllShift(filter, props) {
 
     let newDate = getDateAccordingToShifts(filter[1], props.user);
-    
+
     if (newDate === filter[1]) {
       const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
       var minutes = moment().minutes();
@@ -301,9 +301,9 @@ class DashboardOne extends React.Component {
                   'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
                 };
                 if (data === []) {
-                  data = _.concat([shift], _.orderBy(response.data, ['started_on_chunck', 'start_time']));
+                  data = _.concat([shift], response.data);
                 } else {
-                  data = _.concat(data, [shift], _.orderBy(response.data, ['started_on_chunck', 'start_time']));
+                  data = _.concat(data, [shift], response.data);
                 }
               }
             });
@@ -386,10 +386,6 @@ class DashboardOne extends React.Component {
 
           let data = responseData.data;
           let uom_asset = responseAssetUOM.data;
-
-          if (data instanceof Object) {
-            data = _.orderBy(data, ['started_on_chunck', 'start_time']);
-          }
 
           _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset });
 

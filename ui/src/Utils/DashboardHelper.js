@@ -94,10 +94,10 @@ const helpers = {
 
     renderAggregated(cellInfo, prop, defaultValue, orderChild, displayClick) {
         let newCellInfo = Object.assign({}, cellInfo);
-        if (orderChild && newCellInfo.subRows.length > 1) {
-            let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.start_time));
-            newCellInfo.subRows = newSubrows;
-        }
+        //if (orderChild && newCellInfo.subRows.length > 1) {
+        //    let newSubrows = _.orderBy(cellInfo.subRows, cellInfo.subRows.map((item) => item._original.start_time));
+        //    newCellInfo.subRows = newSubrows;
+        //}
         let rowValid = newCellInfo ? (newCellInfo.subRows ? newCellInfo.subRows[0] : newCellInfo.row) : null;
         if (rowValid && (rowValid.hour_interval === this.props.t('3rd Shift') || rowValid.hour_interval === this.props.t('1st Shift') || rowValid.hour_interval === this.props.t('2nd Shift') || rowValid.hour_interval === this.props.t('No Shift'))) {
             prop = arguments[5] === 'dropdown' ? 'timelost_summary' : arguments[5] === 'comments' ? 'latest_comment' : prop;
