@@ -68,7 +68,7 @@ class SignoffModal extends React.Component {
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             override: 0,
             asset_code: this.props.parentData[0],
-            row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
+            row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
             timestamp: getCurrentTime(this.props.timezone),
         }
         this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, () => {
@@ -129,7 +129,7 @@ class SignoffModal extends React.Component {
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
                 override: 0,
                 asset_code: this.props.parentData[0],
-                row_timestamp: formatDateWithTime(rowData ? rowData.hour_interval_start : this.state.row.hour_interval_start),
+                row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
                 timestamp: getCurrentTime(this.props.timezone),
             }
             this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
@@ -160,7 +160,7 @@ class SignoffModal extends React.Component {
                             })
                         }
                         localStorage.setItem("signoff", false);
-                        var currentHour = moment(rowData.hour_interval_start).hours();
+                        var currentHour = moment(rowData.started_on_chunck).hours();
                         localStorage.setItem("currentHour", currentHour);
                         this.setState({
                             request_status: res,

@@ -36,7 +36,7 @@ class ValueModal extends React.Component {
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             override: this.state.existingValue ? parseInt(this.props.currentRow.production_id) : 0,
-            row_timestamp: formatDateWithTime(this.props.currentRow.hour_interval_start),
+            row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             timestamp: getCurrentTime(this.props.timezone),
             asset_code: this.props.parentData[0]
         }

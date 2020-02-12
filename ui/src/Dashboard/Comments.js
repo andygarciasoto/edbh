@@ -39,7 +39,7 @@ class Comments extends React.Component {
                     first_name: this.props.user.first_name,
                     last_name: this.props.user.last_name,
                     timestamp: getCurrentTime(this.props.timezone),
-                    row_timestamp: formatDateWithTime(this.state.row.hour_interval_start),
+                    row_timestamp: formatDateWithTime(this.state.row.started_on_chunck),
                     inter_shift_id: 0,
                     asset_code: this.props.parentData[0]
                 }
