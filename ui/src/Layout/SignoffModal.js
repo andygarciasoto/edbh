@@ -59,7 +59,7 @@ class SignoffModal extends React.Component {
         }
         const data = {
             dxh_data_id: rowData ? rowData.dxhdata_id : null,
-            actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
+            actual: rowData.actual || "signoff",
             setup_scrap: rowData.summary_setup_scrap || 'signoff',
             other_scrap: rowData.summary_other_scrap || 'signoff',
             adjusted_actual: rowData.summary_adjusted_actual || 'signoff',
@@ -120,7 +120,7 @@ class SignoffModal extends React.Component {
         if (this.state.signOffRole === 'operator') {
             const data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
-                actual: rowData && rowData.actual_pcs !== "" ? rowData.actual_pcs : "signoff",
+                actual: rowData.actual || "signoff",
                 setup_scrap: rowData.setup_scrap || 'signoff',
                 other_scrap: rowData.other_scrap || 'signoff',
                 adjusted_actual: rowData.adjusted_actual || 'signoff',
@@ -198,8 +198,8 @@ class SignoffModal extends React.Component {
         let isgreen;
         if (this.props.currentRow) {
             row = this.props.currentRow;
-            isred = (row.actual_pcs === '') ? 'red' : 'black';
-            isgreen = row.actual_pcs > row.target_pcs ? 'green' : 'black';
+            isred = (row.actual === '') ? 'red' : 'black';
+            isgreen = row.actual > row.target_pcs ? 'green' : 'black';
         }
 
         return (
