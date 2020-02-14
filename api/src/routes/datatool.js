@@ -150,8 +150,8 @@ function getParametersOfTable(tableName, siteId) {
       parametersObject.extraColumns = ', a.asset_id as Site';
       parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code WHERE a.asset_level = 'Site'`;
       parametersObject.matchParameters = 's.Badge = t.Badge AND s.Site = t.Site';
-      parametersObject.updateSentence = `t.[Username] = s.[Username], t.[First_Name] = s.[First_Name], t.[Last_Name] = s.[Last_Name], t.[Role] = s.[Role], t.[Site] = s.[Site]`;
-      parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [Role], [Site]) VALUES (s.[Badge], s.[Username], s.[First_Name], s.[Last_Name], s.[Role], s.[Site])`;
+      parametersObject.updateSentence = `t.[Badge] = s.[Badge], t.[Username] = s.[Username], t.[First_Name] = s.[First_Name], t.[Last_Name] = s.[Last_Name], t.[Role] = s.[Role], t.[Site] = ${siteId}`;
+      parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [Role], [Site]) VALUES (s.[Badge], s.[Username], s.[First_Name], s.[Last_Name], s.[Role], ${siteId})`;
       break;
   }
   return parametersObject;
@@ -159,14 +159,13 @@ function getParametersOfTable(tableName, siteId) {
 
 router.post('/import_asset', upload.single('file'), (req, res) => {
   const file = req.file;
-  const items = req.body.configurationItems;
-  const arrayItems = JSON.parse(items);
+  const arrayItems = JSON.parse(req.body.configurationItems);
   const site_id = JSON.parse(req.body.site_id);
 
   if (!file) {
     return res.status(400).json({ message: "Bad Request - Missing Excel file to import." });
   }
-  if (!items || !site_id) {
+  if (!arrayItems || !site_id) {
     return res.status(400).json({ message: "Bad Request - Missing data to import." });
   }
   // read from a file
@@ -196,14 +195,14 @@ router.post('/import_asset', upload.single('file'), (req, res) => {
               });
               if (rowNumber !== 1) {
                 if (!validRow) return res.status(400).json({ message: 'Bad Request - Invalid file format contains a entire empty row. Please check file' });
-                  updateRow += worksheet.name == 'Tag' || worksheet.name == 'Unavailable' ? site_id : "";
+                  updateRow += worksheet.name == 'Tag' || worksheet.name == 'Unavailable' || worksheet.name == 'TFDUsers' ? site_id : "";
                 tableSourcesValues.push('(' + updateRow + ')');
               }
             });
 
             //create merge sentence with the data extracted from the sheet
             mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-            //console.log(mergeQuery);
+            console.log(mergeQuery);
             sqlQuery(mergeQuery,
                 (err, response) => {
                     if (err) {

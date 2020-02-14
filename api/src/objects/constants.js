@@ -180,7 +180,8 @@ module.exports = Object.freeze({
         { header: 'First_Name', type: 'VARCHAR', key: 'First_Name', width: 14 },
         { header: 'Last_Name', type: 'VARCHAR', key: 'Last_Name', width: 14 },
         { header: 'Role', type: 'VARCHAR', key: 'Role', width: 14 },
-        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 }
+        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
+        { header: 'Site', type: 'FLOAT', key: 'Site', width: 20 }
     ],
     TFDUsersSQL: (site_id) => {
         return `SELECT [Badge],[Username],[First_Name],[Last_Name],[Role],[Asset].[asset_code] FROM [dbo].[TFDUsers] JOIN [dbo].[Asset] 
