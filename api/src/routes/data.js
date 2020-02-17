@@ -719,11 +719,7 @@ router.put('/production_data', async function (req, res) {
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
-
-    console.log(actual);
-    console.log(setup_scrap);
-    console.log(other_scrap);
-    console.log(adjusted_actual);
+    
     if (actual === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters - Actual, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
     }
