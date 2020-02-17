@@ -11,23 +11,23 @@ import './CommentsModal.scss';
 class ValueModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            value: this.props.currentVal,
+        this.state = Object.assign(this.getInitialState(props));
+    }
+
+    getInitialState(props) {
+        return {
+            currentRow: props.currentRow,
             newValue: '',
             errorMessage: '',
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
-            existingValue: false,
-        }
-        this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+            modal_error_IsOpen: false
+        };
     }
 
-    submit(e) {
+    submit = (e) => {
         const data = {
-            dxh_data_id: this.props.currentRow && this.props.currentRow.dxhdata_id ? this.props.currentRow.dxhdata_id : undefined,
+            dxh_data_id: this.state.currentRow && this.state.currentRow.dxhdata_id ? this.state.currentRow.dxhdata_id : undefined,
             actual: this.state.newValue ? this.state.newValue : null,
             setup_scrap: this.props.currentRow.setup_scrap || 'signoff',
             other_scrap: this.props.currentRow.other_scrap || 'signoff',
@@ -35,9 +35,9 @@ class ValueModal extends React.Component {
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-            override: this.state.existingValue ? parseInt(this.props.currentRow.production_id) : 0,
+            override: this.state.currentRow.productiondata_id ? parseInt(this.state.currentRow.productiondata_id) : 0,
             row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
-            timestamp: getCurrentTime(this.props.timezone),
+            timestamp: getCurrentTime(this.props.user.timezone),
             asset_code: this.props.parentData[0]
         }
         if (!data.actual) {
@@ -62,7 +62,7 @@ class ValueModal extends React.Component {
         this.setState({ newValue: '' })
     }
 
-    onChange(e) {
+    onChange = (e) => {
         if (parseInt(e.target.value) !== 0 || e.target.value !== '' || !isNaN(e.target.value)) {
             this.setState({ newValue: e.target.value });
         } else {
@@ -71,25 +71,19 @@ class ValueModal extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.currentVal === '' || !nextProps.currentVal) {
-            if (nextProps.cumulativepcs !== null) {
-                this.setState({ value: nextProps.currentVal, existingValue: true })
-            } else {
-                this.setState({ existingValue: false })
-            }
-        } else {
-            this.setState({ value: nextProps.currentVal, existingValue: true })
+        if (nextProps.currentRow) {
+            this.setState({ currentRow: nextProps.currentRow });
         }
     }
 
-    closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+    closeModal = () => {
+        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false, newValue: '' });
         this.props.onRequestClose();
     }
 
     render() {
         const t = this.props.t;
-        if (this.state.existingValue === true) {
+        if (this.state.currentRow && this.state.currentRow.productiondata_id) {
             return (
                 <React.Fragment>
                     <Modal
@@ -101,9 +95,9 @@ class ValueModal extends React.Component {
                         <span className="dashboard-modal-field-group"><p>{t('Current Value')}:</p>
                             <Form.Control
                                 style={{ paddingTop: '5px' }}
-                                type={this.props.formType}
+                                type={'number'}
                                 disabled={true}
-                                value={this.state.value}>
+                                value={this.state.currentRow.actual}>
                             </Form.Control>
                         </span>
                         <br />
@@ -111,7 +105,7 @@ class ValueModal extends React.Component {
                             <Form.Control
                                 value={this.state.newValue}
                                 style={{ paddingTop: '5px' }}
-                                type={this.props.formType}
+                                type={'number'}
                                 autoFocus
                                 onChange={(val) => this.onChange(val)}
                                 disabled={this.props.readOnly}>
@@ -158,7 +152,7 @@ class ValueModal extends React.Component {
                         <span className="dashboard-modal-field-group"><p>{t('New Value')}:</p>
                             <Form.Control
                                 style={{ paddingTop: '5px' }}
-                                type={this.props.formType}
+                                type={'number'}
                                 value={this.state.newValue}
                                 autoFocus
                                 onChange={(val) => this.onChange(val)}>

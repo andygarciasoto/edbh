@@ -8,14 +8,15 @@ import { sendPut, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
 import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
-import {
-    getUOMS
-} from '../Utils/Requests';
 
 class ManualEntryModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = Object.assign(this.getInitialState(props), this.fetchLoadUOMOptions(props));
+    }
+
+    getInitialState(props) {
+        return {
             currentRow: props.currentRow,
             part_number: '',
             quantity: 1,
@@ -29,7 +30,8 @@ class ManualEntryModal extends React.Component {
             isOpen: false,
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false
+            modal_error_IsOpen: false,
+            site: props.user.site
         }
     }
 
@@ -52,7 +54,7 @@ class ManualEntryModal extends React.Component {
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-                timestamp: getCurrentTime(this.props.timezone)
+                timestamp: getCurrentTime(this.props.user.timezone)
             };
             if (this.state.routed_cycle_time !== '') {
                 data.routed_cycle_time = this.state.routed_cycle_time;
@@ -60,6 +62,7 @@ class ManualEntryModal extends React.Component {
             if (this.state.setup_time !== '') {
                 data.setup_time = this.state.setup_time;
             }
+
             this.setState({ modal_loading_IsOpen: true }, () => {
                 const response = sendPut(data, '/create_order_data');
                 response.then((res) => {
@@ -104,30 +107,35 @@ class ManualEntryModal extends React.Component {
         }
     }
 
-    componentWillMount() {
-        this.fetchConfiguration();
-    }
-
-    async fetchConfiguration() {
-        //const uoms = await getUOMS();
+    fetchLoadUOMOptions(props) {
         let uoms_options = [];
-        //for (let uom of uoms)
-        //    uoms_options.push({ value: uom.UOM.UOM_code, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` });
-
-        this.setState({
-            uoms: uoms_options
+        _.forEach(props.user.uoms, uom => {
+            uoms_options.push({ value: uom.UOM_code, label: `${uom.UOM_code} - ${uom.UOM_name}` });
         });
-
+        return { uoms: uoms_options };
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.currentRow) {
-            let uom = this.state.uoms.length === 1 ? this.state.uoms[0] : this.state.uom;
-            this.setState({
-                isOpen: nextProps.isOpen,
-                currentRow: this.props.currentRow,
-                uom
-            });
+            let actualUoms = this.state.uoms;
+            if (nextProps.user.site === this.state.site) {
+                let uom = actualUoms.length === 1 ? actualUoms[0] : this.state.uom;
+                this.setState({
+                    isOpen: nextProps.isOpen,
+                    currentRow: nextProps.currentRow,
+                    uom
+                });
+            } else {
+                actualUoms = this.fetchLoadUOMOptions(nextProps).uoms;
+                let uom = actualUoms.length === 1 ? actualUoms[0] : '';
+                this.setState({
+                    isOpen: nextProps.isOpen,
+                    currentRow: nextProps.props.currentRow,
+                    uoms: actualUoms,
+                    site: nextProps.user.site,
+                    uom
+                });
+            }
         }
     }
 
@@ -165,11 +173,6 @@ class ManualEntryModal extends React.Component {
                     contentLabel="Example Modal">
                     <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Manual Data Entry')}</h4></span>
-                    {/* <div className={'new-manualentry-close'}>
-                        <Button variant="outline-primary"
-                            style={{ marginTop: '10px', marginLeft: '10px', marginBottom: '10px' }}
-                            onClick={this.clear}>{t('New Entry')}</Button>
-                    </div> */}
                     <div className="new-manualentry">
                         <Row style={{ marginBottom: '1px' }}>
                             <Col sm={6} md={6}>

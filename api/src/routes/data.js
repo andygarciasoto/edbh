@@ -719,11 +719,7 @@ router.put('/production_data', async function (req, res) {
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
-
-    console.log(actual);
-    console.log(setup_scrap);
-    console.log(other_scrap);
-    console.log(adjusted_actual);
+    
     if (actual === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters - Actual, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
     }
@@ -895,10 +891,10 @@ router.get('/uom', async function (req, res) {
 
 router.get('/uom_by_site', async function (req, res) {
     let params = req.query;
-    if (params.site_id == undefined) {
+    if (params.site == undefined) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
-    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_UOM_By_Site ${params.site_id};`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_UOM_By_Site ${params.site};`,
         (err, response) => {
             if (err) {
                 console.log(err);

@@ -134,11 +134,12 @@ function init() {
                 BuildGet(`${API}/asset_display_system`, shift),
                 BuildGet(`${API}/shifts`, shift),
                 BuildGet(`${API}/machine`, shift),
-                BuildGet(`${API}/user_sites`, shift)
+                BuildGet(`${API}/user_sites`, shift),
+                BuildGet(`${API}/uom_by_site`, shift)
             ];
 
             await axios.all(requestData).then(
-                axios.spread((responseAsset, responseShift, responseMachine, responseLogins) => {
+                axios.spread((responseAsset, responseShift, responseMachine, responseLogins, responseUom) => {
                     const machineValues = responseAsset.data[0].AssetDisplaySystem;
                     machine = {
                         asset_code: machineValues.asset_code || machineValues.message,
@@ -150,6 +151,7 @@ function init() {
                     user.shifts = responseShift.data;
                     user.machines = responseMachine.data;
                     user.sites = responseLogins.data;
+                    user.uoms = responseUom.data;
                 })
             ).catch(function (error) {
                 console.log(error);

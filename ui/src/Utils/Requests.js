@@ -123,25 +123,6 @@ function getCurrentTimeOnly(timezone) {
   return moment().format('HH:mm');
 }
 
-async function getUOMS() {//REVISAR MANUAL ENTRY
-  let res = {};
-  res = await axios.get(`${API}/uom`)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
-  if (res) {
-    return res.data;
-  }
-}
-
 function isComponentValid(user_role, name) {
   let role;
   if (user_role) {
@@ -324,7 +305,6 @@ export {
   sendPutDataTool,
   isComponentValid,
   isFieldAllowed,
-  getUOMS,
   formatNumber,
   getCurrentTimeOnly,
   BuildGet,
