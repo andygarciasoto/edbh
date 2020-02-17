@@ -40,7 +40,6 @@ class CommentsModal extends React.Component {
         }
         let requestData = BuildGet(`${API}/comments_dxh_data`, parameters);
         let _this = this;
-
         this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
             requestData.then((response) => {
                 _this.setState({ comments: response.data, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
@@ -58,7 +57,7 @@ class CommentsModal extends React.Component {
                 comment: this.state.value,
                 dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
                 row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
-                timestamp: getCurrentTime(this.props.timezone),
+                timestamp: getCurrentTime(this.props.user.timezone),
                 asset_code: this.props.parentData[0]
             }, '/dxh_new_comment')
             response.then((res) => {

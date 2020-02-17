@@ -69,7 +69,7 @@ class SignoffModal extends React.Component {
             override: 0,
             asset_code: this.props.parentData[0],
             row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
-            timestamp: getCurrentTime(this.props.timezone),
+            timestamp: getCurrentTime(this.props.user.timezone),
         }
         this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, () => {
             const response = sendPut({
@@ -117,7 +117,7 @@ class SignoffModal extends React.Component {
         if (this.props.currentRow) {
             rowData = this.props.currentRow
         }
-        if (this.state.signOffRole === 'operator') {
+        if (this.state.signOffRole === 'Operator') {
             const data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
                 actual: rowData.actual || "signoff",
@@ -173,15 +173,15 @@ class SignoffModal extends React.Component {
                     this.props.onRequestClose();
                 })
             })
-        } else if (this.props.signOffRole === 'supervisor') {
+        } else if (this.props.user.role === 'Supervisor') {
             this.setState({ isOpen: false, modal_validate_IsOpen: true })
         }
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            signOffRole: nextProps.signOffRole,
-            headerMessage: nextProps.t(nextProps.signOffRole + ' Sign Off') +
+            signOffRole: nextProps.user.role,
+            headerMessage: nextProps.t(nextProps.user.role + ' Sign Off') +
                 ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
             isOpen: nextProps.isOpen,
             signoffMessage: nextProps.t("By clicking 'Accept' you confirm that all the values for this hour are correct")

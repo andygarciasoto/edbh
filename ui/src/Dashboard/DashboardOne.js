@@ -535,7 +535,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
-          IsEditable={this.state.comments_IsEditable && !this.state.summary}
+          IsEditable={!this.state.summary}
           //timezone={this.state.timezone}
         />
         <TimelossModal
@@ -552,7 +552,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          isEditable={this.state.timelost_IsEditable && !this.state.summary}
+          isEditable={!this.state.summary}
           //timezone={this.state.timezone}
         />
         <SignoffModal
@@ -560,6 +560,7 @@ class DashboardOne extends React.Component {
           //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           //contentLabel="Example Modal"
+          style={this.state.modalStyle}
           t={this.props.t}
           currentRow={this.state.currentRow}
           user={this.props.user}

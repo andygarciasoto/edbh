@@ -63,7 +63,7 @@ class TimelossModal extends React.Component {
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             asset_code: this.props.parentData[0],
             row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
-            timestamp: getCurrentTime(this.props.timezone)
+            timestamp: getCurrentTime(this.props.user.timezone)
         }
         this.setState({ modal_loading_IsOpen: true }, () => {
             const response = sendPut(data, '/dt_data');
@@ -94,7 +94,7 @@ class TimelossModal extends React.Component {
 
         const parameters = {
             params: {
-                mc: props.machine === 'No Data' ? null : props.machine,
+                mc: this.props.parentData[0] === 'No Data' ? null : this.props.parentData[0],
                 dxh_data_id: props.currentRow.dxhdata_id
             }
         }
@@ -269,7 +269,7 @@ class TimelossModal extends React.Component {
                             </Col>
                         </Row>
                         <div className="new-timeloss-reasoncode">
-                            <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{this.props.label ? this.props.label : t('New Value')}:</p>
+                            <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Search/Select Reason Code') ? t('Search/Select Reason Code') : t('New Value')}:</p>
                             <Form.Group controlId="formGridState">
                                 <ReactSelect
                                     value={this.state.new_tl_reason}
