@@ -12,7 +12,11 @@ import OrderTwoModal from '../Layout/OrderTwoModal';
 class OrderModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = Object.assign(this.getInitialState(props));
+    }
+
+    getInitialState(props) {
+        return {
             value: '',
             errorMessage: '',
             modal_confirm_IsOpen: false,
@@ -20,9 +24,6 @@ class OrderModal extends React.Component {
             modal_error_IsOpen: false,
             order_data: ''
         }
-        this.closeModal = this.closeModal.bind(this);
-        this.handleScan = this.handleScan.bind(this);
-        this.handleError = this.handleError.bind(this);
     }
 
     submit = (e) => {
@@ -33,29 +34,29 @@ class OrderModal extends React.Component {
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-                timestamp: getCurrentTime(this.props.timezone)
+                timestamp: getCurrentTime(this.props.user.timezone)
             }
-        }
+        };
         this.setState({ modal_loading_IsOpen: true }, () => {
-            const response = getRequest('/order_assembly', data)
+            const response = getRequest('/order_assembly', data);
             response.then((res) => {
                 if (!res) {
-                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Please try again or try with a different order.' })
+                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Please try again or try with a different order.' });
                 } else {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: false, order_data: res[0].OrderData })
+                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: false, order_data: res[0].OrderData });
                     this.props.showValidateDataModal(res);
                 }
-                this.setState({ value: '' })
+                this.setState({ value: '' });
             })
         })
-        this.setState({ newValue: '' })
+        this.setState({ newValue: '' });
     }
 
-    closeModal() {
+    closeModal = () => {
         this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
     }
 
-    handleScan(data) {
+    handleScan = (data) => {
         let _this = this;
         this.setState({
             result: 'Scanning',
@@ -63,7 +64,7 @@ class OrderModal extends React.Component {
         }, () => { _this.submit(); })
     }
 
-    handleError(err) {
+    handleError = (err) => {
         if (!isNaN(err)) {
             this.handleScan(err);
         } else {
@@ -85,10 +86,10 @@ class OrderModal extends React.Component {
                         onError={this.handleError}
                         onScan={this.handleScan}
                     />
-                    <span className="dashboard-modal-field-group"><p>{this.props.label}:</p>
+                    <span className="dashboard-modal-field-group"><p>{this.props.t('Scan Order Number')}:</p>
                         <Form.Control
                             style={{ paddingTop: '5px' }}
-                            type={this.props.formType}
+                            type={'text'}
                             value={this.state.value}
                             min="0"
                             autoFocus
