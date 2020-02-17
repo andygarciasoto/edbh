@@ -98,7 +98,7 @@ class BarcodeScanner extends Component {
           t={this.props.t}
           shouldCloseOnOverlayClick={false}
         />
-        <button onClick={() => this.authorize('47132')}>Log in</button>
+        {/* <button onClick={() => this.authorize('47132')}>Log in</button> */}
       </div>
     )
   }
