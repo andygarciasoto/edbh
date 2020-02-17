@@ -8,24 +8,7 @@ function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);
 }
 
-async function getRequestData(data) {
-  let res = {};
-  const parameters = {
-    params: {
-      mc: data[0],
-      dt: formatDate(data[1]).split("-").join(""),
-      sf: mapShift(data[2]),
-      hr: data[3]
-    }
-  }
-  res = await axios.get(`${API}/data`, parameters);
-
-  if (res) {
-    return res.data;
-  }
-}
-
-function mapShift(rawshift) {
+function mapShift(rawshift) {//REVISAR METODO NO DEBERÍA DE USARSE
   let shift = 1;
   if (rawshift === 'Select Shift') {
     shift = 1;
@@ -42,22 +25,7 @@ function mapShift(rawshift) {
   return shift;
 }
 
-function mapShiftReverse(rawshift) {
-  let shift;
-  if (rawshift === 1) {
-    shift = '1st Shift';
-  }
-  if (rawshift === 2) {
-    shift = '2nd Shift';
-  }
-  if (rawshift === 3) {
-    shift = '3rd Shift';
-  }
-  const returnShift = shift === undefined ? rawshift : shift;
-  return returnShift;
-}
-
-async function sendPost(data, route) {
+async function sendPost(data, route) {//CAMBIAR FORMA DE USO SOLO LLAMAR EL POST MANEJAR EN
   const res = await axios.post(`${API}${route}`, data)
     .then(function (response) {
       return response;
@@ -70,7 +38,7 @@ async function sendPost(data, route) {
   }
 }
 
-async function sendPut(data, route) {
+async function sendPut(data, route) {//CAMBIAR FORMA DE USO SOLO LLAMAR EL POST MANEJAR EN
   const res = await axios.put(`${API}${route}`, data)
     .then(function (response) {
       return response;
@@ -94,33 +62,6 @@ async function sendPutDataTool(data, route) {
     })
   if (res) {
     return res.status;
-  }
-}
-
-async function getIntershift(data) {
-  let res = {};
-
-  const parameters = {
-    params: {
-      mc: data[0],
-      dt: formatDate(data[1]).split("-").join(""),
-      sf: mapShift(data[2])
-    }
-  }
-  res = await axios.get(`${API}/intershift_communication`, parameters)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
-  if (res) {
-    return res.data;
   }
 }
 
@@ -168,10 +109,6 @@ function formatDateWithTime(date) {
   return moment(date).format('YYYY/MM/DD HH:mm');
 }
 
-function formatDateWithCurrentTime(date) {
-  return formatDate(date) + ' ' + moment().format('HH:mm');
-}
-
 function getCurrentTime(timezone) {
   if (timezone) {
     return moment().tz(timezone).format('YYYY/MM/DD HH:mm');
@@ -186,52 +123,9 @@ function getCurrentTimeOnly(timezone) {
   return moment().format('HH:mm');
 }
 
-async function timelossGetReasons(machine) {
-  const parameters = {
-    params: {
-      mc: machine
-    }
-  }
-  let res = {};
-  res = await axios.get(`${API}/timelost_reasons`, parameters)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
-  if (res) {
-    return res.data;
-  }
-}
-
-async function getUOMS() {
+async function getUOMS() {//REVISAR MANUAL ENTRY
   let res = {};
   res = await axios.get(`${API}/uom`)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
-  if (res) {
-    return res.data;
-  }
-}
-
-async function getProducts() {
-  let res = {};
-  res = await axios.get(`${API}/product`)
     .then(function (response) {
       // handle success
       return response;
@@ -267,8 +161,8 @@ function isComponentValid(user_role, name) {
       'ideal',
       'target',
       'comments',
-      'operator_signoff',
-      'supervisor_signoff',
+      'signoff',
+      'signoff',
       'intershifts',
       'pagination',
       'neworder',
@@ -286,8 +180,8 @@ function isComponentValid(user_role, name) {
       'actual',
       'timelost',
       'comments',
-      'operator_signoff',
-      'supervisor_signoff',
+      'signoff',
+      'signoff',
       'intershifts',
       'pagination',
       'neworder',
@@ -299,9 +193,9 @@ function isComponentValid(user_role, name) {
       'timelost',
       'comments',
       'pagination',
-      'operator_signoff',
+      'signoff',
       'intershifts',
-      'supervisor_signoff',
+      'signoff',
       'neworder',
       'dashboardOne'
     ],
@@ -353,27 +247,6 @@ function formatNumber(number, decimals) {
     return Math.round(number);
   } else {
     return number.toFixed(decimals);
-  }
-}
-
-function getStationAsset(station) {
-  let machineData = {};
-  machineData = axios(`${API}/asset_display_system?st=${station}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') } })
-    .then(function (response) {
-      const machineValues = response.data[0].AssetDisplaySystem;
-      machineData = {
-        asset_code: machineValues.asset_code,
-        asset_level: machineValues.asset_level,
-        automation_level: machineValues.automation_level,
-        display_name: machineValues.displaysystem_name,
-        asset_description: machineValues.asset_description
-      }
-      return machineData;
-    }).catch((e) => {
-      console.log(e)
-    });
-  if (machineData) {
-    return machineData;
   }
 }
 
@@ -436,31 +309,23 @@ function getCurrentShift(shifts, current_date_time) {
     }
   }
 
-  console.log('use request to check current shift');
   return currentShift;
 }
 
 export {
-  getRequestData,
-  getIntershift,
   getRequest,
   getRequestAuth,
   mapShift,
-  mapShiftReverse,
   formatDate,
   formatDateWithTime,
-  formatDateWithCurrentTime,
   getCurrentTime,
   sendPost,
-  timelossGetReasons,
   sendPut,
   sendPutDataTool,
   isComponentValid,
   isFieldAllowed,
   getUOMS,
-  getProducts,
   formatNumber,
-  getStationAsset,
   getCurrentTimeOnly,
   BuildGet,
   convertNumber,

@@ -889,7 +889,23 @@ router.get('/uom', async function (req, res) {
                 res.status(500).send({ message: 'Error', database_error: err });
                 return;
             }
-            responseGet(response, req, res, 'UOM');
+            res.status(200).json(response);
+        });
+});
+
+router.get('/uom_by_site', async function (req, res) {
+    let params = req.query;
+    if (params.site_id == undefined) {
+        return res.status(400).send("Bad Request - Missing parameters");
+    }
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_UOM_By_Site ${params.site_id};`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            res.status(200).json(response);
         });
 });
 

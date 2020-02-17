@@ -31,12 +31,9 @@ class ManualEntryModal extends React.Component {
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false
         }
-        this.submit = this.submit.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.validate = this.validate.bind(this);
     }
 
-    submit(e) {
+    submit = (e) => {
 
         if (this.validate()) {
             let data = {
@@ -112,10 +109,10 @@ class ManualEntryModal extends React.Component {
     }
 
     async fetchConfiguration() {
-        const uoms = await getUOMS();
+        //const uoms = await getUOMS();
         let uoms_options = [];
-        for (let uom of uoms)
-            uoms_options.push({ value: uom.UOM.UOM_code, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` });
+        //for (let uom of uoms)
+        //    uoms_options.push({ value: uom.UOM.UOM_code, label: `${uom.UOM.UOM_code} - ${uom.UOM.UOM_name}` });
 
         this.setState({
             uoms: uoms_options
@@ -134,7 +131,7 @@ class ManualEntryModal extends React.Component {
         }
     }
 
-    validate() {
+    validate = () => {
         let valid = true;
         if (this.state.quantity < 1) {
             valid = false;
@@ -148,7 +145,7 @@ class ManualEntryModal extends React.Component {
         return valid;
     }
 
-    closeModal() {
+    closeModal = () => {
         this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
     }
 
