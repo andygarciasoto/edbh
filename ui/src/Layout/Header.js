@@ -115,11 +115,12 @@ class Header extends React.Component {
         let requestData = [
             BuildGet(`${API}/user_info_login_by_site`, parameters),
             BuildGet(`${API}/shifts`, parameters),
-            BuildGet(`${API}/machine`, parameters)
+            BuildGet(`${API}/machine`, parameters),
+            BuildGet(`${API}/uom_by_site`, parameters)
         ];
 
         await axios.all(requestData).then(
-            axios.spread(async (responseUser, responseShift, responseMachine) => {
+            axios.spread(async (responseUser, responseShift, responseMachine, responseUom) => {
                 let newUserValues = responseUser.data[0];
                 user.role = newUserValues.role;
                 user.site = newUserValues.site;
@@ -132,6 +133,7 @@ class Header extends React.Component {
                 user.machines = responseMachine.data;
                 user.date_of_shift = newUserValues.date_of_shift;
                 user.current_date_time = newUserValues.current_date_time;
+                user.uoms = responseUom.data
 
                 if (!user.shift_id) {
                     let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
