@@ -216,7 +216,7 @@ class DashboardOne extends React.Component {
 
       }
     } else {
-      this.openModal('order');
+      this.setState({ modal_order_IsOpen: nextProps.showNewOrderModal });
     }
   }
 
@@ -503,7 +503,7 @@ class DashboardOne extends React.Component {
           currentRow={this.state.currentRow}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <ValueModal
           isOpen={this.state.modal_actual_IsOpen}
@@ -536,7 +536,7 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
           IsEditable={this.state.comments_IsEditable && !this.state.summary}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <TimelossModal
           isOpen={this.state.modal_timelost_IsOpen}
@@ -553,7 +553,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           isEditable={this.state.timelost_IsEditable && !this.state.summary}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
@@ -579,13 +579,13 @@ class DashboardOne extends React.Component {
           //currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
           //formType={this.state.modalType}
           t={t}
-          currentRow={this.state.currentRow}
+          //currentRow={this.state.currentRow}
           //label={'Scan Order Number'}
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           showValidateDataModal={this.showValidateDataModal}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <ScrapModal
           isOpen={this.state.modal_scrap_IsOpen}
@@ -599,7 +599,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           IsEditable={this.state.summary}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <ErrorModal
           isOpen={this.state.errorModal}
