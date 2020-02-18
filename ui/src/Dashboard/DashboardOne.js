@@ -319,7 +319,6 @@ class DashboardOne extends React.Component {
         });
       }
     } else {
-      console.log('change date');
       let queryItem = Object.assign({}, props.search);
       // eslint-disable-next-line no-self-assign
       queryItem["dt"] = newDate;
