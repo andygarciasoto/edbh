@@ -90,7 +90,6 @@ class DashboardOne extends React.Component {
       site: props.search.cs || props.user.site,
       valueToEdit: '',
       cumulativepcs: '',
-      modalType: '',
       expanded: {},
       openDropdownAfter: false,
       selectedShift: props.search.sf || props.user.current_shift,
@@ -100,7 +99,8 @@ class DashboardOne extends React.Component {
       timezone: props.user.timezone,
       currentHour: hour,
       summary: props.summary,
-      uom_asset: null
+      uom_asset: null,
+      signOffModalType: ''
     }
   }
 
@@ -565,7 +565,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          //signOffRole={this.state.signOffRole}
+          signOffModalType={this.state.signOffModalType}
           //timezone={this.state.timezone}
           uom_asset={this.state.uom_asset}
         />

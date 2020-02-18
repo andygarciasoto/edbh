@@ -124,7 +124,7 @@ const helpers = {
         if (row[prop]) {
             return this.renderCell(row, prop, defaultValue);
         } else {
-            return this.renderCell(row, prop, defaultValue, true, 'signoff');
+            return this.renderCell(row, prop, defaultValue, true, prop);
         }
     },
 
@@ -314,8 +314,12 @@ const helpers = {
                     case 'timelost':
                     case 'comments':
                     case 'scrap':
-                    case 'signoff':
                         newModalProps['modal_' + modalType + '_IsOpen'] = true;
+                        break;
+                    case 'supervisor_signoff':
+                    case 'operator_signoff':
+                        newModalProps['modal_signoff_IsOpen'] = true;
+                        newModalProps['signOffModalType'] = modalType === 'supervisor_signoff' ? 'Supervisor' : 'Operator';
                         break;
                     default:
                         break;
