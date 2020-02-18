@@ -52,7 +52,6 @@ class OrderModal extends React.Component {
             result: 'Scanning',
             value: data,
         }, () => _this.props.signOffSupervisor(data))
-        this.props.Refresh();
     }
 
     handleError(err) {

@@ -84,6 +84,7 @@ class SignoffModal extends React.Component {
                         errorMessage: 'Invalid Clock Number'
                     })
                 } else {
+                    this.props.Refresh(this.props.parentData);
                     if (data.dxh_data_id === null) {
                         this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
                             const resp = sendPut({
@@ -266,7 +267,6 @@ class SignoffModal extends React.Component {
                     isOpen={this.state.modal_validate_IsOpen}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
-                    Refresh={this.props.Refresh}
                     label={'Please scan your clocknumber'}
                     t={this.props.t}
                     signOffSupervisor={this.signOffSupervisor}

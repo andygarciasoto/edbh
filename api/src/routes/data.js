@@ -59,7 +59,6 @@ router.use(function (req, res, next) {
 function responsePostPutNoJSON(response, req, res) {
     try {
         const resBD = response[0].ReturnStatus;
-        console.log(resBD);
         if (resBD === 0) {
             res.status(200).send('Message Entered Succesfully');
         } else {
@@ -733,6 +732,7 @@ router.put('/production_data', async function (req, res) {
         if (asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
         } else {
+            console.log(responseProm[0].Asset.asset_id, row_timestamp);
             getAssetInfoPromise(asset_code).then(responseProm => {
                 sqlQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${responseProm[0].Asset.asset_id}, '${row_timestamp}', 0;`,
                     (err, data) => {
@@ -743,6 +743,7 @@ router.put('/production_data', async function (req, res) {
                         }
                         let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                         dxh_data_id = response[0].dxhdata_id;
+                        console.log(response);
                         if (clocknumber) {
                             sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                                 (err, responseProduction) => {
