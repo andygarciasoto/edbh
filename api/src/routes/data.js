@@ -1102,9 +1102,9 @@ router.get('/comments_dxh_data', async function (req, res) {
 router.put('/scrap_values', function (req, res) {
     const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
-    const setup_scrap = req.body.setup_scrap ? parseFloat(req.body.setup_scrap) : undefined;
-    const other_scrap = req.body.other_scrap ? parseFloat(req.body.other_scrap) : undefined;
-    const adjusted_actual = req.body.adjusted_actual ? parseFloat(req.body.adjusted_actual) : undefined;
+    const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : undefined;
+    const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : undefined;
+    const adjusted_actual = !isNaN(req.body.adjusted_actual) ? parseFloat(req.body.adjusted_actual) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
