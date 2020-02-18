@@ -173,7 +173,7 @@ class SignoffModal extends React.Component {
                     this.props.onRequestClose();
                 })
             })
-        } else if (this.props.user.role === 'Supervisor') {
+        } else if (this.state.signOffRole === 'Supervisor') {
             this.setState({ isOpen: false, modal_validate_IsOpen: true })
             this.props.Refresh(this.props.parentData);
             this.props.onRequestClose();
@@ -182,7 +182,7 @@ class SignoffModal extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            signOffRole: nextProps.user.role,
+            signOffRole: nextProps.signOffModalType,
             headerMessage: nextProps.t(nextProps.user.role + ' Sign Off') +
                 ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
             isOpen: nextProps.isOpen,
