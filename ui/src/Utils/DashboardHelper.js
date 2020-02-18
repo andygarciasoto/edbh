@@ -299,7 +299,7 @@ const helpers = {
 
         let newModalProps = {};
 
-        if (isComponentValid(this.props.user.role, modalType) && isFieldAllowed(this.props.user.role, currentRow)) {
+        if (isComponentValid(this.props.user.role, modalType) && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone)) {
             newModalProps['modal_' + modalType + '_IsOpen'] = false;
             newModalProps.currentRow = currentRow;
             if (modalType === 'order') {

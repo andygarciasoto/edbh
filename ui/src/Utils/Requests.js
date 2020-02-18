@@ -168,7 +168,8 @@ function isComponentValid(user_role, name) {
       'neworder',
       'manualentry',
       'dashboardOne',
-      'summary'
+      'summary',
+      'scrap'
     ],
     operator: [
       'timelost',
@@ -178,7 +179,8 @@ function isComponentValid(user_role, name) {
       'intershifts',
       'signoff',
       'neworder',
-      'dashboardOne'
+      'dashboardOne',
+      'scrap'
     ],
     summary: [
       'megamenu',
