@@ -266,6 +266,7 @@ class SignoffModal extends React.Component {
                     isOpen={this.state.modal_validate_IsOpen}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
+                    Refresh={this.props.Refresh}
                     label={'Please scan your clocknumber'}
                     t={this.props.t}
                     signOffSupervisor={this.signOffSupervisor}
