@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { sendPut, formatDateWithTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 
 
@@ -37,7 +37,7 @@ class ValueModal extends React.Component {
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             override: this.state.currentRow.productiondata_id ? parseInt(this.state.currentRow.productiondata_id) : 0,
             row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
-            timestamp: getCurrentTime(this.props.user.timezone),
+            timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             asset_code: this.props.parentData[0]
         }
         if (!data.actual) {

@@ -265,7 +265,7 @@ class DashboardOne extends React.Component {
           let param = {
             params: {
               mc: filter[0],
-              dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour > 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+              dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
               sf: shift.shift_id,
               hr: hr,
               st: props.user.site
