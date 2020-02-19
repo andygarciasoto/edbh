@@ -175,9 +175,7 @@ class SignoffModal extends React.Component {
                 })
             })
         } else if (this.state.signOffRole === 'Supervisor') {
-            this.setState({ isOpen: false, modal_validate_IsOpen: true })
-            this.props.Refresh(this.props.parentData);
-            this.props.onRequestClose();
+            this.setState({ isOpen: false, modal_validate_IsOpen: true });
         }
     }
 
