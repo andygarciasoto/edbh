@@ -125,16 +125,16 @@ class CommentsModal extends React.Component {
                             style={{ paddingTop: '5px' }}
                             type="text" value={this.state.value}
                             autoFocus
-                            disabled={!this.props.IsEditable}
+                            disabled={this.props.readOnly}
                             onChange={this.onChange}>
                         </Form.Control>
                     </span>
                     <Row>
                         <Col sm={6} md={2}>
-                            <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={!this.props.IsEditable} onClick={this.submitComment}>{t('Submit')}</Button>
+                            <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
                         </Col>
                         <Col sm={6} md={2}>
-                            {!this.props.IsEditable ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
+                            {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
                         </Col>
                     </Row>
                 </Modal>

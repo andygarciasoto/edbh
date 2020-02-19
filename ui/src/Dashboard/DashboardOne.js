@@ -100,7 +100,8 @@ class DashboardOne extends React.Component {
       currentHour: hour,
       summary: props.summary,
       uom_asset: null,
-      signOffModalType: ''
+      signOffModalType: '',
+      readOnly: false
     }
   }
 
@@ -147,6 +148,7 @@ class DashboardOne extends React.Component {
       modal_manualentry_IsOpen: false,
       modal_scrap_IsOpen: false,
       errorModal: false,
+      readOnly: false
     });
     if (!this.state.summary) {
       this.props.closeOrderModal(false);
@@ -519,7 +521,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           //timezone={this.state.timezone}
-          readOnly={this.state.summary}
+          readOnly={this.state.readOnly || this.state.summary}
         />
         <CommentsModal
           isOpen={this.state.modal_comments_IsOpen}
@@ -534,7 +536,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
-          IsEditable={!this.state.summary}
+          readOnly={this.state.readOnly || this.state.summary}
         //timezone={this.state.timezone}
         />
         <TimelossModal
@@ -551,7 +553,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          isEditable={!this.state.summary}
+          readOnly={this.state.readOnly || this.state.summary}
         //timezone={this.state.timezone}
         />
         <SignoffModal
@@ -566,6 +568,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           signOffModalType={this.state.signOffModalType}
+          readOnly={this.state.readOnly || this.state.summary}
           //timezone={this.state.timezone}
           uom_asset={this.state.uom_asset}
         />
@@ -598,7 +601,7 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          IsEditable={this.state.summary}
+          readOnly={this.state.readOnly || this.state.summary}
         //timezone={this.state.timezone}
         />
         <ErrorModal

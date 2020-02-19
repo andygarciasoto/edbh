@@ -62,7 +62,6 @@ class SignoffModal extends React.Component {
             actual: rowData.actual || "signoff",
             setup_scrap: rowData.summary_setup_scrap || 'signoff',
             other_scrap: rowData.summary_other_scrap || 'signoff',
-            adjusted_actual: rowData.summary_adjusted_actual || 'signoff',
             clocknumber: number,
             first_name: undefined,
             last_name: undefined,
@@ -124,7 +123,6 @@ class SignoffModal extends React.Component {
                 actual: rowData.actual || "signoff",
                 setup_scrap: rowData.setup_scrap || 'signoff',
                 other_scrap: rowData.other_scrap || 'signoff',
-                adjusted_actual: rowData.adjusted_actual || 'signoff',
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : null,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
@@ -231,8 +229,8 @@ class SignoffModal extends React.Component {
                                 {parseInt(row.summary_adjusted_actual || row.summary_actual || 0, 10)}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
-                        <Button variant="outline-success" style={{ marginTop: '20px', textAlign: 'center' }}
-                            className="error-button signoff-buttons" onClick={this.signOff}>{this.props.t('Accept')}</Button>
+                        <Button variant={this.props.readOnly ? "outline-default" : "outline-success"} style={{ marginTop: '20px', textAlign: 'center' }}
+                            className="error-button signoff-buttons" disabled={this.props.readOnly} onClick={this.signOff}>{this.props.t('Accept')}</Button>
                         <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }}
                             className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                     </div>

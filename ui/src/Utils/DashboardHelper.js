@@ -68,7 +68,7 @@ const helpers = {
                 'url("../arabesque.png")';
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'timelost_summary' && rowInfo.subRows && this.getTimeLostToSet(rowInfo) && Math.round(rowInfo.row._subRows[0]._original.allocated_time) !== 0) {
+        } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) && rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
 
             style.backgroundColor = '#b80600';
             style.backgroundImage = 'url("../dark-circles.png")';
@@ -299,7 +299,7 @@ const helpers = {
 
         let newModalProps = {};
 
-        if (isComponentValid(this.props.user.role, modalType) && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone)) {
+        if (isComponentValid(this.props.user.role, modalType)) {
             newModalProps['modal_' + modalType + '_IsOpen'] = false;
             newModalProps.currentRow = currentRow;
             if (modalType === 'order') {
@@ -324,6 +324,8 @@ const helpers = {
                     default:
                         break;
                 }
+
+                newModalProps['readOnly'] = !isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone);
 
                 this.setState(Object.assign(newModalProps));
 

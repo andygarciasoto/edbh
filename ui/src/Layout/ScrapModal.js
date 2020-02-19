@@ -60,7 +60,6 @@ class ScrapModal extends React.Component {
             productiondata_id: this.state.actualRow.productiondata_id,
             setup_scrap: this.state.setup_scrap,
             other_scrap: this.state.other_scrap,
-            adjusted_actual: this.state.adjusted_actual,
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name
@@ -121,7 +120,7 @@ class ScrapModal extends React.Component {
                                 className="form-control"
                                 style={{ paddingTop: '5px' }}
                                 min='0'
-                                disabled={this.props.IsEditable} />
+                                disabled={this.props.readOnly} />
                         </span>
                         <br />
                         <span className="dashboard-modal-field-group"><p>{this.props.t('Other Scrap')}:</p>
@@ -132,7 +131,7 @@ class ScrapModal extends React.Component {
                                 className="form-control"
                                 style={{ paddingTop: '5px' }}
                                 min='0'
-                                disabled={this.props.IsEditable} />
+                                disabled={this.props.readOnly} />
                         </span>
                         <br />
                         <span className="dashboard-modal-field-group"><p>{this.props.t('Adjusted Actual')}:</p>
@@ -143,7 +142,8 @@ class ScrapModal extends React.Component {
                                 style={{ paddingTop: '5px' }}
                                 disabled={true} />
                         </span>
-                        <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.IsEditable} onClick={this.submit}>{this.props.t('Submit')}</Button>
+                        <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submit}>{this.props.t('Submit')}</Button>
+                        {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                     </Modal>
                     <ConfirmModal
                         isOpen={this.state.modal_confirm_IsOpen}

@@ -31,7 +31,6 @@ class ValueModal extends React.Component {
             actual: this.state.newValue ? this.state.newValue : null,
             setup_scrap: this.props.currentRow.setup_scrap || 'signoff',
             other_scrap: this.props.currentRow.other_scrap || 'signoff',
-            adjusted_actual: this.props.currentRow.adjusted_actual || 'signoff',
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
@@ -154,11 +153,12 @@ class ValueModal extends React.Component {
                                 style={{ paddingTop: '5px' }}
                                 type={'number'}
                                 value={this.state.newValue}
+                                disabled={this.props.readOnly}
                                 autoFocus
                                 onChange={(val) => this.onChange(val)}>
                             </Form.Control>
                         </span>
-                        <Button variant="outline-primary" style={{ marginTop: '10px' }} onClick={this.submit}>{t('Submit')}</Button>
+                        <Button variant="outline-primary" disabled={this.props.readOnly} style={{ marginTop: '10px' }} onClick={this.submit}>{t('Submit')}</Button>
                     </Modal>
                     <ConfirmModal
                         isOpen={this.state.modal_confirm_IsOpen}

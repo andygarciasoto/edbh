@@ -43,7 +43,6 @@ class ManualEntryModal extends React.Component {
                 actual: 'signoff',
                 setup_scrap: 'signoff',
                 other_scrap: 'signoff',
-                adjusted_actual: 'signoff',
                 asset_code: this.props.parentData[0],
                 override: 0,
                 part_number: this.state.part_number,
