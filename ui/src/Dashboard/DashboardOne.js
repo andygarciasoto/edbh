@@ -81,7 +81,7 @@ class DashboardOne extends React.Component {
       logoffHourCheck: localStorage.getItem("signoff") === false ? localStorage.getItem("signoff") : true,
       barcode: 1001,
       dataCall: {},
-      selectedDate: props.search.dt || getCurrentTime(props.user.timezone),
+      selectedDate: props.search.dt || props.user.date_of_shift || getCurrentTime(props.user.timezone),
       selectedDateParsed: '',
       selectedMachine: props.search.mc || props.machineData.asset_code,
       selectedMachineType: props.search.tp || props.machineData.automation_level,
@@ -192,13 +192,13 @@ class DashboardOne extends React.Component {
         let selectedMachine;
         let selectedShift;
         if (nextProps.user.site === this.state.site) {
-          selectedDate = nextProps.search.dt || getCurrentTime(this.props.user.timezone);
+          selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
           selectedMachine = nextProps.search.mc || this.state.selectedMachine;
           selectedShift = nextProps.search.sf || this.state.selectedShift;
         } else {
-          selectedDate = nextProps.search.dt || getCurrentTime(nextProps.user.timezone);
-          selectedMachine = nextProps.machineData.asset_code;
-          selectedShift = nextProps.user.current_shift;
+          selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
+          selectedMachine = nextProps.search.mc || nextProps.machineData.asset_code;
+          selectedShift = nextProps.search.sf || nextProps.user.current_shift;
         }
 
         this.fetchData([selectedMachine, selectedDate, selectedShift], nextProps);
@@ -535,7 +535,7 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
           IsEditable={!this.state.summary}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <TimelossModal
           isOpen={this.state.modal_timelost_IsOpen}
@@ -552,7 +552,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           isEditable={!this.state.summary}
-          //timezone={this.state.timezone}
+        //timezone={this.state.timezone}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}

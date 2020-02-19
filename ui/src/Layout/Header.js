@@ -35,7 +35,7 @@ class Header extends React.Component {
             megaMenuToggle: 'dropdown-content',
             mc: search.mc || props.machineData.asset_code,
             tp: search.tp || props.machineData.automation_level,
-            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (props.user.date_of_shift ? new Date(props.user.date_of_shift) : new Date(getCurrentTime(props.user.timezone))),
             sf: search.sf || props.user.current_shift,
             ln: search.ln || props.user.language,
             cs: search.cs || props.user.site
@@ -55,7 +55,7 @@ class Header extends React.Component {
         this.setState({
             mc: search.mc || nextProps.machineData.asset_code,
             tp: search.tp || nextProps.machineData.automation_level,
-            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : new Date(getCurrentTime()),
+            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone))),
             sf: search.sf || nextProps.user.current_shift,
             ln: search.ln || nextProps.user.language,
             cs: search.cs || nextProps.user.site

@@ -17,9 +17,9 @@ class Pagination extends React.Component {
 
     getInitialState(props) {
         const search = qs.parse(props.history.location.search);
-        let selected_date = search.dt ? moment(search.dt).format('YYYY/MM/DD') + ' 00:00' : null;
-        let current_date = moment(getCurrentTime(props.timezone)).format('YYYY/MM/DD') + ' 00:00';
-        const dt = search.dt ? selected_date : current_date;
+        let selected_date = search.dt ? moment(search.dt).format('YYYY/MM/DD') + ' 00:00' : props.user.date_of_shift;
+        let current_date = !search.dt && props.user.date_of_shift ? props.user.date_of_shift : moment(getCurrentTime(props.user.timezone)).format('YYYY/MM/DD') + ' 00:00';
+        const dt = selected_date || current_date;
         return {
             mc: search.mc || props.machineData.asset_code,
             tp: search.tp || props.machineData.automation_level,
@@ -44,35 +44,42 @@ class Pagination extends React.Component {
     loadLogicToApply(props) {
         let newState = this.getInitialState(props);
 
-        let indexSelectedShift = _.findIndex(this.props.user.shifts, ['shift_name', newState.sf]) + 1;
-        let indexCurrentShift = 1;
+        let indexSelectedShift = -1;
+        let indexCurrentShift = -1;
+        if (newState.sf === props.user.current_shift) {
+            indexSelectedShift = _.findIndex(props.user.shifts, ['shift_name', newState.sf]) + 1;
+            indexCurrentShift = indexSelectedShift;
+        } else{
+            indexSelectedShift = _.findIndex(props.user.shifts, ['shift_name', newState.sf]) + 1;
+            indexCurrentShift = _.findIndex(props.user.shifts, ['shift_name', props.user.current_shift]) + 1;
+        }
 
-        let currentDate = moment(getCurrentTime(props.user.timezone));//current datetime to get the current shift
+        let currentShiftDate = moment(props.user.date_of_shift);//current datetime to get the current shift
 
-        _.forEach(props.user.shifts, (shift, index) => {
-            if ((currentDate.isSameOrAfter(moment(shift.start_date_time_today)) && currentDate.isBefore(moment(shift.end_date_time_today))) ||
-                (currentDate.isSameOrAfter(moment(shift.start_date_time_yesterday)) && currentDate.isBefore(moment(shift.end_date_time_yesterday))) ||
-                (currentDate.isSameOrAfter(moment(shift.start_date_time_tomorrow)) && currentDate.isBefore(moment(shift.end_date_time_tomorrow)))) {
-                indexCurrentShift = index + 1;
-            }
-        });
+        // _.forEach(props.user.shifts, (shift, index) => {
+        //     if ((currentShiftDate.isSameOrAfter(moment(shift.start_date_time_today)) && currentShiftDate.isBefore(moment(shift.end_date_time_today))) ||
+        //         (currentShiftDate.isSameOrAfter(moment(shift.start_date_time_yesterday)) && currentShiftDate.isBefore(moment(shift.end_date_time_yesterday))) ||
+        //         (currentShiftDate.isSameOrAfter(moment(shift.start_date_time_tomorrow)) && currentShiftDate.isBefore(moment(shift.end_date_time_tomorrow)))) {
+        //         indexCurrentShift = index + 1;
+        //     }
+        // });
 
         let lastShiftDate = moment(props.user.shifts[props.user.shifts.length - 1].end_date_time_today);
         let firstShiftDateTomorrow = moment(props.user.shifts[0].start_date_time_tomorrow);
         if (newState.diffDays === 0) {
-            if (currentDate.isSameOrAfter(lastShiftDate)) {
+            if (currentShiftDate.isSameOrAfter(lastShiftDate)) {
                 newState.diffDays = -1;
                 indexCurrentShift = 1;
-            } else if (currentDate.isSameOrAfter(moment(props.user.shifts[props.user.shifts.length - 1].start_date_time_yesterday)) &&
-                currentDate.isBefore(moment(props.user.shifts[props.user.shifts.length - 1].end_date_time_yesterday))) {
-            } else if (currentDate.isBefore(moment(props.user.shifts[0].start_date_time_today))) {
+            } else if (currentShiftDate.isSameOrAfter(moment(props.user.shifts[props.user.shifts.length - 1].start_date_time_yesterday)) &&
+                currentShiftDate.isBefore(moment(props.user.shifts[props.user.shifts.length - 1].end_date_time_yesterday))) {
+            } else if (currentShiftDate.isBefore(moment(props.user.shifts[0].start_date_time_today))) {
                 newState.diffDays = 0;
                 indexCurrentShift = 1;
             }
         }
 
         if (newState.diffDays === 1) {
-            if (currentDate.isSameOrAfter(lastShiftDate) && currentDate.isBefore(firstShiftDateTomorrow)) {
+            if (currentShiftDate.isSameOrAfter(lastShiftDate) && currentShiftDate.isBefore(firstShiftDateTomorrow)) {
                 newState.diffDays = 0;
                 indexCurrentShift = 1;
             }
@@ -102,7 +109,7 @@ class Pagination extends React.Component {
 
     returnToCurrentShift() {
         let object = {};
-        object.dt = new Date(getCurrentTime());
+        object.dt = new Date(this.props.user.date_of_shift);
         object.sf = this.props.user.current_shift;
         this.applyToQueryOptions(object);
     }
