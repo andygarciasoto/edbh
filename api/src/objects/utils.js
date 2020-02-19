@@ -215,16 +215,16 @@ function createUnallocatedTime2(obj, tz, dt) {
             if ((item.productiondata_id === '') || item.productiondata_id === undefined || item.productiondata_id === null) {
                 actualUnallocatedTime = base == current && today == day ? minutes : totalTime + lunch_setup;
             }
-            else if (item.summary_actual >= item.summary_ideal) {
+            else if (item.summary_adjusted_actual >= item.summary_ideal) {
                 actualUnallocatedTime = 0;
             }
             else if (base == current && day == today) {
                 if (minutes > lunch_setup) {
                     newIdeal = item.summary_ideal * ((minutes - lunch_setup) / (totalTime));
-                    if (item.summary_actual < newIdeal) {
+                    if (item.summary_adjusted_actual < newIdeal) {
                         var idealTimeForPart = totalTime / item.summary_ideal;
                         var minimumTime = newIdeal * idealTimeForPart;
-                        var actualTimeForPart = item.summary_actual * idealTimeForPart;
+                        var actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
                         actualUnallocatedTime = Math.round(minimumTime - actualTimeForPart);
                     } else {
                         actualUnallocatedTime = 0;
@@ -233,11 +233,11 @@ function createUnallocatedTime2(obj, tz, dt) {
                     actualUnallocatedTime = 0;
                 }
             } else {
-                if (item.summary_actual === 0) {
+                if (item.summary_adjusted_actual === 0) {
                     actualUnallocatedTime = totalTime;
                 } else {
                     var idealTimeForPart = totalTime / item.summary_ideal;
-                    var actualTimeForPart = item.summary_actual * idealTimeForPart;
+                    var actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
                     actualUnallocatedTime = Math.round(totalTime - actualTimeForPart);
                 }
             }
