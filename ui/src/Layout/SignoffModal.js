@@ -57,7 +57,7 @@ class SignoffModal extends React.Component {
         if (this.props.currentRow) {
             rowData = this.props.currentRow
         }
-        const data = {
+        let data = {
             dxh_data_id: rowData ? rowData.dxhdata_id : null,
             actual: rowData.actual || "signoff",
             setup_scrap: rowData.summary_setup_scrap || 'signoff',
@@ -84,8 +84,8 @@ class SignoffModal extends React.Component {
                         errorMessage: 'Invalid Clock Number'
                     })
                 } else {
-                    this.props.Refresh(this.props.parentData);
                     if (data.dxh_data_id === null) {
+                        data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
                         this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
                             const resp = sendPut({
                                 ...data
@@ -119,7 +119,7 @@ class SignoffModal extends React.Component {
             rowData = this.props.currentRow
         }
         if (this.state.signOffRole === 'Operator') {
-            const data = {
+            let data = {
                 dxh_data_id: rowData ? rowData.dxhdata_id : null,
                 actual: rowData.actual || "signoff",
                 setup_scrap: rowData.setup_scrap || 'signoff',
@@ -146,6 +146,7 @@ class SignoffModal extends React.Component {
                         })
                     } else {
                         if (data.dxh_data_id === null) {
+                            data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
                             this.setState({ modal_loading_IsOpen: true }, () => {
                                 const resp = sendPut({
                                     ...data
