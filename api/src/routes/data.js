@@ -710,7 +710,6 @@ router.put('/production_data', async function (req, res) {
     const actual = req.body.actual ? (req.body.actual != "signoff" ? parseFloat(req.body.actual) : 0) : undefined;
     const setup_scrap = req.body.setup_scrap ? (req.body.setup_scrap != "signoff" ? parseFloat(req.body.setup_scrap) : 0) : undefined;
     const other_scrap = req.body.other_scrap ? (req.body.other_scrap != "signoff" ? parseFloat(req.body.other_scrap) : 0) : undefined;
-    const adjusted_actual = req.body.adjusted_actual ? (req.body.adjusted_actual != "signoff" ? parseFloat(req.body.adjusted_actual) : 0) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
@@ -718,8 +717,8 @@ router.put('/production_data', async function (req, res) {
     const override = req.body.override ? parseInt(req.body.override) : 0;
     const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
     const row_timestamp = req.body.row_timestamp;
-    
-    if (actual === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
+
+    if (actual === undefined || setup_scrap === undefined || other_scrap === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters - Actual, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
     }
     if (!clocknumber) {
@@ -743,7 +742,7 @@ router.put('/production_data', async function (req, res) {
                         let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                         dxh_data_id = response[0].dxhdata_id;
                         if (clocknumber) {
-                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                                 (err, responseProduction) => {
                                     if (err) {
                                         console.log(err);
@@ -753,7 +752,7 @@ router.put('/production_data', async function (req, res) {
                                     responsePostPutNoJSON(responseProduction, req, res);
                                 });
                         } else {
-                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+                            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                                 (err, responseProduction) => {
                                     if (err) {
                                         console.log(err);
@@ -768,7 +767,7 @@ router.put('/production_data', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', Null, Null, '${timestamp}', ${override};`,
                 (err, responseProduction) => {
                     if (err) {
                         console.log(err);
@@ -778,7 +777,7 @@ router.put('/production_data', async function (req, res) {
                     responsePostPutNoJSON(responseProduction, req, res);
                 });
         } else {
-            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
+            sqlQuery(`exec spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override};`,
                 (err, responseProduction) => {
                     if (err) {
                         console.log(err);
@@ -1103,12 +1102,11 @@ router.put('/scrap_values', function (req, res) {
     const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
     const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : undefined;
     const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : undefined;
-    const adjusted_actual = !isNaN(req.body.adjusted_actual) ? parseFloat(req.body.adjusted_actual) : undefined;
     const clocknumber = req.body.clocknumber;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
 
-    if (dxh_data_id === undefined || productiondata_id === undefined || setup_scrap === undefined || other_scrap === undefined || adjusted_actual === undefined) {
+    if (dxh_data_id === undefined || productiondata_id === undefined || setup_scrap === undefined || other_scrap === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters - dxh_data_id,productiondata_id, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
     }
     if (!clocknumber) {
@@ -1118,7 +1116,7 @@ router.put('/scrap_values', function (req, res) {
     }
 
     if (clocknumber) {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, '${clocknumber}', NULL, NULL;`,
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', NULL, NULL;`,
             (err, response) => {
                 if (err) {
                     console.log(err);
@@ -1128,7 +1126,7 @@ router.put('/scrap_values', function (req, res) {
                 responsePostPutNoJSON(response, req, res);
             });
     } else {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, ${adjusted_actual}, Null, '${first_name}', '${last_name}';`,
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}';`,
             (err, response) => {
                 if (err) {
                     console.log(err);
