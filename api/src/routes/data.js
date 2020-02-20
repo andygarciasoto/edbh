@@ -1030,6 +1030,28 @@ router.get('/uom_asset', async function (req, res) {
         });
 });
 
+router.get('/workcell', async function (req, res) {
+    let params = req.query;
+    if (!params.st) {
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    sqlQuery(`SELECT A.asset_code, AD.displaysystem_name, W.workcell_name, W.workcell_description
+    FROM AssetDisplaySystem AD
+    INNER JOIN Workcell W
+    ON AD.displaysystem_name = W.displaysystem_name
+    INNER JOIN Asset A
+    ON AD.asset_id = A.asset_id
+    WHERE AD.displaysystem_name = '${params.st}';`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            res.status(200).json(response);
+        });
+});
+
 router.get('/user_sites', async function (req, res) {
     let params = req.query;
     if (!params.clock_number) {
