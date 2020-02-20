@@ -496,71 +496,49 @@ class DashboardOne extends React.Component {
           isOpen={this.state.modal_manualentry_IsOpen}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
-          //contentLabel="Example Modal"
           t={this.props.t}
-          //timelost={this.state.current_display_timelost}
-          //machine={this.state.selectedMachine}
           user={this.props.user}
           currentRow={this.state.currentRow}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-        //timezone={this.state.timezone}
         />
         <ValueModal
           isOpen={this.state.modal_actual_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
-          //contentLabel="Example Modal"
-          //currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
-          //cumulativepcs={this.state.cumulative_pcs}
-          //formType={this.state.modalType}
           t={t}
           user={this.props.user}
           currentRow={this.state.currentRow}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          //timezone={this.state.timezone}
           readOnly={this.state.readOnly || this.state.summary}
         />
         <CommentsModal
           isOpen={this.state.modal_comments_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
-          //contentLabel="Example Modal"
           t={t}
-          //comments={this.state.current_display_comments}
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           selectedDate={this.state.selected}
           readOnly={this.state.readOnly || this.state.summary}
-        //timezone={this.state.timezone}
         />
         <TimelossModal
           isOpen={this.state.modal_timelost_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
-          //contentLabel="Example Modal"
           t={t}
-          //label={t('Search/Select Reason Code')}
-          //timelost={this.state.current_display_timelost}
-          //machine={this.state.selectedMachine}
           currentRow={this.state.currentRow}
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           readOnly={this.state.readOnly || this.state.summary}
-        //timezone={this.state.timezone}
         />
         <SignoffModal
           isOpen={this.state.modal_signoff_IsOpen}
-          //  onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
-          //contentLabel="Example Modal"
           style={this.state.modalStyle}
           t={this.props.t}
           currentRow={this.state.currentRow}
@@ -569,7 +547,6 @@ class DashboardOne extends React.Component {
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           signOffModalType={this.state.signOffModalType}
           readOnly={this.state.readOnly || this.state.summary}
-          //timezone={this.state.timezone}
           uom_asset={this.state.uom_asset}
         />
         <OrderModal
@@ -578,23 +555,15 @@ class DashboardOne extends React.Component {
           open={this.openModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
-          //contentLabel="Example Modal"
-          //currentVal={isNaN(this.state.valueToEdit) ? undefined : this.state.valueToEdit}
-          //formType={this.state.modalType}
           t={t}
-          //currentRow={this.state.currentRow}
-          //label={'Scan Order Number'}
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           showValidateDataModal={this.showValidateDataModal}
-        //timezone={this.state.timezone}
         />
         <ScrapModal
           isOpen={this.state.modal_scrap_IsOpen}
           onRequestClose={this.closeModal}
-          //contentLabel="Example Modal"
-          //formType={this.state.modalType}
           style={this.state.modalStyle}
           t={t}
           currentRow={this.state.currentRow}
@@ -602,11 +571,9 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           readOnly={this.state.readOnly || this.state.summary}
-        //timezone={this.state.timezone}
         />
         <ErrorModal
           isOpen={this.state.errorModal}
-          //onAfterOpen={this.afterOpenModal}
           onRequestClose={a => {
             obj.setState({ logoffHourCheck: false })
             this.closeModal();
