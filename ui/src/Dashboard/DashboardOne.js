@@ -426,8 +426,8 @@ class DashboardOne extends React.Component {
     const columns = this.state.columns;
     let machineName = 'No Data';
     _.forEach(this.props.user.machines, (machine) => {
-      if (machine.Asset.asset_code === this.state.selectedMachine) {
-        machineName = machine.Asset.asset_name;
+      if (machine.asset_code === this.state.selectedMachine) {
+        machineName = machine.asset_name;
       }
     });
 
