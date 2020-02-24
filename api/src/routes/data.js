@@ -14,7 +14,7 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-/*router.use(function (err, req, res, next) {
+router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -54,7 +54,7 @@ router.use(function (req, res, next) {
             message: 'Auth token is not supplied'
         });
     }
-}); */
+}); 
 
 function responsePostPutNoJSON(response, req, res) {
     try {
@@ -832,8 +832,8 @@ router.get("/order_assembly", async function (req, res) {
     if (params.order_number === undefined || params.asset_code === undefined || params.timestamp === undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    getAssetInfoPromise(asset_code).then(responseProm => {
-        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData${responseProm[0].Asset.asset_id},'${params.order_number}', 0`,
+    getAssetInfoPromise(params.asset_code).then(responseProm => {
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Get_OrderData ${responseProm[0].Asset.asset_id}, '${params.order_number}', 0`,
             (err, data) => {
                 if (err) {
                     console.log(err);
@@ -841,6 +841,7 @@ router.get("/order_assembly", async function (req, res) {
                     return;
                 }
                 let response = JSON.parse(Object.values(data)[0].OrderData);
+                console.log(response);
                 const orderId = response[0].OrderData.order_id;
                 if (orderId === null || orderId === undefined) {
                     var assembly = {
