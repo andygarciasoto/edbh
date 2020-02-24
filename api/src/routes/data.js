@@ -148,14 +148,14 @@ router.get('/machine', async function (req, res) {
         const machines = utils.structureMachines(response);
         res.status(200).json(machines);
     }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Asset 'Cell','All',${params.site};`,
+    sqlQuery(`exec spLocal_EY_DxH_Get_Asset_new_1 'Cell','All',${params.site};`,
         (err, response) => {
             if (err) {
                 console.log(err)
                 res.status(500).send({ message: 'Error', database_error: err.message });
                 return;
             }
-            structureMachines(response);
+            return res.status(200).json(response);
         });
 });
 

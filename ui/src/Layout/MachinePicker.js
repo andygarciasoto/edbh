@@ -7,43 +7,32 @@ class MachinePickerCustom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            machines: [],
+            machines: this.getMachineArray(props),
             value: {},
             site: props.user.site
         }
-        this.onSelect = this.onSelect.bind(this);
-    }
-
-    componentDidMount() {
-        let machineArray = this.getMachineArray(this.props.user.machines);
-        this.setState({ machines: machineArray })
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.value) {
             let machineSelected = {};
-            _.forEach(nextProps.user.machines, (machine) => {
-                if (machine.Asset.asset_code === nextProps.value) {
-                    machineSelected = machine.Asset;
-                }
-            });
-            let machineArray = this.state.machines;
-            if (nextProps.user.site !== this.state.site) {
-                machineArray = this.getMachineArray(nextProps.user.machines);
-            }
+            const machineArray = this.getMachineArray(nextProps);
+            machineSelected = _.find(machineArray, ['asset_code', nextProps.value]);
+            machineSelected = machineSelected ? machineSelected : {};
             this.setState({ value: machineSelected, machines: machineArray, site: nextProps.user.site });
         }
     }
 
-    getMachineArray(machines) {
+    getMachineArray(props) {
+        let machines = props.history.location.pathname === '/summary' ? props.user.workcell : props.user.machines;
         let machineArray = [];
         _.forEach(machines, item => {
-            machineArray.push({ asset_name: item.Asset.asset_name, asset_code: item.Asset.asset_code, automation_level: item.Asset.automation_level })
+            machineArray.push({ asset_name: item.asset_name, asset_code: item.asset_code, automation_level: item.automation_level })
         });
         return machineArray;
     }
 
-    onSelect(machine) {
+    onSelect = (machine) => {
         this.props.collectInput(machine.asset_code, 'mc');
         if (machine.automation_level) {
             this.props.collectInput(machine.automation_level, 'tp');
@@ -52,7 +41,7 @@ class MachinePickerCustom extends React.Component {
 
     render() {
         var machineSelected = this.state.value;
-        if (!machineSelected.asset_name) {
+        if (!machineSelected || !machineSelected.asset_name) {
             machineSelected.asset_name = 'No Data';
         }
         const t = this.props.t;

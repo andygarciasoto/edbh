@@ -193,7 +193,8 @@ class Header extends React.Component {
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         user={this.props.user}
-                                        value={this.state.mc} />
+                                        value={this.state.mc}
+                                        history={this.props.history} />
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.dt}

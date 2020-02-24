@@ -157,6 +157,15 @@ function init() {
                 console.log(error);
             });
 
+            //shift.params.st = 'CR2080435W1';
+            await axios.all([BuildGet(`${API}/workcell`, shift)]).then(
+                axios.spread(async (responseWorkcell) => {
+                    user.workcell = responseWorkcell.data;
+                })
+            ).catch(function (error) {
+                console.log(error);
+            });
+
             if (site && Number(user.site) !== Number(site)) {
 
                 const parameters = {
