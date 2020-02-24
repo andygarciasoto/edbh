@@ -841,7 +841,6 @@ router.get("/order_assembly", async function (req, res) {
                     return;
                 }
                 let response = JSON.parse(Object.values(data)[0].OrderData);
-                console.log(response);
                 const orderId = response[0].OrderData.order_id;
                 if (orderId === null || orderId === undefined) {
                     var assembly = {
