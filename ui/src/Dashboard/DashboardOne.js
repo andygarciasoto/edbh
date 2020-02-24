@@ -14,6 +14,7 @@ import ManualEntryModal from '../Layout/ManualEntryModal';
 import Spinner from '../Spinner';
 import Comments from './Comments';
 import ErrorModal from '../Layout/ErrorModal';
+import AlertModalOverProd from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
 import ScrapModal from '../Layout/ScrapModal';
 import openSocket from 'socket.io-client';
@@ -101,7 +102,9 @@ class DashboardOne extends React.Component {
       summary: props.summary,
       uom_asset: null,
       signOffModalType: '',
-      readOnly: false
+      readOnly: false,
+      alertModalOverProd: false,
+      alertMessageOverProd: ''
     }
   }
 
@@ -148,7 +151,8 @@ class DashboardOne extends React.Component {
       modal_manualentry_IsOpen: false,
       modal_scrap_IsOpen: false,
       errorModal: false,
-      readOnly: false
+      readOnly: false,
+      alertModalOverProd: false
     });
     if (!this.state.summary) {
       this.props.closeOrderModal(false);
@@ -372,6 +376,7 @@ class DashboardOne extends React.Component {
           st: props.user.site
         }
       }
+
       let requestData = [
         BuildGet(`${API}/data`, parameters),
         BuildGet(`${API}/uom_asset`, parameters)
@@ -388,7 +393,15 @@ class DashboardOne extends React.Component {
           let data = responseData.data;
           let uom_asset = responseAssetUOM.data;
 
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset });
+          let alertModalOverProd = false;
+          let alertMessageOverProd = '';
+          if (data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+            (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
+            alertModalOverProd = true;
+            alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+          }
+
+          _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset, alertModalOverProd, alertMessageOverProd });
 
         })
       ).catch(function (error) {
@@ -581,6 +594,13 @@ class DashboardOne extends React.Component {
           contentLabel="Example Modal"
           t={t}
           message={this.state.errorMessage}
+        />
+        <AlertModalOverProd
+          isOpen={this.state.alertModalOverProd}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+          t={t}
+          message={this.state.alertMessageOverProd}
         />
       </React.Fragment >
     );
