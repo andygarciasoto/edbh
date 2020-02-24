@@ -195,6 +195,7 @@ function createUnallocatedTime2(obj, tz, dt) {
     obj.map((item, index) => {
         if (actualElement === null || actualElement.dxhdata_id === null || actualElement.dxhdata_id !== item.dxhdata_id && actualElement.started_on_chunck !== item.started_on_chunck) {
             actualElement = item;
+            console.log(item);
             actualUnallocatedTime = actualElement.unallocated_time;
             actualAllocatedTime = actualElement.allocated_time;
             var base = moment(item.started_on_chunck).hours();
@@ -215,13 +216,13 @@ function createUnallocatedTime2(obj, tz, dt) {
             if ((item.productiondata_id === '') || item.productiondata_id === undefined || item.productiondata_id === null) {
                 actualUnallocatedTime = base == current && today == day ? minutes : totalTime + lunch_setup;
             }
-            else if (item.summary_adjusted_actual >= item.summary_ideal) {
+            else if (Math.round(item.summary_adjusted_actual) >= Math.round(item.summary_ideal)) {
                 actualUnallocatedTime = 0;
             }
             else if (base == current && day == today) {
                 if (minutes > lunch_setup) {
                     newIdeal = item.summary_ideal * ((minutes - lunch_setup) / (totalTime));
-                    if (item.summary_adjusted_actual < newIdeal) {
+                    if (item.summary_adjusted_actual < Math.round(newIdeal)) {
                         var idealTimeForPart = totalTime / item.summary_ideal;
                         var minimumTime = newIdeal * idealTimeForPart;
                         var actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
