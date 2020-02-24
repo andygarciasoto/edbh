@@ -14,7 +14,7 @@ var utils = require('../objects/utils');
 var nJwt = require('njwt');
 var format = 'YYYY-MM-DD HH:mm:ss';
 
-router.use(function (err, req, res, next) {
+/*router.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401);
         res.json({ "message": err.name + ": " + err.message });
@@ -54,7 +54,7 @@ router.use(function (req, res, next) {
             message: 'Auth token is not supplied'
         });
     }
-});
+}); */
 
 function responsePostPutNoJSON(response, req, res) {
     try {
@@ -1035,13 +1035,15 @@ router.get('/workcell', async function (req, res) {
     if (!params.st) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`SELECT A.asset_code, AD.displaysystem_name, W.workcell_name, W.workcell_description
-    FROM AssetDisplaySystem AD
-    INNER JOIN Workcell W
-    ON AD.displaysystem_name = W.displaysystem_name
-    INNER JOIN Asset A
-    ON AD.asset_id = A.asset_id
-    WHERE AD.displaysystem_name = '${params.st}';`,
+    sqlQuery(`DECLARE
+    @workcell_id int,
+    @workcell_name VARCHAR(100),
+    @workcell_description VARCHAR(100)
+    SELECT @workcell_id = A.grouping1 FROM dbo.Asset A INNER JOIN dbo.AssetDisplaySystem AD ON AD.asset_id = A.asset_id WHERE AD.displaysystem_name = '${params.st}'
+    SELECT @workcell_name = workcell_name, @workcell_description = workcell_description FROM dbo.Workcell WHERE workcell_id = @workcell_id
+    SELECT asset_code, asset_name, asset_id, '${params.st}' as displaysystem_name, @workcell_name as workcell_name, @workcell_description as workcell_description
+        FROM dbo.Asset
+        WHERE grouping1 = @workcell_id;`,
         (err, response) => {
             if (err) {
                 console.log(err);
