@@ -101,8 +101,8 @@ function getParametersOfTable(tableName, siteId) {
   switch (tableName) {
     case 'Asset':
       parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.parent_asset_code = t.parent_asset_code';
-      parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], t.[asset_level] = s.[asset_level], t.[value_stream] = s.[value_stream], t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[grouping1], t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
-      parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[grouping1], s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on])`;
+      parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], t.[asset_level] = s.[asset_level], t.[value_stream] = s.[value_stream], t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[grouping1], t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[target_percent_of_ideal] = s.[target_percent_of_ideal]`;
+      parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[grouping1], s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[target_percent_of_ideal])`;
       break;
     case 'DTReason':
       parametersObject.extraColumns = ', a.asset_id';
@@ -157,7 +157,7 @@ function getParametersOfTable(tableName, siteId) {
   return parametersObject;
 }
 
-router.post('/import_asset', upload.single('file'), (req, res) => {
+router.post('/import_data', upload.single('file'), (req, res) => {
   const file = req.file;
   const arrayItems = JSON.parse(req.body.configurationItems);
   const site_id = JSON.parse(req.body.site_id);

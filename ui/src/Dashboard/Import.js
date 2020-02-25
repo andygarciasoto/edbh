@@ -102,7 +102,7 @@ class Import extends React.Component {
 
     onSubmit = () => {
         let _this = this;
-        const url = `${DATATOOL}/import_asset`;
+        const url = `${DATATOOL}/import_data`;
         let formData = new FormData();
         formData.append('file', _this.state.file);
         formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));

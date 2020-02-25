@@ -32,12 +32,13 @@ module.exports = Object.freeze({
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
+        { header: 'target_percent_of_ideal', type: 'FLOAT', key: 'target_percent_of_ideal', width: 28 }
     ],
     AssetSQL: (site_id) => {
         return `SELECT [asset_code],[asset_name],[asset_description],[asset_level],[site_code],[parent_asset_code],[value_stream],[automation_level],
         [include_in_escalation],[grouping1],[grouping2],[grouping3],[grouping4],[grouping5],[status],[entered_by],[entered_on],[last_modified_by],
-        [last_modified_on] FROM [dbo].[Asset] WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
+        [last_modified_on],[target_percent_of_ideal] FROM [dbo].[Asset] WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
     },
     DTReason: [
         { header: 'dtreason_code', type: 'VARCHAR', key: 'dtreason_code' },
