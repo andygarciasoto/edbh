@@ -144,11 +144,7 @@ router.get('/machine', async function (req, res) {
     if (!params.site) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    function structureMachines(response) {
-        const machines = utils.structureMachines(response);
-        res.status(200).json(machines);
-    }
-    sqlQuery(`exec spLocal_EY_DxH_Get_Asset_new_1 'Cell','All',${params.site};`,
+    sqlQuery(`exec spLocal_EY_DxH_Get_Asset 'Cell','All',${params.site};`,
         (err, response) => {
             if (err) {
                 console.log(err)
