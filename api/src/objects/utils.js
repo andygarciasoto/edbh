@@ -195,7 +195,6 @@ function createUnallocatedTime2(obj, tz, dt) {
     obj.map((item, index) => {
         if (actualElement === null || actualElement.dxhdata_id === null || actualElement.dxhdata_id !== item.dxhdata_id && actualElement.started_on_chunck !== item.started_on_chunck) {
             actualElement = item;
-            console.log(item);
             actualUnallocatedTime = actualElement.unallocated_time;
             actualAllocatedTime = actualElement.allocated_time;
             var base = moment(item.started_on_chunck).hours();
