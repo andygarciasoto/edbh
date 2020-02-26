@@ -396,23 +396,23 @@ router.put('/dt_data', async function (req, res) {
                         let response = JSON.parse(Object.values(data)[0].GetDxHDataId);
                         dxh_data_id = response[0].dxhdata_id;
                         if (clocknumber) {
-                            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+                            sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
                                 (err, response) => {
                                     if (err) {
                                         console.log(err);
                                         res.status(500).send({ message: 'Error', database_error: err });
                                         return;
                                     }
-                                    responsePostPut(response, req, res);
+                                    responsePostPutNoJSON(response, req, res);
                                 });
                         } else {
-                            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+                            sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
                                 (err, response) => {
                                     if (err) {
                                         console.log(err);
                                         res.status(500).send({ message: 'Error', database_error: err });
                                         return;
-                                    } responsePostPut(response, req, res);
+                                    } responsePostPutNoJSON(response, req, res);
                                 });
                         }
                     });
@@ -420,23 +420,23 @@ router.put('/dt_data', async function (req, res) {
         }
     } else {
         if (clocknumber) {
-            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
+            sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${update};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send({ message: 'Error', database_error: err });
                         return;
-                    } responsePostPut(response, req, res);
+                    } responsePostPutNoJSON(response, req, res);
                 });
         } else {
-            sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
+            sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${update};`,
                 (err, response) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send({ message: 'Error', database_error: err });
                         return;
                     }
-                    responsePostPut(response, req, res);
+                    responsePostPutNoJSON(response, req, res);
                 });
         }
     }
@@ -1179,23 +1179,23 @@ router.put('/dt_data_update', async function (req, res) {
     }
 
     if (clocknumber) {
-        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${dtdata_id};`,
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${dtdata_id};`,
             (err, response) => {
                 if (err) {
                     console.log(err);
                     res.status(500).send({ message: 'Error', database_error: err });
                     return;
-                } responsePostPut(response, req, res);
+                } responsePostPutNoJSON(response, req, res);
             });
     } else {
-        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${dtdata_id};`,
+        sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${dtdata_id};`,
             (err, response) => {
                 if (err) {
                     console.log(err);
                     res.status(500).send({ message: 'Error', database_error: err });
                     return;
                 }
-                responsePostPut(response, req, res);
+                responsePostPutNoJSON(response, req, res);
             });
     }
 
