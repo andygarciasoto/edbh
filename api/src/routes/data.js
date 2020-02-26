@@ -54,7 +54,7 @@ router.use(function (req, res, next) {
             message: 'Auth token is not supplied'
         });
     }
-}); 
+});
 
 function responsePostPutNoJSON(response, req, res) {
     try {
@@ -1154,6 +1154,48 @@ router.put('/scrap_values', function (req, res) {
                     return;
                 };
                 responsePostPutNoJSON(response, req, res);
+            });
+    }
+
+});
+
+router.put('/dt_data_update', async function (req, res) {
+    let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+    const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
+    const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
+    const clocknumber = req.body.clocknumber;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const timestamp = moment(new Date(req.body.timestamp)).format(format);
+    const dtdata_id = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
+
+    if (dxh_data_id === undefined || dt_reason_id === undefined || dt_minutes === undefined || dtdata_id === 0) {
+        return res.status(400).send("Missing parameters");
+    }
+    if (!clocknumber) {
+        if (!(first_name || last_name)) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+    }
+
+    if (clocknumber) {
+        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${dtdata_id};`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                } responsePostPut(response, req, res);
+            });
+    } else {
+        sqlQuery(`exec spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, Null, '${first_name}', '${last_name}', '${timestamp}', ${dtdata_id};`,
+            (err, response) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ message: 'Error', database_error: err });
+                    return;
+                }
+                responsePostPut(response, req, res);
             });
     }
 

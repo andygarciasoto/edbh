@@ -75,3 +75,7 @@
     }
 
 .react_control__menu {height: 220px !important; overflow-y: hidden}
+
+.ReactTable .rt-th, .ReactTable .rt-td {
+    overflow: visible;
+}

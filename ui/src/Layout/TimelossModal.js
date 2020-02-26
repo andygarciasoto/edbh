@@ -1,6 +1,9 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Form, Button, Row, Col, Table } from 'react-bootstrap';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
+import { Form, Button, Row, Col, Nav } from 'react-bootstrap';
+import FontAwesome from 'react-fontawesome';
 import * as _ from 'lodash';
 import './TimelossModal.scss';
 import ReactSelect from 'react-select';
@@ -20,8 +23,12 @@ const axios = require('axios');
 class TimelossModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            value: this.props.currentVal,
+        this.state = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
+    }
+
+    getInitialState(props) {
+        return {
+            value: props.currentVal,
             newValue: '',
             break_time: 0,
             setup_time: 0,
@@ -32,19 +39,72 @@ class TimelossModal extends React.Component {
             allowSubmit: true,
             timelost: [],
             currentRow: {},
+            editDTReason: false,
+            currentDTReason: {},
+            newDTReason: {},
             new_tl_reason: '',
+            allDTReason: [],
             modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
             changed: false,
             actualDxH_Id: null
         }
-        this.submit = this.submit.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.allocateTime = this.allocateTime.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.validate = this.validate.bind(this);
-        this.closeTimeloss = this.closeTimeloss.bind(this);
+    }
+
+    getTextTranslations(props) {
+        return {
+            timeText: props.t('Time'),
+            timeLostCodeText: props.t('Time Lost Code'),
+            reasonText: props.t('Reason')
+        }
+    }
+
+    getColumns() {
+        let columns = [
+            {
+                Header: this.getHeader(this.state.timeText),
+                accessor: 'dtminutes',
+                maxWidth: 127,
+                Cell: c => this.renderCell(c.original, 'dtminutes')
+            },
+            {
+                Header: this.getHeader(this.state.timeLostCodeText),
+                accessor: 'dtreason_code',
+                maxWidth: 256,
+                Cell: c => this.renderCell(c.original, 'dtreason_code')
+            },
+            {
+                Header: this.getHeader(this.state.reasonText),
+                accessor: 'dtreason_name',
+                maxWidth: 514,
+                Cell: c => this.renderCell(c.original, 'dtreason_name')
+            }
+        ];
+
+        if (this.state.editDTReason) {
+            columns.push(
+                {
+                    maxWidth: 50,
+                    Cell: c => this.renderEditAcceptDeleteButton(c.original, 'accept')
+                }
+            );
+            columns.push(
+                {
+                    maxWidth: 50,
+                    Cell: c => this.renderEditAcceptDeleteButton(c.original, 'cancel')
+                }
+            );
+        } else {
+            columns.push(
+                {
+                    maxWidth: 50,
+                    Cell: c => this.renderEditAcceptDeleteButton(c.original, 'edit')
+                }
+            );
+        }
+
+        return columns;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -53,16 +113,16 @@ class TimelossModal extends React.Component {
         }
     }
 
-    submit(e) {
+    submit = (e) => {
         const data = {
             dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-            dt_reason_id: this.state.new_tl_reason.reason_id,
+            dt_reason_id: this.state.new_tl_reason.dtreason_id,
             dt_minutes: parseInt(this.state.time_to_allocate),
             clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             asset_code: this.props.parentData[0],
-            row_timestamp: this.props.currentRow.started_on_chunck,
+            row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             timestamp: getCurrentTime(this.props.user.timezone)
         }
         this.setState({ modal_loading_IsOpen: true }, () => {
@@ -107,6 +167,14 @@ class TimelossModal extends React.Component {
         this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
             axios.all(requestData).then(
                 axios.spread((responseReasons) => {
+
+                    let reasonsOption = [];
+                    if (responseReasons.data) {
+                        _.forEach(responseReasons.data, reason => {
+                            reasonsOption.push({ value: reason.dtreason_code, label: `${reason.dtreason_code} - ${reason.dtreason_name}`, dtreason_id: reason.dtreason_id });
+                        })
+                    }
+
                     _this.setState({
                         modal_loading_IsOpen: false,
                         allocated_time: props.currentRow.allocated_time,
@@ -114,9 +182,10 @@ class TimelossModal extends React.Component {
                         time_to_allocate: time,
                         setup_time: props.currentRow.summary_setup_minutes || 0,
                         break_time: props.currentRow.summary_breakandlunch_minutes || 0,
-                        reasons: responseReasons.data,
+                        reasons: reasonsOption,
                         currentRow: props.currentRow,
-                        actualDxH_Id: props.currentRow.dxhdata_id
+                        actualDxH_Id: props.currentRow.dxhdata_id,
+                        allDTReason: responseReasons.data
                     });
                 })
             ).catch(function (error) {
@@ -135,18 +204,19 @@ class TimelossModal extends React.Component {
         });
     }
 
-    closeTimeloss() {
+    closeTimeloss = () => {
         this.setState({
             validationMessage: '',
             time_to_allocate: 0,
             unallocated_time: 0,
             new_tl_reason: '',
-            allowSubmit: true
+            allowSubmit: true,
+            editDTReason: false
         });
         this.props.onRequestClose();
     }
 
-    allocateTime(e) {
+    allocateTime = (e) => {
         const value = parseInt(e.target.value);
         const max = Math.round(this.state.allocated_time);
         if (value > max) {
@@ -171,9 +241,111 @@ class TimelossModal extends React.Component {
         }
     }
 
-    closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false, allowSubmit: true });
+    closeModal = () => {
+        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false, allowSubmit: true, editDTReason: false });
         this.props.onRequestClose();
+    }
+
+    getHeader(text) {
+        return <span className={'wordwrap left-align'} style={{ float: 'left' }} data-tip={text}><b>{text}</b></span>
+    }
+
+    renderCell(row, prop) {
+        if (!this.state.editDTReason || row.dtdata_id !== this.state.currentDTReason.dtdata_id) {
+            return <span>{row[prop]}</span>;
+        } else {
+            if (prop === 'dtminutes') {
+                return <input type='number' autoFocus={this.state.editDTReason}
+                    min='1' max={formatNumber(this.state.allocated_time) + formatNumber(this.state.currentDTReason.dtminutes)} value={this.state.newDTReason[prop]}
+                    onChange={(e) => this.changeInputValue(e)}></input>
+            } else if (prop === 'dtreason_code') {
+                return <ReactSelect
+                    value={{
+                        value: this.state.newDTReason.dtreason_code,
+                        label: `${this.state.newDTReason.dtreason_code} - ${this.state.newDTReason.dtreason_name}`,
+                        reason_id: this.state.newDTReason.dtreason_id
+                    }}
+                    onChange={(e) => this.changeSelectTable(e)}
+                    options={this.state.reasons}
+                />;
+            } else {
+                return <span>{this.state.newDTReason[prop]}</span>;
+            }
+        }
+    }
+
+    changeInputValue(e) {
+        let newDTReason = this.state.newDTReason;
+        newDTReason.dtminutes = e.target.value;
+        this.setState({ newDTReason });
+    }
+
+    changeSelectTable(e) {
+        let newDTReason = _.find(this.state.allDTReason, ['dtreason_id', e.dtreason_id]);
+        newDTReason.dtminutes = this.state.newDTReason.dtminutes;
+        this.setState({ newDTReason });
+    }
+
+    renderEditAcceptDeleteButton(row, action) {
+        if (action === 'edit') {
+            return <Nav.Link onClick={() => this.editDTReasonRow(row)}><FontAwesome name='edit' /></Nav.Link>;
+        } else if (action === 'accept' && row.dtdata_id === this.state.currentDTReason.dtdata_id) {
+            return <Nav.Link onClick={() => this.acceptNewDTReason(row)}><FontAwesome name='check' /></Nav.Link>;
+        } else if (action === 'cancel' && row.dtdata_id === this.state.currentDTReason.dtdata_id) {
+            return <Nav.Link onClick={() => this.cancelEditDTReason()}><FontAwesome name='window-close' /></Nav.Link>;
+        } else {
+            return <span></span>;
+        }
+    }
+
+    editDTReasonRow(row) {
+        this.setState({
+            editDTReason: true,
+            currentDTReason: _.clone(row),
+            newDTReason: _.clone(row)
+        });
+    }
+
+    acceptNewDTReason() {
+        if ((formatNumber(this.state.allocated_time) + formatNumber(this.state.currentDTReason.dtminutes)) >= formatNumber(this.state.newDTReason.dtminutes) &&
+            formatNumber(this.state.newDTReason.dtminutes) > 0) {
+            const data = {
+                dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
+                dt_reason_id: this.state.newDTReason.dtreason_id,
+                dt_minutes: parseInt(this.state.newDTReason.dtminutes),
+                dtdata_id: parseInt(this.state.currentDTReason.dtdata_id),
+                clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
+                first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
+                last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+                timestamp: getCurrentTime(this.props.user.timezone)
+            }
+            this.setState({ modal_loading_IsOpen: true }, () => {
+                const response = sendPut(data, '/dt_data_update');
+                response.then((res) => {
+                    if (res !== 200) {
+                        this.setState({ modal_error_IsOpen: true })
+                    } else {
+                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                    }
+                    this.props.Refresh(this.props.parentData);
+                    this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
+                    this.closeTimeloss();
+                })
+            })
+        } else {
+            this.setState({
+                modal_error_IsOpen: true,
+                errorMessage: `The minimum value for time is 1 and the max value is ${formatNumber(this.state.allocated_time) + formatNumber(this.state.currentDTReason.dtminutes)}`
+            })
+        }
+    }
+
+    cancelEditDTReason() {
+        this.setState({
+            editDTReason: false,
+            currentDTReason: {},
+            newDTReason: {}
+        });
     }
 
     render() {
@@ -187,12 +359,6 @@ class TimelossModal extends React.Component {
                 ...base,
                 height: 35,
                 minHeight: 35
-            })
-        }
-        const reasons = [];
-        if (this.state.reasons) {
-            _.forEach(this.state.reasons, reason => {
-                reasons.push({ value: reason.reason_code, label: `${reason.reason_code} - ${reason.dtreason_name}`, reason_id: reason.dtreason_id });
             })
         }
         const t = this.props.t;
@@ -220,29 +386,14 @@ class TimelossModal extends React.Component {
                         </Col>
                     </Row>
                     <div className="timeloss-table">
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '10%' }}>{t('Time')}</th>
-                                    <th style={{ width: '20%' }}>{t('Time Lost Code')}</th>
-                                    <th style={{ width: '40%' }}>{t('Reason')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    this.state.timelost.length > 0 ? this.state.timelost.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>{item.dtminutes}</td>
-                                                <td>{item.dtreason_code}</td>
-                                                <td>{item.dtreason_name}</td>
-                                            </tr>)
-                                    }) : <tr>
-                                            <td colSpan={3}>{t('No Time Lost entries yet')}.</td>
-                                        </tr>
-                                }
-                            </tbody>
-                        </Table>
+                        <ReactTable
+                            data={this.state.timelost}
+                            columns={this.getColumns()}
+                            defaultPageSize={this.state.timelost.length > 3 ? this.state.timelost.length : 4}
+                            showPaginationBottom={false}
+                            noDataText={this.props.t('No Time Lost entries yet')}
+                            className='-striped -bordered -hover'
+                        />
                     </div>
                     <span className={"new-timelost-label"}>{t('New Time Lost Entry')}</span>
                     <div className="new-timeloss">
@@ -259,7 +410,7 @@ class TimelossModal extends React.Component {
                                 <input className={'timelost-field'}
                                     type="number"
                                     min="0"
-                                    disabled={this.props.readOnly}
+                                    disabled={this.props.readOnly || this.state.editDTReason}
                                     value={this.state.time_to_allocate}
                                     autoFocus
                                     onChange={this.allocateTime}></input>
@@ -274,11 +425,11 @@ class TimelossModal extends React.Component {
                                 <ReactSelect
                                     value={this.state.new_tl_reason}
                                     onChange={(e) => this.setState({ new_tl_reason: e }, (e) => this.validate(e))}
-                                    options={reasons}
+                                    options={this.state.reasons}
                                     className={"react-select-container"}
                                     classNamePrefix={"react_control"}
                                     styles={selectStyles}
-                                    isDisabled={this.props.readOnly}
+                                    isDisabled={this.props.readOnly || this.state.editDTReason}
                                 />
                             </Form.Group>
                         </div>
