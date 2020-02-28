@@ -64,6 +64,8 @@ class Import extends React.Component {
         actualTabs.push({ id: 'UOM', content: 'UOM' });
         actualTabs.push({ id: 'Unavailable', content: 'Unavailable' });
         actualTabs.push({ id: 'TFDUsers', content: 'TFDUsers' });
+        actualTabs.push({ id: 'AssetDisplaySystem', content: 'AssetDisplaySystem' });
+        actualTabs.push({ id: 'Workcell', content: 'Workcell' });
 
         this.setState({
             completeListTabs: actualTabs,
@@ -136,7 +138,7 @@ class Import extends React.Component {
                 })
                 .then(response => {
                     if (!response.status) {
-                        saveAs(response, 'Result.xlsx');
+                        saveAs(response, `${this.props.user.site_name} eDBH Configuration.xlsx`);
                         _this.setState({ isExporting: false, errorExport: false, showActionMessageExport: true });
                     } else {
                         _this.setState({ isExporting: false, errorExport: true, showActionMessageExport: true });
