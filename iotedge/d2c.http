@@ -1,16 +1,34 @@
 curl --request POST 
-  --url 'https://phc-fcgfotf01-dev-iothub.azure-devices.net/devices/IVJ1WOKM/messages/events?api-version=2018-06-30' 
-  --header 'authorization: SharedAccessSignature sr=phc-fcgfotf01-dev-iothub.azure-devices.net%2Fdevices%2FIVJ1WOKM&sig=vHwnW1%2FdBd9sd3IOhANs0ZgrLikw5cktkAg8xqOjoDA%3D&se=1565796177' 
+  --url 'https://phc-edbh01-prd-iothub.azure-devices.net/devices/ZSQ483UK/messages/events?api-version=2018-06-30' 
+  --header 'authorization: SharedAccessSignature sr=phc-edbh01-prd-iothub.azure-devices.net%2Fdevices%2FZSQ483UK&sig=pmoWzPUPS2A5AC7T68VFBP94qZrKboomFXXOjN9C738%3D&se=1618827644' 
   --data '{
-	"timestamp":1572464400000,
-	"data":	[{
-		  "name": "Modbus.ADAM01CRIMPER.CRIMPER_PART_COUNT",
-      "value": 1,
-      "quality": true,
-      "timestamp": 1572464400000
-		}],
-	"deviceId":"PCZ81UO3",
-	"productFilter":"kepserver"
+  "deviceId": "ZSQ483UK",
+  "productFilter": "fcgFotf",
+  "data": {
+    "product_code": "16 LL6JA-S PS",
+    "product_name": "16 LL6JA-S PS",
+    "product_description": "SEAL-LOK TEE",
+    "product_family": "SEAL-LOK-S ST THD",
+    "grouping1": null,
+    "grouping2": null,
+    "grouping3": "X",
+    "grouping4": "B",
+    "grouping5": "N",
+    "status": "Active",
+    "order_number": "14N34",
+    "asset_code": "34002",
+    "order_quantity": 100,
+    "UOM_code": "PCS",
+    "routed_cycle_time": 483,
+    "target_percent_of_ideal": 0.85,
+    "minutes_allowed_per_setup": 30,
+    "production_status": "Setup",
+    "valid_from": "2020-02-27T13:36:34.8070311Z",
+    "start_time": "2020-02-27T13:36:34.8070311Z",
+    "timestamp": "2020-02-27T13:36:34.8070311Z",
+    "message_source": "jTrax",
+    "messageType": "ProductOrderDataMessage"
+  }
 }
 
 '
