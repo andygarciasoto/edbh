@@ -13,6 +13,18 @@ module.exports = Object.freeze({
                 })
         });
     },
+    Workcell: [
+        { header: 'workcell_name', type: 'VARCHAR', key: 'workcell_name', width: 16 },
+        { header: 'workcell_description', type: 'VARCHAR', key: 'workcell_description', width: 21 },
+        { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
+        { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
+        { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+    ],
+    WorkcellSQL: (site_id) => {
+        return `SELECT DISTINCT W.[workcell_name], W.[workcell_description], W.[entered_by], W.[entered_on], W.[last_modified_by], W.[last_modified_on] 
+        FROM dbo.Asset A1 JOIN dbo.Asset A2 ON A1.site_code = A2.asset_code AND A2.asset_id = ${site_id} JOIN dbo.Workcell W ON A1.grouping1 = W.workcell_id;`;
+    },
     Asset: [
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 16 },
         { header: 'asset_name', type: 'VARCHAR', key: 'asset_name', width: 16 },
@@ -29,16 +41,32 @@ module.exports = Object.freeze({
         { header: 'grouping4', type: 'VARCHAR', key: 'grouping4', width: 10 },
         { header: 'grouping5', type: 'VARCHAR', key: 'grouping5', width: 10 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
+        { header: 'target_percent_of_ideal', type: 'FLOAT', key: 'target_percent_of_ideal', width: 28 },
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'target_percent_of_ideal', type: 'FLOAT', key: 'target_percent_of_ideal', width: 28 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
     ],
     AssetSQL: (site_id) => {
-        return `SELECT [asset_code],[asset_name],[asset_description],[asset_level],[site_code],[parent_asset_code],[value_stream],[automation_level],
-        [include_in_escalation],[grouping1],[grouping2],[grouping3],[grouping4],[grouping5],[status],[entered_by],[entered_on],[last_modified_by],
-        [last_modified_on],[target_percent_of_ideal] FROM [dbo].[Asset] WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
+        return `SELECT A.[asset_id], A.[asset_code], A.[asset_name], A.[asset_description], A.[asset_level], A.[site_code], A.[parent_asset_code], A.[value_stream], 
+        A.[automation_level], A.[include_in_escalation], W.workcell_name AS [grouping1], A.[grouping2], A.[grouping3], A.[grouping4], A.[grouping5], A.[status], 
+        A.[target_percent_of_ideal], A.[entered_by], A.[entered_on], A.[last_modified_by], A.[last_modified_on] FROM [dbo].[Asset] AS A LEFT JOIN [dbo].[Workcell] 
+        AS W ON A.grouping1 = W.workcell_id WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id}) ORDER BY A.asset_id;`
+    },
+    AssetDisplaySystem: [
+        { header: 'displaysystem_name', type: 'VARCHAR', key: 'displaysystem_name', width: 25 },
+        { header: 'status', type: 'VARCHAR', key: 'status', width: 14 },
+        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
+        { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
+        { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
+        { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+    ],
+    AssetDisplaySystemSQL: (site_id) => {
+        return `SELECT [AssetDisplaySystem].[displaysystem_name], [AssetDisplaySystem].[status], [Asset].[asset_code], 
+        [AssetDisplaySystem].[entered_by], [AssetDisplaySystem].[entered_on], [AssetDisplaySystem].[last_modified_by], [AssetDisplaySystem].[last_modified_on] 
+        FROM [dbo].[AssetDisplaySystem] JOIN [dbo].[Asset] ON [AssetDisplaySystem].[asset_id] = [Asset].[asset_id] WHERE 
+        [Asset].[site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`;
     },
     DTReason: [
         { header: 'dtreason_code', type: 'VARCHAR', key: 'dtreason_code' },
@@ -85,11 +113,28 @@ module.exports = Object.freeze({
         [Shift].[status],[Shift].[entered_by],[Shift].[entered_on],[Shift].[last_modified_by],[Shift].[last_modified_on]
         FROM [dbo].[Shift] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [Shift].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`
     },
+    UOM: [
+        { header: 'UOM_code', type: 'VARCHAR', key: 'UOM_code', width: 14 },
+        { header: 'UOM_name', type: 'VARCHAR', key: 'UOM_name', width: 16 },
+        { header: 'UOM_description', type: 'VARCHAR', key: 'UOM_description', width: 27 },
+        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 },
+        { header: 'status', type: 'VARCHAR', key: 'status' },
+        { header: 'decimals', type: 'BIT', key: 'decimals' },
+        { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
+        { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
+        { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+    ],
+    UOMSQL: (site_id) => {
+        return `SELECT [UOM].[UOM_code],[UOM].[UOM_name],[UOM].[UOM_description],[Asset].[site_code],[UOM].[status], [UOM].[decimals],[UOM].[entered_by],[UOM].[entered_on],
+        [UOM].[last_modified_by], [UOM].[last_modified_on] FROM [dbo].[UOM] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [UOM].[site_id] AND [UOM].[site_id] = ${site_id};`;
+    },
     Tag: [
         { header: 'tag_code', type: 'VARCHAR', key: 'tag_code', width: 24 },
         { header: 'tag_name', type: 'VARCHAR', key: 'tag_name', width: 24 },
         { header: 'tag_description', type: 'VARCHAR', key: 'tag_description', width: 25 },
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 15 },
+        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 15 },
         { header: 'tag_group', type: 'VARCHAR', key: 'tag_group', width: 16 },
         { header: 'datatype', type: 'VARCHAR', key: 'datatype', width: 13 },
         { header: 'tag_type', type: 'VARCHAR', key: 'tag_type', width: 11 },
@@ -101,16 +146,15 @@ module.exports = Object.freeze({
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 },
-        { header: 'site_id', type: 'FLOAT', key: 'site_id', width: 20 }
+        { header: 'max_change', type: 'FLOAT', key: 'max_change', width: 20 }
     ],
     TagSQL: (site_id) => {
-        return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
+        return `SELECT [Tag].[tag_code],[Tag].[tag_name],[Tag].[tag_description],[Asset].[asset_code],[Asset].[site_code],[Tag].[tag_group],[Tag].[datatype],[Tag].[tag_type],
         [Tag].[UOM_code],[Tag].[rollover_point],[Tag].[aggregation],[Tag].[status],[Tag].[entered_by],[Tag].[entered_on],[Tag].[last_modified_by],
-        [Tag].[last_modified_on],[Tag].[max_change] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] WHERE [Asset].[site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id});`
+        [Tag].[last_modified_on],[Tag].[max_change] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] AND [Tag].[site_id] = ${site_id};`
     },
     CommonParameters: [
-        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 15 },
+        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 15 },
         { header: 'site_name', type: 'VARCHAR', key: 'site_name', width: 15 },
         { header: 'production_day_offset_minutes', type: 'FLOAT', key: 'production_day_offset_minutes', width: 31 },
         { header: 'site_timezone', type: 'VARCHAR', key: 'site_timezone', width: 24 },
@@ -129,28 +173,12 @@ module.exports = Object.freeze({
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
     ],
     CommonParametersSQL: (site_id) => {
-        return `SELECT [Asset].[asset_code],[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
+        return `SELECT [Asset].[asset_code] AS site_code,[CommonParameters].[site_name],[CommonParameters].[production_day_offset_minutes],[CommonParameters].[site_timezone],
         [CommonParameters].[ui_timezone],[CommonParameters].[escalation_level1_minutes],[CommonParameters].[escalation_level2_minutes],
         [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
         [CommonParameters].[setup_lookback_minutes],[CommonParameters].[language],[CommonParameters].[status],
         [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
-        FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
-    },
-    UOM: [
-        { header: 'UOM_code', type: 'VARCHAR', key: 'UOM_code', width: 14 },
-        { header: 'UOM_name', type: 'VARCHAR', key: 'UOM_name', width: 16 },
-        { header: 'UOM_description', type: 'VARCHAR', key: 'UOM_description', width: 27 },
-        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 },
-        { header: 'status', type: 'VARCHAR', key: 'status' },
-        { header: 'decimals', type: 'BIT', key: 'decimals' },
-        { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
-        { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
-        { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
-    ],
-    UOMSQL: (site_id) => {
-        return `SELECT [UOM].[UOM_code],[UOM].[UOM_name],[UOM].[UOM_description],[Asset].[site_code],[UOM].[status], [UOM].[decimals],[UOM].[entered_by],[UOM].[entered_on],[UOM].[last_modified_by],
-        [UOM].[last_modified_on] FROM [dbo].[UOM] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [UOM].[site_id] WHERE [Asset].[asset_id] = ${site_id};`;
+        FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] AND [CommonParameters].[site_id] = ${site_id};`;
     },
     Unavailable: [
         { header: 'unavailable_code', type: 'VARCHAR', key: 'unavailable_code', width: 24 },
@@ -162,18 +190,18 @@ module.exports = Object.freeze({
         { header: 'valid_from', type: 'DATETIME', key: 'valid_from', width: 16 },
         { header: 'valid_to', type: 'DATETIME', key: 'valid_to', width: 27 },
         { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
+        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 20 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'site_id', type: 'FLOAT', key: 'site_id', width: 20 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
     ],
     UnavailableSQL: (site_id) => {
         return `SELECT [Unavailable].[unavailable_code],[Unavailable].[unavailable_name],[Unavailable].[unavailable_description],[Unavailable].[start_time],
-        [Unavailable].[end_time],[Unavailable].[duration_in_minutes],[Unavailable].[valid_from],[Unavailable].[valid_to],[Asset].[asset_code],
+        [Unavailable].[end_time],[Unavailable].[duration_in_minutes],[Unavailable].[valid_from],[Unavailable].[valid_to],[Asset].[asset_code],[Asset].[site_code],
         [Unavailable].[status],[Unavailable].[entered_by],[Unavailable].[entered_on],[Unavailable].[last_modified_by],[Unavailable].[last_modified_on]
-        FROM [dbo].[Unavailable] JOIN [dbo].[Asset] ON [Unavailable].[asset_id] = [Asset].[asset_id] WHERE [Unavailable].[site_id] = ${site_id};`;
+        FROM [dbo].[Unavailable] JOIN [dbo].[Asset] ON [Unavailable].[asset_id] = [Asset].[asset_id] AND [Unavailable].[site_id] = ${site_id};`;
     },
     TFDUsers: [
         { header: 'Badge', type: 'VARCHAR', key: 'Badge', width: 14 },
@@ -181,11 +209,10 @@ module.exports = Object.freeze({
         { header: 'First_Name', type: 'VARCHAR', key: 'First_Name', width: 14 },
         { header: 'Last_Name', type: 'VARCHAR', key: 'Last_Name', width: 14 },
         { header: 'Role', type: 'VARCHAR', key: 'Role', width: 14 },
-        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
-        { header: 'Site', type: 'FLOAT', key: 'Site', width: 20 }
+        { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 }
     ],
     TFDUsersSQL: (site_id) => {
-        return `SELECT [Badge],[Username],[First_Name],[Last_Name],[Role],[Asset].[asset_code] FROM [dbo].[TFDUsers] JOIN [dbo].[Asset] 
-        ON [TFDUsers].[Site] = [Asset].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`;
+        return `SELECT [Badge],[Username],[First_Name],[Last_Name],[Role],[Asset].[site_code] FROM [dbo].[TFDUsers] JOIN [dbo].[Asset] 
+        ON [TFDUsers].[Site] = [Asset].[asset_id] AND [TFDUsers].[Site] = ${site_id};`;
     }
 })
