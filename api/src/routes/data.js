@@ -1028,18 +1028,13 @@ router.get('/uom_asset', async function (req, res) {
 
 router.get('/workcell', async function (req, res) {
     let params = req.query;
-    if (!params.st) {
+    if (!params.st == null){
+        params.st = 'Null';
+    }
+    if (!params.site || params.site == null || params.site == undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`DECLARE
-    @workcell_id int,
-    @workcell_name VARCHAR(100),
-    @workcell_description VARCHAR(100)
-    SELECT @workcell_id = A.grouping1 FROM dbo.Asset A INNER JOIN dbo.AssetDisplaySystem AD ON AD.asset_id = A.asset_id WHERE AD.displaysystem_name = '${params.st}'
-    SELECT @workcell_name = workcell_name, @workcell_description = workcell_description FROM dbo.Workcell WHERE workcell_id = @workcell_id
-    SELECT asset_code, asset_name, asset_id, '${params.st}' as displaysystem_name, @workcell_name as workcell_name, @workcell_description as workcell_description
-        FROM dbo.Asset
-        WHERE grouping1 = @workcell_id;`,
+    sqlQuery(`exec dbo.sp_get_workcell '${params.st}', ${params.site};`,
         (err, response) => {
             if (err) {
                 console.log(err);
