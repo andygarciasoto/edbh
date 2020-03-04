@@ -266,6 +266,7 @@ class TimelossModal extends React.Component {
                         reason_id: this.state.newDTReason.dtreason_id
                     }}
                     onChange={(e) => this.changeSelectTable(e)}
+
                     options={this.state.reasons}
                 />;
             } else {
@@ -385,16 +386,14 @@ class TimelossModal extends React.Component {
                             <input type="text" disabled={true} value={formatNumber(this.state.setup_time)}></input>
                         </Col>
                     </Row>
-                    <div className="timeloss-table">
-                        <ReactTable
-                            data={this.state.timelost}
-                            columns={this.getColumns()}
-                            defaultPageSize={this.state.timelost.length > 3 ? this.state.timelost.length : 4}
-                            showPaginationBottom={false}
-                            noDataText={this.props.t('No Time Lost entries yet')}
-                            className='-striped -bordered -hover'
-                        />
-                    </div>
+                    <ReactTable
+                        className={'reactTableTReason'}
+                        data={this.state.timelost}
+                        columns={this.getColumns()}
+                        defaultPageSize={this.state.timelost.length > 3 ? this.state.timelost.length : 4}
+                        showPaginationBottom={false}
+                        noDataText={this.props.t('No Time Lost entries yet')}
+                    />
                     <span className={"new-timelost-label"}>{t('New Time Lost Entry')}</span>
                     <div className="new-timeloss">
                         <Row style={{ marginBottom: '1px' }}>
@@ -427,7 +426,6 @@ class TimelossModal extends React.Component {
                                     onChange={(e) => this.setState({ new_tl_reason: e }, (e) => this.validate(e))}
                                     options={this.state.reasons}
                                     className={"react-select-container"}
-                                    classNamePrefix={"react_control"}
                                     styles={selectStyles}
                                     isDisabled={this.props.readOnly || this.state.editDTReason}
                                 />
@@ -453,7 +451,7 @@ class TimelossModal extends React.Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
-                    message={'Timeloss was inserted'}
+                    message={'Time Lost Entries Saved'}
                     title={'Request Successful'}
                     t={this.props.t}
                 />
