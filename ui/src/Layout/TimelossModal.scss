@@ -56,11 +56,6 @@
     padding-bottom: 30px;
 }
 
-.timeloss-table {
-    max-height: 25vh;
-    overflow-y: scroll;
-}
-
 .timeloss-top {display: inline;}
 .new-timeloss-reasoncode { margin-bottom: 5px;}
 
@@ -76,6 +71,6 @@
 
 .react_control__menu {height: 220px !important; overflow-y: hidden}
 
-.ReactTable .rt-th, .ReactTable .rt-td {
-    overflow: visible;
+.reactTableTReason, .reactTableTReason .rt-table, .reactTableTReason .rt-tbody, .reactTableTReason .rt-td {
+    overflow: visible
 }

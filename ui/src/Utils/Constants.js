@@ -11,10 +11,10 @@ export const SOCKET = 'http://localhost:8080';
 
 
 //public app
-//export const API = 'https://dxhapi.azurewebsites.net/api';
-//export const AUTH = 'https://dxhapi.azurewebsites.net/auth';
-//export const DATATOOL = 'https://dxhapi.azurewebsites.net/datatool';
-//export const SOCKET = 'https://dxhapi.azurewebsites.net';
+// export const API = 'https://dxhapi.azurewebsites.net/api';
+// export const AUTH = 'https://dxhapi.azurewebsites.net/auth';
+// export const DATATOOL = 'https://dxhapi.azurewebsites.net/datatool';
+// export const SOCKET = 'https://dxhapi.azurewebsites.net';
 
 //private app
 //export const API = 'https://edxhapidev.us.parker.corp/api';
