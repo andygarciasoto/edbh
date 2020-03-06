@@ -45,7 +45,8 @@ class Import extends React.Component {
             successExportMessage: props.t('Configuration Exported Successfully'),
             warningExportMessage: props.t('Fail, Configuration not Exported'),
             importExportTitleText: props.t('Site Configuration Import/Export Tool'),
-            selectText: props.t('Select an action')
+            selectText: props.t('Select an action'),
+            errorEmptySelectionText: props.t('You must choose at least one of the available configurations items')
         };
     }
 
@@ -82,6 +83,8 @@ class Import extends React.Component {
             selectedAction: changeEvent.target.value,
             availableListTabs: changeEvent.target.value === 'Export' ? [] : this.state.completeListTabs,
             selectedListTabs: changeEvent.target.value === 'Export' ? this.state.completeListTabs : [],
+            showActionMessage: false,
+            showActionMessageExport: false
         });
     }
 
@@ -103,32 +106,36 @@ class Import extends React.Component {
     }
 
     onSubmit = () => {
-        let _this = this;
-        const url = `${DATATOOL}/import_data`;
-        let formData = new FormData();
-        formData.append('file', _this.state.file);
-        formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
-        formData.append('site_id', JSON.stringify(_this.props.user.site));
-        const config = {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        this.setState({ isLoading: true }, () => {
-            post(url, formData, config).then((res) => {
-                if (res.status !== 200 || !res) {
-                    _this.setState({ isLoading: false, showActionMessage: true, error: true })
-                } else {
-                    _this.setState({ isLoading: false, showActionMessage: true, error: false })
+        if (this.state.selectedListTabs.length > 0) {
+            let _this = this;
+            const url = `${DATATOOL}/import_data`;
+            let formData = new FormData();
+            formData.append('file', _this.state.file);
+            formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
+            formData.append('site_id', JSON.stringify(_this.props.user.site));
+            const config = {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+                    'Content-Type': 'multipart/form-data'
                 }
-            }).catch((e) => { _this.setState({ isLoading: false, showActionMessage: true, error: false }) });
-        });
+            };
+            this.setState({ isLoading: true, showActionMessage: false }, () => {
+                post(url, formData, config).then((res) => {
+                    if (res.status !== 200 || !res) {
+                        _this.setState({ isLoading: false, showActionMessage: true, error: true });
+                    } else {
+                        _this.setState({ isLoading: false, showActionMessage: true, error: false });
+                    }
+                }).catch((e) => { _this.setState({ isLoading: false, showActionMessage: true, error: false }) });
+            });
+        } else {
+            this.setState({ showActionMessage: true, error: true });
+        }
     }
 
     exportEvent = async () => {
         let _this = this;
-        this.setState({ isExporting: true, errorExport: false, showActionMessageExport: false }, () => {
+        this.setState({ isExporting: true, errorExport: false, showActionMessageExport: false, showActionMessage: false }, () => {
             fetch(
                 `${DATATOOL}/export_data?content_type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&site_id=${this.props.user.site}`,
                 { headers: { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) } })
@@ -204,7 +211,7 @@ class Import extends React.Component {
                             {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                         </button>
                     }
-                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? this.state.warningImportMessage : this.state.successImportMessage) : null}</p></div>
+                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? (this.state.selectedListTabs.length === 0 ? this.state.errorEmptySelectionText : this.state.warningImportMessage) : this.state.successImportMessage) : null}</p></div>
                     <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
                 </div>
             </div >)
