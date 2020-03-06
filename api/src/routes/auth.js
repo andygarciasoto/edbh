@@ -47,7 +47,6 @@ router.get("/token", cors(), async function (req, res) {
         if ((jsonwebtoken.exp + 5 * 60) * 1000 < Date.now()) {
             return res.status(400).json({ message: "Expired JWT" });
         }
-
         jsonwebtoken.user_id = localStorage.getItem('user_id');
         jsonwebtoken.user_badge = localStorage.getItem('user_badge');
         jsonwebtoken.user_machine = localStorage.getItem('user_machine');
@@ -56,7 +55,6 @@ router.get("/token", cors(), async function (req, res) {
         localStorage.removeItem('user_badge');
         localStorage.removeItem('user_machine');
         localStorage.removeItem('inactive_timeout_minutes');
-
         var jwtx = nJwt.create(jsonwebtoken, config['signingKey']);
         jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
         var token = jwtx.compact();

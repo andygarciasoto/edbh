@@ -176,6 +176,7 @@ router.post('/import_data', upload.single('file'), (req, res) => {
   const file = req.file;
   const arrayItems = JSON.parse(req.body.configurationItems);
   const site_id = JSON.parse(req.body.site_id);
+  var mergeQuery = '';
 
   if (!file) {
     return res.status(400).json({ message: "Bad Request - Missing Excel file to import." });
@@ -194,8 +195,7 @@ router.post('/import_data', upload.single('file'), (req, res) => {
             let columns = constants[worksheet.name];
             let tableSourcesValues = [];
             let parameters = getParametersOfTable(worksheet.name, site_id);
-            let mergeQuery = `MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
-
+            mergeQuery = mergeQuery ? mergeQuery + ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES` : ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
             //Read and get data from each row of the sheet
             worksheet.eachRow((row, rowNumber) => {
               let updateRow = '';
@@ -213,26 +213,24 @@ router.post('/import_data', upload.single('file'), (req, res) => {
                 tableSourcesValues.push('(' + updateRow + ')');
               }
             });
-
             //create merge sentence with the data extracted from the sheet
             mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
             if (config['loginURL'] === 'http://localhost:3000/dashboard') {
               //var log_file = fs.createWriteStream(__dirname + `/log_${worksheet.name}_${moment().format('YYYYMMDDHHmmSS')}.txt`, { flags: 'w' });
               //log_file.write(mergeQuery);
             }
-          console.log(mergeQuery);
-           sqlQuery(mergeQuery,
-              (err, response) => {
-                if (err) {
-                  console.log(err);
-                  res.status(500).send({ message: 'Error', database_error: err });
-                  return;
-                }
-              });
           }
         });
       });
-      //return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
+      console.log(mergeQuery);
+      sqlQuery(mergeQuery,
+        (err, response) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Error', database_error: err });
+          }
+          return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
+        });
     }).catch((e) => { return res.status(500).send({ message: 'Error', application_error: e.message }); });
 });
 
