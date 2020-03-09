@@ -46,7 +46,8 @@ class Import extends React.Component {
             warningExportMessage: props.t('Fail, Configuration not Exported'),
             importExportTitleText: props.t('Site Configuration Import/Export Tool'),
             selectText: props.t('Select an action'),
-            errorEmptySelectionText: props.t('You must choose at least one of the available configurations items')
+            errorEmptySelectionText: props.t('You must choose at least one of the available configurations items'),
+            secondMessageErrorImportText: ''
         };
     }
 
@@ -126,7 +127,16 @@ class Import extends React.Component {
                     } else {
                         _this.setState({ isLoading: false, showActionMessage: true, error: false });
                     }
-                }).catch((e) => { _this.setState({ isLoading: false, showActionMessage: true, error: false }) });
+                }).catch((e) => {
+                    console.log(e.response);
+                    let errorMessage = e.response.data.application_error || e.response.data.database_error;
+                    _this.setState({
+                        isLoading: false,
+                        showActionMessage: true,
+                        error: true,
+                        secondMessageErrorImportText: _this.state.warningImportMessage + ' ' + errorMessage
+                    });
+                });
             });
         } else {
             this.setState({ showActionMessage: true, error: true });
@@ -211,7 +221,7 @@ class Import extends React.Component {
                             {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                         </button>
                     }
-                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? (this.state.selectedListTabs.length === 0 ? this.state.errorEmptySelectionText : this.state.warningImportMessage) : this.state.successImportMessage) : null}</p></div>
+                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? (this.state.selectedListTabs.length === 0 ? this.state.errorEmptySelectionText : this.state.secondMessageErrorImportText) : this.state.successImportMessage) : null}</p></div>
                     <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
                 </div>
             </div >)

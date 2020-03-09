@@ -227,7 +227,7 @@ router.post('/import_data', upload.single('file'), (req, res) => {
         (err, response) => {
           if (err) {
             console.log(err);
-            return res.status(500).send({ message: 'Error', database_error: err });
+            return res.status(500).send({ message: 'Error', database_error: err.message });
           }
           return res.status(200).send('Excel File ' + file + ' Entered Succesfully');
         });
