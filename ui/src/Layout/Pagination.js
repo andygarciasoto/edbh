@@ -1,7 +1,6 @@
 
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import { getCurrentTime } from '../Utils/Requests';
 import Tooltip from 'react-tooltip'
 import moment from 'moment';
 import $ from 'jquery';
@@ -17,18 +16,13 @@ class Pagination extends React.Component {
 
     getInitialState(props) {
         const search = qs.parse(props.history.location.search);
-        let selected_date = search.dt ? moment(search.dt).format('YYYY/MM/DD') + ' 00:00' : props.user.date_of_shift;
-        let current_date = !search.dt && props.user.date_of_shift ? props.user.date_of_shift : moment(getCurrentTime(props.user.timezone)).format('YYYY/MM/DD') + ' 00:00';
-        const dt = selected_date || current_date;
         return {
             mc: search.mc || props.machineData.asset_code,
             tp: search.tp || props.machineData.automation_level,
             ln: search.ln || props.user.language,
             cs: search.cs || props.user.site,
-            dt,
+            dt: search.dt || moment().tz(props.user.timezone),
             sf: search.sf || props.user.current_shift,
-            diffDays: moment.duration(moment(dt).diff(moment(current_date))).asDays(),
-            actual_regresion: 0,
             max_regresion: props.user.max_regression,
             display_next: false,
             display_go_current_shift: false,
@@ -38,18 +32,77 @@ class Pagination extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.loadLogicToApply(nextProps);
+        this.newPaginationLogic(nextProps);
+    }
+
+    newPaginationLogic(props) {
+        let newState = this.getInitialState(props);
+
+        const search = qs.parse(props.history.location.search);
+        newState.diffDays = 0;
+        newState.actual_regresion = 0;
+        if (search.dt || search.sf) {
+            //console.log('check selected parameters in the UI');
+            let site_shifts = props.user.shifts;
+
+            //GET SHIFT AND TME OF THE CURRENT SHIFT
+
+            let currentSiteTime = moment(moment().tz(props.user.timezone).format('YYYY-MM-DD HH:mm:ss'));
+            let indexActualShift = _.findIndex(site_shifts, shift => {
+                return (currentSiteTime.isBetween(moment(shift.start_date_time_today), moment(shift.end_date_time_today)))
+                    || (currentSiteTime.isBetween(moment(shift.start_date_time_yesterday), moment(shift.end_date_time_yesterday)))
+                    || (currentSiteTime.isBetween(moment(shift.start_date_time_tomorrow), moment(shift.end_date_time_tomorrow)))
+            });
+
+            //GET DATETIME AND SHIFT OF SELECTED OPTION IN THE URL
+            let selectedDateTime = moment(search.dt);//ONLY SELECTED DATA. WE NEED THE TME OF THE SHIFT TOO
+            let indexSelectedShift = _.findIndex(site_shifts, ['shift_name', search.sf]);
+
+            if (currentSiteTime.format('YYYY-MM-DD') !== selectedDateTime.format('YYYY-MM-DD') || indexActualShift !== indexSelectedShift) {
+                //console.log('selected information is not the current shift');
+                //logic to get the days difference between the current date and the selected date
+                newState.diffDays = currentSiteTime.format('YYYY-MM-DD') === selectedDateTime.format('YYYY-MM-DD') ? 0 :
+                    moment.duration(moment(selectedDateTime.format('YYYY-MM-DD')).diff(moment(currentSiteTime.format('YYYY-MM-DD')))).asDays();
+
+                if (newState.diffDays > 0 || (newState.diffDays === 0 && indexActualShift < indexSelectedShift)) {
+                    newState.display_back_current_shift = true;
+                    //console.log('back to current shift');
+                } else if (newState.diffDays < 0) {
+                    newState.actual_regresion = indexActualShift;//calculate number of shift for current shift
+                    newState.actual_regresion += (newState.diffDays + 1) * -1 * site_shifts.length;//calculate numbers of shifts between dates
+                    newState.actual_regresion += site_shifts.length - indexSelectedShift;//calculate number of shifts for selected date
+                    newState.display_next = true;
+                    //console.log('actual_regresion: ', newState.actual_regresion);
+                } else if (newState.diffDays === 0) {
+                    newState.actual_regresion = indexActualShift - indexSelectedShift;
+                    newState.display_next = true;
+                    //console.log('regresion of shift', indexActualShift - indexSelectedShift);
+                }
+
+            } else {
+                //console.log('selected date and shift is the current shift');
+            }
+        } else {
+            //console.log('nothing to check in the UI');
+        }
+
+        newState.display_back = newState.actual_regresion < newState.max_regresion;
+        newState.display_go_current_shift = newState.actual_regresion > newState.max_regresion;
+
+        this.setState(newState);
     }
 
     loadLogicToApply(props) {
         let newState = this.getInitialState(props);
+
+        this.newPaginationLogic(props);
 
         let indexSelectedShift = -1;
         let indexCurrentShift = -1;
         if (newState.sf === props.user.current_shift) {
             indexSelectedShift = _.findIndex(props.user.shifts, ['shift_name', newState.sf]) + 1;
             indexCurrentShift = indexSelectedShift;
-        } else{
+        } else {
             indexSelectedShift = _.findIndex(props.user.shifts, ['shift_name', newState.sf]) + 1;
             indexCurrentShift = _.findIndex(props.user.shifts, ['shift_name', props.user.current_shift]) + 1;
         }

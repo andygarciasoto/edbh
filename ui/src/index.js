@@ -140,7 +140,7 @@ function init() {
 
             await axios.all(requestData).then(
                 axios.spread((responseAsset, responseShift, responseMachine, responseLogins, responseUom) => {
-                    const machineValues = responseAsset.data[0].AssetDisplaySystem;
+                    const machineValues = responseAsset.data[0];
                     machine = {
                         asset_code: machineValues.asset_code || machineValues.message,
                         asset_level: machineValues.asset_level,
