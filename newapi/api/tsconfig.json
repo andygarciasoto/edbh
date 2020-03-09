@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es2018",
+        "sourceMap": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": false,//strict parameters on functions
+        "resolveJsonModule": true,
+        "lib": [
+            "es2018"
+        ],
+        "declaration": true,
+        "outDir": "./bin/",
+        "importHelpers": true,
+        "types": [
+            "node"
+        ],
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "rootDirs": [
+            "./src",
+            "./test"
+        ],
+        "removeComments": true,
+        "noImplicitAny": false,
+        "noUnusedParameters": false,
+        "noUnusedLocals": false,//Display error when have unused variables
+        "noLib": false
+    },
+    "exclude": [
+        "node_modules",
+        "bin",
+        "test"
+    ]
+}
