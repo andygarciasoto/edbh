@@ -12,7 +12,7 @@ export class AssetService {
 
     public async GetAssetByAssetDisplaySystem(req: Request, res: Response) {
         let display_system_name = req.query.st;
-        if (!display_system_name) {
+        if (!display_system_name || display_system_name == 'null') {
             // return res.status(400).json({ message: "Bad Request - Missing Parameters" });
             display_system_name = 'CR2080435W1';
         }

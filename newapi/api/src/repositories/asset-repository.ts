@@ -18,7 +18,7 @@ export class AssetRepository {
     }
 
     public async GetAssetBySite(site: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Asset_new_1 'Cell','All',${site}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Asset 'Cell','All',${site}`);
     }
 
     public async GetAssetByWorkcell(station: string, site: number): Promise<any> {
