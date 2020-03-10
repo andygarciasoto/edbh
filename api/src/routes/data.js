@@ -1026,7 +1026,7 @@ router.get('/uom_asset', async function (req, res) {
 
 router.get('/workcell', async function (req, res) {
     let params = req.query;
-    if (!params.st == null){
+    if (!params.st == null) {
         params.st = 'Null';
     }
     if (!params.site || params.site == null || params.site == undefined) {
@@ -1127,7 +1127,6 @@ router.put('/scrap_values', function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
         }
     }
-
     if (clocknumber) {
         sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', NULL, NULL;`,
             (err, response) => {
@@ -1149,7 +1148,6 @@ router.put('/scrap_values', function (req, res) {
                 responsePostPutNoJSON(response, req, res);
             });
     }
-
 });
 
 router.put('/dt_data_update', async function (req, res) {
@@ -1170,7 +1168,6 @@ router.put('/dt_data_update', async function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-
     if (clocknumber) {
         sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${dtdata_id};`,
             (err, response) => {
@@ -1191,7 +1188,6 @@ router.put('/dt_data_update', async function (req, res) {
                 responsePostPutNoJSON(response, req, res);
             });
     }
-
 });
 
 module.exports = router;

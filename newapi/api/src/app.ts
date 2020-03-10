@@ -46,7 +46,7 @@ const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
-const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository);
+const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository, dxhdataRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 
 const appConfig = {
@@ -110,6 +110,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/timelost_dxh_data', 'get', async (req: Request, res: Response) => {
             await dtreasonService.getTimelostDxhData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/dt_data', 'put', async (req: Request, res: Response) => {
+            await dtreasonService.putDtData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/dt_data_update', 'put', async (req: Request, res: Response) => {
+            await dtreasonService.putDtDataUpdate(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
