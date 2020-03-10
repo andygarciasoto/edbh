@@ -73,7 +73,7 @@ export class CommentDataService {
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
-            res.status(500).json({ message: err.message });
+            return res.status(500).json({ message: err.message });
         }
     }
 
