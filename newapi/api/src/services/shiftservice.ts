@@ -9,14 +9,14 @@ export class ShiftService {
         this.shiftrepository = shiftrepository;
     }
 
-    public async GetShiftBySite(req: Request, res: Response) {
+    public async getShiftBySite(req: Request, res: Response) {
         const site = req.query.site;
         if (!site) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
         let shifts: any;
         try {
-            shifts = await this.shiftrepository.GetShiftBySite(site);
+            shifts = await this.shiftrepository.getShiftBySite(site);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

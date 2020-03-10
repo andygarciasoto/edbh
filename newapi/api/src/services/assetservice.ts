@@ -10,7 +10,7 @@ export class AssetService {
         this.assetrepository = assetrepository;
     }
 
-    public async GetAssetByAssetDisplaySystem(req: Request, res: Response) {
+    public async getAssetByAssetDisplaySystem(req: Request, res: Response) {
         let display_system_name = req.query.st;
         if (!display_system_name || display_system_name == 'null') {
             // return res.status(400).json({ message: "Bad Request - Missing Parameters" });
@@ -18,7 +18,7 @@ export class AssetService {
         }
         let assets: any;
         try {
-            assets = await this.assetrepository.GetAssetByAssetDisplaySystem(display_system_name);
+            assets = await this.assetrepository.getAssetByAssetDisplaySystem(display_system_name);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -26,7 +26,7 @@ export class AssetService {
         return res.status(200).json(assets);
     }
 
-    public async GetAssetBySite(req: Request, res: Response) {
+    public async getAssetBySite(req: Request, res: Response) {
         const site = req.query.site;
         if (!site) {
             res.status(400).json({ message: "Bad Request - Missing Parameters" });
@@ -34,7 +34,7 @@ export class AssetService {
         }
         let assets: any;
         try {
-            assets = await this.assetrepository.GetAssetBySite(site);
+            assets = await this.assetrepository.getAssetBySite(site);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -42,7 +42,7 @@ export class AssetService {
         return res.status(200).json(assets);
     }
 
-    public async GetAssetByWorkcell(req: Request, res: Response) {
+    public async getAssetByWorkcell(req: Request, res: Response) {
         let params = req.query;
         if (!params.st == null) {
             params.st = 'Null';
@@ -52,7 +52,7 @@ export class AssetService {
         }
         let assets: any;
         try {
-            assets = await this.assetrepository.GetAssetByWorkcell(params.st, params.site);
+            assets = await this.assetrepository.getAssetByWorkcell(params.st, params.site);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

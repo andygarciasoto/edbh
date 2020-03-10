@@ -9,7 +9,7 @@ export class UserService {
         this.userrepository = userrepository;
     }
 
-    public async GetUserByBadge(req: Request, res: Response) {
+    public async getUserByBadge(req: Request, res: Response) {
         let badge = req.query.clock_number;
         if (!badge) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });

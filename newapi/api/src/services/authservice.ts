@@ -19,7 +19,7 @@ export class AuthService {
         return res.redirect(401, this.config.app_section.loginURL);
     }
 
-    public async LoginWithBadgeAndMachine(req: Request, res: Response) {
+    public async loginWithBadgeAndMachine(req: Request, res: Response) {
         const params = req.query;
         let machine = '';
         if (!params.badge) {
@@ -98,7 +98,7 @@ export class AuthService {
         });
     }
 
-    public async LoginWithUsername(req: Request, res: Response) {
+    public async loginWithUsername(req: Request, res: Response) {
         const params = req.body;
         let machine = '';
         if (!params.username) {

@@ -24,7 +24,7 @@ export class DataService {
         let data: any;
         let asset: any;
         try {
-            asset = await this.assetrepository.GetAssetByCode(params.mc);
+            asset = await this.assetrepository.getAssetByCode(params.mc);
             data = await this.datarepository.getShiftData(asset[0].asset_id, params.dt, params.sf, params.st);
             data = utils.createUnallocatedTime2(data, params.hr, date);
         } catch (err) {

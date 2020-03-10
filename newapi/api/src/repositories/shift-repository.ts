@@ -9,7 +9,7 @@ export class ShiftRepository {
         this.sqlServerStore = sqlServerStore;
     }
 
-    public async GetShiftBySite(site: number): Promise<any> {
+    public async getShiftBySite(site: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_getshifts_new_1 ${site}`);
     }
 

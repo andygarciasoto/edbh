@@ -16,8 +16,7 @@ class Comments extends React.Component {
         super(props);
         this.state = {
             modal_thread_IsOpen: false,
-            commentLen: 0,
-            lastComment: {},
+            lastComment: null,
             value: '',
             modal_error_IsOpen: false,
             modal_confirm_IsOpen: false,
@@ -76,17 +75,9 @@ class Comments extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.comments) {
-            let comments = [];
-            if (nextProps.comments && nextProps.comments instanceof Array) {
-                for (let comment of nextProps.comments) {
-                    comments.push(comment.InterShiftData)
-                }
-            }
-            comments = _.sortBy(comments, 'entered_on').reverse();
             this.setState({
-                lastComment: comments[0] || null,
-                commentLen: comments.length,
-                comments: comments,
+                lastComment: nextProps.comments.length > 0 ? _.sortBy(nextProps.comments, 'entered_on').reverse()[0] : null,
+                comments: nextProps.comments,
                 row: nextProps.dxh_parent
             })
         }
@@ -94,11 +85,6 @@ class Comments extends React.Component {
 
     render() {
         const t = this.props.t;
-        let lastComment;
-        if (this.state.lastComment) {
-            lastComment = this.state.lastComment;
-        }
-        const lastCommentDate = lastComment ? formatDateWithTime(lastComment.entered_on) : null;
         return (
             <div className={'intershift-communication-comments'}>
                 <h5>{t('Intershift Communication')}</h5>
@@ -111,20 +97,25 @@ class Comments extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {lastComment ? lastComment.intershift_id !== null ? Object.values(lastComment).length > 0 ? <React.Fragment>
+                            {this.state.comments ? (this.state.lastComment ? <React.Fragment>
                                 <tr>
-                                    <td style={{ width: '20%' }}><span>{`${lastComment.first_name} ${lastComment.last_name}`}</span><div className={'intershift-comment-date'}>{lastCommentDate}</div></td>
-                                    <td style={{ width: '80%' }} className={"intershift-comment"}><div>{lastComment.comment}</div>
-                                        {this.state.commentLen > 1 ?
+                                    <td style={{ width: '20%' }}>
+                                        <span>{`${this.state.lastComment.first_name} ${this.state.lastComment.last_name}`}</span>
+                                        <div className={'intershift-comment-date'}>{formatDateWithTime(this.state.lastComment.entered_on)}</div>
+                                    </td>
+                                    <td style={{ width: '80%' }} className={"intershift-comment"}>
+                                        <div>{this.state.lastComment.comment}</div>
+                                        {this.state.comments.length > 1 ?
                                             <span className="intershift-read-more"
                                                 onClick={this.openModal}>{`${t('Read More')}
-                                        (${this.state.commentLen})`}
+                                        (${this.state.comments.length})`}
                                                 <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
                                             </span> : null
-                                        }</td>
+                                        }
+                                    </td>
                                 </tr>
-                            </React.Fragment> : <tr><td ><Spinner /></td><td className={"intershift-comment"}><Spinner /></td></tr> :
-                                <tr><td colSpan={2}>{t('No intershift communications for this shift')}.</td></tr> :
+                            </React.Fragment> :
+                                <tr><td colSpan={2}>{t('No intershift communications for this shift')}.</td></tr>) :
                                 <tr><td colSpan={3}><Spinner /></td></tr>}
                         </tbody>
                     </Table>
