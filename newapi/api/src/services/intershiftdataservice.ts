@@ -78,7 +78,7 @@ export class InterShiftDataService {
                     await this.intershiftdatarepository.putInterShiftDataByUsername(dxh_data_id, comment, first_name, last_name, timestamp, update);
                 }
             }
-            res.status(200).send('Message Entered Succesfully');
+            return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }

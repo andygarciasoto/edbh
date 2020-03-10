@@ -20,6 +20,8 @@ import { DataService } from './services/dataservice';
 import { InterShiftDataRepository } from './repositories/intershiftdata-repository';
 import { InterShiftDataService } from './services/intershiftdataservice';
 import { DxHDataRepository } from './repositories/dxhdata-repository';
+import { CommentDataRepository } from './repositories/comment-repository';
+import { CommentDataService } from './services/commentservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -35,6 +37,7 @@ const uomRepository = new UomRepository(sqlServerStore);
 const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
 const dxhdataRepository = new DxHDataRepository(sqlServerStore);
+const commentDataRepository = new CommentDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -44,6 +47,7 @@ const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
+const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -100,6 +104,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/intershift_communication', 'put', async (req: Request, res: Response) => {
             await intershiftdataService.putIntershiftData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/comments_dxh_data', 'get', async (req: Request, res: Response) => {
+            await commentdataService.getCommentDataByDxHDataId(req, res);
+        }, true),
+        new http.RestEndpoint('/api/dxh_new_comment', 'post', async (req: Request, res: Response) => {
+            await commentdataService.putCommentData(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
