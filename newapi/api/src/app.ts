@@ -19,6 +19,8 @@ import { DataRepository } from './repositories/data-repository';
 import { DataService } from './services/dataservice';
 import { InterShiftDataRepository } from './repositories/intershiftdata-repository';
 import { InterShiftDataService } from './services/intershiftdataservice';
+import { DTReasonRepository } from './repositories/dtreason-repository';
+import { DTReasonService } from './services/dtreasonservice';
 import { DxHDataRepository } from './repositories/dxhdata-repository';
 import { CommentDataRepository } from './repositories/comment-repository';
 import { CommentDataService } from './services/commentservice';
@@ -36,6 +38,7 @@ const shiftsRepository = new ShiftRepository(sqlServerStore);
 const uomRepository = new UomRepository(sqlServerStore);
 const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
+const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 const commentDataRepository = new CommentDataRepository(sqlServerStore);
 
@@ -46,6 +49,7 @@ const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
+const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 
@@ -110,6 +114,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/dxh_new_comment', 'post', async (req: Request, res: Response) => {
             await commentdataService.putCommentData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/timelost_reasons', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getTimelostReasons(req, res);
+        }, true),
+        new http.RestEndpoint('/api/timelost_dxh_data', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getTimelostDxhData(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),

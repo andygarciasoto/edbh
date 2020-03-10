@@ -241,8 +241,6 @@ router.get('/intershift_communication', async function (req, res) {
                 responseGet(response, req, res, 'InterShiftData');
             });
     }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e.message }); });
-
-
 });
 
 router.post('/dxh_new_comment', async function (req, res) {
