@@ -19,6 +19,8 @@ import { DataRepository } from './repositories/data-repository';
 import { DataService } from './services/dataservice';
 import { InterShiftDataRepository } from './repositories/intershiftdata-repository';
 import { InterShiftDataService } from './services/intershiftdataservice';
+import { DTReasonRepository } from './repositories/dtreason-repository';
+import { DTReasonService } from './services/dtreasonservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -33,6 +35,7 @@ const shiftsRepository = new ShiftRepository(sqlServerStore);
 const uomRepository = new UomRepository(sqlServerStore);
 const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
+const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -42,6 +45,7 @@ const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository);
+const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -98,6 +102,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/intershift_communication', 'put', async (req: Request, res: Response) => {
             await intershiftdataService.putIntershiftData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/timelost_reasons', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getTimelostReasons(req, res);
+        }, true),
+        new http.RestEndpoint('/api/timelost_dxh_data', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getTimelostDxhData(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
