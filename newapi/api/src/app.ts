@@ -19,6 +19,7 @@ import { DataRepository } from './repositories/data-repository';
 import { DataService } from './services/dataservice';
 import { InterShiftDataRepository } from './repositories/intershiftdata-repository';
 import { InterShiftDataService } from './services/intershiftdataservice';
+import { DxHDataRepository } from './repositories/dxhdata-repository';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -33,6 +34,7 @@ const shiftsRepository = new ShiftRepository(sqlServerStore);
 const uomRepository = new UomRepository(sqlServerStore);
 const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
+const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -41,7 +43,7 @@ const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
-const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository);
+const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
