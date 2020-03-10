@@ -35,7 +35,7 @@ export class UomService {
         let uoms: any;
         let asset: any;
         try {
-            asset = await this.assetrepository.GetAssetByCode(params.mc);
+            asset = await this.assetrepository.getAssetByCode(params.mc);
             uoms = await this.uomrepository.getUomByAsset(asset[0].asset_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
