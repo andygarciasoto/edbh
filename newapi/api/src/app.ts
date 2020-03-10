@@ -21,6 +21,7 @@ import { InterShiftDataRepository } from './repositories/intershiftdata-reposito
 import { InterShiftDataService } from './services/intershiftdataservice';
 import { DTReasonRepository } from './repositories/dtreason-repository';
 import { DTReasonService } from './services/dtreasonservice';
+import { DxHDataRepository } from './repositories/dxhdata-repository';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -36,6 +37,7 @@ const uomRepository = new UomRepository(sqlServerStore);
 const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
 const dtreasonRepository = new DTReasonRepository(sqlServerStore);
+const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -44,8 +46,8 @@ const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
-const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository);
 const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository);
+const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
