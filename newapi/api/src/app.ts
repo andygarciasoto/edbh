@@ -22,6 +22,8 @@ import { InterShiftDataService } from './services/intershiftdataservice';
 import { DTReasonRepository } from './repositories/dtreason-repository';
 import { DTReasonService } from './services/dtreasonservice';
 import { DxHDataRepository } from './repositories/dxhdata-repository';
+import { CommentDataRepository } from './repositories/comment-repository';
+import { CommentDataService } from './services/commentservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -38,6 +40,7 @@ const dataRespository = new DataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
 const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 const dxhdataRepository = new DxHDataRepository(sqlServerStore);
+const commentDataRepository = new CommentDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -48,6 +51,7 @@ const uomService = new UomService(uomRepository, assetRepository);
 const dataService = new DataService(dataRespository, assetRepository);
 const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository, dxhdataRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
+const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -104,6 +108,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/intershift_communication', 'put', async (req: Request, res: Response) => {
             await intershiftdataService.putIntershiftData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/comments_dxh_data', 'get', async (req: Request, res: Response) => {
+            await commentdataService.getCommentDataByDxHDataId(req, res);
+        }, true),
+        new http.RestEndpoint('/api/dxh_new_comment', 'post', async (req: Request, res: Response) => {
+            await commentdataService.putCommentData(req, res);
         }, true),
         new http.RestEndpoint('/api/timelost_reasons', 'get', async (req: Request, res: Response) => {
             await dtreasonService.getTimelostReasons(req, res);
