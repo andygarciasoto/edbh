@@ -137,6 +137,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/production_data', 'put', async (req: Request, res: Response) => {
             await productiondataService.putProductionData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/scrap_values', 'put', async (req: Request, res: Response) => {
+            await productiondataService.putScrapValues(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),

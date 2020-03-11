@@ -67,5 +67,36 @@ export class ProductionDataService {
             return res.status(500).json({ message: err.message });
         }
     }
+    
+    public async putScrapValues(req: Request, res: Response) {
+        const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
+        const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : undefined;
+        const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : undefined;
+        const clocknumber = req.body.clocknumber;
+        const first_name = req.body.first_name;
+        const last_name = req.body.last_name;
 
+        if (dxh_data_id === undefined || productiondata_id === undefined || setup_scrap === undefined || other_scrap === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters - dxh_data_id, productiondata_id, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
+        }
+        if (!clocknumber) {
+            if (!(first_name || last_name)) {
+                return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
+            }
+        }
+        try {
+            if (clocknumber) {
+                await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
+            } else {
+                await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
+            }
+            return res.status(200).send('Message Entered Succesfully');
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+    }
 }
+
+
+
