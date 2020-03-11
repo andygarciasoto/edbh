@@ -17,6 +17,10 @@ export class UserRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_usernamelogin_new_1 '${username}', '${machine}'`);
     }
 
+    public async findUserByBadgeAndAsset(badge: string, asset_code: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_clocknumber_asset_login '${badge}', '${asset_code}'`);
+    }
+
     // public async findUserByBadge(badge: string): Promise<any> {
     //     return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_get_users_by_badge_new_1 '${badge}'`);
     // }

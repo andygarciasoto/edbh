@@ -15,13 +15,12 @@ import { ShiftService } from './services/shiftservice';
 import { UserService } from './services/userservice';
 import { UomRepository } from './repositories/uom-repository';
 import { UomService } from './services/uomservice';
-import { DataRepository } from './repositories/data-repository';
-import { DataService } from './services/dataservice';
+import { DxHDataRepository } from './repositories/dxhdata-repository';
+import { DxHDataService } from './services/dxhdataservice';
 import { InterShiftDataRepository } from './repositories/intershiftdata-repository';
 import { InterShiftDataService } from './services/intershiftdataservice';
 import { DTReasonRepository } from './repositories/dtreason-repository';
 import { DTReasonService } from './services/dtreasonservice';
-import { DxHDataRepository } from './repositories/dxhdata-repository';
 import { CommentDataRepository } from './repositories/comment-repository';
 import { CommentDataService } from './services/commentservice';
 
@@ -36,10 +35,9 @@ const userRepository = new UserRepository(sqlServerStore);
 const assetRepository = new AssetRepository(sqlServerStore);
 const shiftsRepository = new ShiftRepository(sqlServerStore);
 const uomRepository = new UomRepository(sqlServerStore);
-const dataRespository = new DataRepository(sqlServerStore);
+const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
 const dtreasonRepository = new DTReasonRepository(sqlServerStore);
-const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 const commentDataRepository = new CommentDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
@@ -48,7 +46,7 @@ const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
 const uomService = new UomService(uomRepository, assetRepository);
-const dataService = new DataService(dataRespository, assetRepository);
+const dxhdataService = new DxHDataService(dxhdataRepository, assetRepository, userRepository);
 const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository, dxhdataRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
@@ -98,7 +96,7 @@ const appConfig = {
             await assetService.getAssetBySite(req, res);
         }, true),
         new http.RestEndpoint('/api/data', 'get', async (req: Request, res: Response) => {
-            await dataService.getShiftData(req, res);
+            await dxhdataService.getShiftData(req, res);
         }, true),
         new http.RestEndpoint('/api/uom_asset', 'get', async (req: Request, res: Response) => {
             await uomService.getUomByAsset(req, res);
@@ -126,6 +124,15 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/dt_data_update', 'put', async (req: Request, res: Response) => {
             await dtreasonService.putDtDataUpdate(req, res);
+        }, true),
+        new http.RestEndpoint('/api/operator_sign_off', 'put', async (req: Request, res: Response) => {
+            await dxhdataService.operatorSignoff(req, res);
+        }, true),
+        new http.RestEndpoint('/api/supervisor_sign_off', 'put', async (req: Request, res: Response) => {
+            await dxhdataService.operatorSignoff(req, res);
+        }, true),
+        new http.RestEndpoint('/api/production_data', 'put', async (req: Request, res: Response) => {
+            await dxhdataService.operatorSignoff(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
