@@ -57,7 +57,7 @@ const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository,
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
-const orderdataService = new OrderDataService(orderDataRepository);
+const orderdataService = new OrderDataService(orderDataRepository, assetRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
