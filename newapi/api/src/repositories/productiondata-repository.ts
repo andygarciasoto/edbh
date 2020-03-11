@@ -1,0 +1,20 @@
+import { SqlServerStore } from '../configurations/sqlserverstore';
+
+export class ProductionDataRepository {
+    
+    private static readonly table = 'ProductionData';
+    private readonly sqlServerStore: SqlServerStore;
+
+    public constructor(sqlServerStore: SqlServerStore) {
+        this.sqlServerStore = sqlServerStore;
+    }
+
+    public async putProductionDataByClocknumber(dxh_data_id: number, actual: number, setup_scrap: number, other_scrap: number, clocknumber: string, timestamp: string, override: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', Null, Null, '${timestamp}', ${override}`);
+    }
+
+    public async putProductionDataByUsername(dxh_data_id: number, actual: number, setup_scrap: number, other_scrap: number, first_name: string, last_name: string, timestamp: string, override: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override}`);
+    }
+
+}

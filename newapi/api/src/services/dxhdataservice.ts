@@ -124,6 +124,7 @@ export class DxHDataService {
                         await this.dxhdatarepository.putSupervisorSignOffByUsername(dxh_data_id, first_name, last_name, timestamp);
                     }
                 }
+                return res.status(200).send('Message Entered Succesfully');
             } else {
                 return res.status(400).json({ message: "Bad Request - Unauthorized Role to SignOff" });
             }

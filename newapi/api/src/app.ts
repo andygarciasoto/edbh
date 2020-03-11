@@ -23,6 +23,8 @@ import { DTReasonRepository } from './repositories/dtreason-repository';
 import { DTReasonService } from './services/dtreasonservice';
 import { CommentDataRepository } from './repositories/comment-repository';
 import { CommentDataService } from './services/commentservice';
+import { ProductionDataRepository } from './repositories/productiondata-repository';
+import { ProductionDataService } from './services/productionservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -39,6 +41,7 @@ const dxhdataRepository = new DxHDataRepository(sqlServerStore);
 const intershiftdataRespository = new InterShiftDataRepository(sqlServerStore);
 const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 const commentDataRepository = new CommentDataRepository(sqlServerStore);
+const productionDataRepository = new ProductionDataRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -50,6 +53,7 @@ const dxhdataService = new DxHDataService(dxhdataRepository, assetRepository, us
 const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository, dxhdataRepository);
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
+const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -129,10 +133,10 @@ const appConfig = {
             await dxhdataService.operatorSignoff(req, res);
         }, true),
         new http.RestEndpoint('/api/supervisor_sign_off', 'put', async (req: Request, res: Response) => {
-            await dxhdataService.operatorSignoff(req, res);
+            await dxhdataService.supervisorSignoff(req, res);
         }, true),
         new http.RestEndpoint('/api/production_data', 'put', async (req: Request, res: Response) => {
-            await dxhdataService.operatorSignoff(req, res);
+            await productiondataService.putProductionData(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
