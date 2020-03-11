@@ -29,13 +29,13 @@ import { OrderDataRepository } from './repositories/orderdata-repository';
 import { OrderDataService } from './services/orderdataservice';
 import { ProductRepository } from './repositories/product-repository';
 
-//INITIALIZE CONFIGURATION OF NODE JS
+//INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
 const serverConfig = new ServerConfig(sqlServerStore);
 const constants = new Constants();
 constants.initializeSecurityRouter(config);
 
-//INITIALIZE ALL REPOSITORIES
+//INITIALIZE ALL REPOSITORIES//
 const userRepository = new UserRepository(sqlServerStore);
 const assetRepository = new AssetRepository(sqlServerStore);
 const shiftsRepository = new ShiftRepository(sqlServerStore);
@@ -48,7 +48,7 @@ const productionDataRepository = new ProductionDataRepository(sqlServerStore);
 const orderDataRepository = new OrderDataRepository(sqlServerStore);
 const productRepository = new ProductRepository(sqlServerStore);
 
-//INITIALIZE ALL SERVICES
+//INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, config);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
