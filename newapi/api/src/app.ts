@@ -29,14 +29,15 @@ import { OrderDataRepository } from './repositories/orderdata-repository';
 import { OrderDataService } from './services/orderdataservice';
 import { DataToolService } from './services/datatoolservice';
 import { WorkcellRepository } from './repositories/workcell-repository';
+import { ProductRepository } from './repositories/product-repository';
 
-//INITIALIZE CONFIGURATION OF NODE JS
+//INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
 const serverConfig = new ServerConfig(sqlServerStore);
 const constants = new Constants();
 constants.initializeSecurityRouter(config);
 
-//INITIALIZE ALL REPOSITORIES
+//INITIALIZE ALL REPOSITORIES//
 const userRepository = new UserRepository(sqlServerStore);
 const assetRepository = new AssetRepository(sqlServerStore);
 const shiftsRepository = new ShiftRepository(sqlServerStore);
@@ -47,9 +48,10 @@ const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 const commentDataRepository = new CommentDataRepository(sqlServerStore);
 const productionDataRepository = new ProductionDataRepository(sqlServerStore);
 const orderDataRepository = new OrderDataRepository(sqlServerStore);
+const productRepository = new ProductRepository(sqlServerStore);
 const workcellRepository = new WorkcellRepository(sqlServerStore);
 
-//INITIALIZE ALL SERVICES
+//INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, config);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
@@ -60,7 +62,7 @@ const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository,
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
-const orderdataService = new OrderDataService(orderDataRepository, assetRepository);
+const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository);
 
 const appConfig = {
@@ -146,8 +148,17 @@ const appConfig = {
         new http.RestEndpoint('/api/production_data', 'put', async (req: Request, res: Response) => {
             await productiondataService.putProductionData(req, res);
         }, true),
+        new http.RestEndpoint('/api/scrap_values', 'put', async (req: Request, res: Response) => {
+            await productiondataService.putScrapValues(req, res);
+        }, true),
         new http.RestEndpoint('/api/order_assembly', 'get', async (req: Request, res: Response) => {
             await orderdataService.getOrderAssembly(req, res);
+        }, true),
+        new http.RestEndpoint('/api/order_data', 'get', async (req: Request, res: Response) => {
+            await orderdataService.getOrderData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/create_order_data', 'put', async (req: Request, res: Response) => {
+            await orderdataService.createOrderData(req, res);
         }, true),
         new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
             await dataToolService.exportData(req, res);

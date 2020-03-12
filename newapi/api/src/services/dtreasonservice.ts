@@ -93,7 +93,7 @@ export class DTReasonService {
                     await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, first_name, last_name, timestamp, update);
                 }
             }
-            res.status(200).send('Message Entered Succesfully');
+            return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
@@ -123,7 +123,7 @@ export class DTReasonService {
             } else {
                 await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, first_name, last_name, timestamp, dtdata_id);
             }
-            res.status(200).send('Message Entered Succesfully');
+            return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
