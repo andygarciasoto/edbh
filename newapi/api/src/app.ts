@@ -30,6 +30,10 @@ import { OrderDataService } from './services/orderdataservice';
 import { DataToolService } from './services/datatoolservice';
 import { WorkcellRepository } from './repositories/workcell-repository';
 import { ProductRepository } from './repositories/product-repository';
+import { TagRepository } from './repositories/tag-repository';
+import { CommonParametersRepository } from './repositories/commonparameters-repository';
+import { UnavailableRepository } from './repositories/unavailable-repository';
+import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-repository';
 
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
@@ -50,6 +54,10 @@ const productionDataRepository = new ProductionDataRepository(sqlServerStore);
 const orderDataRepository = new OrderDataRepository(sqlServerStore);
 const productRepository = new ProductRepository(sqlServerStore);
 const workcellRepository = new WorkcellRepository(sqlServerStore);
+const tagRepository = new TagRepository(sqlServerStore);
+const commonparametersRepository = new CommonParametersRepository(sqlServerStore);
+const unavailableRepository = new UnavailableRepository(sqlServerStore);
+const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, config);
@@ -63,7 +71,8 @@ const intershiftdataService = new InterShiftDataService(intershiftdataRespositor
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
 const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
-const dataToolService = new DataToolService(workcellRepository, assetRepository);
+const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
+    tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
