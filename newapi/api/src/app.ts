@@ -27,6 +27,8 @@ import { ProductionDataRepository } from './repositories/productiondata-reposito
 import { ProductionDataService } from './services/productionservice';
 import { OrderDataRepository } from './repositories/orderdata-repository';
 import { OrderDataService } from './services/orderdataservice';
+import { DataToolService } from './services/datatoolservice';
+import { WorkcellRepository } from './repositories/workcell-repository';
 
 //INITIALIZE CONFIGURATION OF NODE JS
 const sqlServerStore = new SqlServerStore(config);
@@ -45,6 +47,7 @@ const dtreasonRepository = new DTReasonRepository(sqlServerStore);
 const commentDataRepository = new CommentDataRepository(sqlServerStore);
 const productionDataRepository = new ProductionDataRepository(sqlServerStore);
 const orderDataRepository = new OrderDataRepository(sqlServerStore);
+const workcellRepository = new WorkcellRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES
 const authService = new AuthService(userRepository, config);
@@ -58,6 +61,7 @@ const intershiftdataService = new InterShiftDataService(intershiftdataRespositor
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
 const orderdataService = new OrderDataService(orderDataRepository, assetRepository);
+const dataToolService = new DataToolService(workcellRepository, assetRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -144,6 +148,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/order_assembly', 'get', async (req: Request, res: Response) => {
             await orderdataService.getOrderAssembly(req, res);
+        }, true),
+        new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
+            await dataToolService.exportData(req, res);
         }, true)
     ],
     router: constants.getUnsecurityRouter(),
