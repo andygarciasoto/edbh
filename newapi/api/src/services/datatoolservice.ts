@@ -9,7 +9,7 @@ import { UomRepository } from '../repositories/uom-repository';
 import { UnavailableRepository } from '../repositories/unavailable-repository';
 import { UserRepository } from '../repositories/user-repository';
 import { AssetDisplaySystemRepository } from '../repositories/assetdisplaysystem-repository';
-import datatoolutils from '../configurations/datatoolutils';
+import { headers, getParametersOfTable, getValuesFromHeaderTable } from '../configurations/datatoolutils';
 import Excel from 'exceljs';
 import * as _ from 'lodash';
 
@@ -70,11 +70,39 @@ export class DataToolService {
                 workbook.eachSheet((worksheet, sheetId) => {
                     arrayItems.forEach(function (value) {
                         if (worksheet.name == value.id) {
+                            if (!headers[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
+                            let columns = headers[worksheet.name];
+                            let tableSourcesValues = [];
+                            let parameters = getParametersOfTable(worksheet.name, site_id);
+                            mergeQuery = mergeQuery ? mergeQuery + ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES` : ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+                            //Read and get data from each row of the sheet
+                            worksheet.eachRow((row, rowNumber) => {
+                                let updateRow = '';
+                                let validRow = false;
+                                columns.forEach((col, colNumber) => {
+                                    if (rowNumber === 1) {
+                                        if (row.getCell(colNumber + 1).value === 'NULL') return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
+                                    } else {
+                                        if (row.getCell(colNumber + 1).value !== 'NULL') validRow = true;
+                                        updateRow += getValuesFromHeaderTable(headers[worksheet.name], headers[worksheet.name][colNumber], row.getCell(colNumber + 1).value);
+                                    }
+                                });
+                                if (rowNumber !== 1) {
+                                    if (!validRow) return res.status(400).json({ message: 'Bad Request - Invalid file format contains a entire empty row. Please check file' });
+                                    tableSourcesValues.push('(' + updateRow + ')');
+                                }
+                            });
+                            //create merge sentence with the data extracted from the sheet
+                            mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
                         }
                     });
                 });
                 console.log(mergeQuery);
+                //call execution
+                //
+                //
             }).catch((e) => { return res.status(500).send({ message: 'Error', application_error: e.message }); });
+
             return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
         } catch (err) {
             return res.status(400).json({ message: err.message });
@@ -108,7 +136,7 @@ export class DataToolService {
 
             _.forEach(results, response => {
                 let worksheet = workbook.addWorksheet(response.table);
-                worksheet.columns = datatoolutils[response.table];
+                worksheet.columns = headers[response.table];
                 _.forEach(response.result, element => {
                     worksheet.addRow(element);
                 });
