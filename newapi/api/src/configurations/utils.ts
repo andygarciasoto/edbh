@@ -9,20 +9,20 @@ export function createUnallocatedTime2(obj, tz, dt) {
             actualElement = item;
             actualUnallocatedTime = actualElement.unallocated_time;
             actualAllocatedTime = actualElement.allocated_time;
-            var base = moment(item.started_on_chunck).hours();
-            var current = tz;
-            var day = moment(dt, 'YYYYMMDD').format('YYYYMMDD');
-            var today = moment().format('YYYYMMDD');
-            var lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
-            var totalTime = lunch_setup ? 60 - lunch_setup : 60;
+            let base = moment(item.started_on_chunck).hours();
+            let current = tz;
+            let day = moment(dt, 'YYYYMMDD').format('YYYYMMDD');
+            let today = moment().format('YYYYMMDD');
+            let lunch_setup = item.summary_setup_minutes + item.summary_breakandlunch_minutes;
+            let totalTime = lunch_setup ? 60 - lunch_setup : 60;
             if (totalTime < 0) {
                 totalTime = 0;
             }
             if (lunch_setup > 60) {
                 lunch_setup = 60;
             }
-            var newIdeal = 0;
-            var minutes = moment().minutes();
+            let newIdeal = 0;
+            let minutes = moment().minutes();
 
             if ((item.productiondata_id === '') || item.productiondata_id === undefined || item.productiondata_id === null) {
                 actualUnallocatedTime = base == current && today == day ? minutes : totalTime + lunch_setup;
@@ -34,9 +34,9 @@ export function createUnallocatedTime2(obj, tz, dt) {
                 if (minutes > lunch_setup) {
                     newIdeal = item.summary_ideal * ((minutes - lunch_setup) / (totalTime));
                     if (item.summary_adjusted_actual < Math.round(newIdeal)) {
-                        var idealTimeForPart = totalTime / item.summary_ideal;
-                        var minimumTime = newIdeal * idealTimeForPart;
-                        var actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
+                        let idealTimeForPart = totalTime / item.summary_ideal;
+                        let minimumTime = newIdeal * idealTimeForPart;
+                        let actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
                         actualUnallocatedTime = Math.round(minimumTime - actualTimeForPart);
                     } else {
                         actualUnallocatedTime = 0;
@@ -48,8 +48,8 @@ export function createUnallocatedTime2(obj, tz, dt) {
                 if (item.summary_adjusted_actual === 0) {
                     actualUnallocatedTime = totalTime;
                 } else {
-                    var idealTimeForPart = totalTime / item.summary_ideal;
-                    var actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
+                    let idealTimeForPart = totalTime / item.summary_ideal;
+                    let actualTimeForPart = item.summary_adjusted_actual * idealTimeForPart;
                     actualUnallocatedTime = Math.round(totalTime - actualTimeForPart);
                 }
             }

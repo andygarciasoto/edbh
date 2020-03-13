@@ -5,7 +5,7 @@ import { DATATOOL } from '../Utils/Constants';
 import { saveAs } from 'file-saver';
 import Spinner from '../Spinner';
 import ConfigurationTab from '../Layout/ConfigurationTab';
-import { post } from 'axios';
+import * as axios from 'axios';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 class Import extends React.Component {
@@ -114,22 +114,21 @@ class Import extends React.Component {
             formData.append('file', _this.state.file);
             formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
             formData.append('site_id', JSON.stringify(_this.props.user.site));
-            const config = {
+            const request_config = {
+                method: "POST",
+                url: url,
                 headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-                    'Content-Type': 'multipart/form-data'
-                }
+                    "Authorization": "Bearer " + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+                    "Content-Type": "multipart/form-data"
+                },
+                data: formData
             };
             this.setState({ isLoading: true, showActionMessage: false }, () => {
-                post(url, formData, config).then((res) => {
-                    if (res.status !== 200 || !res) {
-                        _this.setState({ isLoading: false, showActionMessage: true, error: true });
-                    } else {
-                        _this.setState({ isLoading: false, showActionMessage: true, error: false });
-                    }
-                }).catch((e) => {
-                    console.log(e.response);
-                    let errorMessage = e.response.data.application_error || e.response.data.database_error;
+                axios(request_config).then(response => {
+                    _this.setState({ isLoading: false, showActionMessage: true, error: false });
+                }).catch(e => {
+                    console.log(e);
+                    let errorMessage = e.response.data.message;
                     _this.setState({
                         isLoading: false,
                         showActionMessage: true,

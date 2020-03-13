@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 
-var multer = require('multer');
+let multer = require('multer');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/')
@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
     }
 })
 
-var uploading = multer({ storage: storage }).single('file');
+let uploading = multer({ storage }).single('file');
 
 let basePath = '/';
 
@@ -38,7 +38,7 @@ export class RestEndpoint {
         this.target = target;
         this.targetImport = target;
         this.useToken = useToken;
-        this.recieveFile = recieveFile;
+        this.recieveFile = recieveFile || false;
     }
 
     private hostRelativePath(): string {

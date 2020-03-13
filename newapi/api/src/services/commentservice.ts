@@ -3,7 +3,6 @@ import { CommentDataRepository } from '../repositories/comment-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import moment from 'moment';
-import { throws } from 'assert';
 
 export class CommentDataService {
 

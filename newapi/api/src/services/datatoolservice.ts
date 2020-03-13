@@ -54,9 +54,9 @@ export class DataToolService {
             const file = req.file;
             const arrayItems = JSON.parse(req.body.configurationItems);
             const site_id = JSON.parse(req.body.site_id);
-            var mergeQuery = '';
+            let mergeQuery = '';
 
-            if (file) {
+            if (!file) {
                 return res.status(400).json({ message: "Bad Request - Missing Excel file to import." });
             }
             if (!arrayItems || !site_id) {
@@ -65,14 +65,14 @@ export class DataToolService {
 
             // read from a file
             console.log(file.path);
-            var workbook = new Excel.Workbook();
+            let workbook = new Excel.Workbook();
             workbook.xlsx.readFile(file.path).then(() => {
                 workbook.eachSheet((worksheet, sheetId) => {
                     arrayItems.forEach(function (value) {
                         if (worksheet.name == value.id) {
                             if (!headers[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
                             let columns = headers[worksheet.name];
-                            let tableSourcesValues = [];
+                            let tableSourcesValues: any[] = [];
                             let parameters = getParametersOfTable(worksheet.name, site_id);
                             mergeQuery = mergeQuery ? mergeQuery + ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES` : ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
                             //Read and get data from each row of the sheet
@@ -101,7 +101,10 @@ export class DataToolService {
                 //call execution
                 //
                 //
-            }).catch((e) => { return res.status(500).send({ message: 'Error', application_error: e.message }); });
+            }).catch((e) => {
+                console.log(e);
+                return res.status(500).send({ message: 'Error', application_error: e.message });
+            });
 
             return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
         } catch (err) {
@@ -120,7 +123,7 @@ export class DataToolService {
         });
 
         let workbook = new Excel.stream.xlsx.WorkbookWriter({ stream: res });
-        let results = [];
+        let results: any[] = [];
         try {
             //create array of results
             results.push({ result: await this.workcellrepository.getWorkcellBySite(site_id), table: 'Workcell' });

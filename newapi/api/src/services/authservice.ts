@@ -165,7 +165,6 @@ export class AuthService {
                 });
             }
             if (payload.body.sub) {
-                let id = payload.body.user_id;
                 let badge = payload.body.user_badge;
                 let machine = payload.body.user_machine;
                 let responseUser: any;

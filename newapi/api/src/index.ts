@@ -84,7 +84,8 @@ function attachHttpEndpoints(config: LoaderConfiguration) {
     // Error handler must be declared after all other endpoints
     // next parameter is required to register the error handler
     config.app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
-        res.status(500).send();
+        console.log(err);
+        res.status(500).send('Something is wrong with the request, please check the log file for more details.');
         if (next) {
             next();
         }
