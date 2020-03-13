@@ -49,6 +49,38 @@ export class DataToolService {
         this.assetdisplaysystemrepository = assetdisplaysystemrepository;
     }
 
+    public async importData(req, res: Response) {
+        try {
+            const file = req.file;
+            const arrayItems = JSON.parse(req.body.configurationItems);
+            const site_id = JSON.parse(req.body.site_id);
+            var mergeQuery = '';
+
+            if (file) {
+                return res.status(400).json({ message: "Bad Request - Missing Excel file to import." });
+            }
+            if (!arrayItems || !site_id) {
+                return res.status(400).json({ message: "Bad Request - Missing data to import." });
+            }
+
+            // read from a file
+            console.log(file.path);
+            var workbook = new Excel.Workbook();
+            workbook.xlsx.readFile(file.path).then(() => {
+                workbook.eachSheet((worksheet, sheetId) => {
+                    arrayItems.forEach(function (value) {
+                        if (worksheet.name == value.id) {
+                        }
+                    });
+                });
+                console.log(mergeQuery);
+            }).catch((e) => { return res.status(500).send({ message: 'Error', application_error: e.message }); });
+            return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
+        } catch (err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
     public async exportData(req: Request, res: Response) {
 
         let site_id = req.query.site_id;

@@ -1,9 +1,9 @@
 import * as appInsights from 'applicationinsights';
 import * as config from './configurations/config.json';
+import * as configutils from './configurations/configutils';
 import { SqlServerStore } from './configurations/sqlserverstore';
 import { initializeApp } from './index';
 import { ServerConfig } from './configurations/serverConfig';
-import { Constants } from './configurations/constants';
 import * as http from './configurations/http';
 import { Request, Response } from 'express';
 import { AuthService } from './services/authservice';
@@ -38,8 +38,6 @@ import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
 const serverConfig = new ServerConfig(sqlServerStore);
-const constants = new Constants();
-constants.initializeSecurityRouter(config);
 
 //INITIALIZE ALL REPOSITORIES//
 const userRepository = new UserRepository(sqlServerStore);
@@ -81,7 +79,7 @@ const appConfig = {
     prefix: config.app_section.prefix,
     defaultPort: config.app_section.port,
     healthCheck: () => sqlServerStore.isConnected(),
-    options: constants.getCorsConfiguration(config),
+    options: configutils.getCorsConfiguration(config),
     cors: config.app_section.cors,
     webSocketHandler: serverConfig,
     restEndpoints: [
@@ -169,12 +167,15 @@ const appConfig = {
         new http.RestEndpoint('/api/create_order_data', 'put', async (req: Request, res: Response) => {
             await orderdataService.createOrderData(req, res);
         }, true),
+        new http.RestEndpoint('/datatool/import_data', 'post', async (req, res: Response) => {
+            await dataToolService.importData(req, res);
+        }, true, true),
         new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
             await dataToolService.exportData(req, res);
         }, true)
     ],
-    router: constants.getUnsecurityRouter(),
-    routerToken: constants.getSecurityRouter()
+    router: configutils.routerWhithoutToken(config),
+    routerToken: configutils.routerWithToken(config)
 }
 
 initializeApp(appConfig)

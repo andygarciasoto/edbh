@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 import * as http from './configurations/http';
 import { ServerConfig } from './configurations/serverConfig';
 
-
 const developmentEnvId = 'development';
 
 export interface LoaderConfiguration {
@@ -30,22 +29,21 @@ export function initializeApp(config: LoaderConfiguration): void {
     config.appInsightsConfig.setup(config.appInsightsKey);
     config.appInsightsConfig.start();
 
-    const app = config.app || express();
+    config.app = config.app || express();
     // Remove X-Powered-By header
-    app.disable('x-powered-by');
+    config.app.disable('x-powered-by');
     // Setup development environment variable and request logging
-    app.locals.ENV = process.env.NODE_ENV || developmentEnvId;
-    app.locals.ENV_DEVELOPMENT = app.locals.ENV === developmentEnvId;
+    config.app.locals.ENV = process.env.NODE_ENV || developmentEnvId;
+    config.app.locals.ENV_DEVELOPMENT = config.app.locals.ENV === developmentEnvId;
 
-    app.use(express.static(join(__dirname, 'public')));
+    config.app.use(express.static(join(__dirname, 'public')));
 
-    app.options('*', cors(config.options));
+    config.app.options('*', cors(config.options));
 
-    app.use(json());
-    app.use(urlencoded({ extended: false }));
-    app.use(cookieParser());
 
-    config.app = app;
+    config.app.use(json());
+    config.app.use(urlencoded({ extended: false }));
+    config.app.use(cookieParser());
 
     attachHttpEndpoints(config);
 

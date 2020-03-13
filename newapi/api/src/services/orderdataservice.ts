@@ -3,7 +3,6 @@ import { OrderDataRepository } from '../repositories/orderdata-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import { ProductRepository } from '../repositories/product-repository';
 let request = require('request');
-import moment from 'moment';
 
 export class OrderDataService {
 
