@@ -64,7 +64,6 @@ export class DataToolService {
             }
 
             // read from a file
-            console.log(file.path);
             let workbook = new Excel.Workbook();
             workbook.xlsx.readFile(file.path).then(() => {
                 workbook.eachSheet((worksheet, sheetId) => {
