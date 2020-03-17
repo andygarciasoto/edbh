@@ -43,8 +43,8 @@ export function routerWhithoutToken(config): Router {
 }
 
 export function routerWithToken(config): Router {
-    let router: Router = Router();
-    router.use((req: Request, res: Response, next: NextFunction) => {
+    let routerToken: Router = Router();
+    routerToken.use((req: Request, res: Response, next: NextFunction) => {
         let origin = req.headers.origin;
         if (config.app_section.cors.indexOf(origin) > -1) {
             res.setHeader('Access-Control-Allow-Origin', origin);
@@ -54,7 +54,7 @@ export function routerWithToken(config): Router {
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
-    router.use((req: Request, res: Response, next: NextFunction) => {
+    routerToken.use((req: Request, res: Response, next: NextFunction) => {
         let token = req.header('Authorization');
         if (token && token.startsWith('Bearer ')) {
             token = token.slice(7, token.length).trimLeft();
@@ -77,5 +77,5 @@ export function routerWithToken(config): Router {
             });
         }
     });
-    return router;
+    return routerToken;
 }

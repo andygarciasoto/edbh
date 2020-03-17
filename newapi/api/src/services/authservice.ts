@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/user-repository';
 import jwt from 'jsonwebtoken';
+import localStorage from 'localStorage';
 let nJwt = require('njwt');
 let request = require('request');
 
@@ -35,6 +36,10 @@ export class AuthService {
         }
         let role = responseUser[0].role;
         if (role === 'Supervisor' || role === 'Administrator') {
+            localStorage.setItem('user_id', responseUser[0].id);
+            localStorage.setItem('user_badge', responseUser[0].badge);
+            localStorage.setItem('user_machine', machine);
+            localStorage.setItem('inactive_timeout_minutes', responseUser[0].inactive_timeout_minutes);
             const url = `https://login.microsoftonline.com/${this.config.ad_authentication_section.tenant_id}/oauth2/authorize?client_id=${this.config.ad_authentication_section.client_id}&response_type=code&scope=openid&redirect_uri=${this.config.app_section.redirect_uri}`;
             return res.redirect(302, url);
         } else {
@@ -77,7 +82,8 @@ export class AuthService {
             timeout: 10000
         }, (error, resp, body) => {
             if (error) {
-                res.status(500).send({ message: 'Error' });
+                console.log(error);
+                res.status(500).send({ message: 'Error', error });
                 return;
             }
             body = JSON.parse(body);
@@ -91,9 +97,23 @@ export class AuthService {
             if ((jsonwebtoken.exp + 5 * 60) * 1000 < Date.now()) {
                 return res.status(400).json({ message: "Expired JWT" });
             }
+            jsonwebtoken.user_id = localStorage.getItem('user_id');
+            jsonwebtoken.user_badge = localStorage.getItem('user_badge');
+            jsonwebtoken.user_machine = localStorage.getItem('user_machine');
+            const expirationToken = localStorage.getItem('inactive_timeout_minutes');
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('user_badge');
+            localStorage.removeItem('user_machine');
+            localStorage.removeItem('inactive_timeout_minutes');
+            console.log(jsonwebtoken);
             let jwtx = nJwt.create(jsonwebtoken, config.authentication_section.signingKey);
-            jwtx.setExpiration(new Date().getTime() + (440 * 60000));
+            jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
             let token = jwtx.compact();
+            if (localStorage.getItem("st")) {
+                let st = localStorage.getItem("st");
+                localStorage.removeItem("st");
+                return res.redirect(302, config.app_section.loginURL + `?st=${st}` + `#token=${token}`);
+            }
             return res.redirect(302, config.app_section.loginURL + `#token=${token}`);
         });
     }
@@ -111,12 +131,10 @@ export class AuthService {
         try {
             responseUser = await this.userrepository.findUserByUsernameAndMachine(params.username, machine);
         } catch (err) {
-            res.status(500).json({ message: err.message });
-            return;
+            return res.status(500).json({ message: err.message });
         }
         if (responseUser[0] === null) {
-            res.redirect(303, this.config.app_section.badLogin);
-            return;
+            return res.redirect(303, this.config.app_section.badLogin);
         }
 
         let role = responseUser[0].role;
