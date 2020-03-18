@@ -140,9 +140,9 @@ function init() {
 
             await axios.all(requestData).then(
                 axios.spread((responseAsset, responseShift, responseMachine, responseLogins, responseUom) => {
-                    const machineValues = responseAsset.data[0];
+                    const machineValues = responseAsset.data[0] || {};
                     machine = {
-                        asset_code: machineValues.asset_code || machineValues.message,
+                        asset_code: machineValues.asset_code || 'No Data',
                         asset_level: machineValues.asset_level,
                         automation_level: machineValues.automation_level,
                         display_name: machineValues.displaysystem_name,
@@ -170,7 +170,7 @@ function init() {
 
                 const parameters = {
                     params: {
-                        user_id: _.find(user.sites, ['asset_id', parseInt(site)])['dbo.TFDUsers'][0].id
+                        user_id: _.find(user.sites, ['Site', parseInt(site)]).id
                     }
                 };
 

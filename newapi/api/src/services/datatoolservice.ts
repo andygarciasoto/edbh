@@ -9,6 +9,7 @@ import { UomRepository } from '../repositories/uom-repository';
 import { UnavailableRepository } from '../repositories/unavailable-repository';
 import { UserRepository } from '../repositories/user-repository';
 import { AssetDisplaySystemRepository } from '../repositories/assetdisplaysystem-repository';
+import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { headers, getParametersOfTable, getValuesFromHeaderTable } from '../configurations/datatoolutils';
 import Excel from 'exceljs';
 import * as _ from 'lodash';
@@ -25,6 +26,7 @@ export class DataToolService {
     private readonly unavailablerepository: UnavailableRepository;
     private readonly userrepository: UserRepository;
     private readonly assetdisplaysystemrepository: AssetDisplaySystemRepository;
+    private readonly dxhdatarepository: DxHDataRepository;
 
     public constructor(
         workcellrepository: WorkcellRepository,
@@ -36,7 +38,8 @@ export class DataToolService {
         uomrepository: UomRepository,
         unavailablerepository: UnavailableRepository,
         userrepository: UserRepository,
-        assetdisplaysystemrepository: AssetDisplaySystemRepository) {
+        assetdisplaysystemrepository: AssetDisplaySystemRepository,
+        dxhdatarepository: DxHDataRepository) {
         this.workcellrepository = workcellrepository;
         this.assetrepository = assetrepository;
         this.dtreasonrepository = dtreasonrepository;
@@ -47,6 +50,7 @@ export class DataToolService {
         this.unavailablerepository = unavailablerepository;
         this.userrepository = userrepository;
         this.assetdisplaysystemrepository = assetdisplaysystemrepository;
+        this.dxhdatarepository = dxhdatarepository;
     }
 
     public async importData(req, res: Response) {
@@ -65,9 +69,9 @@ export class DataToolService {
 
             // read from a file
             let workbook = new Excel.Workbook();
-            workbook.xlsx.readFile(file.path).then(() => {
+            workbook.xlsx.readFile(file.path).then(async () => {
                 workbook.eachSheet((worksheet, sheetId) => {
-                    arrayItems.forEach(function (value) {
+                    arrayItems.forEach((value) => {
                         if (worksheet.name == value.id) {
                             if (!headers[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
                             let columns = headers[worksheet.name];
@@ -98,14 +102,12 @@ export class DataToolService {
                 });
                 console.log(mergeQuery);
                 //call execution
+                await this.dxhdatarepository.executeGeneralImportQuery(mergeQuery);
                 //
-                //
+                return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
             }).catch((e) => {
-                console.log(e);
-                return res.status(500).send({ message: 'Error', application_error: e.message });
+                return res.status(500).send({ message: 'Error ' + e.message });
             });
-
-            return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
         } catch (err) {
             return res.status(400).json({ message: err.message });
         }

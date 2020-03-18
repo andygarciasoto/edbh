@@ -26,8 +26,12 @@ export class UserRepository {
         ON [TFDUsers].[Site] = [Asset].[asset_id] AND [TFDUsers].[Site] = ${site_id}`);
     }
 
-    // public async findUserByBadge(badge: string): Promise<any> {
-    //     return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_get_users_by_badge_new_1 '${badge}'`);
-    // }
+    public async findUserByBadge(badge: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_get_users_by_badge_new_1 '${badge}'`);
+    }
+
+    public async findUserById(user_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_user_id_login_new_1 ${user_id}`);
+    }
 
 }

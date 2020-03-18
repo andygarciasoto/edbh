@@ -45,7 +45,7 @@ class Header extends React.Component {
     componentDidMount() {
         window.addEventListener('scroll', this.onScroll);
         if (Number(this.state.cs) !== Number(this.props.user.site)) {
-            let actualSite = _.find(this.props.user.sites, ['site', parseInt(this.state.cs)]);
+            let actualSite = _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]);
             this.changeUserInformation(actualSite);
         }
     }
@@ -90,15 +90,15 @@ class Header extends React.Component {
     getSiteOptions() {
         let options = [];
         _.forEach(this.props.user.sites, site => {
-            options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.site}>{site.site_name}</Dropdown.Item>);
+            options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.Site}>{site.asset_name}</Dropdown.Item>);
         });
 
         return options;
     }
 
     changeSite(site) {
-        if (Number(this.state.cs) !== Number(site.site)) {
-            this.setState({ cs: site.site }, () => { this.changeUserInformation(site) });
+        if (Number(this.state.cs) !== Number(site.asset_id)) {
+            this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
 
         }
     }
@@ -107,8 +107,8 @@ class Header extends React.Component {
         let user = this.props.user;
         const parameters = {
             params: {
-                site: newSite.site,
-                user_id: newSite['dbo.TFDUsers'][0].id
+                site: newSite.Site,
+                user_id: newSite.id
             }
         };
 
@@ -175,7 +175,7 @@ class Header extends React.Component {
                         {/* {isComponentValid(this.props.user.role, 'sitename') ? */}
                         <Dropdown className="customToogleSite">
                             <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
-                                {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['site', parseInt(this.state.cs)]).site_name}
+                                {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]).asset_name}
                             </Dropdown.Toggle>
                             {this.props.user.sites.length > 1 ?
                                 <Dropdown.Menu>

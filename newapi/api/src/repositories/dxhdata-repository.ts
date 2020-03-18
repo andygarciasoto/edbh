@@ -31,4 +31,8 @@ export class DxHDataRepository {
     public async putSupervisorSignOffByUsername(dxh_data_id: number, first_name: string, last_name: string, timestamp: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}'`);
     }
+
+    public async executeGeneralImportQuery(query: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(query);
+    }
 }

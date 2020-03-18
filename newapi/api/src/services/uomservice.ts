@@ -32,14 +32,15 @@ export class UomService {
         if (!params.mc) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
-        let uoms: any;
+        let uoms: any[] = [];
         let asset: any;
         try {
             asset = await this.assetrepository.getAssetByCode(params.mc);
-            uoms = await this.uomrepository.getUomByAsset(asset[0].asset_id);
+            if (asset[0]) {
+                uoms = await this.uomrepository.getUomByAsset(asset[0].asset_id);
+            }
         } catch (err) {
-            res.status(500).json({ message: err.message });
-            return;
+            return res.status(500).json({ message: err.message });
         }
         return res.status(200).json(uoms);
     }

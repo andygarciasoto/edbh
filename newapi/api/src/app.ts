@@ -70,7 +70,7 @@ const commentdataService = new CommentDataService(commentDataRepository, assetRe
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
 const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
-    tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository);
+    tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -105,7 +105,10 @@ const appConfig = {
             await shiftService.getShiftBySite(req, res);
         }, true),
         new http.RestEndpoint('/api/user_sites', 'get', async (req: Request, res: Response) => {
-            await userService.getUserByBadge(req, res);
+            await userService.findUserByBadge(req, res);
+        }, true),
+        new http.RestEndpoint('/api/user_info_login_by_site', 'get', async (req: Request, res: Response) => {
+            await userService.findUserById(req, res);
         }, true),
         new http.RestEndpoint('/api/uom_by_site', 'get', async (req: Request, res: Response) => {
             await uomService.getUomBySite(req, res);

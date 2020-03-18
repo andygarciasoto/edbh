@@ -25,11 +25,13 @@ export class DxHDataService {
         }
         let date = params.dt;
         params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
-        let data: any;
+        let data: any[] = [];
         let asset: any;
         try {
             asset = await this.assetrepository.getAssetByCode(params.mc);
-            data = await this.dxhdatarepository.getShiftData(asset[0].asset_id, params.dt, params.sf, params.st);
+            asset = asset[0] || {};
+            asset.asset_id = asset.asset_id || null;
+            data = await this.dxhdatarepository.getShiftData(asset.asset_id, params.dt, params.sf, params.st);
             data = utils.createUnallocatedTime2(data, params.hr, date);
         } catch (err) {
             return res.status(500).json({ message: err.message });

@@ -24,11 +24,13 @@ export class InterShiftDataService {
         if (asset_code === undefined || production_day === undefined || shift_id === undefined) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
-        let shifts: any;
+        let shifts: any[] = [];
         let asset: any;
         try {
             asset = await this.assetrepository.getAssetByCode(asset_code);
-            shifts = await this.intershiftdatarepository.getInterShiftDataByAssetProdDayShift(asset[0].asset_id, production_day, shift_id);
+            if (asset[0]) {
+                shifts = await this.intershiftdatarepository.getInterShiftDataByAssetProdDayShift(asset[0].asset_id, production_day, shift_id);
+            }
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
