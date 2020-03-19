@@ -4,7 +4,7 @@ import moment from 'moment';
 import * as _ from 'lodash';
 
 const poolConfig = {
-    min: 10,
+    min: 40,
     max: 80,
     log: true,
 };
