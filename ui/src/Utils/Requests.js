@@ -236,11 +236,10 @@ function formatNumber(number, decimals) {
 function convertNumber(num, uom_asset) {
   let result = 0;
   if (uom_asset && uom_asset.decimals) {
-    result = (Math.round(num * 10 + Number.EPSILON) / 10);
+    result = (Math.round(Math.round(num) * 10 + Number.EPSILON) / 10);
   } else {
-    result = Math.floor(num);
+    result = Math.floor(Math.round(num));
   }
-
   return result;
 }
 
