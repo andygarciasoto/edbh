@@ -1154,6 +1154,23 @@ router.put('/scrap_values', function (req, res) {
 
 });
 
+router.get('/test', async function (req, res) {
+    let params = req.query;
+    if (!params.resourceUri || !params.key || !params.policyName || !params.expiryInSeconds){
+        return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+    }
+    
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Product;`,
+        (err, response) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: 'Error', database_error: err });
+                return;
+            }
+            responseGet(response, req, res, 'Product');
+        });
+});
+
 router.put('/dt_data_update', async function (req, res) {
     let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
     const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
