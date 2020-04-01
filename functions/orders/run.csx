@@ -17,7 +17,7 @@ public static async void Run(string eventHubMessage, ILogger log)
     string grouping3 = "";
     string grouping4 = "";
     string grouping5 = "";
-    string entered_by = "JTrax";
+    string entered_by = "";
     string value_stream = "";
     float order_quantity = 0;
     string UOM_code = "";
@@ -79,6 +79,9 @@ public static async void Run(string eventHubMessage, ILogger log)
         }
         if (data["valid_to"] != null){
             valid_to = Convert.ToDateTime(data["valid_to"].ToString());
+        }
+        if (data["message_source"] != null){
+            entered_by = data["message_source"].ToString();
         }
         // Setting the non-nullables values based on the JSON data
         string product_code = data["product_code"].ToString();
