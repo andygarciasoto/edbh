@@ -198,6 +198,14 @@ class Import extends React.Component {
                             <Col>
                                 <input type="file" name="Open File" id="" accept=".xlsx,.xlsm" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
                             </Col>
+                            <Col md={12}>
+                                <p className={'text-danger'}>Notes
+                                <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
+                                    <li>If the Excel sheet does not have data, do not include it in the import.</li>
+                                    <li>This configuration will not delete data. It will only insert and update.</li>
+                                    <li>If an error shows up, try again importing the tables individually. Then, check the Excel sheet that is failing and if the error persists, contact the EY Team.</li>
+                                </p>
+                            </Col>
                         </Row>
                         : null}
                     <br />
