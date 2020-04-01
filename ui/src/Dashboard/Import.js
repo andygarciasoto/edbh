@@ -198,7 +198,7 @@ class Import extends React.Component {
                             <Col>
                                 <input type="file" name="Open File" id="" accept=".xlsx,.xlsm" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
                             </Col>
-                            <Col md={12}>
+                            <Col>
                                 <p className={'text-danger'}>Notes
                                 <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
                                     <li>If the Excel sheet does not have data, do not include it in the import.</li>
