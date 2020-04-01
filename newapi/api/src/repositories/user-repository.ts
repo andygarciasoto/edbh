@@ -10,11 +10,11 @@ export class UserRepository {
     }
 
     public async findUserByBadgeAndMachine(badge: string, machine: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_clocknumberlogin_new_1 '${badge}', '${machine}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_clocknumberlogin '${badge}', '${machine}'`);
     }
 
     public async findUserByUsernameAndMachine(username: string, machine: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_usernamelogin_new_1 '${username}', '${machine}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_usernamelogin '${username}', '${machine}'`);
     }
 
     public async findUserByBadgeAndAsset(badge: string, asset_code: string): Promise<any> {
@@ -27,11 +27,11 @@ export class UserRepository {
     }
 
     public async findUserByBadge(badge: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_get_users_by_badge_new_1 '${badge}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_get_users_by_badge '${badge}'`);
     }
 
     public async findUserById(user_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_user_id_login_new_1 ${user_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_user_id_login ${user_id}`);
     }
 
 }

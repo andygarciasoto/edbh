@@ -13,7 +13,7 @@ export class DxHDataRepository {
     }
 
     public async getDxHDataId(asset_id: number, row_timestamp: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId_new_1 ${asset_id}, '${row_timestamp}', 0`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_DxHDataId ${asset_id}, '${row_timestamp}', 0`);
     }
 
     public async putOperatorSignOffByClocknumber(dxh_data_id: number, clocknumber: string, timestamp: string): Promise<any> {
