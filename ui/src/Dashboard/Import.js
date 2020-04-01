@@ -166,7 +166,7 @@ class Import extends React.Component {
 
     render() {
         return (
-            <div className="wrapper-main-import" style={{ height: '100vh' }}>
+            <div className="wrapper-main-import" style={{ height: '95%' }}>
                 <Row></Row>
                 <div className="import-wrapper">
                     <Row>
