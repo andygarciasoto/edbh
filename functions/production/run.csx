@@ -19,32 +19,34 @@ public static async void Run(string eventHubMessage, ILogger log)
     if(String.IsNullOrWhiteSpace(eventHubMessage))
         return;
     try{
-        log.LogInformation(eventHubMessage);
         JObject jObject = JObject.Parse(eventHubMessage);
-        string data = "{'data':" + jObject["data"].ToString() + "}";
-        // getting all the values in the data array
-        var resultObjects = AllChildren(JObject.Parse(data)).First(c => c.Type == JTokenType.Array && c.Path.Contains("data")).Children<JObject>();
-        // processing all the properties in each array value and mapping those values to local variables
-        foreach (JObject result in resultObjects) {
-            foreach (JProperty singleProp in result.Properties())
-            {
-                if (singleProp.Name == "value"){
-                    tagdata_value = singleProp.Value.ToString();
+        if (jObject["productFilter"].ToString() == "kepserver") {
+            log.LogInformation(eventHubMessage);
+            string data = "{'data':" + jObject["data"].ToString() + "}";
+            // getting all the values in the data array
+            var resultObjects = AllChildren(JObject.Parse(data)).First(c => c.Type == JTokenType.Array && c.Path.Contains("data")).Children<JObject>();
+            // processing all the properties in each array value and mapping those values to local variables
+            foreach (JObject result in resultObjects) {
+                foreach (JProperty singleProp in result.Properties())
+                {
+                    if (singleProp.Name == "value"){
+                        tagdata_value = singleProp.Value.ToString();
+                    }
+                    if (singleProp.Name == "name"){
+                        tag_name = singleProp.Value.ToString();
+                    }
+                    if (singleProp.Name == "timestamp"){
+                        datetime = (int)(checked((long)singleProp.Value) / 1000);
+                        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(datetime);
+                        timestamp = dateTimeOffset.UtcDateTime;
+                    }
                 }
-                if (singleProp.Name == "name"){
-                    tag_name = singleProp.Value.ToString();
-                }
-                if (singleProp.Name == "timestamp"){
-                    datetime = (int)(checked((long)singleProp.Value) / 1000);
-                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(datetime);
-                    timestamp = dateTimeOffset.UtcDateTime;
-                }
-            }
-        // creates the connection to the database
-        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
-        var connection = new SqlConnection(ConnString);
-        // insert products and orders
-        InsertTagData(connection, tag_name, tagdata_value, entered_by, timestamp);   
+            // creates the connection to the database
+            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+            var connection = new SqlConnection(ConnString);
+            // insert products and orders
+            InsertTagData(connection, tag_name, tagdata_value, entered_by, timestamp);  
+            } 
         }
     } catch (Exception ex) { 
         log.LogError($"There is the following exception: {ex.Message}");
@@ -53,7 +55,7 @@ public static async void Run(string eventHubMessage, ILogger log)
     // runs a stored procedure that udpdates or inserts data into Products table
     public static void InsertTagData (SqlConnection connection, string tag_name, string tagdata_value, string entered_by, DateTime timestamp)
     {
-        var sqlCmd = new SqlCommand("dbo.spLocal_EY_DxH_Put_Production_From_IoT", connection);
+        var sqlCmd = new SqlCommand("spLocal_EY_DxH_Put_Production_From_IoT", connection);
         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
         sqlCmd.SetParameters(Parameter("tag_name", tag_name), Parameter("tagdata_value", tagdata_value), Parameter("entered_by", entered_by), Parameter("entered_on", timestamp));
         connection.Open();

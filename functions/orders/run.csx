@@ -31,9 +31,10 @@ public static async void Run(string eventHubMessage, ILogger log)
         return;
             
     try{
-        log.LogInformation(eventHubMessage);
         JObject full = JObject.Parse(eventHubMessage);
-        JObject data = (JObject)full["data"];
+        if (full["productFilter"].ToString() != "kepserver") {
+        log.LogInformation(eventHubMessage);
+        JObject data = (JObject)full["data"];        
     // validation of nullable values in order to send them to SQL with the message value or empty
         if (data["product_description"] != null){
             product_description = data["product_description"].ToString();
@@ -101,6 +102,7 @@ public static async void Run(string eventHubMessage, ILogger log)
         // insert products and orders
         InsertProducts(connection, product_code, product_name, product_description, product_family, value_stream, grouping1, grouping2, grouping3, grouping4, grouping5, status, entered_by, timestamp);
         InsertOrders(connection, order_number, asset_code, product_code, order_quantity, UOM_code, routed_cycle_time, minutes_allowed_per_setup, ideal, target_percent_of_ideal, production_status, start_time, entered_by, timestamp);
+        }
     } catch (Exception ex) {
         log.LogError($"There is the following exception: {ex.Message}");
     }
