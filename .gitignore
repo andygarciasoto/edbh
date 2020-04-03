@@ -1,9 +1,9 @@
 ui/node_modules
 ui/build
 ui/.vscode
-api/api/bin
-api/api/node_modules
-api/api/.deployment
+api/bin
+api/node_modules
+api/.deployment
 api/.vscode
 old_api/node_modules
 old_api/bin
