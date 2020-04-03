@@ -53,7 +53,7 @@ public static async void Run(string eventHubMessage, ILogger log)
     // runs a stored procedure that udpdates or inserts data into Products table
     public static void InsertTagData (SqlConnection connection, string tag_name, string tagdata_value, string entered_by, DateTime timestamp)
     {
-        var sqlCmd = new SqlCommand("sp_importtagdata", connection);
+        var sqlCmd = new SqlCommand("dbo.spLocal_EY_DxH_Put_Production_From_IoT", connection);
         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
         sqlCmd.SetParameters(Parameter("tag_name", tag_name), Parameter("tagdata_value", tagdata_value), Parameter("entered_by", entered_by), Parameter("entered_on", timestamp));
         connection.Open();

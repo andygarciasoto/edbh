@@ -10,7 +10,7 @@ export class ShiftRepository {
     }
 
     public async getShiftBySite(site: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.sp_getshifts ${site}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Shifts ${site}`);
     }
     public async getShiftBySiteExport(site_id: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`SELECT [Shift].[shift_code],[Shift].[shift_name],[Shift].[shift_description],[Shift].[shift_sequence],[Shift].[start_time],[Shift].[end_time],

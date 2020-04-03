@@ -108,7 +108,7 @@ public static async void Run(string eventHubMessage, ILogger log)
 // runs a stored procedure that udpdates or inserts data into Products table
 public static void InsertProducts (SqlConnection connection, string product_code, string product_name, string product_description, string product_family, string value_stream, string grouping1, string grouping2, string grouping3, string grouping4, string grouping5, string status, string entered_by, DateTime timestamp)
 {
-    var sqlCmd = new SqlCommand("sp_importproducts", connection);
+    var sqlCmd = new SqlCommand("spLocal_EY_DxH_Put_Products_From_IoT", connection);
     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
     sqlCmd.SetParameters(Parameter("product_code", product_code), Parameter("product_name", product_name), Parameter("product_description", product_description), Parameter("product_family", product_family), Parameter("value_stream", value_stream), Parameter("grouping1", grouping1), Parameter("grouping2", grouping2), Parameter("grouping3", grouping3), Parameter("grouping4", grouping4), Parameter("grouping5", grouping5), Parameter("status", status), Parameter("entered_by", entered_by), Parameter("timestamp", timestamp));
     connection.Open();
@@ -118,7 +118,7 @@ public static void InsertProducts (SqlConnection connection, string product_code
 // runs a stored procedure that inserts data into Orders table
 public static void InsertOrders (SqlConnection connection, string order_number, string asset_code, string product_code, float order_quantity, string UOM_code, float routed_cycle_time, float minutes_allowed_per_setup, float ideal, float target_percent_of_ideal, string production_status, DateTime start_time, string entered_by, DateTime entered_on)
 {
-    var sqlCmd = new SqlCommand("sp_importorders", connection);
+    var sqlCmd = new SqlCommand("spLocal_EY_DxH_Put_Orders_From_IoT", connection);
     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
     sqlCmd.SetParameters(Parameter("order_number", order_number), Parameter("asset_code", asset_code), Parameter("product_code", product_code), Parameter("order_quantity", order_quantity), Parameter("UOM_code", UOM_code), Parameter("routed_cycle_time", routed_cycle_time), Parameter("minutes_allowed_per_setup", minutes_allowed_per_setup), Parameter("ideal", ideal), Parameter("target_percent_of_ideal", target_percent_of_ideal), Parameter("production_status", production_status), Parameter("start_time", start_time), Parameter("entered_by", entered_by), Parameter("entered_on", entered_on));
     connection.Open();

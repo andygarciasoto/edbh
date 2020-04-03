@@ -74,7 +74,7 @@ router.get("/badge", cors(), async function (req, res) {
         return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
     }
     machine = params.st == 'null' || params.st == 'undefined' ? 0 : params.st;
-    sqlQuery(`exec dbo.sp_clocknumberlogin '${params.badge}', '${machine}'`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Clocknumber_Machine '${params.badge}', '${machine}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
@@ -131,7 +131,7 @@ router.post("/", function (req, res) {
 
     machine = params.st == 'null' || params.st == 'undefined' || params.st === '' ? 0 : params.st;
 
-    sqlQuery(`exec dbo.sp_usernamelogin '${params.username}', '${machine}'`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Username_Machine '${params.username}', '${machine}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
