@@ -21,12 +21,12 @@ public static async void Run(string eventHubMessage, ILogger log)
     try{
         JObject jObject = JObject.Parse(eventHubMessage);
         if (jObject["productFilter"].ToString() == "kepserver") {
-            log.LogInformation(eventHubMessage);
             string data = "{'data':" + jObject["data"].ToString() + "}";
             // getting all the values in the data array
             var resultObjects = AllChildren(JObject.Parse(data)).First(c => c.Type == JTokenType.Array && c.Path.Contains("data")).Children<JObject>();
             // processing all the properties in each array value and mapping those values to local variables
             foreach (JObject result in resultObjects) {
+                log.LogInformation(result.ToString());
                 foreach (JProperty singleProp in result.Properties())
                 {
                     if (singleProp.Name == "value"){
