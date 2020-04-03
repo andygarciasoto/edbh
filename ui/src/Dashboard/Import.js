@@ -5,7 +5,7 @@ import { DATATOOL } from '../Utils/Constants';
 import { saveAs } from 'file-saver';
 import Spinner from '../Spinner';
 import ConfigurationTab from '../Layout/ConfigurationTab';
-import { post } from 'axios';
+import * as axios from 'axios';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 class Import extends React.Component {
@@ -114,22 +114,21 @@ class Import extends React.Component {
             formData.append('file', _this.state.file);
             formData.append('configurationItems', JSON.stringify(_this.state.selectedListTabs));
             formData.append('site_id', JSON.stringify(_this.props.user.site));
-            const config = {
+            const request_config = {
+                method: "POST",
+                url: url,
                 headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-                    'Content-Type': 'multipart/form-data'
-                }
+                    "Authorization": "Bearer " + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+                    "Content-Type": "multipart/form-data"
+                },
+                data: formData
             };
             this.setState({ isLoading: true, showActionMessage: false }, () => {
-                post(url, formData, config).then((res) => {
-                    if (res.status !== 200 || !res) {
-                        _this.setState({ isLoading: false, showActionMessage: true, error: true });
-                    } else {
-                        _this.setState({ isLoading: false, showActionMessage: true, error: false });
-                    }
-                }).catch((e) => {
-                    console.log(e.response);
-                    let errorMessage = e.response.data.application_error || e.response.data.database_error;
+                axios(request_config).then(response => {
+                    _this.setState({ isLoading: false, showActionMessage: true, error: false });
+                }).catch(e => {
+                    console.log(e);
+                    let errorMessage = e.response.data.message;
                     _this.setState({
                         isLoading: false,
                         showActionMessage: true,
@@ -167,7 +166,7 @@ class Import extends React.Component {
 
     render() {
         return (
-            <div className="wrapper-main-import" style={{ height: '100vh' }}>
+            <div className="wrapper-main-import" style={{ height: '95%' }}>
                 <Row></Row>
                 <div className="import-wrapper">
                     <Row>
@@ -198,6 +197,14 @@ class Import extends React.Component {
                         <Row className='show-grid'>
                             <Col>
                                 <input type="file" name="Open File" id="" accept=".xlsx,.xlsm" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
+                            </Col>
+                            <Col>
+                                <p className={'text-danger'}>Notes
+                                <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
+                                    <li>If the Excel sheet does not have data, do not include it in the import.</li>
+                                    <li>This configuration will not delete data. It will only insert and update.</li>
+                                    <li>If an error shows up, try again importing the tables individually. Then, check the Excel sheet that is failing and if the error persists, contact the EY Team.</li>
+                                </p>
                             </Col>
                         </Row>
                         : null}

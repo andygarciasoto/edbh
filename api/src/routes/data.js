@@ -176,7 +176,7 @@ router.get('/me', async function (req, res) {
             let id = payload.body.user_id;
             let badge = payload.body.user_badge;
             let machine = payload.body.user_machine;
-            sqlQuery(`exec dbo.sp_clocknumberlogin '${badge}', '${machine}'`,
+            sqlQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Clocknumber_Machine '${badge}', '${machine}'`,
                 (err, data) => {
                     if (err) {
                         console.log(err);
@@ -211,7 +211,7 @@ router.get('/shifts', async function (req, res) {
     if (!site) {
         return res.status(400).send("Bad Request - Missing parameters");
     }
-    sqlQuery(`exec sp_getshifts ${site}`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Shifts ${site}`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -241,8 +241,6 @@ router.get('/intershift_communication', async function (req, res) {
                 responseGet(response, req, res, 'InterShiftData');
             });
     }).catch((e) => { res.status(500).send({ message: 'Error', api_error: e.message }); });
-
-
 });
 
 router.post('/dxh_new_comment', async function (req, res) {
@@ -622,7 +620,7 @@ router.put('/supervisor_sign_off', async function (req, res) {
         return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
     }
 
-    sqlQuery(`exec dbo.sp_clocknumber_asset_login '${clocknumber}', '${asset_code}'`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Clocknumber_Asset '${clocknumber}', '${asset_code}'`,
         (err, responseUser) => {
             if (err) {
                 console.log(err);
@@ -940,7 +938,7 @@ router.put('/create_order_data', async function (req, res) {
             "[grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], " +
             "[last_modified_on] From [dbo].[Product] Where product_code = '" + part_number + "';";
 
-        const queryInsertNewProduct = `exec dbo.sp_importproducts '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
+        const queryInsertNewProduct = `exec dbo.spLocal_EY_DxH_Put_Products_From_IoT '${part_number}', '${part_number}', '${part_number}', '', '', '', '', 
         '', '', '', 'Active', 'SQL manual entry', '${moment.utc().format('YYYY-MM-DD HH:MM')}';`;
 
         const queryCreateOrder = clocknumber ? `exec dbo.spLocal_EY_DxH_Create_OrderData ${responseProm[0].Asset.asset_id}, '${part_number}', ${order_quantity}, '${uom_code}', 
@@ -1028,13 +1026,13 @@ router.get('/uom_asset', async function (req, res) {
 
 router.get('/workcell', async function (req, res) {
     let params = req.query;
-    if (!params.st == null){
+    if (!params.st == null) {
         params.st = 'Null';
     }
     if (!params.site || params.site == null || params.site == undefined) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`exec dbo.sp_get_workcell '${params.st}', ${params.site};`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Workcell '${params.st}', ${params.site};`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -1050,7 +1048,7 @@ router.get('/user_sites', async function (req, res) {
     if (!params.clock_number) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`exec dbo.sp_get_users_by_badge '${params.clock_number}';`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_Users_By_Badge '${params.clock_number}';`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -1067,7 +1065,7 @@ router.get('/user_info_login_by_site', async function (req, res) {
     if (!params.user_id) {
         return res.status(400).json({ message: "Bad Request - Missing Parameters" });
     }
-    sqlQuery(`exec dbo.sp_user_id_login ${params.user_id};`,
+    sqlQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Id ${params.user_id};`,
         (err, response) => {
             if (err) {
                 console.log(err);
@@ -1129,7 +1127,6 @@ router.put('/scrap_values', function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
         }
     }
-
     if (clocknumber) {
         sqlQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', NULL, NULL;`,
             (err, response) => {
@@ -1151,7 +1148,6 @@ router.put('/scrap_values', function (req, res) {
                 responsePostPutNoJSON(response, req, res);
             });
     }
-
 });
 
 router.put('/dt_data_update', async function (req, res) {
@@ -1172,7 +1168,6 @@ router.put('/dt_data_update', async function (req, res) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
     }
-
     if (clocknumber) {
         sqlQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${dt_reason_id}, ${dt_minutes}, '${clocknumber}', Null, Null, '${timestamp}', ${dtdata_id};`,
             (err, response) => {
@@ -1193,7 +1188,6 @@ router.put('/dt_data_update', async function (req, res) {
                 responsePostPutNoJSON(response, req, res);
             });
     }
-
 });
 
 module.exports = router;

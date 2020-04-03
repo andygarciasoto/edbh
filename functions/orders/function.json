@@ -1,0 +1,32 @@
+// Test Environment
+
+{
+    "bindings": [
+      {
+        "type": "eventHubTrigger",
+        "name": "eventHubMessage",
+        "direction": "in",
+        "eventHubName": "phc-edbhraw-tst-eh",
+        "cardinality": "one",
+        "dataType": "string",
+        "connection": "EventHubConnectionAppSetting",
+        "consumerGroup": "data-path2"
+      }
+    ]
+  }
+
+// Production Environment
+
+  {
+    "bindings": [
+      {
+        "type": "eventHubTrigger",
+        "name": "eventHubMessage",
+        "connection": "phc-edbh01-prd-ehns_dataPathPolicy_EVENTHUB",
+        "eventHubName": "phc-edbhraw-prd-eh",
+        "consumerGroup": "data-path",
+        "cardinality": "one",
+        "direction": "in"
+      }
+    ]
+  }

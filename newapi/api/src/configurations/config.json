@@ -1,0 +1,34 @@
+{
+    "sql_section": {
+        "user": "appUser",
+        "password": "d??VzYv7r-^n$EA58V2$#ZUa",
+        "server": "phc-diviot01-tst-sql.database.windows.net",
+        "database": "FCGFOTF"
+    },
+    "app_section": {
+        "port": 8080,
+        "prefix": "/",
+        "service_name": "Dxh Service",
+        "cors": [
+            "http://localhost:3000",
+            "http://localhost:3001"
+        ],
+        "redirect_uri": "http://localhost:8080/auth/token",
+        "timezone": "MST",
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
+    },
+    "authentication_section": {
+        "signingKey": "JhbGciOiJSUzI1NiJ9"
+    },
+    "ad_authentication_section": {
+        "app_reg_name": "PHIOTFCGFOTFDev",
+        "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+        "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
+        "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127"
+    },
+    "azure_section": {
+        "appInsights": "363e8d3c-d6ee-465a-898c-71e8b489718d"
+    }
+}
