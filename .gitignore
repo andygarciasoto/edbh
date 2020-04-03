@@ -1,13 +1,10 @@
-api/node_modules
-api/bin
-api/.vscode
 ui/node_modules
 ui/build
 ui/.vscode
-n_api/api/bin
-n_api/api/node_modules
-n_api/api/.deployment
-n_api/.vscode
+api/api/bin
+api/api/node_modules
+api/api/.deployment
+api/.vscode
 old_api/node_modules
 old_api/bin
 old_api/.vscode
