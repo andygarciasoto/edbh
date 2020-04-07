@@ -23,7 +23,7 @@ export class SqlServerStore {
                 database: config.sql_section.database,
                 encrypt: true,
                 useColumnNames: true,
-                requestTimeout: 30000
+                requestTimeout: 15000
             },
         };
         this.pool = new Promise<ConnectionPool>((resolve, reject) => {
