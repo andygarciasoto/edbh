@@ -96,7 +96,7 @@ public static async void Run(string eventHubMessage, ILogger log)
         DateTime valid_from = Convert.ToDateTime(data["valid_from"].ToString());
 
         // creates the connection to the database
-        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3"); // CUSTOMCONNSTR_parkerdbconnection for Production
         var connection = new SqlConnection(ConnString);
 
         // insert products and orders
