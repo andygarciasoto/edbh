@@ -10,51 +10,65 @@ public static void Run(TimerInfo myTimer, ILogger log)
     // creates the connection to the database
     var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_dbconnection");
     var connection = new SqlConnection(ConnString);
-    // declaration of needed variables
+    // declaration of variables needed
+    Random random = new Random();
     DateTime timestamp = DateTime.Now;
-    string queryString = "SELECT TOP 1 tagdata_value FROM dbo.TagData ORDER BY last_modified_on DESC";
+    string queryString = "SELECT TOP 1 tagdata_value FROM dbo.TagData WHERE tag_name = @tag_name ORDER BY last_modified_on DESC";
     string tagdata_value = "";
     int value = 0;
 
     try{
-        // getting the last tag value to simulate production
-        SqlCommand command = new SqlCommand(queryString, connection);
-        connection.Open();
-        SqlDataReader reader = command.ExecuteReader();
-        if (reader.HasRows)
-        {
-            while (reader.Read())
-            {
-                tagdata_value = reader.GetString(0);
-                // simulating a rollover
-                if (tagdata_value == "999999"){
-                    tagdata_value = "0";
+        // simulating production
+        for (int i = 1; i < 6; i++) {
+            int tag = random.Next(1, 4);
+            log.LogInformation(tag.ToString());
+            string tag_name = "EY_Tag" + i.ToString();
+
+            if (tag != 2) { 
+            // getting the last tag value to simulate progressive production
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@tag_name", tag_name);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        tagdata_value = reader.GetString(0);
+                        value = int.Parse(tagdata_value);
+                        // simulating a rollover
+                        if (value >= 999999){
+                            tagdata_value = "0";
+                        }
+                        // adding 1 to the tag value to simulate progression
+                        value = int.Parse(tagdata_value) + random.Next(1, 3);
+                        tagdata_value = value.ToString();
+                    }
                 }
-                // adding 1 to the tag value to simulate progression
-                value = int.Parse(tagdata_value) + 1;
-                tagdata_value = value.ToString();
+                else
+                {
+                    log.LogError("No rows found.");
+                }
+                reader.Close();
+                connection.Close();
+            // insert tags
+                InsertTagData(connection, tagdata_value, timestamp, tag_name);  
+                log.LogInformation("Tag inserted for " + tag_name + " with the following value: " +tagdata_value);
+            } else {
+                log.LogInformation("Tag was not inserted for " + tag_name + " due to simulated delay");
             }
         }
-        else
-        {
-            log.LogError("No rows found.");
-        }
-        reader.Close();
-        connection.Close();
-    // insert tags
-        InsertTagData(connection, tagdata_value, timestamp);  
-        log.LogInformation("Tag inserted: " +tagdata_value);
     } catch (Exception ex) { 
         log.LogError($"There is the following exception: {ex.Message}");
     }
 }
 
 // runs a stored procedure that inserts within tagdata table
-public static void InsertTagData (SqlConnection connection, string value, DateTime timestamp)
+public static void InsertTagData (SqlConnection connection, string value, DateTime timestamp, string tag_name)
 {
     var sqlCmd = new SqlCommand("spLocal_EY_DxH_Put_Production_From_IoT", connection);
     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-    sqlCmd.SetParameters(Parameter("tag_name", "EY_Tag"), Parameter("tagdata_value", value), Parameter("entered_by", "Azure Function"), Parameter("entered_on", timestamp));
+    sqlCmd.SetParameters(Parameter("tag_name", tag_name), Parameter("tagdata_value", value), Parameter("entered_by", "Azure Function"), Parameter("entered_on", timestamp));
     connection.Open();
     sqlCmd.ExecuteNonQuery();
     connection.Close();
