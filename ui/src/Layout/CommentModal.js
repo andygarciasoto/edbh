@@ -95,31 +95,31 @@ class CommentsModal extends React.Component {
                     onRequestClose={this.props.onRequestClose}
                     style={styles}
                     contentLabel="Example Modal">
-                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                    <div className={"comments-table"}>
-                        <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>{t('Date')}</th>
-                                    <th>{t('User')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(this.state.comments.length > 0) ? this.state.comments.map((comment, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td className={"commentsModal-user"}>
-                                                <span>{`${comment.first_name} ${comment.last_name}`}</span>
-                                                <div className={'commentsModal-date'}>{formatDateWithTime(comment.last_modified_on)}</div>
-                                            </td>
-                                            <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
-                                        </tr>
-                                    )
-                                }) : <tr><td colSpan={2}>{t("There are no comments to display")}</td></tr>}
-                            </tbody>
-                        </Table>
-                    </div>
+                    {/* <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span> */}
+
+                    <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>{t('Date')}</th>
+                                <th>{t('User')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(this.state.comments.length > 0) ? this.state.comments.map((comment, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td className={"commentsModal-user"}>
+                                            <span>{`${comment.first_name} ${comment.last_name}`}</span>
+                                            <div className={'commentsModal-date'}>{formatDateWithTime(comment.last_modified_on)}</div>
+                                        </td>
+                                        <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
+                                    </tr>
+                                )
+                            }) : <tr><td colSpan={2}>{t("There are no comments to display")}</td></tr>}
+                        </tbody>
+                    </Table>
+
                     <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                         <Form.Control
                             style={{ paddingTop: '5px' }}
@@ -132,6 +132,9 @@ class CommentsModal extends React.Component {
                     <Row>
                         <Col sm={6} md={2}>
                             <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
+                        </Col>
+                        <Col sm={6} md={2}>
+                            <Button variant="outline-danger" style={{ marginTop: '10px' }} onClick={this.props.onRequestClose}>{t('Cancel')}</Button>
                         </Col>
                         <Col sm={6} md={2}>
                             {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
