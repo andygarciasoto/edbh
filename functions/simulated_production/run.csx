@@ -13,8 +13,10 @@ public static void Run(TimerInfo myTimer, ILogger log)
     // declaration of variables needed
     Random random = new Random();
     DateTime timestamp = DateTime.Now;
-    string queryString = "SELECT TOP 1 tagdata_value FROM dbo.TagData WHERE tag_name = @tag_name ORDER BY last_modified_on DESC";
+    string queryString = "SELECT TOP 1 TD.tagdata_value, OD.order_quantity, SUM(PD.actual) as actual FROM dbo.TagData Td INNER JOIN Tag T ON Td.tag_name = T.tag_name INNER JOIN OrderData OD ON T.asset_id = OD.asset_id INNER JOIN ProductionData PD ON OD.order_id = PD.order_id WHERE Td.tag_name = @tag_name AND OD.is_current_order = 1 GROUP BY TD.tagdata_value, OD.order_quantity, TD.last_modified_on ORDER BY TD.last_modified_on DESC";
     string tagdata_value = "";
+    double order_quantity = 0;
+    double actual = 0;
     int value = 0;
 
     try{
@@ -35,6 +37,9 @@ public static void Run(TimerInfo myTimer, ILogger log)
                     while (reader.Read())
                     {
                         tagdata_value = reader.GetString(0);
+                        order_quantity = reader.GetDouble(1);
+                        actual = reader.GetDouble(2);
+
                         value = int.Parse(tagdata_value);
                         // simulating a rollover
                         if (value >= 999999){
@@ -52,8 +57,12 @@ public static void Run(TimerInfo myTimer, ILogger log)
                 reader.Close();
                 connection.Close();
             // insert tags
-                InsertTagData(connection, tagdata_value, timestamp, tag_name);  
-                log.LogInformation("Tag inserted for " + tag_name + " with the following value: " +tagdata_value);
+                if (order_quantity > actual){
+                    InsertTagData(connection, tagdata_value, timestamp, tag_name);  
+                    log.LogInformation("Tag inserted for " + tag_name + " with the following value: " +tagdata_value);
+                }else{
+                    log.LogInformation("Tag was not inserted for " + tag_name + " due to over production");
+                }
             } else {
                 log.LogInformation("Tag was not inserted for " + tag_name + " due to simulated delay");
             }
