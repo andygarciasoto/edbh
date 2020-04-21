@@ -39,7 +39,7 @@ class SignIn extends React.Component {
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
-                    <img src={EYlogo} className="App-logo" alt="logo" />
+                    <img style={{ backgroundColor: 'white' }} src={EYlogo} className="App-logo" alt="logo" />
                     <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Day by Hour Application')}</h3>
                     <BarcodeScanner t={this.props.t} st={this.props.st} />
                 </div>
