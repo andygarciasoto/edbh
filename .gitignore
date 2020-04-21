@@ -1,9 +1,12 @@
-api1/node_modules
-api1/bin
-api1/.vscode
+api/node_modules
+api/bin
+api/.vscode
+api/package-lock.json
 ui/.vscode
 ui/build
 ui/node_modules
+ui/package-lock.json
 old_api/node_modules
 old_api/bin
 old_api/.vscode
+old_api/package-lock.json
