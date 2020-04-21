@@ -1,7 +1,7 @@
 import React from 'react';
 import BarcodeScanner from './Scanner/BarcodeScanner';
 import logo from './Parker_Hannifin.svg';
-import Background from './backdrop1.jpg';
+import Background from './eDBH_IndustryBackground.jpg';
 import FontAwesome from 'react-fontawesome';
 import './sass/SignIn.scss';
 import * as qs from 'query-string';

@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './Parker_Hannifin.svg';
-import Background from './backdrop1.jpg';
+import Background from './eDBH_IndustryBackground.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
 import { AUTH } from './Utils/Constants';
