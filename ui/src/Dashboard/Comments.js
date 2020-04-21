@@ -124,7 +124,7 @@ class Comments extends React.Component {
                     <p>{t('Enter new communication')}:</p>
                     <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={this.props.readOnly} onChange={(e) => this.setState({ value: e.target.value })}></Form.Control>
                 </span>
-                <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.enterCommunication}>{t('Submit')}</Button>
+                <Button variant="outline-info" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.enterCommunication}>{t('Submit')}</Button>
                 <ThreadModal
                     isOpen={this.state.modal_thread_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}

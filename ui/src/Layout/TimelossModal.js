@@ -432,7 +432,7 @@ class TimelossModal extends React.Component {
                             </Form.Group>
                         </div>
                         <div className={'new-timeloss-button'}>
-                            <Button variant="outline-primary"
+                            <Button variant="outline-info"
                                 style={{ marginTop: '30px' }}
                                 disabled={this.state.allowSubmit || this.props.readOnly}
                                 onClick={this.submit}>{t('Submit')}

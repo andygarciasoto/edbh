@@ -3,6 +3,7 @@ import './Header.scss';
 import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
 import logo from '../Parker_Hannifin.svg';
+import EYlogo from '../ernst-young-vector-logo.png';
 import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';
 import MachinePickerCustom from './MachinePicker';
@@ -169,7 +170,7 @@ class Header extends React.Component {
         return (
             <Navbar>
                 <Row>
-                    <Navbar.Brand><img src={logo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
+                    <Navbar.Brand><img src={EYlogo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
                         {/* {isComponentValid(this.props.user.role, 'sitename') ? */}

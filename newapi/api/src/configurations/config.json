@@ -1,8 +1,8 @@
 {
     "sql_section": {
-        "user": "appUser",
-        "password": "d??VzYv7r-^n$EA58V2$#ZUa",
-        "server": "phc-diviot01-tst-sql.database.windows.net",
+        "user": "parkeradmin",
+        "password": "VFM9rqSkunX4pFPm",
+        "server": "parker-ctpdev-test.database.windows.net",
         "database": "FCGFOTF"
     },
     "app_section": {

@@ -131,7 +131,7 @@ class CommentsModal extends React.Component {
                     </span>
                     <Row>
                         <Col sm={6} md={2}>
-                            <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
+                            <Button variant="outline-info" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
                         </Col>
                         <Col sm={6} md={2}>
                             {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
