@@ -21,9 +21,6 @@ class CommentsModal extends React.Component {
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
         }
-        this.submitComment = this.submitComment.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.closeModal = this.closeModal.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -49,7 +46,7 @@ class CommentsModal extends React.Component {
         });
     }
 
-    submitComment(e) {
+    submitComment = (e) => {
         this.setState({ modal_loading_IsOpen: true }, () => {
             const response = sendPost({
                 first_name: this.props.user.first_name,
@@ -67,17 +64,21 @@ class CommentsModal extends React.Component {
                     this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
                 }
                 this.props.Refresh(this.props.parentData);
-                this.setState({ value: '' })
-                this.props.onRequestClose();
+                this.closeCommentModal();
             })
         })
     }
 
-    closeModal() {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+    closeCommentModal = () => {
+        this.setState({ value: '' })
+        this.props.onRequestClose();
     }
 
-    onChange(e) {
+    closeModal = () => {
+        this.setState({ value: '', modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+    }
+
+    onChange = (e) => {
         this.setState({ value: e.target.value });
     }
 
@@ -92,34 +93,34 @@ class CommentsModal extends React.Component {
                 <Modal
                     isOpen={this.props.isOpen}
                     //  onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.props.onRequestClose}
+                    onRequestClose={() => this.closeCommentModal()}
                     style={styles}
                     contentLabel="Example Modal">
-                    <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                    <div className={"comments-table"}>
-                        <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>{t('Date')}</th>
-                                    <th>{t('User')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(this.state.comments.length > 0) ? this.state.comments.map((comment, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td className={"commentsModal-user"}>
-                                                <span>{`${comment.first_name} ${comment.last_name}`}</span>
-                                                <div className={'commentsModal-date'}>{formatDateWithTime(comment.last_modified_on)}</div>
-                                            </td>
-                                            <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
-                                        </tr>
-                                    )
-                                }) : <tr><td colSpan={2}>{t("There are no comments to display")}</td></tr>}
-                            </tbody>
-                        </Table>
-                    </div>
+                    {/* <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span> */}
+
+                    <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>{t('Date')}</th>
+                                <th>{t('User')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(this.state.comments.length > 0) ? this.state.comments.map((comment, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td className={"commentsModal-user"}>
+                                            <span>{`${comment.first_name} ${comment.last_name}`}</span>
+                                            <div className={'commentsModal-date'}>{formatDateWithTime(comment.last_modified_on)}</div>
+                                        </td>
+                                        <td className={"commentsModal-comment"}><div>{comment.comment}</div></td>
+                                    </tr>
+                                )
+                            }) : <tr><td colSpan={2}>{t("There are no comments to display")}</td></tr>}
+                        </tbody>
+                    </Table>
+
                     <span className="dashboard-modal-field-group"><p>{t('Enter new comment')}:</p>
                         <Form.Control
                             style={{ paddingTop: '5px' }}
@@ -132,6 +133,9 @@ class CommentsModal extends React.Component {
                     <Row>
                         <Col sm={6} md={2}>
                             <Button variant="outline-info" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
+                        </Col>
+                        <Col sm={6} md={2}>
+                            <Button variant="outline-danger" style={{ marginTop: '10px' }} onClick={() => this.closeCommentModal()}>{t('Cancel')}</Button>
                         </Col>
                         <Col sm={6} md={2}>
                             {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}

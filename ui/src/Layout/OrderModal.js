@@ -41,9 +41,9 @@ class OrderModal extends React.Component {
             const response = getRequest('/order_assembly', data);
             response.then((res) => {
                 if (!res) {
-                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Please try again or try with a different order.' });
+                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true, errorMessage: 'Please try again or try with a different order.' });
                 } else {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: false, order_data: res[0].OrderData });
+                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: false });
                     this.props.showValidateDataModal(res);
                 }
                 this.setState({ value: '' });

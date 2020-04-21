@@ -27,7 +27,7 @@ export class OrderDataService {
         try {
             asset = await this.assetrepository.getAssetByCode(params.asset_code);
             orderData = await this.orderdatarepository.getOrderData(asset[0].asset_id, params.order_number);
-            const orderId = orderData[0].order_id;
+            const orderId = orderData[0] ? orderData[0].order_id : orderData[0];
             if (orderId === null || orderId === undefined) {
                 let assembly = {
                     order_number: params.order_number,
@@ -43,12 +43,12 @@ export class OrderDataService {
                     timeout: 10000
                 }, (error, resp, body) => {
                     if (error || body) {
-                        return res.status(500).send({ message: 'Error', jtrax_error: error });
+                        return res.status(500).send({ message: 'Error', jtrax_error: error.Message });
                     }
                     if (resp.statusCode >= 400) {
-                        return res.status(500).send({ message: 'Error', jtrax_error: error, body: body });
+                        return res.status(500).send({ message: 'Error', jtrax_error: error.Message, body: body.Message });
                     }
-                    return res.status(200).json(orderData);
+                    return res.status(200).json({});
                 });
             } else {
                 return res.status(200).json(orderData);

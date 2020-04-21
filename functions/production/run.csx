@@ -42,7 +42,7 @@ public static async void Run(string eventHubMessage, ILogger log)
                     }
                 }
             // creates the connection to the database
-            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3"); // CUSTOMCONNSTR_parkerdbconnection for Production
             var connection = new SqlConnection(ConnString);
             // insert products and orders
             InsertTagData(connection, tag_name, tagdata_value, entered_by, timestamp);  

@@ -125,12 +125,12 @@ class DashboardOne extends React.Component {
     }
   }
 
-  showValidateDataModal(data) {
+  showValidateDataModal = (data) => {
     if (data) {
       this.setState({
         modal_order_IsOpen: false,
         modal_order_two_IsOpen: true,
-        orderTwo_data: data[0].OrderData
+        orderTwo_data: data[0]
       })
     } else {
       this.setState({
