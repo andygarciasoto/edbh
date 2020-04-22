@@ -51,40 +51,8 @@ async function sendPut(data, route) {//CAMBIAR FORMA DE USO SOLO LLAMAR EL POST 
   }
 }
 
-async function sendPutDataTool(data, route) {
-
-  const res = await axios.put(`${DATATOOL}${route}`, data)
-    .then(function (response) {
-      return response;
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-  if (res) {
-    return res.status;
-  }
-}
-
 async function getRequest(route, data) {
   const res = await axios.get(`${API}${route}`, data)
-    .then(function (response) {
-      // handle success
-      return response;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // nothing
-    });
-  if (res) {
-    return res.data;
-  }
-}
-
-async function getRequestAuth(route, data) {
-  const res = await axios.get(`${AUTH}${route}`, data)
     .then(function (response) {
       // handle success
       return response;
@@ -296,14 +264,12 @@ function getCurrentShift(shifts, current_date_time) {
 
 export {
   getRequest,
-  getRequestAuth,
   mapShift,
   formatDate,
   formatDateWithTime,
   getCurrentTime,
   sendPost,
   sendPut,
-  sendPutDataTool,
   isComponentValid,
   isFieldAllowed,
   formatNumber,
