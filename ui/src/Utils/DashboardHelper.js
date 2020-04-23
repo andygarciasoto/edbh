@@ -23,31 +23,30 @@ const helpers = {
 
         if (applyGrey) {
             style = {
-                backgroundColor: '#c0c0c0',
-                borderRight: 'solid 1px #c0c0c0',
-                borderLeft: 'solid 1px #c0c0c0',
-                borderTop: 'solid 1px #c0c0c0',
+                backgroundColor: 'rgb(247, 247, 247)',
+                borderRight: 'solid 1px rgb(219, 219, 219)',
+                borderLeft: 'solid 1px rgb(219, 219, 219)',
+                borderTop: 'solid 1px rgb(219, 219, 219)',
                 textAlign: align
             }
         } else {
             style = {
                 textAlign: align,
-                borderRight: 'solid 1px #c0c0c0',
-                borderTop: 'solid 1px #c0c0c0'
+                borderRight: 'solid 1px rgb(219, 219, 219)',
+                borderTop: 'solid 1px rgb(219, 219, 219)'
             }
         }
 
         if (rowValid && (rowValid.hour_interval.includes('Shift'))) {
             style.textAlign = 'center';
-            style.borderRight = 'solid 1px #f0f0f0';
-            style.borderLeft = 'solid 1px #f0f0f0';
-            style.borderTop = 'solid 1px #f0f0f0';
-            style.backgroundColor = '#f0f0f0';
+            style.borderRight = 'solid 1px rgb(219, 219, 219)';
+            style.borderTop = 'solid 1px rgb(219, 219, 219)';
+            style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
             if (useIndividualValues) {
                 style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset)) ? '#f04c3e' : '#2c973e';
+                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset)) ? '#b80600' : 'green';
                 style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
@@ -55,25 +54,25 @@ const helpers = {
             } else {
                 style.backgroundColor = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset)) ? '#f04c3e' : '#2c973e';
+                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset)) ? '#b80600' : 'green';
                 style.backgroundImage = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
                     (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
                     'url("../arabesque.png")';
             }
-            style.color = 'f0f0f0';
+            style.color = 'white';
 
         } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset)) ? '#f04c3e' : '#2c973e';
+            style.backgroundColor = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset)) ? '#b80600' : 'green';
             style.backgroundImage = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
-            style.color = 'f0f0f0';
+            style.color = 'white';
 
         } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) && rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
 
-            style.backgroundColor = '#f04c3e';
+            style.backgroundColor = '#b80600';
             style.backgroundImage = 'url("../dark-circles.png")';
-            style.color = '#f0f0f0';
+            style.color = 'white';
 
         } else {
             style.whiteSpace = 'normal!important';

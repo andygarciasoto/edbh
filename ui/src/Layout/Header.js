@@ -3,7 +3,7 @@ import './Header.scss';
 import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
 import logo from '../Parker_Hannifin.svg';
-import EYlogo from '../ernst-young-vector-logo.png';
+import EYlogo from '../EY_Logo_White.png';
 import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';
 import MachinePickerCustom from './MachinePicker';
