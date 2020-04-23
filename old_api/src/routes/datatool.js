@@ -215,13 +215,13 @@ router.post('/import_data', upload.single('file'), (req, res) => {
             });
             //create merge sentence with the data extracted from the sheet
             mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-            /*if (config['loginURL'] === 'http://localhost:3000/dashboard') {
-              var log_file = fs.createWriteStream(__dirname + `/log_${worksheet.name}_${moment().format('YYYYMMDDHHmmSS')}.txt`, { flags: 'w' });
-              log_file.write(mergeQuery);
-            }*/
           }
         });
       });
+      /*if (config['loginURL'] === 'http://localhost:3000/dashboard') {
+        var log_file = fs.createWriteStream(__dirname + `/log_${worksheet.name}_${moment().format('YYYYMMDDHHmmSS')}.txt`, { flags: 'w' });
+        log_file.write(mergeQuery);
+      }*/
       console.log(mergeQuery);
       sqlQuery(mergeQuery,
         (err, response) => {
