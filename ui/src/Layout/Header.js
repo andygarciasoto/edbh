@@ -3,7 +3,7 @@ import './Header.scss';
 import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
 import logo from '../Parker_Hannifin.svg';
-import EYlogo from '../EY_Logo_White.png';
+import EYlogo from '../EY_Logo.png';
 import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';
 import MachinePickerCustom from './MachinePicker';
@@ -173,7 +173,6 @@ class Header extends React.Component {
                     <Navbar.Brand><img src={EYlogo} className="App-logo header-side" alt="logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse className="justify-content-end">
-                        {/* {isComponentValid(this.props.user.role, 'sitename') ? */}
                         <Dropdown className="customToogleSite">
                             <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
                                 {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]).asset_name}
@@ -184,7 +183,6 @@ class Header extends React.Component {
                                 </Dropdown.Menu>
                                 : null}
                         </Dropdown>
-                        {/* : null} */}
                         {isComponentValid(this.props.user.role, 'megamenu') ?
                             <span>
                                 <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />

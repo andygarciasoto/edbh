@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './Parker_Hannifin.svg';
-import EYlogo from './ernst-young-vector-logo.png';
+import EYlogo from './EY_Logo_White_Back.jpg';
 import Background from './eDBH_IndustryBackground.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
