@@ -1,8 +1,66 @@
-import { API, AUTH, DATATOOL } from './Constants';
+import { API } from './Constants';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
 const axios = require('axios');
+
+function genericRequest(method, baseURL, route, headers, parameters, body) {
+  return axios({
+    method: method,
+    url: `${baseURL}${route}`,
+    headers: headers,
+    params: parameters,
+    data: body
+  });
+}
+
+async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body) {
+  const res = await axios({
+    method: method,
+    url: `${baseURL}${route}`,
+    headers: headers,
+    params: parameters,
+    data: body
+  })
+    .then(response => {
+      // handle success
+      return response;
+    })
+    .catch(error => {
+      // handle error
+      return error.response;
+    });
+  if (res.status === 200) {
+    if (method === 'get') {
+      return res.data;
+    } else {
+      return res;
+    }
+  } else {
+    if (method === 'get') {
+      return [];
+    } else {
+      return res;
+    }
+  }
+}
+
+function assignValuesToUser(user, newAttributes) {
+  user.first_name = newAttributes.first_name;
+  user.last_name = newAttributes.last_name;
+  user.username = newAttributes.username;
+  user.role = newAttributes.role;
+  user.clock_number = newAttributes.badge;
+  user.site = newAttributes.site;
+  user.site_name = newAttributes.site_name;
+  user.timezone = newAttributes.timezone;
+  user.current_shift = newAttributes.shift_name;
+  user.shift_id = newAttributes.shift_id;
+  user.language = newAttributes.language;
+  user.date_of_shift = newAttributes.date_of_shift;
+  user.current_date_time = newAttributes.current_date_time;
+  return user;
+}
 
 function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);
@@ -277,5 +335,8 @@ export {
   BuildGet,
   convertNumber,
   getDateAccordingToShifts,
-  getCurrentShift
+  getCurrentShift,
+  genericRequest,
+  getResponseFromGeneric,
+  assignValuesToUser
 }

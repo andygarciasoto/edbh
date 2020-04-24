@@ -24,8 +24,8 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  BuildGet,
-  getDateAccordingToShifts
+  getDateAccordingToShifts,
+  getResponseFromGeneric
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
@@ -35,7 +35,6 @@ import $ from 'jquery';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
-const axios = require('axios');
 
 const modalStyle = {
   content: {
@@ -265,68 +264,54 @@ class DashboardOne extends React.Component {
 
         let hr = moment().tz(props.user.timezone).hours();
 
-        let requestArray = [];
+        let responseArray = [];
 
         _.forEach(props.user.shifts, shift => {
           let param = {
-            params: {
-              mc: filter[0],
-              dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-              sf: shift.shift_id,
-              hr: hr,
-              st: props.user.site
-            }
+            mc: filter[0],
+            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+            sf: shift.shift_id,
+            hr: hr,
+            st: props.user.site
           }
-          requestArray.push(BuildGet(`${API}/data`, param));
+          responseArray.push(getResponseFromGeneric('get', API, '/data', {}, param, {}));
         });
 
-
         const parameters = {
-          params: {
-            mc: filter[0],
-            dt: formatDate(filter[1]).split("-").join(""),
-            sf: mapShift(filter[2]),
-            hr: hr
-          }
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: mapShift(filter[2]),
+          hr: hr
         };
-        requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
-        requestArray.push(BuildGet(`${API}/uom_asset`, parameters));
+        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}));
+        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}));
 
-        let _this = this;
-
-        axios.all(requestArray).then(
-          axios.spread((...responses) => {
-
-            let data = [];
-            _.forEach(responses, (response, index) => {
-              if (index < (responses.length - 2)) {
-                let shift = {
-                  'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-                  'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
-                  'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                  'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
-                };
-                if (data === []) {
-                  data = _.concat([shift], response.data);
-                } else {
-                  data = _.concat(data, [shift], response.data);
-                }
+        Promise.all(responseArray).then(responses => {
+          let data = [];
+          _.forEach(responses, (res, index) => {
+            if (index < (responses.length - 2)) {
+              let shift = {
+                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+                'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
+                'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
+              };
+              if (data === []) {
+                data = _.concat([shift], res);
+              } else {
+                data = _.concat(data, [shift], res);
               }
-            });
+            }
+          });
 
-            let comments = responses[responses.length - 2].data;
-            let uom_asset = responses[responses.length - 1].data;
+          let comments = responses[responses.length - 2] || [];
+          let uom_asset = responses[responses.length - 1] || [];
 
-            _this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
-
-          })
-        ).catch(function (error) {
-          console.log(error);
+          this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
         });
       }
     } else {
       let queryItem = Object.assign({}, props.search);
-      // eslint-disable-next-line no-self-assign
       queryItem["dt"] = newDate;
       let parameters = $.param(queryItem);
       props.history.push(`${props.history.location.pathname}?${parameters}`);
@@ -334,7 +319,7 @@ class DashboardOne extends React.Component {
 
   }
 
-  loadDataCurrentShift(filter, props) {
+  async loadDataCurrentShift(filter, props) {
     const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
@@ -368,57 +353,26 @@ class DashboardOne extends React.Component {
       });
 
       const parameters = {
-        params: {
-          mc: filter[0],
-          dt: formatDate(filter[1]).split("-").join(""),
-          sf: sf.shift_id || props.user.shift_id,
-          hr: moment().tz(props.user.timezone).hours(),
-          st: props.user.site
-        }
+        mc: filter[0],
+        dt: formatDate(filter[1]).split("-").join(""),
+        sf: sf.shift_id || props.user.shift_id,
+        hr: moment().tz(props.user.timezone).hours(),
+        st: props.user.site
       }
 
-      let requestData = [
-        BuildGet(`${API}/data`, parameters),
-        BuildGet(`${API}/uom_asset`, parameters)
-      ];
+      let data = await getResponseFromGeneric('get', API, '/data', {}, parameters, {}) || [];
+      let uom_asset = await getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}) || [];
+      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}) || [];
 
-      let requestIntershift = [
-        BuildGet(`${API}/intershift_communication`, parameters)];
+      let alertModalOverProd = false;
+      let alertMessageOverProd = '';
+      if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+        (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
+        alertModalOverProd = true;
+        alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+      }
 
-      let _this = this;
-
-      axios.all(requestData).then(
-        axios.spread((responseData, responseAssetUOM) => {
-
-          let data = responseData.data;
-          let uom_asset = responseAssetUOM.data;
-
-          let alertModalOverProd = false;
-          let alertMessageOverProd = '';
-          if (data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
-            (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
-            alertModalOverProd = true;
-            alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
-          }
-
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset, alertModalOverProd, alertMessageOverProd });
-
-        })
-      ).catch(function (error) {
-        console.log(error);
-      });
-
-      axios.all(requestIntershift).then(
-        axios.spread((responseIntershift) => {
-
-          let comments = responseIntershift.data;
-
-          _this.setState({ comments });
-
-        })
-      ).catch(function (error) {
-        console.log(error);
-      });
+      this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset, alertModalOverProd, alertMessageOverProd, comments });
     }
   }
 

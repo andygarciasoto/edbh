@@ -3,7 +3,6 @@ import { Row, Col } from 'react-bootstrap';
 import '../Layout/Header.scss';
 import { DATATOOL } from '../Utils/Constants';
 import { saveAs } from 'file-saver';
-import Spinner from '../Spinner';
 import ConfigurationTab from '../Layout/ConfigurationTab';
 import * as axios from 'axios';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
