@@ -427,6 +427,16 @@ class DashboardOne extends React.Component {
                       }
                       : {}
                   }}
+                  getTdProps={(state, rowInfo, column) => {
+                    return {
+                      onClick: () => {
+                        this.clickWholeCell(rowInfo, column)
+                      },
+                      style: {
+                        cursor: rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
+                      }
+                    }
+                  }}
                   sortable={false}
                   data={data}
                   columns={columns}
