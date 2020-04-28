@@ -1,10 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { Form, Button } from 'react-bootstrap';
-import ConfirmModal from './ConfirmModal';
-import ErrorModal from './ErrorModal';
+import MessageModal from './MessageModal';
 import LoadingModal from './LoadingModal';
-import { sendPut } from '../Utils/Requests';
+import { getResponseFromGeneric } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
 import './CommentsModal.scss';
 
 class ScrapModal extends React.Component {
@@ -22,9 +22,10 @@ class ScrapModal extends React.Component {
             adjusted_actual: 0,
             errorMessage: '',
             isOpen: props.isOpen,
-            modal_confirm_IsOpen: false,
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: '',
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false
         }
     }
 
@@ -64,24 +65,19 @@ class ScrapModal extends React.Component {
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name
         }
-        this.setState({ modal_loading_IsOpen: true }, () => {
-            const response = sendPut({
-                ...data
-            }, '/scrap_values')
-            response.then((res) => {
-                if (res !== 200 || !res) {
-                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
-                } else {
-                    this.setState({ request_status: res, modal_loading_IsOpen: false });
-                    this.props.Refresh(this.props.parentData);
-                    this.props.onRequestClose();
-                }
-            })
-        })
+        this.setState({ modal_loading_IsOpen: true }, async () => {
+            let res = await getResponseFromGeneric('put', API, '/scrap_values', {}, {}, data);
+            if (res.status !== 200) {
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' });
+            } else {
+                this.props.Refresh(this.props.parentData);
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Value was inserted' });
+            }
+        });
     }
 
     closeModal = () => {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ modal_message_isOpen: false, modal_loading_IsOpen: false });
         this.props.onRequestClose();
     }
 
@@ -145,13 +141,11 @@ class ScrapModal extends React.Component {
                         <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={this.props.readOnly} onClick={this.submit}>{this.props.t('Submit')}</Button>
                         {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                     </Modal>
-                    <ConfirmModal
-                        isOpen={this.state.modal_confirm_IsOpen}
+                    <MessageModal
+                        isOpen={this.state.modal_message_isOpen}
                         onRequestClose={this.closeModal}
-                        contentLabel="Example Modal"
-                        shouldCloseOnOverlayClick={false}
-                        message={'Value was inserted'}
-                        title={'Request Successful'}
+                        type={this.state.modal_type}
+                        message={this.state.modal_message}
                         t={this.props.t}
                     />
                     <LoadingModal
@@ -159,13 +153,6 @@ class ScrapModal extends React.Component {
                         onRequestClose={this.closeModal}
                         contentLabel="Example Modal"
                         t={this.props.t}
-                    />
-                    <ErrorModal
-                        isOpen={this.state.modal_error_IsOpen}
-                        onRequestClose={this.closeModal}
-                        contentLabel="Example Modal"
-                        t={this.props.t}
-                        message={this.state.errorMessage}
                     />
                 </React.Fragment>
                 : null

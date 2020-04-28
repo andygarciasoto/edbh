@@ -7,7 +7,7 @@ import { API } from '../Utils/Constants';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
-import { sendPost, getCurrentTime, formatDateWithTime, BuildGet } from '../Utils/Requests';
+import { getCurrentTime, formatDateWithTime, getResponseFromGeneric } from '../Utils/Requests';
 
 
 class CommentsModal extends React.Component {
@@ -29,26 +29,17 @@ class CommentsModal extends React.Component {
         }
     }
 
-    loadData(props) {
+    async loadData(props) {
         const parameters = {
-            params: {
-                dxh_data_id: props.currentRow.dxhdata_id
-            }
+            dxh_data_id: props.currentRow.dxhdata_id
         }
-        let requestData = BuildGet(`${API}/comments_dxh_data`, parameters);
-        let _this = this;
-        this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
-            requestData.then((response) => {
-                _this.setState({ comments: response.data, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
-            }).catch(function (error) {
-                _this.setState({ comments: [], modal_loading_IsOpen: false })
-            });
-        });
+        let res = await getResponseFromGeneric('get', API, '/comments_dxh_data', {}, parameters, {}) || [];
+        this.setState({ comments: res, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
     }
 
     submitComment = (e) => {
-        this.setState({ modal_loading_IsOpen: true }, () => {
-            const response = sendPost({
+        this.setState({ modal_loading_IsOpen: true }, async () => {
+            const data = {
                 first_name: this.props.user.first_name,
                 last_name: this.props.user.last_name,
                 comment: this.state.value,
@@ -56,17 +47,17 @@ class CommentsModal extends React.Component {
                 row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
                 timestamp: getCurrentTime(this.props.user.timezone),
                 asset_code: this.props.parentData[0]
-            }, '/dxh_new_comment')
-            response.then((res) => {
-                if (res !== 200 || !res) {
-                    this.setState({ modal_error_IsOpen: true })
-                } else {
-                    this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                }
-                this.props.Refresh(this.props.parentData);
-                this.closeCommentModal();
-            })
-        })
+            };
+
+            let res = await getResponseFromGeneric('post', API, '/dxh_new_comment', {}, {}, data);
+            if (res.status !== 200) {
+                this.setState({ modal_error_IsOpen: true });
+            } else {
+                this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false });
+            }
+            this.props.Refresh(this.props.parentData);
+            this.closeCommentModal();
+        });
     }
 
     closeCommentModal = () => {
@@ -92,11 +83,9 @@ class CommentsModal extends React.Component {
             <React.Fragment>
                 <Modal
                     isOpen={this.props.isOpen}
-                    //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={() => this.closeCommentModal()}
                     style={styles}
                     contentLabel="Example Modal">
-                    {/* <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span> */}
 
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
                     <Table striped bordered hover>

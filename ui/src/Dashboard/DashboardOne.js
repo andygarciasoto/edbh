@@ -25,16 +25,19 @@ import {
   getCurrentTime,
   formatNumber,
   getDateAccordingToShifts,
+  genericRequest,
   getResponseFromGeneric
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
 import dashboardHelper from '../Utils/DashboardHelper';
+import MessageForm from '../Layout/MessageModal';
 import $ from 'jquery';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
+const axios = require('axios');
 
 const modalStyle = {
   content: {
@@ -44,6 +47,7 @@ const modalStyle = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    position: 'fixed'
   },
   overlay: {
     backgroundColor: 'rgba(0,0,0, 0.6)'
@@ -103,7 +107,10 @@ class DashboardOne extends React.Component {
       signOffModalType: '',
       readOnly: false,
       alertModalOverProd: false,
-      alertMessageOverProd: ''
+      alertMessageOverProd: '',
+      modal_message_Is_Open: false,
+      messageModalType: '',
+      messageModalMessage: ''
     }
   }
 
@@ -151,7 +158,8 @@ class DashboardOne extends React.Component {
       modal_scrap_IsOpen: false,
       errorModal: false,
       readOnly: false,
-      alertModalOverProd: false
+      alertModalOverProd: false,
+      modal_message_Is_Open: false
     });
     if (!this.state.summary) {
       this.props.closeOrderModal(false);
@@ -360,20 +368,40 @@ class DashboardOne extends React.Component {
         st: props.user.site
       }
 
-      let data = await getResponseFromGeneric('get', API, '/data', {}, parameters, {}) || [];
-      let uom_asset = await getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}) || [];
+      let requestArray = [
+        genericRequest('get', API, '/data', {}, parameters, {}),
+        genericRequest('get', API, '/uom_asset', {}, parameters, {}),
+      ];
+
+      axios.all(requestArray).then(
+        axios.spread((...responses) => {
+          let data = responses[0].data;
+          let uom_asset = responses[1].data;
+          if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+            (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
+            alertModalOverProd = true;
+            alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+          }
+          this.setState({ data, uom_asset });
+        })
+      );
+
       let comments = await getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}) || [];
 
       let alertModalOverProd = false;
       let alertMessageOverProd = '';
-      if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
-        (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
-        alertModalOverProd = true;
-        alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
-      }
 
-      this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset, alertModalOverProd, alertMessageOverProd, comments });
+
+      this.setState({ signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd, comments });
     }
+  }
+
+  openMessageModal = (type, message) => {
+    this.setState({
+      modal_message_Is_Open: true,
+      messageModalType: type,
+      messageModalMessage: message
+    });
   }
 
   render() {
@@ -467,6 +495,7 @@ class DashboardOne extends React.Component {
             parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
             timezone={this.state.timezone}
             readOnly={this.state.summary}
+            openMessageModal={this.openMessageModal}
           />
         </div>
         <ManualEntryModal
@@ -548,6 +577,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           readOnly={this.state.readOnly || this.state.summary}
+          openMessageModal={this.openMessageModal}
         />
         <ErrorModal
           isOpen={this.state.errorModal}
@@ -565,6 +595,13 @@ class DashboardOne extends React.Component {
           contentLabel="Example Modal"
           t={t}
           message={this.state.alertMessageOverProd}
+        />
+        <MessageForm
+          isOpen={this.state.modal_message_Is_Open}
+          onRequestClose={this.closeModal}
+          type={this.state.messageModalType}
+          message={this.state.messageModalMessage}
+          t={t}
         />
       </React.Fragment >
     );

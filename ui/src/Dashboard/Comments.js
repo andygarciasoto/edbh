@@ -44,9 +44,11 @@ class Comments extends React.Component {
 
             let res = await getResponseFromGeneric('put', API, '/intershift_communication', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true })
+                this.props.openMessageModal('Error', 'Fail on insert the new comment intershift communication.');
+                this.setState({ modal_loading_IsOpen: false });
             } else {
-                this.setState({ modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true })
+                this.props.openMessageModal('Success', 'Success on insert the new comment intershift communication.');
+                this.setState({ modal_loading_IsOpen: false });
             }
             this.setState({ value: '' });
             this.props.Refresh(this.props.parentData);
