@@ -4,11 +4,12 @@ import './ErrorModal.scss';
 import moment from 'moment-timezone';
 import { Button } from 'react-bootstrap';
 import * as _ from 'lodash';
+import { API } from '../Utils/Constants';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
 import ErrorModal from '../Layout/ErrorModal';
 import ValidateModal from '../Layout/ValidateModal';
-import { sendPut, getCurrentTime, formatDateWithTime, convertNumber } from '../Utils/Requests';
+import { getResponseFromGeneric, getCurrentTime, formatDateWithTime, convertNumber } from '../Utils/Requests';
 
 
 class SignoffModal extends React.Component {
@@ -70,42 +71,34 @@ class SignoffModal extends React.Component {
             row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
             timestamp: getCurrentTime(this.props.user.timezone),
         }
-        this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, () => {
-            const response = sendPut({
-                ...data
-            }, `/${this.state.signOffRole}_sign_off`)
-            response.then((res) => {
-                if (res !== 200 || !res) {
-                    this.setState({
-                        modal_loading_IsOpen: false,
-                        modal_error_IsOpen: true,
-                        modal_validate_IsOpen: false,
-                        errorMessage: 'Invalid Clock Number'
-                    })
-                } else {
-                    if (data.dxh_data_id === null) {
-                        data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
-                        this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
-                            const resp = sendPut({
-                                ...data
-                            }, '/production_data')
-                            resp.then((res) => {
-                                if (res !== 200 || !res) {
-                                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
-                                }
-                                this.setState({ actual: '' });
-                                this.props.Refresh(this.props.parentData);
-                                this.props.onRequestClose();
-                            })
-                        })
-                    }
-                }
+        this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, async () => {
+            let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+            if (res.status !== 200) {
                 this.setState({
-                    request_status: res,
                     modal_loading_IsOpen: false,
-                    modal_confirm_IsOpen: true,
-                    modal_validate_IsOpen: false
+                    modal_error_IsOpen: true,
+                    modal_validate_IsOpen: false,
+                    errorMessage: 'Invalid Clock Number'
                 })
+            } else {
+                if (data.dxh_data_id === null) {
+                    data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
+                    this.setState({ modal_loading_IsOpen: true, isOpen: false }, async () => {
+                        let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+                        if (res.status !== 200) {
+                            this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                        }
+                        this.setState({ actual: '' });
+                        this.props.Refresh(this.props.parentData);
+                        this.props.onRequestClose();
+                    })
+                }
+            }
+            this.setState({
+                request_status: res,
+                modal_loading_IsOpen: false,
+                modal_confirm_IsOpen: true,
+                modal_validate_IsOpen: false
             })
             this.props.Refresh(this.props.parentData);
             this.props.onRequestClose();
@@ -131,47 +124,42 @@ class SignoffModal extends React.Component {
                 row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
                 timestamp: getCurrentTime(this.props.timezone),
             }
-            this.setState({ modal_loading_IsOpen: true, isOpen: false }, () => {
-                const response = sendPut({
-                    ...data
-                }, `/${this.state.signOffRole}_sign_off`)
-                response.then((res) => {
-                    if (res !== 200 || !res) {
-                        this.setState({
-                            modal_loading_IsOpen: false,
-                            modal_error_IsOpen: true,
-                            modal_validate_IsOpen: false
-                        })
-                    } else {
-                        if (data.dxh_data_id === null) {
-                            data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
-                            this.setState({ modal_loading_IsOpen: true }, () => {
-                                const resp = sendPut({
-                                    ...data
-                                }, '/production_data')
-                                resp.then((res) => {
-                                    if (res !== 200 || !res) {
-                                        this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
-                                    }
-                                    this.setState({ actual: '' });
-                                    this.props.Refresh(this.props.parentData);
-                                    this.props.onRequestClose();
-                                })
-                            })
-                        }
-                        localStorage.setItem("signoff", false);
-                        var currentHour = moment(rowData.started_on_chunck).hours();
-                        localStorage.setItem("currentHour", currentHour);
-                        this.setState({
-                            request_status: res,
-                            modal_loading_IsOpen: false,
-                            modal_confirm_IsOpen: true,
-                            modal_validate_IsOpen: false
+            this.setState({ modal_loading_IsOpen: true, isOpen: false }, async () => {
+                let res = await getResponseFromGeneric('put', API, `/${this.state.signOffRole}_sign_off`, {}, {}, data);
+                if (res.status !== 200) {
+                    this.setState({
+                        modal_loading_IsOpen: false,
+                        modal_error_IsOpen: true,
+                        modal_validate_IsOpen: false
+                    })
+                } else {
+                    if (data.dxh_data_id === null) {
+                        data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
+                        this.setState({ modal_loading_IsOpen: true }, async () => {
+                            let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+
+
+                            if (res.status !== 200) {
+                                this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                            }
+                            this.setState({ actual: '' });
+                            this.props.Refresh(this.props.parentData);
+                            this.props.onRequestClose();
+
                         })
                     }
-                    this.props.Refresh(this.props.parentData);
-                    this.props.onRequestClose();
-                })
+                    localStorage.setItem("signoff", false);
+                    var currentHour = moment(rowData.started_on_chunck).hours();
+                    localStorage.setItem("currentHour", currentHour);
+                    this.setState({
+                        request_status: res,
+                        modal_loading_IsOpen: false,
+                        modal_confirm_IsOpen: true,
+                        modal_validate_IsOpen: false
+                    })
+                }
+                this.props.Refresh(this.props.parentData);
+                this.props.onRequestClose();
             })
         } else if (this.state.signOffRole === 'Supervisor') {
             this.setState({ isOpen: false, modal_validate_IsOpen: true });

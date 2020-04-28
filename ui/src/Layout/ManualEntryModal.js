@@ -4,7 +4,8 @@ import { Button, Row, Col } from 'react-bootstrap';
 import ReactSelect from 'react-select';
 import * as _ from 'lodash';
 import './ManualEntryModal.scss';
-import { sendPut, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
+import { getResponseFromGeneric, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
 import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
 import ErrorModal from './ErrorModal';
@@ -62,43 +63,37 @@ class ManualEntryModal extends React.Component {
                 data.setup_time = this.state.setup_time;
             }
 
-            this.setState({ modal_loading_IsOpen: true }, () => {
-                const response = sendPut(data, '/create_order_data');
-                response.then((res) => {
-                    if (res !== 200) {
-                        this.setState({ modal_error_IsOpen: true })
-                    } else {
-                        this.setState({ modal_loading_IsOpen: true }, () => {
-                            const resp = sendPut({
-                                ...data
-                            }, '/production_data')
-                            resp.then((res) => {
-                                if (res !== 200 || !res) {
-                                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
-                                }
-                                this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                                this.props.Refresh(this.props.parentData);
-                                this.props.onRequestClose();
-                            })
-                        })
-                        this.setState({
-                            request_status: res,
-                            modal_loading_IsOpen: false,
-                            modal_confirm_IsOpen: true,
-                            modal_validate_IsOpen: false
-                        })
-                    }
-                    this.props.Refresh(this.props.parentData);
-                    this.setState({
-                        part_number: '',
-                        quantity: 1,
-                        uom: '',
-                        routed_cycle_time: '',
-                        setup_time: '',
-                        production_status: 'setup',
+            this.setState({ modal_loading_IsOpen: true }, async () => {
+                let res = await getResponseFromGeneric('put', API, '/create_order_data', {}, {}, data);
+                if (res.status !== 200) {
+                    this.setState({ modal_error_IsOpen: true })
+                } else {
+                    this.setState({ modal_loading_IsOpen: true }, async () => {
+                        let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+                        if (res.status !== 200 || !res) {
+                            this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                        }
+                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                        this.props.Refresh(this.props.parentData);
+                        this.props.onRequestClose();
                     })
-                    this.props.onRequestClose();
+                    this.setState({
+                        request_status: res,
+                        modal_loading_IsOpen: false,
+                        modal_confirm_IsOpen: true,
+                        modal_validate_IsOpen: false
+                    })
+                }
+                this.props.Refresh(this.props.parentData);
+                this.setState({
+                    part_number: '',
+                    quantity: 1,
+                    uom: '',
+                    routed_cycle_time: '',
+                    setup_time: '',
+                    production_status: 'setup',
                 })
+                this.props.onRequestClose();
             });
         } else {
             let errorMessage = 'Missing required fields';
