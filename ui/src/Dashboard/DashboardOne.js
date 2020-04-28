@@ -131,20 +131,6 @@ class DashboardOne extends React.Component {
     }
   }
 
-  showValidateDataModal = (data) => {
-    if (data) {
-      this.setState({
-        modal_order_IsOpen: false,
-        modal_order_two_IsOpen: true,
-        orderTwo_data: data[0]
-      })
-    } else {
-      this.setState({
-        modal_error_IsOpen: true,
-      })
-    }
-  }
-
   closeModal = () => {
     this.setState({
       modal_authorize_IsOpen: false,
@@ -153,7 +139,6 @@ class DashboardOne extends React.Component {
       modal_timelost_IsOpen: false,
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
-      modal_order_two_IsOpen: false,
       modal_manualentry_IsOpen: false,
       modal_scrap_IsOpen: false,
       errorModal: false,
@@ -557,7 +542,6 @@ class DashboardOne extends React.Component {
         />
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}
-          isOpenTwo={this.state.modal_order_two_IsOpen}
           open={this.openModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
@@ -565,7 +549,6 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          showValidateDataModal={this.showValidateDataModal}
         />
         <ScrapModal
           isOpen={this.state.modal_scrap_IsOpen}
