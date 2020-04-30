@@ -52,6 +52,7 @@ function assignValuesToUser(user, newAttributes) {
   user.role = newAttributes.role;
   user.clock_number = newAttributes.badge;
   user.site = newAttributes.site;
+  user.max_regression = newAttributes.max_regression;
   user.site_name = newAttributes.site_name;
   user.timezone = newAttributes.timezone;
   user.current_shift = newAttributes.shift_name;
