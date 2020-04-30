@@ -72,7 +72,7 @@ class SignoffModal extends React.Component {
             timestamp: getCurrentTime(this.props.user.timezone),
         }
         this.setState({ modal_loading_IsOpen: true, modal_validate_IsOpen: false, isOpen: false }, async () => {
-            let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+            let res = await getResponseFromGeneric('put', API, `/${this.state.signOffRole}_sign_off`, {}, {}, data);
             if (res.status !== 200) {
                 this.setState({
                     modal_loading_IsOpen: false,
