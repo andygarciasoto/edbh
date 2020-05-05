@@ -253,7 +253,7 @@ export function getValuesFromHeaderTable(headers, header, value) {
                 newValue = `'${value}'`;
                 break;
             case 'BIT':
-                newValue = value === 'TRUE' ? 1 : 0;
+                newValue = value ? 1 : 0;
                 break;
             default:
                 newValue = value;
