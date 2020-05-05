@@ -4,9 +4,8 @@ import { Form, Button, Table, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
 import { API } from '../Utils/Constants';
-import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
-import ErrorModal from '../Layout/ErrorModal';
+import MessageModal from './MessageModal';
 import { getCurrentTime, formatDateWithTime, getResponseFromGeneric } from '../Utils/Requests';
 
 
@@ -17,9 +16,10 @@ class CommentsModal extends React.Component {
             value: '',
             comments: [],
             actualDxH_Id: null,
-            modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: ''
         }
     }
 
@@ -51,9 +51,9 @@ class CommentsModal extends React.Component {
 
             let res = await getResponseFromGeneric('post', API, '/dxh_new_comment', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_error_IsOpen: true });
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Comment not created' });
             } else {
-                this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false });
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Comment was inserted' });
             }
             this.props.Refresh(this.props.parentData);
             this.closeCommentModal();
@@ -66,7 +66,8 @@ class CommentsModal extends React.Component {
     }
 
     closeModal = () => {
-        this.setState({ value: '', modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ value: '', modal_message_isOpen: false });
+        
     }
 
     onChange = (e) => {
@@ -131,25 +132,15 @@ class CommentsModal extends React.Component {
                         </Col>
                     </Row>
                 </Modal>
-                <ConfirmModal
-                    isOpen={this.state.modal_confirm_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                <MessageModal
+                    isOpen={this.state.modal_message_isOpen}
                     onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    shouldCloseOnOverlayClick={false}
-                    message={'Comment was inserted'}
-                    title={'Request Successful'}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
                     t={this.props.t}
                 />
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    t={this.props.t}
-                />
-                <ErrorModal
-                    isOpen={this.state.modal_error_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"

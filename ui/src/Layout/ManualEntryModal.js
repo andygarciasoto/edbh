@@ -6,9 +6,8 @@ import * as _ from 'lodash';
 import './ManualEntryModal.scss';
 import { API } from '../Utils/Constants';
 import { getResponseFromGeneric, formatDateWithTime, getCurrentTime } from '../Utils/Requests';
-import ConfirmModal from './ConfirmModal';
 import LoadingModal from './LoadingModal';
-import ErrorModal from './ErrorModal';
+import MessageModal from './MessageModal';
 
 class ManualEntryModal extends React.Component {
     constructor(props) {
@@ -29,10 +28,11 @@ class ManualEntryModal extends React.Component {
             validationMessage: '',
             allowSubmit: true,
             isOpen: false,
-            modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
-            site: props.user.site
+            site: props.user.site,
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: ''
         }
     }
 
@@ -66,17 +66,17 @@ class ManualEntryModal extends React.Component {
             this.setState({ modal_loading_IsOpen: true }, async () => {
                 let res = await getResponseFromGeneric('put', API, '/create_order_data', {}, {}, data);
                 if (res.status !== 200) {
-                    this.setState({ modal_error_IsOpen: true })
+                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Order not created' });
                 } else {
                     this.setState({ modal_loading_IsOpen: true }, async () => {
                         let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
                         if (res.status !== 200 || !res) {
-                            this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                            this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Production row not created' });
                         }
-                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                        this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Manual Entry Succesfully Inserted' });
                         this.props.Refresh(this.props.parentData);
                         this.props.onRequestClose();
-                    })
+                    });
                     this.setState({
                         request_status: res,
                         modal_loading_IsOpen: false,
@@ -96,8 +96,7 @@ class ManualEntryModal extends React.Component {
                 this.props.onRequestClose();
             });
         } else {
-            let errorMessage = 'Missing required fields';
-            this.setState({ errorMessage, allowSubmit: false, modal_error_IsOpen: true });
+            this.setState({ allowSubmit: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Missing required fields' });
         }
     }
 
@@ -148,7 +147,7 @@ class ManualEntryModal extends React.Component {
     }
 
     closeModal = () => {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ modal_message_isOpen: false });
     }
 
     render() {
@@ -223,30 +222,18 @@ class ManualEntryModal extends React.Component {
                             onClick={this.props.onRequestClose}>{t('Close')}</Button>
                     </div>
                 </Modal>
-                <ConfirmModal
-                    isOpen={this.state.modal_confirm_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                <MessageModal
+                    isOpen={this.state.modal_message_isOpen}
                     onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    shouldCloseOnOverlayClick={false}
-                    message={'Manual Entry Succesfully Inserted'}
-                    title={'Request Successful'}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
                     t={this.props.t}
                 />
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     t={this.props.t}
-                />
-                <ErrorModal
-                    isOpen={this.state.modal_error_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    t={this.props.t}
-                    message={this.state.errorMessage}
                 />
             </React.Fragment >
         )

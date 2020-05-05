@@ -42,7 +42,7 @@ class OrderModal extends React.Component {
                 if (!res) {
                     this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Please try again or try with a different order' });
                 } else {
-                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Order was inserted' });
+                    this.closeModal();
                 }
                 this.setState({ value: '' });
             })

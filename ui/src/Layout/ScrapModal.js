@@ -20,12 +20,11 @@ class ScrapModal extends React.Component {
             setup_scrap: 0,
             other_scrap: 0,
             adjusted_actual: 0,
-            errorMessage: '',
             isOpen: props.isOpen,
             modal_message_isOpen: false,
             modal_type: '',
             modal_message: '',
-            modal_loading_IsOpen: false,
+            modal_loading_IsOpen: false
         }
     }
 
