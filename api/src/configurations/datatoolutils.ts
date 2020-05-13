@@ -180,8 +180,8 @@ export function getParametersOfTable(tableName, siteId) {
         case 'AssetDisplaySystem':
             parametersObject.extraColumns = ', a.asset_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code`;
-            parametersObject.matchParameters = 's.displaysystem_name = t.displaysystem_name AND s.asset_id = t.asset_id';
-            parametersObject.updateSentence = `t.[displaysystem_name] = s.[displaysystem_name], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+            parametersObject.matchParameters = 's.displaysystem_name = t.displaysystem_name';
+            parametersObject.updateSentence = `t.[asset_id] = s.[asset_id], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
             parametersObject.insertSentence = `([displaysystem_name], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[displaysystem_name], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id])`
             break;
         case 'DTReason':
