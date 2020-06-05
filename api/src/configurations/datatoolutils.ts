@@ -180,8 +180,8 @@ export function getParametersOfTable(tableName, siteId) {
         case 'AssetDisplaySystem':
             parametersObject.extraColumns = ', a.asset_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code`;
-            parametersObject.matchParameters = 's.displaysystem_name = t.displaysystem_name';
-            parametersObject.updateSentence = `t.[asset_id] = s.[asset_id], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+            parametersObject.matchParameters = 's.asset_id = t.asset_id';
+            parametersObject.updateSentence = `t.[displaysystem_name] = s.[displaysystem_name], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
             parametersObject.insertSentence = `([displaysystem_name], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[displaysystem_name], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id])`
             break;
         case 'DTReason':
@@ -208,8 +208,8 @@ export function getParametersOfTable(tableName, siteId) {
         case 'Tag':
             parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code JOIN dbo.Asset aas ON s.site_code = aas.asset_code AND aas.asset_level = 'Site'`;
-            parametersObject.matchParameters = 's.tag_code = t.tag_code AND s.UOM_code = t.UOM_code AND s.asset_id = t.asset_id AND s.site_id = t.site_id';//consultar columna con Andres
-            parametersObject.updateSentence = `t.[tag_name] = s.[tag_name], t.[tag_description] = s.[tag_description], t.[tag_group] = s.[tag_group], t.[datatype] = s.[datatype], t.[tag_type] = s.[tag_type], t.[rollover_point] = s.[rollover_point], t.[aggregation] = s.[aggregation], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[max_change] = s.[max_change]`;
+            parametersObject.matchParameters = 's.asset_id = t.asset_id AND s.site_id = t.site_id';
+            parametersObject.updateSentence = `t.[tag_code] = s.[tag_code], t.[tag_name] = s.[tag_name], t.[tag_description] = s.[tag_description], t.[tag_group] = s.[tag_group], t.[datatype] = s.[datatype], t.[tag_type] = s.[tag_type], t.[UOM_code] = s.[UOM_code], t.[rollover_point] = s.[rollover_point], t.[aggregation] = s.[aggregation], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[max_change] = s.[max_change]`;
             parametersObject.insertSentence = `([tag_code], [tag_name], [tag_description], [tag_group], [datatype], [tag_type], [UOM_code], [rollover_point], [aggregation], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [site_id], [asset_id], [max_change]) VALUES (s.[tag_code], s.[tag_name], s.[tag_description], s.[tag_group], s.[datatype], s.[tag_type], s.[UOM_code], s.[rollover_point], s.[aggregation], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[site_id], s.[asset_id], s.[max_change])`;
             break;
         case 'CommonParameters':
