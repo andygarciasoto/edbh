@@ -36,6 +36,8 @@ export class CommentDataService {
         if (!params.comment) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
+        const com = params.comment;
+        var comment = com.replace(/'/g,"''");
         const asset_code = params.asset_code ? params.asset_code : undefined;
         const update = params.comment_id ? params.comment_id : 0;
         const timestamp = moment(new Date(params.timestamp)).format(this.format);
@@ -58,16 +60,16 @@ export class CommentDataService {
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     let dxh_data_id = dxhData[0].dxhdata_id;
                     if (params.clocknumber) {
-                        await this.commentdatarepository.putCommentDataByClocknumber(dxh_data_id, params.comment, params.clocknumber, timestamp, update);
+                        await this.commentdatarepository.putCommentDataByClocknumber(dxh_data_id, comment, params.clocknumber, timestamp, update);
                     } else {
-                        await this.commentdatarepository.putCommentDataByUsername(dxh_data_id, params.comment, params.first_name, params.last_name, timestamp, update);
+                        await this.commentdatarepository.putCommentDataByUsername(dxh_data_id, comment, params.first_name, params.last_name, timestamp, update);
                     }
                 }
             } else {
                 if (params.clocknumber) {
-                    await this.commentdatarepository.putCommentDataByClocknumber(params.dxh_data_id, params.comment, params.clocknumber, timestamp, update);
+                    await this.commentdatarepository.putCommentDataByClocknumber(params.dxh_data_id, comment, params.clocknumber, timestamp, update);
                 } else {
-                    await this.commentdatarepository.putCommentDataByUsername(params.dxh_data_id, params.comment, params.first_name, params.last_name, timestamp, update);
+                    await this.commentdatarepository.putCommentDataByUsername(params.dxh_data_id, comment, params.first_name, params.last_name, timestamp, update);
                 }
             }
             return res.status(200).send('Message Entered Succesfully');
