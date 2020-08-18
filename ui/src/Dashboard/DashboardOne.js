@@ -26,7 +26,8 @@ import {
   formatNumber,
   getDateAccordingToShifts,
   genericRequest,
-  getResponseFromGeneric
+  getResponseFromGeneric,
+  getRowsFromShifts
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
@@ -411,6 +412,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
+    const num_rows = getRowsFromShifts(this.props,this.state.summary);
     return (
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
@@ -446,7 +448,7 @@ class DashboardOne extends React.Component {
                         this.clickWholeCell(rowInfo, column)
                       },
                       style: {
-                        cursor: rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
+                        cursor: rowInfo && rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
                       }
                     }
                   }}
@@ -454,7 +456,7 @@ class DashboardOne extends React.Component {
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  pageSize={this.state.summary ? (this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length : (this.state.shifts[0].duration_in_minutes / 60)}
+                  pageSize={num_rows}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}

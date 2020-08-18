@@ -321,6 +321,19 @@ function getCurrentShift(shifts, current_date_time) {
   return currentShift;
 }
 
+function getRowsFromShifts(props, summary) {
+  let rows = 0;
+  if(summary){
+    let totalMinutes = _.sumBy(props.user.shifts, 'duration_in_minutes');
+    rows = (totalMinutes / 60) + props.user.shifts.length;
+  }else{
+    let currentShift = props.search.sf ? props.search.sf : props.user.current_shift;
+    let shift = _.find(props.user.shifts, {shift_name: currentShift});
+    rows = (shift.duration_in_minutes / 60);
+  }
+  return rows;
+}
+
 export {
   getRequest,
   mapShift,
@@ -339,5 +352,6 @@ export {
   getCurrentShift,
   genericRequest,
   getResponseFromGeneric,
-  assignValuesToUser
+  assignValuesToUser,
+  getRowsFromShifts
 }
