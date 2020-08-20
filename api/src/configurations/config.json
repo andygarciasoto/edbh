@@ -17,6 +17,7 @@
         "timezone": "MST",
         "URL": "http://localhost:3000",
         "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
         "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {

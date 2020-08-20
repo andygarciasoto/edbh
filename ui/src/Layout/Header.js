@@ -15,9 +15,8 @@ import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { BuildGet, getCurrentShift } from '../Utils/Requests';
+import { getCurrentShift, getResponseFromGeneric, assignValuesToUser } from '../Utils/Requests';
 import { API } from '../Utils/Constants';
-import axios from 'axios';
 
 
 class Header extends React.Component {
@@ -106,62 +105,42 @@ class Header extends React.Component {
 
     async changeUserInformation(newSite) {
         let user = this.props.user;
+
         const parameters = {
-            params: {
-                site: newSite.Site,
-                user_id: newSite.id
-            }
+            site: newSite.Site,
+            user_id: newSite.id
         };
 
-        let requestData = [
-            BuildGet(`${API}/user_info_login_by_site`, parameters),
-            BuildGet(`${API}/shifts`, parameters),
-            BuildGet(`${API}/machine`, parameters),
-            BuildGet(`${API}/uom_by_site`, parameters)
-        ];
+        let res = await getResponseFromGeneric('get', API, '/user_info_login_by_site', {}, parameters, {}) || [];
+        let newUserValues = res[0] || {};
+        user = assignValuesToUser(user, newUserValues);
 
-        await axios.all(requestData).then(
-            axios.spread(async (responseUser, responseShift, responseMachine, responseUom) => {
-                let newUserValues = responseUser.data[0];
-                user.role = newUserValues.role;
-                user.site = newUserValues.site;
-                user.site_name = newUserValues.site_name;
-                user.timezone = newUserValues.timezone;
-                user.current_shift = newUserValues.shift_name;
-                user.shift_id = newUserValues.shift_id;
-                user.language = newUserValues.language;
-                user.shifts = responseShift.data;
-                user.machines = responseMachine.data;
-                user.date_of_shift = newUserValues.date_of_shift;
-                user.current_date_time = newUserValues.current_date_time;
-                user.uoms = responseUom.data
+        user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, parameters, {}) || [];
+        user.machines = await getResponseFromGeneric('get', API, '/machine', {}, parameters, {}) || [];
+        user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, parameters, {}) || [];
 
-                if (!user.shift_id) {
-                    let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
-                    user.date_of_shift = currentShiftInfo.date_of_shift;
-                    user.current_shift = currentShiftInfo.current_shift;
-                    user.shift_id = currentShiftInfo.shift_id;
-                }
+        if (!user.shift_id) {
+            let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
+            user.date_of_shift = currentShiftInfo.date_of_shift;
+            user.current_shift = currentShiftInfo.current_shift;
+            user.shift_id = currentShiftInfo.shift_id;
+        }
 
-                let search = qs.parse(this.props.history.location.search);
-                let ln = search.ln;
+        let search = qs.parse(this.props.history.location.search);
+        let ln = search.ln;
 
-                this.props.changeCurrentUser(user);
-                await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
-            })
-        ).catch(function (error) {
-            console.log(error);
-        });
+        this.props.changeCurrentUser(user);
+        await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
     }
 
     render() {
 
         const customToogle = React.forwardRef(({ children, onClick }, ref) => (
-            <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name='bars' /></a>
+            <a className='nav-link' href='/' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name='bars' /></a>
         ));
 
         const customToogleSite = React.forwardRef(({ children, onClick }, ref) => (
-            <a className='nav-link' href='#' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
+            <a className='nav-link' href='/' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
         ));
 
         const station = localStorage.getItem('st');

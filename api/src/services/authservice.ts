@@ -34,6 +34,11 @@ export class AuthService {
             res.status(500).json({ message: err.message });
             return;
         }
+
+        if (responseUser[0] === undefined) {
+            return res.redirect(303, this.config.app_section.badLogin);
+        }
+
         let role = responseUser[0].role;
         if (role === 'Supervisor' || role === 'Administrator') {
             localStorage.setItem('user_id', responseUser[0].id);
@@ -105,7 +110,6 @@ export class AuthService {
             localStorage.removeItem('user_badge');
             localStorage.removeItem('user_machine');
             localStorage.removeItem('inactive_timeout_minutes');
-            console.log(jsonwebtoken);
             let jwtx = nJwt.create(jsonwebtoken, config.authentication_section.signingKey);
             jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
             let token = jwtx.compact();
@@ -131,10 +135,11 @@ export class AuthService {
         try {
             responseUser = await this.userrepository.findUserByUsernameAndMachine(params.username, machine);
         } catch (err) {
-            return res.status(500).json({ message: err.message });
+            return res.redirect(303, this.config.app_section.badLoginUser);
         }
-        if (responseUser[0] === null) {
-            return res.redirect(303, this.config.app_section.badLogin);
+
+        if (responseUser[0] === undefined) {
+            return res.redirect(303, this.config.app_section.badLoginUser);
         }
 
         let role = responseUser[0].role;

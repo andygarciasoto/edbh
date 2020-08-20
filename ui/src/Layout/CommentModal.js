@@ -4,10 +4,9 @@ import { Form, Button, Table, Row, Col } from 'react-bootstrap';
 import './CommentsModal.scss';
 import * as _ from 'lodash';
 import { API } from '../Utils/Constants';
-import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
-import ErrorModal from '../Layout/ErrorModal';
-import { sendPost, getCurrentTime, formatDateWithTime, BuildGet } from '../Utils/Requests';
+import MessageModal from './MessageModal';
+import { getCurrentTime, formatDateWithTime, getResponseFromGeneric } from '../Utils/Requests';
 
 
 class CommentsModal extends React.Component {
@@ -17,9 +16,10 @@ class CommentsModal extends React.Component {
             value: '',
             comments: [],
             actualDxH_Id: null,
-            modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: ''
         }
     }
 
@@ -29,44 +29,30 @@ class CommentsModal extends React.Component {
         }
     }
 
-    loadData(props) {
+    async loadData(props) {
         const parameters = {
-            params: {
-                dxh_data_id: props.currentRow.dxhdata_id
-            }
+            dxh_data_id: props.currentRow.dxhdata_id
         }
-        let requestData = BuildGet(`${API}/comments_dxh_data`, parameters);
-        let _this = this;
-        this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
-            requestData.then((response) => {
-                _this.setState({ comments: response.data, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
-            }).catch(function (error) {
-                _this.setState({ comments: [], modal_loading_IsOpen: false })
-            });
-        });
+        let res = await getResponseFromGeneric('get', API, '/comments_dxh_data', {}, parameters, {}) || [];
+        this.setState({ comments: res, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
     }
 
     submitComment = (e) => {
-        this.setState({ modal_loading_IsOpen: true }, () => {
-            const response = sendPost({
-                first_name: this.props.user.first_name,
-                last_name: this.props.user.last_name,
                 comment: this.state.value,
                 dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-                row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
                 timestamp: getCurrentTime(this.props.user.timezone),
                 asset_code: this.props.parentData[0]
-            }, '/dxh_new_comment')
-            response.then((res) => {
-                if (res !== 200 || !res) {
-                    this.setState({ modal_error_IsOpen: true })
-                } else {
-                    this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                }
-                this.props.Refresh(this.props.parentData);
-                this.closeCommentModal();
-            })
-        })
+            };
+
+            let res = await getResponseFromGeneric('post', API, '/dxh_new_comment', {}, {}, data);
+            if (res.status !== 200) {
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Comment not created' });
+            } else {
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Comment was inserted' });
+            }
+            this.props.Refresh(this.props.parentData);
+            this.closeCommentModal();
+        });
     }
 
     closeCommentModal = () => {
@@ -75,7 +61,8 @@ class CommentsModal extends React.Component {
     }
 
     closeModal = () => {
-        this.setState({ value: '', modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ value: '', modal_message_isOpen: false });
+        
     }
 
     onChange = (e) => {
@@ -92,11 +79,9 @@ class CommentsModal extends React.Component {
             <React.Fragment>
                 <Modal
                     isOpen={this.props.isOpen}
-                    //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={() => this.closeCommentModal()}
                     style={styles}
                     contentLabel="Example Modal">
-                    {/* <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span> */}
 
                     <span><h4 style={{ marginLeft: '10px' }}>{t('Comments This Hour')}</h4></span>
                     <Table striped bordered hover>
@@ -138,29 +123,22 @@ class CommentsModal extends React.Component {
                             <Button variant="outline-danger" style={{ marginTop: '10px' }} onClick={() => this.closeCommentModal()}>{t('Cancel')}</Button>
                         </Col>
                         <Col sm={6} md={2}>
+                            <Button variant="outline-danger" style={{ marginTop: '10px' }} onClick={() => this.closeCommentModal()}>{t('Cancel')}</Button>
+                        </Col>
+                        <Col sm={6} md={2}>
                             {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
                         </Col>
                     </Row>
                 </Modal>
-                <ConfirmModal
-                    isOpen={this.state.modal_confirm_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                <MessageModal
+                    isOpen={this.state.modal_message_isOpen}
                     onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    shouldCloseOnOverlayClick={false}
-                    message={'Comment was inserted'}
-                    title={'Request Successful'}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
                     t={this.props.t}
                 />
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    t={this.props.t}
-                />
-                <ErrorModal
-                    isOpen={this.state.modal_error_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"

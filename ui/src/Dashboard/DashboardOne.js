@@ -24,13 +24,16 @@ import {
   mapShift,
   getCurrentTime,
   formatNumber,
-  BuildGet,
-  getDateAccordingToShifts
+  getDateAccordingToShifts,
+  genericRequest,
+  getResponseFromGeneric,
+  getRowsFromShifts
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
 import { SOCKET, API } from '../Utils/Constants';
 import dashboardHelper from '../Utils/DashboardHelper';
+import MessageForm from '../Layout/MessageModal';
 import $ from 'jquery';
 import('moment/locale/es');
 import('moment/locale/it');
@@ -45,6 +48,7 @@ const modalStyle = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    position: 'fixed'
   },
   overlay: {
     backgroundColor: 'rgba(0,0,0, 0.6)'
@@ -104,7 +108,10 @@ class DashboardOne extends React.Component {
       signOffModalType: '',
       readOnly: false,
       alertModalOverProd: false,
-      alertMessageOverProd: ''
+      alertMessageOverProd: '',
+      modal_message_Is_Open: false,
+      messageModalType: '',
+      messageModalMessage: ''
     }
   }
 
@@ -125,20 +132,6 @@ class DashboardOne extends React.Component {
     }
   }
 
-  showValidateDataModal = (data) => {
-    if (data) {
-      this.setState({
-        modal_order_IsOpen: false,
-        modal_order_two_IsOpen: true,
-        orderTwo_data: data[0]
-      })
-    } else {
-      this.setState({
-        modal_error_IsOpen: true,
-      })
-    }
-  }
-
   closeModal = () => {
     this.setState({
       modal_authorize_IsOpen: false,
@@ -147,12 +140,12 @@ class DashboardOne extends React.Component {
       modal_timelost_IsOpen: false,
       modal_signoff_IsOpen: false,
       modal_order_IsOpen: false,
-      modal_order_two_IsOpen: false,
       modal_manualentry_IsOpen: false,
       modal_scrap_IsOpen: false,
       errorModal: false,
       readOnly: false,
-      alertModalOverProd: false
+      alertModalOverProd: false,
+      modal_message_Is_Open: false
     });
     if (!this.state.summary) {
       this.props.closeOrderModal(false);
@@ -265,68 +258,54 @@ class DashboardOne extends React.Component {
 
         let hr = moment().tz(props.user.timezone).hours();
 
-        let requestArray = [];
+        let responseArray = [];
 
         _.forEach(props.user.shifts, shift => {
           let param = {
-            params: {
-              mc: filter[0],
-              dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-              sf: shift.shift_id,
-              hr: hr,
-              st: props.user.site
-            }
+            mc: filter[0],
+            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+            sf: shift.shift_id,
+            hr: hr,
+            st: props.user.site
           }
-          requestArray.push(BuildGet(`${API}/data`, param));
+          responseArray.push(getResponseFromGeneric('get', API, '/data', {}, param, {}));
         });
 
-
         const parameters = {
-          params: {
-            mc: filter[0],
-            dt: formatDate(filter[1]).split("-").join(""),
-            sf: mapShift(filter[2]),
-            hr: hr
-          }
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: mapShift(filter[2]),
+          hr: hr
         };
-        requestArray.push(BuildGet(`${API}/intershift_communication`, parameters));
-        requestArray.push(BuildGet(`${API}/uom_asset`, parameters));
+        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}));
+        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}));
 
-        let _this = this;
-
-        axios.all(requestArray).then(
-          axios.spread((...responses) => {
-
-            let data = [];
-            _.forEach(responses, (response, index) => {
-              if (index < (responses.length - 2)) {
-                let shift = {
-                  'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-                  'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
-                  'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                  'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
-                };
-                if (data === []) {
-                  data = _.concat([shift], response.data);
-                } else {
-                  data = _.concat(data, [shift], response.data);
-                }
+        Promise.all(responseArray).then(responses => {
+          let data = [];
+          _.forEach(responses, (res, index) => {
+            if (index < (responses.length - 2)) {
+              let shift = {
+                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+                'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
+                'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
+                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
+              };
+              if (data === []) {
+                data = _.concat([shift], res);
+              } else {
+                data = _.concat(data, [shift], res);
               }
-            });
+            }
+          });
 
-            let comments = responses[responses.length - 2].data;
-            let uom_asset = responses[responses.length - 1].data;
+          let comments = responses[responses.length - 2] || [];
+          let uom_asset = responses[responses.length - 1] || [];
 
-            _this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
-
-          })
-        ).catch(function (error) {
-          console.log(error);
+          this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
         });
       }
     } else {
       let queryItem = Object.assign({}, props.search);
-      // eslint-disable-next-line no-self-assign
       queryItem["dt"] = newDate;
       let parameters = $.param(queryItem);
       props.history.push(`${props.history.location.pathname}?${parameters}`);
@@ -334,7 +313,7 @@ class DashboardOne extends React.Component {
 
   }
 
-  loadDataCurrentShift(filter, props) {
+  async loadDataCurrentShift(filter, props) {
     const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
     var minutes = moment().minutes();
 
@@ -368,58 +347,47 @@ class DashboardOne extends React.Component {
       });
 
       const parameters = {
-        params: {
-          mc: filter[0],
-          dt: formatDate(filter[1]).split("-").join(""),
-          sf: sf.shift_id || props.user.shift_id,
-          hr: moment().tz(props.user.timezone).hours(),
-          st: props.user.site
-        }
+        mc: filter[0],
+        dt: formatDate(filter[1]).split("-").join(""),
+        sf: sf.shift_id || props.user.shift_id,
+        hr: moment().tz(props.user.timezone).hours(),
+        st: props.user.site
       }
 
-      let requestData = [
-        BuildGet(`${API}/data`, parameters),
-        BuildGet(`${API}/uom_asset`, parameters)
+      let requestArray = [
+        genericRequest('get', API, '/data', {}, parameters, {}),
+        genericRequest('get', API, '/uom_asset', {}, parameters, {}),
       ];
 
-      let requestIntershift = [
-        BuildGet(`${API}/intershift_communication`, parameters)];
-
-      let _this = this;
-
-      axios.all(requestData).then(
-        axios.spread((responseData, responseAssetUOM) => {
-
-          let data = responseData.data;
-          let uom_asset = responseAssetUOM.data;
-
-          let alertModalOverProd = false;
-          let alertMessageOverProd = '';
-          if (data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+      axios.all(requestArray).then(
+        axios.spread((...responses) => {
+          let data = responses[0].data;
+          let uom_asset = responses[1].data;
+          if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
             (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
             alertModalOverProd = true;
             alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
           }
-
-          _this.setState({ signoff_reminder, errorModal, errorMessage, data, uom_asset, alertModalOverProd, alertMessageOverProd });
-
+          this.setState({ data, uom_asset });
         })
-      ).catch(function (error) {
-        console.log(error);
-      });
+      );
 
-      axios.all(requestIntershift).then(
-        axios.spread((responseIntershift) => {
+      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}) || [];
 
-          let comments = responseIntershift.data;
+      let alertModalOverProd = false;
+      let alertMessageOverProd = '';
 
-          _this.setState({ comments });
 
-        })
-      ).catch(function (error) {
-        console.log(error);
-      });
+      this.setState({ signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd, comments });
     }
+  }
+
+  openMessageModal = (type, message) => {
+    this.setState({
+      modal_message_Is_Open: true,
+      messageModalType: type,
+      messageModalMessage: message
+    });
   }
 
   render() {
@@ -444,6 +412,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
+    const num_rows = getRowsFromShifts(this.props,this.state.summary);
     return (
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
@@ -473,11 +442,21 @@ class DashboardOne extends React.Component {
                       }
                       : {}
                   }}
+                  getTdProps={(state, rowInfo, column) => {
+                    return {
+                      onClick: () => {
+                        this.clickWholeCell(rowInfo, column)
+                      },
+                      style: {
+                        cursor: rowInfo && rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
+                      }
+                    }
+                  }}
                   sortable={false}
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  pageSize={this.state.summary ? (this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length : (this.state.shifts[0].duration_in_minutes / 60)}
+                  pageSize={num_rows}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}
@@ -503,6 +482,7 @@ class DashboardOne extends React.Component {
             parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
             timezone={this.state.timezone}
             readOnly={this.state.summary}
+            openMessageModal={this.openMessageModal}
           />
         </div>
         <ManualEntryModal
@@ -564,7 +544,6 @@ class DashboardOne extends React.Component {
         />
         <OrderModal
           isOpen={this.state.modal_order_IsOpen}
-          isOpenTwo={this.state.modal_order_two_IsOpen}
           open={this.openModal}
           onRequestClose={this.closeModal}
           style={this.state.modalStyle}
@@ -572,7 +551,6 @@ class DashboardOne extends React.Component {
           user={this.props.user}
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          showValidateDataModal={this.showValidateDataModal}
         />
         <ScrapModal
           isOpen={this.state.modal_scrap_IsOpen}
@@ -584,6 +562,7 @@ class DashboardOne extends React.Component {
           Refresh={this.fetchData}
           parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
           readOnly={this.state.readOnly || this.state.summary}
+          openMessageModal={this.openMessageModal}
         />
         <ErrorModal
           isOpen={this.state.errorModal}
@@ -601,6 +580,13 @@ class DashboardOne extends React.Component {
           contentLabel="Example Modal"
           t={t}
           message={this.state.alertMessageOverProd}
+        />
+        <MessageForm
+          isOpen={this.state.modal_message_Is_Open}
+          onRequestClose={this.closeModal}
+          type={this.state.messageModalType}
+          message={this.state.messageModalMessage}
+          t={t}
         />
       </React.Fragment >
     );
