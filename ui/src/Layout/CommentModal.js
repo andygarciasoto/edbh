@@ -38,8 +38,13 @@ class CommentsModal extends React.Component {
     }
 
     submitComment = (e) => {
+        this.setState({ modal_loading_IsOpen: true }, async () => {
+            const data = {
+                first_name: this.props.user.first_name,
+                last_name: this.props.user.last_name,
                 comment: this.state.value,
                 dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
+                row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
                 timestamp: getCurrentTime(this.props.user.timezone),
                 asset_code: this.props.parentData[0]
             };
