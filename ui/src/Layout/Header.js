@@ -2,7 +2,6 @@ import React from 'react';
 import './Header.scss';
 import { Navbar, Nav, Dropdown, Row } from 'react-bootstrap'
 import FontAwesome from 'react-fontawesome';
-import logo from '../Parker_Hannifin.svg';
 import EYlogo from '../EY_Logo.png';
 import { isComponentValid, getCurrentTime } from '../Utils/Requests';
 import MegaMenu from './MegaMenu';

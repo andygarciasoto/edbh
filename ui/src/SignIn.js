@@ -1,6 +1,5 @@
 import React from 'react';
 import BarcodeScanner from './Scanner/BarcodeScanner';
-import logo from './Parker_Hannifin.svg';
 import EYlogo from './EY_Logo_White_Back.jpg';
 import Background from './eDBH_IndustryBackground.jpg';
 import FontAwesome from 'react-fontawesome';
