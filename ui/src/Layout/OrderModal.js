@@ -2,11 +2,10 @@ import React from 'react';
 import Modal from 'react-modal';
 import BarcodeReader from 'react-barcode-reader';
 import { Form } from 'react-bootstrap';
-import ErrorModal from './ErrorModal';
+import MessageModal from './MessageModal';
 import LoadingModal from './LoadingModal';
 import { getRequest, getCurrentTime } from '../Utils/Requests';
 import './CommentsModal.scss';
-import OrderTwoModal from '../Layout/OrderTwoModal';
 
 
 class OrderModal extends React.Component {
@@ -19,10 +18,10 @@ class OrderModal extends React.Component {
         return {
             value: '',
             errorMessage: '',
-            modal_confirm_IsOpen: false,
             modal_loading_IsOpen: false,
-            modal_error_IsOpen: false,
-            order_data: ''
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: '',
         }
     }
 
@@ -41,19 +40,19 @@ class OrderModal extends React.Component {
             const response = getRequest('/order_assembly', data);
             response.then((res) => {
                 if (!res) {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true, errorMessage: 'Please try again or try with a different order.' });
+                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Please try again or try with a different order' });
                 } else {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: false });
-                    this.props.showValidateDataModal(res);
+                    this.closeModal();
                 }
                 this.setState({ value: '' });
             })
-        })
+        });
         this.setState({ newValue: '' });
     }
 
     closeModal = () => {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false });
+        this.setState({ modal_message_isOpen: false, modal_loading_IsOpen: false });
+        this.props.onRequestClose();
     }
 
     handleScan = (data) => {
@@ -68,7 +67,7 @@ class OrderModal extends React.Component {
         if (!isNaN(err)) {
             this.handleScan(err);
         } else {
-            this.setState({ modal_error_IsOpen: true, errorMessage: 'Scan failed: Barcode not Valid' });
+            this.setState({ modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Scan failed: Barcode not Valid' });
             console.log(err);
         }
     }
@@ -105,24 +104,12 @@ class OrderModal extends React.Component {
                     contentLabel="Example Modal"
                     t={this.props.t}
                 />
-                <OrderTwoModal
-                    isOpen={this.props.isOpenTwo}
-                    open={this.props.open}
-                    onRequestClose={this.props.onRequestClose}
-                    contentLabel="Example Modal"
-                    data={this.state.order_data}
-                    t={this.props.t}
-                    user={this.props.user}
-                    Refresh={this.props.Refresh}
-                    parentData={this.props.parentData}
-                />
-                <ErrorModal
-                    isOpen={this.state.modal_error_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                <MessageModal
+                    isOpen={this.state.modal_message_isOpen}
                     onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
                     t={this.props.t}
-                    message={this.state.errorMessage}
                 />
 
             </React.Fragment>

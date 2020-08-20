@@ -7,18 +7,15 @@ import FontAwesome from 'react-fontawesome';
 import * as _ from 'lodash';
 import './TimelossModal.scss';
 import ReactSelect from 'react-select';
-import { sendPut } from '../Utils/Requests';
-import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
-import ErrorModal from '../Layout/ErrorModal';
 import {
     formatDateWithTime,
     getCurrentTime,
     formatNumber,
-    BuildGet
+    getResponseFromGeneric
 } from '../Utils/Requests';
 import { API } from '../Utils/Constants';
-const axios = require('axios');
+import MessageModal from './MessageModal';
 
 class TimelossModal extends React.Component {
     constructor(props) {
@@ -48,7 +45,10 @@ class TimelossModal extends React.Component {
             modal_loading_IsOpen: false,
             modal_error_IsOpen: false,
             changed: false,
-            actualDxH_Id: null
+            actualDxH_Id: null,
+            modal_message_isOpen: false,
+            modal_type: '',
+            modal_message: ''
         }
     }
 
@@ -125,18 +125,16 @@ class TimelossModal extends React.Component {
             row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             timestamp: getCurrentTime(this.props.user.timezone)
         }
-        this.setState({ modal_loading_IsOpen: true }, () => {
-            const response = sendPut(data, '/dt_data');
-            response.then((res) => {
-                if (res !== 200) {
-                    this.setState({ modal_error_IsOpen: true })
-                } else {
-                    this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                }
-                this.props.Refresh(this.props.parentData);
-                this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
-                this.closeTimeloss();
-            })
+        this.setState({ modal_loading_IsOpen: true }, async () => {
+            let res = await getResponseFromGeneric('put', API, '/dt_data', {}, {}, data);
+            if (res.status !== 200) {
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Time Lost Entries unsaved' });
+            } else {
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Time Lost Entries Saved' });
+            }
+            this.props.Refresh(this.props.parentData);
+            this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
+            this.closeTimeloss();
         })
     }
 
@@ -153,53 +151,39 @@ class TimelossModal extends React.Component {
         }
 
         const parameters = {
-            params: {
-                mc: this.props.parentData[0] === 'No Data' ? null : this.props.parentData[0],
-                dxh_data_id: props.currentRow.dxhdata_id
-            }
+            mc: this.props.parentData[0] === 'No Data' ? null : this.props.parentData[0],
+            dxh_data_id: props.currentRow.dxhdata_id
         }
-        let requestData = [BuildGet(`${API}/timelost_reasons`, parameters)];
 
-        let resquestData1 = [BuildGet(`${API}/timelost_dxh_data`, parameters)];
+        this.setState({ modal_loading_IsOpen: this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, async () => {
 
-        let _this = this;
+            let resReason = await getResponseFromGeneric('get', API, '/timelost_reasons', {}, parameters, {}) || [];
 
-        this.setState({ modal_loading_IsOpen: _this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, () => {
-            axios.all(requestData).then(
-                axios.spread((responseReasons) => {
-
-                    let reasonsOption = [];
-                    if (responseReasons.data) {
-                        _.forEach(responseReasons.data, reason => {
-                            reasonsOption.push({ value: reason.dtreason_code, label: `${reason.dtreason_code} - ${reason.dtreason_name}`, dtreason_id: reason.dtreason_id });
-                        })
-                    }
-
-                    _this.setState({
-                        modal_loading_IsOpen: false,
-                        allocated_time: props.currentRow.allocated_time,
-                        unallocated_time: props.currentRow.unallocated_time,
-                        time_to_allocate: time,
-                        setup_time: props.currentRow.summary_setup_minutes || 0,
-                        break_time: props.currentRow.summary_breakandlunch_minutes || 0,
-                        reasons: reasonsOption,
-                        currentRow: props.currentRow,
-                        actualDxH_Id: props.currentRow.dxhdata_id,
-                        allDTReason: responseReasons.data
-                    });
+            let reasonsOption = [];
+            if (resReason) {
+                _.forEach(resReason, reason => {
+                    reasonsOption.push({ value: reason.dtreason_code, label: `${reason.dtreason_code} - ${reason.dtreason_name}`, dtreason_id: reason.dtreason_id });
                 })
-            ).catch(function (error) {
-                _this.setState({ modal_loading_IsOpen: false });
+            }
+
+            this.setState({
+                modal_loading_IsOpen: false,
+                allocated_time: props.currentRow.allocated_time,
+                unallocated_time: props.currentRow.unallocated_time,
+                time_to_allocate: time,
+                setup_time: props.currentRow.summary_setup_minutes || 0,
+                break_time: props.currentRow.summary_breakandlunch_minutes || 0,
+                reasons: reasonsOption,
+                currentRow: props.currentRow,
+                actualDxH_Id: props.currentRow.dxhdata_id,
+                allDTReason: resReason
             });
-            axios.all(resquestData1).then(
-                axios.spread((responseTimeLost) => {
-                    _this.setState({
-                        modal_loading_IsOpen: false,
-                        timelost: responseTimeLost.data
-                    });
-                })
-            ).catch(function (error) {
-                _this.setState({ timelost: [], modal_loading_IsOpen: false });
+
+            let responseTimeLost = await getResponseFromGeneric('get', API, '/timelost_dxh_data', {}, parameters, {}) || [];
+
+            this.setState({
+                modal_loading_IsOpen: false,
+                timelost: responseTimeLost
             });
         });
     }
@@ -242,7 +226,7 @@ class TimelossModal extends React.Component {
     }
 
     closeModal = () => {
-        this.setState({ modal_confirm_IsOpen: false, modal_loading_IsOpen: false, modal_error_IsOpen: false, allowSubmit: true, editDTReason: false });
+        this.setState({ modal_message_isOpen: false, modal_loading_IsOpen: false, allowSubmit: true, editDTReason: false });
         this.props.onRequestClose();
     }
 
@@ -320,24 +304,24 @@ class TimelossModal extends React.Component {
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
                 timestamp: getCurrentTime(this.props.user.timezone)
             }
-            this.setState({ modal_loading_IsOpen: true }, () => {
-                const response = sendPut(data, '/dt_data_update');
-                response.then((res) => {
-                    if (res !== 200) {
-                        this.setState({ modal_error_IsOpen: true })
-                    } else {
-                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                    }
-                    this.props.Refresh(this.props.parentData);
-                    this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 })
-                    this.closeTimeloss();
-                })
-            })
+            this.setState({ modal_loading_IsOpen: true }, async () => {
+                let res = await getResponseFromGeneric('put', API, '/dt_data_update', {}, {}, data);
+
+                if (res.status !== 200) {
+                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Time Lost Entries unsaved' });
+                } else {
+                    this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Time Lost Entries Saved' });
+                }
+                this.props.Refresh(this.props.parentData);
+                this.setState({ new_tl_reason: '', allowSubmit: true, time_to_allocate: 0 });
+                this.closeTimeloss();
+            });
         } else {
             this.setState({
-                modal_error_IsOpen: true,
-                errorMessage: `The minimum value for time is 1 and the max value is ${formatNumber(this.state.allocated_time) + formatNumber(this.state.currentDTReason.dtminutes)}`
-            })
+                modal_message_isOpen: true,
+                modal_type: 'Error',
+                modal_message: `The minimum value for time is 1 and the max value is ${formatNumber(this.state.allocated_time) + formatNumber(this.state.currentDTReason.dtminutes)}`
+            });
         }
     }
 
@@ -445,16 +429,23 @@ class TimelossModal extends React.Component {
                             onClick={this.closeTimeloss}>{t('Close')}</Button>
                     </div>
                 </Modal>
-                <ConfirmModal
+                <MessageModal
+                    isOpen={this.state.modal_message_isOpen}
+                    onRequestClose={this.closeModal}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
+                    t={this.props.t}
+                />
+                {/* <ConfirmModal
                     isOpen={this.state.modal_confirm_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                    onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     shouldCloseOnOverlayClick={false}
                     message={'Time Lost Entries Saved'}
                     title={'Request Successful'}
                     t={this.props.t}
-                />
+                /> */}
                 <LoadingModal
                     isOpen={this.state.modal_loading_IsOpen}
                     //  onAfterOpen={this.afterOpenModal}
@@ -462,14 +453,14 @@ class TimelossModal extends React.Component {
                     contentLabel="Example Modal"
                     t={this.props.t}
                 />
-                <ErrorModal
+                {/* <ErrorModal
                     isOpen={this.state.modal_error_IsOpen}
-                    //  onAfterOpen={this.afterOpenModal}
+                    onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     contentLabel="Example Modal"
                     t={this.props.t}
                     message={this.state.errorMessage}
-                />
+                /> */}
             </React.Fragment>
         )
     }

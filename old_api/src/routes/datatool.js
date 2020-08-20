@@ -108,7 +108,7 @@ function getParametersOfTable(tableName, siteId) {
     case 'Asset':
       parametersObject.extraColumns = ', w.workcell_id';
       parametersObject.joinSentence = `LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name`;
-      parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code';
+      parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
       parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], t.[asset_level] = s.[asset_level], t.[parent_asset_code] = s.[parent_asset_code], t.[value_stream] = s.[value_stream], t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[workcell_id], t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[target_percent_of_ideal] = s.[target_percent_of_ideal]`;
       parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [target_percent_of_ideal]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[target_percent_of_ideal])`;
       break;
@@ -215,13 +215,13 @@ router.post('/import_data', upload.single('file'), (req, res) => {
             });
             //create merge sentence with the data extracted from the sheet
             mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-            /*if (config['loginURL'] === 'http://localhost:3000/dashboard') {
-              var log_file = fs.createWriteStream(__dirname + `/log_${worksheet.name}_${moment().format('YYYYMMDDHHmmSS')}.txt`, { flags: 'w' });
-              log_file.write(mergeQuery);
-            }*/
           }
         });
       });
+      /*if (config['loginURL'] === 'http://localhost:3000/dashboard') {
+        var log_file = fs.createWriteStream(__dirname + `/log_${worksheet.name}_${moment().format('YYYYMMDDHHmmSS')}.txt`, { flags: 'w' });
+        log_file.write(mergeQuery);
+      }*/
       console.log(mergeQuery);
       sqlQuery(mergeQuery,
         (err, response) => {

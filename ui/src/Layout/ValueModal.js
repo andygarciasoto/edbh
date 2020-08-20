@@ -4,7 +4,8 @@ import { Form, Button } from 'react-bootstrap';
 import ConfirmModal from './ConfirmModal';
 import ErrorModal from './ErrorModal';
 import LoadingModal from './LoadingModal';
-import { sendPut, formatDateWithTime } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
+import { getResponseFromGeneric, formatDateWithTime } from '../Utils/Requests';
 import './CommentsModal.scss';
 
 
@@ -42,20 +43,17 @@ class ValueModal extends React.Component {
         if (!data.actual) {
             this.setState({ modal_error_IsOpen: true, newValue: "", errorMessage: 'You have not entered a value' })
         } else {
-            this.setState({ modal_loading_IsOpen: true }, () => {
-                const response = sendPut({
-                    ...data
-                }, '/production_data')
-                response.then((res) => {
-                    if (res !== 200 || !res) {
-                        this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
-                    } else {
-                        this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
-                    }
-                    this.props.Refresh(this.props.parentData);
-                    this.setState({ actual: '' })
-                    this.props.onRequestClose();
-                })
+            this.setState({ modal_loading_IsOpen: true }, async () => {
+                let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+                console.log(res);
+                if (res.status !== 200) {
+                    this.setState({ modal_error_IsOpen: true, errorMessage: 'Could not complete request' })
+                } else {
+                    this.setState({ request_status: res, modal_confirm_IsOpen: true, modal_loading_IsOpen: false })
+                }
+                this.props.Refresh(this.props.parentData);
+                this.setState({ actual: '' })
+                this.props.onRequestClose();
             })
         }
         this.setState({ newValue: '' })

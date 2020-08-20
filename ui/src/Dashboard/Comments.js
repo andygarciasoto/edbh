@@ -6,7 +6,8 @@ import ThreadModal from '../Layout/ThreadModal';
 import FontAwesome from 'react-fontawesome';
 import Spinner from '../Spinner';
 import _ from 'lodash';
-import { sendPut, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
+import { API } from '../Utils/Constants';
+import { getResponseFromGeneric, getCurrentTime, formatDateWithTime } from '../Utils/Requests';
 import ErrorModal from '../Layout/ErrorModal';
 import ConfirmModal from '../Layout/ConfirmModal';
 import LoadingModal from '../Layout/LoadingModal';
@@ -23,14 +24,11 @@ class Comments extends React.Component {
             modal_loading_IsOpen: false,
             row: this.props.dxh_parent || {}
         }
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.enterCommunication = this.enterCommunication.bind(this);
     }
 
-    enterCommunication(e) {
+    enterCommunication = (e) => {
         let data = {};
-        this.setState({ modal_loading_IsOpen: true }, () => {
+        this.setState({ modal_loading_IsOpen: true }, async () => {
             if (!_.isEmpty(this.state.row)) {
                 data = {
                     dxh_data_id: this.state.row.dxhdata_id,
@@ -43,20 +41,21 @@ class Comments extends React.Component {
                     asset_code: this.props.parentData[0]
                 }
             }
-            const response = sendPut(data, '/intershift_communication');
-            response.then((res) => {
-                if (res !== 200) {
-                    this.setState({ modal_loading_IsOpen: false, modal_error_IsOpen: true })
-                } else {
-                    this.setState({ modal_loading_IsOpen: false, request_status: res, modal_confirm_IsOpen: true })
-                }
-                this.setState({ value: '' });
-                this.props.Refresh(this.props.parentData);
-            })
+
+            let res = await getResponseFromGeneric('put', API, '/intershift_communication', {}, {}, data);
+            if (res.status !== 200) {
+                this.props.openMessageModal('Error', 'Fail on insert the new comment intershift communication.');
+                this.setState({ modal_loading_IsOpen: false });
+            } else {
+                this.props.openMessageModal('Success', 'Success on insert the new comment intershift communication.');
+                this.setState({ modal_loading_IsOpen: false });
+            }
+            this.setState({ value: '' });
+            this.props.Refresh(this.props.parentData);
         })
     }
 
-    closeModal() {
+    closeModal = () => {
         this.setState({
             modal_thread_IsOpen: false,
             modal_error_IsOpen: false,
@@ -65,7 +64,7 @@ class Comments extends React.Component {
         });
     }
 
-    openModal() {
+    openModal = () => {
         this.setState({ modal_thread_IsOpen: true });
     }
 

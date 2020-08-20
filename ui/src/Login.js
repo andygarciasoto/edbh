@@ -4,6 +4,7 @@ import EYlogo from './EY_Logo_White_Back.jpg';
 import Background from './eDBH_IndustryBackground.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
+import FontAwesome from 'react-fontawesome';
 import { AUTH } from './Utils/Constants';
 
 class Login extends React.Component {
@@ -13,6 +14,7 @@ class Login extends React.Component {
             username: '',
             password: '',
             style: {},
+            errMessage: 'Incorrect Username or Password, please try again.'
         }
     }
 
@@ -30,8 +32,8 @@ class Login extends React.Component {
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
-                    <img style={{ backgroundColor: 'white' }} src={EYlogo} className="App-logo" alt="logo" />
-                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Day by Hour Application')}</h3>
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <Form action={AUTH} method="post">
                         <Form.Group controlId="formGroupEmail" style={{ textAlign: 'right' }}>
                             <Form.Label>Username: &nbsp;</Form.Label>
@@ -42,9 +44,10 @@ class Login extends React.Component {
                             <Form.Control value={this.state.password} name={'password'} type="password" placeholder="Password" style={{ width: '400px', float: 'right' }} onChange={(e) => { this.setState({ password: e.target.value }) }} />
                         </Form.Group>
                         <Form.Control value={this.props.st} name={'st'} type="hidden" />
-                        <Button type="submit" variant="outline-info" style={{ marginTop: '10px' }}>{'Submit'}</Button>
+                        <Button type="submit" variant="outline-primary" style={{ marginTop: '10px' }}>{'Submit'}</Button>
                     </Form>
                 </div>
+                {this.props.search.err ? <div className="app-info"><FontAwesome name="warning" /><span>{this.state.errMessage}</span></div> : 'null'}
             </div>
         );
     }

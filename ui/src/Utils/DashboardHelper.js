@@ -80,34 +80,18 @@ const helpers = {
         return rowInfo ? { style } : style;
     },
 
-    renderCell(row, prop, defaultValue, displayClick, modalToOpen) {
+    renderCell(row, prop, defaultValue) {
         if (row) {
-            if (row.hour_interval.includes('Shift')) {
-                prop = modalToOpen === 'timelost' ? 'timelost_summary' : (modalToOpen === 'comments' ? 'latest_comment' : prop);
-                return <span className={'wordwrap'} data-tip={row[prop]}>{row[prop]}</span>
-            } else {
-                return this.renderRowValue((row[prop] ?
-                    (isNaN(row[prop]) ? row[prop] : convertNumber(row[prop], this.state.uom_asset))
-                    : defaultValue), displayClick, modalToOpen, row);
-            }
+            //validation for timelost and latest comment, don't work on render the value of each one only the text in the vertical view
+            prop = !row.hour_interval.includes('Shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
+            let valueToDisplay = (row[prop] ?
+                (isNaN(row[prop]) ? row[prop] : convertNumber(row[prop], this.state.uom_asset))
+                : defaultValue);
+            return valueToDisplay || valueToDisplay === 0 ?
+                <span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
+                <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
         } else {
-            return this.renderRowValue(null, displayClick, modalToOpen, row);
-        }
-    },
-
-    renderRowValue(valueToDisplay, displayClick, modalToOpen, row) {
-        if (valueToDisplay || valueToDisplay === 0) {
-            if (displayClick) {
-                return <span className={'react-table-click-text table-click'} data-tip={valueToDisplay} onClick={() => this.openModal(modalToOpen, row)}>{valueToDisplay}</span>
-            } else {
-                return <span className={'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span>
-            }
-        } else {
-            if (displayClick) {
-                return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'} onClick={() => this.openModal(modalToOpen, row)}></span>;
-            } else {
-                return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
-            }
+            return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
         }
     },
 
@@ -118,14 +102,6 @@ const helpers = {
 
     getCommentsToSet(row) {
         return row.comment ? row.total_comments > 1 ? row.comment + ` (${(row.total_comments - 1)}+ more)` : row.comment : '';
-    },
-
-    renderCellSignOff(row, prop, defaultValue) {
-        if (row[prop]) {
-            return this.renderCell(row, prop, defaultValue);
-        } else {
-            return this.renderCell(row, prop, defaultValue, true, prop);
-        }
     },
 
     getExpandClick(state, rowInfo, column) {
@@ -179,7 +155,7 @@ const helpers = {
                             className={classNames("rt-expander", cellInfo.isExpanded && "-open")}
                         >
                             &bull;
-                </div>
+                        </div>
                     ) : null;
                 },
                 getProps: (state, rowInfo, column) => this.getExpandClick(state, rowInfo, column)
@@ -215,7 +191,7 @@ const helpers = {
                 minWidth: 180,
                 accessor: 'product_code',
                 Cell: c => this.renderCell(c.original, 'product_code', ''),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_product_code', '', true, 'manualentry'),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_product_code', ''),
                 PivotValue: <span>{''}</span>,
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
@@ -236,16 +212,16 @@ const helpers = {
                 Header: this.getHeader(state.actualText),
                 accessor: 'actual',
                 minWidth: 90,
-                Cell: c => this.renderCell(c.original, 'adjusted_actual', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null, true, 'actual'),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_adjusted_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : '', a.subRows.length === 1, 'actual'),
+                Cell: c => this.renderCell(c.original, 'adjusted_actual', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : null),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_adjusted_actual', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : ''),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             },
             {
                 Header: this.getHeader(state.scrapText),
                 accessor: 'scrap',
                 minWidth: 90,
-                Cell: c => this.renderCell(c.original, 'scrap', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : '', true, 'scrap'),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_scrap', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : '', a.subRows.length === 1, 'scrap'),
+                Cell: c => this.renderCell(c.original, 'scrap', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : ''),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'summary_scrap', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : ''),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             },
             {
@@ -266,33 +242,68 @@ const helpers = {
                 Header: this.getHeader(state.timeLostText),
                 accessor: 'timelost_summary',
                 minWidth: 100,
-                Cell: c => this.renderCell(c.original, '', ''),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, '', this.getTimeLostToSet(a.subRows[0]._original), true, 'timelost'),
+                Cell: c => this.renderCell(c.original, 'timelost_summary', ''),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'timelost_summary', this.getTimeLostToSet(a.subRows[0]._original)),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(state.commentsActionText),
                 accessor: 'latest_comment',
                 Cell: c => this.renderCell(c.original, '', ''),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, '', this.getCommentsToSet(a.subRows[0]._original), true, 'comments'),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'latest_comment', this.getCommentsToSet(a.subRows[0]._original)),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(state.operatorText),
                 accessor: 'operator_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c.original, '', ''),
-                Aggregated: a => this.renderCellSignOff(a.subRows[0]._original, 'operator_signoff', ''),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'operator_signoff', ''),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }, {
                 Header: this.getHeader(state.supervisorText),
                 accessor: 'supervisor_signoff',
                 minWidth: 90,
                 Cell: c => this.renderCell(c.original, '', ''),
-                Aggregated: a => this.renderCellSignOff(a.subRows[0]._original, 'supervisor_signoff', ''),
+                Aggregated: a => this.renderCell(a.subRows[0]._original, 'supervisor_signoff', ''),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }
         ];
 
         return { columns };
+    },
+
+    clickWholeCell(rowInfo, column) {
+        let openModal = false;
+        let modalType = '';
+        let row = {};
+        if ((rowInfo.level === 0 && !rowInfo.subRows[0]._original.hour_interval.includes('Shift')) || rowInfo.level === 1) {
+            switch (column.id) {
+                case 'product_code':
+                case 'timelost_summary':
+                case 'latest_comment':
+                case 'operator_signoff':
+                case 'supervisor_signoff':
+                    if (rowInfo.level === 0) {
+                        modalType = column.id === 'product_code' ? 'manualentry' : (column.id === 'timelost_summary' ? 'timelost' : (column.id === 'latest_comment' ? 'comments' : column.id));
+                        row = rowInfo.subRows[0]._original;
+                        openModal = true;
+                    }
+                    break;
+                case 'actual':
+                case 'scrap':
+                    if ((rowInfo.level === 0 && rowInfo.subRows.length === 1) || rowInfo.level === 1) {
+                        modalType = column.id;
+                        row = rowInfo.level === 0 ? rowInfo.subRows[0]._original : rowInfo.original;
+                        openModal = true;
+                    }
+                    break;
+                default:
+                    openModal = false;
+                    break;
+            }
+        }
+        if (openModal) {
+            this.openModal(modalType, row);
+        }
     },
 
     openModal(modalType, currentRow) {
