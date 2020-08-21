@@ -58,8 +58,7 @@ export let headers = {
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'type', type: 'VARCHAR', key: 'type', width: 12 }
+        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
     ],
     Shift: [
         { header: 'shift_code', type: 'VARCHAR', key: 'shift_code', width: 14 },
@@ -189,8 +188,8 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', h.asset_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code OUTER APPLY [dbo].[AssetsResolverFromId] (a.asset_id, CASE WHEN (a.asset_level='Area' or a.asset_level='Site') then 3 else 0 end ) as H`;
             parametersObject.matchParameters = 's.dtreason_code = t.dtreason_code AND s.asset_id = t.asset_id';
-            parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[type] = s.[type]`;
-            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[type])`;
+            parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id])`;
             break;
         case 'Shift':
             parametersObject.extraColumns = ', a.asset_id';

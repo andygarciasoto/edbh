@@ -23,7 +23,7 @@ function App(propsApp) {
   return (
     <Router>
       <Helmet>
-        <title>{'Day By Hour Application'}</title>
+        <title>{'Parker Hannifin Day By Hour'}</title>
         <meta name="description" content="Day By Hour Application" />
         <meta name="theme-color" content="#ccc" />
       </Helmet>

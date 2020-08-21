@@ -6,11 +6,11 @@
     display: none;
     position: fixed;
     margin-top: 25px;
-    background-color: #f0f0f0;
+    background-color: #f9f9f9;
     width: 100%;
     left: 0;
     right: 0;
-    box-shadow: 0px 8px 16px 0px #333333;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
   
@@ -27,5 +27,5 @@
   }
 
   .title_child{
-    color: #333333;
+    color: #ffb91d;
   }

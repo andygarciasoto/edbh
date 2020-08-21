@@ -43,7 +43,7 @@ export const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 export const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? '#c0c0c0' : '#c0c0c0',
+    background: isDraggingOver ? '#ece5a1' : '#a2a2a2',
     padding: grid,
     width: '90%',
     height: 250,
@@ -54,7 +54,7 @@ export const getListStyle = isDraggingOver => ({
 });
 
 export const getListStyleDrop = (isDraggingOver, height) => ({
-    background: isDraggingOver ? '#c0c0c0' : '#c0c0c0',
+    background: isDraggingOver ? '#ece5a1' : '#a2a2a2',
     padding: grid,
     width: '90%',
     height: height,

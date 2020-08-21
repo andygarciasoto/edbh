@@ -1,6 +1,6 @@
 import React from 'react';
 import BarcodeScanner from './Scanner/BarcodeScanner';
-import EYlogo from './EY_Logo_White_Back.jpg';
+import logo from './Parker_Hannifin.svg';
 import Background from './eDBH_IndustryBackground.jpg';
 import FontAwesome from 'react-fontawesome';
 import './sass/SignIn.scss';
@@ -38,8 +38,8 @@ class SignIn extends React.Component {
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
-                    <img style={{ backgroundColor: 'white' }} src={EYlogo} className="App-logo" alt="logo" />
-                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Day by Hour Application')}</h3>
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <BarcodeScanner t={this.props.t} st={this.props.st} />
                 </div>
                 {this.props.search.err ? <div className="app-info"><FontAwesome name="warning" /><span>{this.state.errMessage}</span></div> : 'null'}
