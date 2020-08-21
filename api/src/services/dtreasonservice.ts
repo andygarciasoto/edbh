@@ -18,8 +18,7 @@ export class DTReasonService {
 
     public async getTimelostReasons(req: Request, res: Response) {
         let machine = req.query.mc;
-        let type = req.query.type;
-        if (!machine || machine === null || machine === undefined || !type) {
+        if (!machine || machine === null || machine === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         if (machine !== 'No Data') {
@@ -27,7 +26,7 @@ export class DTReasonService {
             let timelost: any;
             try {
                 asset = await this.assetrepository.getAssetByCode(machine);
-                timelost = await this.dtreasonrepository.getTimelostReasons(asset[0].asset_id, type);
+                timelost = await this.dtreasonrepository.getTimelostReasons(asset[0].asset_id);
             } catch (err) {
                 res.status(500).json({ message: err.message });
                 return;
@@ -38,13 +37,12 @@ export class DTReasonService {
 
     public async getTimelostDxhData(req: Request, res: Response) {
         let dxh_data_id = req.query.dxh_data_id;
-        let type = req.query.type;
-        if (!dxh_data_id || dxh_data_id === null || dxh_data_id === undefined || !type) {
+        if (!dxh_data_id || dxh_data_id === null || dxh_data_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let dtdata: any;
         try {
-            dtdata = await this.dtreasonrepository.getTimelostDxhData(dxh_data_id, type);
+            dtdata = await this.dtreasonrepository.getTimelostDxhData(dxh_data_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -63,7 +61,6 @@ export class DTReasonService {
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
         const row_timestamp = req.body.row_timestamp;
-        const quantity = req.body.quantity ? req.body.quantity : 0;
 
         if (dt_reason_id === undefined || dt_minutes === undefined) {
             return res.status(400).send("Missing parameters");
@@ -84,16 +81,16 @@ export class DTReasonService {
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     dxh_data_id = dxhData[0].dxhdata_id;
                     if (clocknumber) {
-                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, clocknumber, timestamp, update);
                     } else {
-                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, first_name, last_name, timestamp, update);
                     }
                 }
             } else {
                 if (clocknumber) {
-                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, clocknumber, timestamp, update);
                 } else {
-                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, first_name, last_name, timestamp, update);
                 }
             }
             return res.status(200).send('Message Entered Succesfully');
@@ -111,7 +108,6 @@ export class DTReasonService {
         const last_name = req.body.last_name;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
         const dtdata_id = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
-        const quantity = req.body.quantity ? req.body.quantity : 0;
 
         if (dxh_data_id === undefined || dt_reason_id === undefined || dt_minutes === undefined || dtdata_id === 0) {
             return res.status(400).send("Missing parameters");
@@ -123,9 +119,9 @@ export class DTReasonService {
         }
         try {
             if (clocknumber) {
-                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, clocknumber, timestamp, dtdata_id);
             } else {
-                await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, first_name, last_name, timestamp, dtdata_id);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {

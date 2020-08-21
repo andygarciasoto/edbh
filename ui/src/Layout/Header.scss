@@ -1,14 +1,12 @@
 .navbar {
-    height: 13vh; 
-    background-color: #333333;
+    height: 10vh; 
+    background-color: rgb(31, 31, 31);
     .links {
         padding-bottom: 10px !important;
     }
     .App-logo {
-        margin-top: 2%;
-        margin-left: 8%;
-        height: 80%;
-        width: 20%; 
+        height: 90%;
+         width: auto; 
         }
 
     // .col {border: solid red;}
@@ -17,12 +15,12 @@
     .header-item, #mega-menu {
         display: inline-block; 
         padding: 10px 10px 10px 10px;
-         color: #ffe600; 
+         color: rgb(255, 185, 29); 
          float: right;
         }
 
     .header-item:hover {
-        background-color: #333333;
+        background-color: rgb(81, 81, 81);
         text-decoration: none;
     }
     .header-elem {cursor: pointer;}
@@ -31,7 +29,7 @@
 .import-wrapper {
     margin: 100px 75px 0px 75px;
     padding: 50px;
-    border: solid #c0c0c0 1px;
+    border: solid lightgray 1px;
 }
 
 .title {
@@ -47,7 +45,7 @@ color: #fff;
 }
 
 .customToogle:hover {
-    background-color: #999999;
+    background-color: rgb(81, 81, 81);
     text-decoration: none;   
 }
 
@@ -56,7 +54,7 @@ color: #fff;
 }
 
 a:hover {
-    background-color: #999999;
+    background-color: rgb(81, 81, 81);
     text-decoration: none;   
 }
 
@@ -67,7 +65,7 @@ a:hover {
 .import-wrapper {
     margin: 100px 75px 0px 75px;
     padding: 50px;
-    border: solid #999999 1px;
+    border: solid lightgray 1px;
 }
 
 .dropdown-toggle::after {

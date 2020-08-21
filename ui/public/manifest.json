@@ -1,9 +1,9 @@
 {
-  "short_name": "Day By Hour Application",
-  "name": "Day By Hour Application",
+  "short_name": "Parker Hannifin App",
+  "name": "Parker Hannifin App",
   "icons": [
     {
-      "src": "eyfavicon.ico",
+      "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
