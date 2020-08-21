@@ -6,6 +6,7 @@ import moment from 'moment';
 import $ from 'jquery';
 import * as qs from 'query-string';
 import _ from 'lodash';
+import './Pagination.scss'
 
 
 class Pagination extends React.Component {

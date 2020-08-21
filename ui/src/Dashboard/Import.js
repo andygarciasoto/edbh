@@ -198,7 +198,7 @@ class Import extends React.Component {
                                 <input type="file" name="Open File" id="" accept=".xlsx,.xlsm" style={{ fontWeight: 'bold' }} onChange={this.onFileChange} />
                             </Col>
                             <Col>
-                                <p className={'text-danger'}>Notes
+                                <p style={{ color: '#f04c3e' }}>Notes
                                 <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
                                     <li>If the Excel sheet does not have data, do not include it in the import.</li>
                                     <li>This configuration will not delete data. It will only insert and update.</li>
@@ -227,8 +227,8 @@ class Import extends React.Component {
                             {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                         </button>
                     }
-                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? (this.state.selectedListTabs.length === 0 ? this.state.errorEmptySelectionText : this.state.secondMessageErrorImportText) : this.state.successImportMessage) : null}</p></div>
-                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? 'red' : 'green', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
+                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.error ? '#f04c3e' : '#2c973e', fontWeight: 'bold' }}><p>{this.state.showActionMessage ? (this.state.error ? (this.state.selectedListTabs.length === 0 ? this.state.errorEmptySelectionText : this.state.secondMessageErrorImportText) : this.state.successImportMessage) : null}</p></div>
+                    <div style={{ marginTop: "20px", fontSize: "17px", width: "45%", color: this.state.errorExport ? '#f04c3e' : '#2c973e', fontWeight: 'bold' }}><p>{this.state.showActionMessageExport ? (this.state.errorExport ? this.state.warningExportMessage : this.state.successExportMessage) : null}</p></div>
                 </div>
             </div >)
     }

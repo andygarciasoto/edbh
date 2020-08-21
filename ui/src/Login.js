@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './Parker_Hannifin.svg';
+import EYlogo from './EY_Logo_White_Back.jpg';
 import Background from './eDBH_IndustryBackground.jpg';
 import './sass/SignIn.scss';
 import { Form, Button } from 'react-bootstrap';
@@ -31,7 +31,7 @@ class Login extends React.Component {
         return (
             <div id="main" style={this.state.style}>
                 <div id="signIn">
-                    <img src={logo} className="App-logo" alt="logo" />
+                    <img src={EYlogo} className="App-logo" alt="logo" />
                     <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
                     <Form action={AUTH} method="post">
                         <Form.Group controlId="formGroupEmail" style={{ textAlign: 'right' }}>
