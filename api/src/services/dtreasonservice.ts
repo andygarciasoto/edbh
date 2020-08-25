@@ -54,6 +54,7 @@ export class DTReasonService {
 
     public async putDtData(req: Request, res: Response) {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+        let productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
         const clocknumber = req.body.clocknumber;
@@ -84,16 +85,16 @@ export class DTReasonService {
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     dxh_data_id = dxhData[0].dxhdata_id;
                     if (clocknumber) {
-                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
                     } else {
-                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
                     }
                 }
             } else {
                 if (clocknumber) {
-                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
                 } else {
-                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
                 }
             }
             return res.status(200).send('Message Entered Succesfully');
@@ -104,6 +105,7 @@ export class DTReasonService {
 
     public async putDtDataUpdate(req: Request, res: Response) {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+        let productiondata_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
         const clocknumber = req.body.clocknumber;
@@ -123,9 +125,9 @@ export class DTReasonService {
         }
         try {
             if (clocknumber) {
-                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, dtdata_id);
             } else {
-                await this.dtreasonrepository.putDtDataByName(dxh_data_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, dtdata_id);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
