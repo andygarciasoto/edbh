@@ -74,7 +74,7 @@ export class ProductionDataService {
     
     public async putScrapValues(req: Request, res: Response) {
         const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
+        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : 0;

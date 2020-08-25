@@ -10,14 +10,15 @@
         "prefix": "/",
         "service_name": "Dxh Service",
         "cors": [
-            "https://dxhwebtest.azurewebsites.net",
-            "https://dxhapitest.azurewebsites.net"
+            "http://localhost:3000",
+            "http://localhost:3001"
         ],
-        "redirect_uri": "https://dxhapitest.azurewebsites.net/auth/token",
+        "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",
-        "URL": "https://dxhwebtest.azurewebsites.net",
-        "badLogin": "https://dxhwebtest.azurewebsites.net?err=true",
-        "loginURL": "https://dxhwebtest.azurewebsites.net/dashboard"
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
