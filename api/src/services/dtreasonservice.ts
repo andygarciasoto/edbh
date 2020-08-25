@@ -56,7 +56,7 @@ export class DTReasonService {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         let productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
-        const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
+        const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const clocknumber = req.body.clocknumber;
         const first_name = req.body.first_name;
         const last_name = req.body.last_name;
@@ -64,10 +64,10 @@ export class DTReasonService {
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
         const row_timestamp = req.body.row_timestamp;
-        const quantity = req.body.quantity ? req.body.quantity : 0;
+        const quantity = req.body.quantity ? req.body.quantity : null;
 
-        if (dt_reason_id === undefined || dt_minutes === undefined) {
-            return res.status(400).send("Missing parameters");
+        if (dt_reason_id === undefined || dxh_data_id === undefined || productiondata_id === undefined) {
+            return res.status(400).send("Bad Request - Missing Parameters");
         }
         if (!clocknumber) {
             if (!(first_name || last_name)) {
@@ -107,15 +107,15 @@ export class DTReasonService {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         let productiondata_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
-        const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : undefined;
+        const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const clocknumber = req.body.clocknumber;
         const first_name = req.body.first_name;
         const last_name = req.body.last_name;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
-        const dtdata_id = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
-        const quantity = req.body.quantity ? req.body.quantity : 0;
+        const dtdata_id = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : undefined;
+        const quantity = req.body.quantity ? req.body.quantity : null;
 
-        if (dxh_data_id === undefined || dt_reason_id === undefined || dt_minutes === undefined || dtdata_id === 0) {
+        if (dxh_data_id === undefined || dt_reason_id === undefined || dtdata_id === undefined) {
             return res.status(400).send("Missing parameters");
         }
         if (!clocknumber) {
