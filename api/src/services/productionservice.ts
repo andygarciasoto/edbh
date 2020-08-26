@@ -87,7 +87,7 @@ export class ProductionDataService {
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
 
         if (dxh_data_id === undefined || productiondata_id === undefined || dt_reason_id === undefined) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters - dxh_data_id, productiondata_id, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         if (!clocknumber) {
             if (!(first_name || last_name)) {
@@ -97,12 +97,12 @@ export class ProductionDataService {
         try {
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
-                if (other_scrap > 0) {
+                if (quantity > 0) {
                     await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
                 }
             } else {
                 await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
-                if (other_scrap > 0) {
+                if (quantity > 0) {
                     await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
                 }
             }
