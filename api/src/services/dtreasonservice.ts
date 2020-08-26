@@ -38,13 +38,13 @@ export class DTReasonService {
 
     public async getTimelostDxhData(req: Request, res: Response) {
         let dxh_data_id = req.query.dxh_data_id;
-        let type = req.query.type;
-        if (!dxh_data_id || dxh_data_id === null || dxh_data_id === undefined || !type) {
+        let productiondata_id = req.query.productiondata_id ? req.query.productiondata_id : null; 
+        if (!dxh_data_id || dxh_data_id === null || dxh_data_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let dtdata: any;
         try {
-            dtdata = await this.dtreasonrepository.getTimelostDxhData(dxh_data_id, type);
+            dtdata = await this.dtreasonrepository.getTimelostDxhData(dxh_data_id, productiondata_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
