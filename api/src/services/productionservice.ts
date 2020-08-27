@@ -86,7 +86,7 @@ export class ProductionDataService {
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
 
-        if (dxh_data_id === undefined || productiondata_id === undefined || dt_reason_id === undefined) {
+        if (dxh_data_id === undefined || productiondata_id === undefined || (quantity > 0 && dt_reason_id === undefined)) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         if (!clocknumber) {

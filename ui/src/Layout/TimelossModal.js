@@ -151,8 +151,9 @@ class TimelossModal extends React.Component {
         }
 
         const parameters = {
-            mc: this.props.parentData[0] === 'No Data' ? null : this.props.parentData[0],
-            dxh_data_id: props.currentRow.dxhdata_id
+            mc: props.parentData[0] === 'No Data' ? null : props.parentData[0],
+            dxh_data_id: props.currentRow.dxhdata_id,
+            type: 'downtime'
         }
 
         this.setState({ modal_loading_IsOpen: this.state.actualDxH_Id !== props.currentRow.dxhdata_id }, async () => {
@@ -250,7 +251,6 @@ class TimelossModal extends React.Component {
                         reason_id: this.state.newDTReason.dtreason_id
                     }}
                     onChange={(e) => this.changeSelectTable(e)}
-
                     options={this.state.reasons}
                 />;
             } else {
@@ -302,10 +302,11 @@ class TimelossModal extends React.Component {
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
-                timestamp: getCurrentTime(this.props.user.timezone)
+                timestamp: getCurrentTime(this.props.user.timezone),
+                asset_code: this.props.parentData[0]
             }
             this.setState({ modal_loading_IsOpen: true }, async () => {
-                let res = await getResponseFromGeneric('put', API, '/dt_data_update', {}, {}, data);
+                let res = await getResponseFromGeneric('put', API, '/dt_data', {}, {}, data);
 
                 if (res.status !== 200) {
                     this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Time Lost Entries unsaved' });
