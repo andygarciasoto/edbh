@@ -30,7 +30,7 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
       // handle error
       return error.response;
     });
-  if (res.status === 200) {
+  if (res && res.status === 200) {
     if (method === 'get') {
       return res.data;
     } else {
@@ -323,12 +323,12 @@ function getCurrentShift(shifts, current_date_time) {
 
 function getRowsFromShifts(props, summary) {
   let rows = 0;
-  if(summary){
+  if (summary) {
     let totalMinutes = _.sumBy(props.user.shifts, 'duration_in_minutes');
     rows = (totalMinutes / 60) + props.user.shifts.length;
-  }else{
+  } else {
     let currentShift = props.search.sf ? props.search.sf : props.user.current_shift;
-    let shift = _.find(props.user.shifts, {shift_name: currentShift});
+    let shift = _.find(props.user.shifts, { shift_name: currentShift });
     rows = (shift.duration_in_minutes / 60);
   }
   return rows;

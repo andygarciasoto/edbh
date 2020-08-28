@@ -39,6 +39,9 @@ import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
 const axios = require('axios');
+let requestDashOne = null;
+let requestVertDas = null;
+let requestInter = null;
 
 const modalStyle = {
   content: {
@@ -260,6 +263,21 @@ class DashboardOne extends React.Component {
 
         let responseArray = [];
 
+        if (requestDashOne) {
+          requestDashOne.cancel();
+        }
+
+        if (requestInter) {
+          requestInter.cancel();
+        }
+
+        if (requestVertDas) {
+          requestVertDas.cancel();
+        }
+
+        requestVertDas = axios.CancelToken.source();
+        requestInter = axios.CancelToken.source();
+
         _.forEach(props.user.shifts, shift => {
           let param = {
             mc: filter[0],
@@ -268,7 +286,7 @@ class DashboardOne extends React.Component {
             hr: hr,
             st: props.user.site
           }
-          responseArray.push(getResponseFromGeneric('get', API, '/data', {}, param, {}));
+          responseArray.push(getResponseFromGeneric('get', API, '/data', { cancelToken: requestVertDas.token }, param, {}));
         });
 
         const parameters = {
@@ -277,8 +295,9 @@ class DashboardOne extends React.Component {
           sf: mapShift(filter[2]),
           hr: hr
         };
-        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}));
-        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}));
+
+        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', { cancelToken: requestInter.token }, parameters, {}));
+        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', { cancelToken: requestVertDas.token }, parameters, {}));
 
         Promise.all(responseArray).then(responses => {
           let data = [];
@@ -354,9 +373,24 @@ class DashboardOne extends React.Component {
         st: props.user.site
       }
 
+      if (requestDashOne) {
+        requestDashOne.cancel();
+      }
+
+      if (requestInter) {
+        requestInter.cancel();
+      }
+
+      if (requestVertDas) {
+        requestVertDas.cancel();
+      }
+
+      requestDashOne = axios.CancelToken.source();
+      requestInter = axios.CancelToken.source();
+
       let requestArray = [
-        genericRequest('get', API, '/data', {}, parameters, {}),
-        genericRequest('get', API, '/uom_asset', {}, parameters, {}),
+        genericRequest('get', API, '/data', { cancelToken: requestDashOne.token }, parameters, {}),
+        genericRequest('get', API, '/uom_asset', { cancelToken: requestDashOne.token }, parameters, {}),
       ];
 
       axios.all(requestArray).then(
@@ -372,7 +406,7 @@ class DashboardOne extends React.Component {
         })
       );
 
-      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}) || [];
+      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', { cancelToken: requestInter.token }, parameters, {}) || [];
 
       let alertModalOverProd = false;
       let alertMessageOverProd = '';
@@ -412,7 +446,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
-    const num_rows = getRowsFromShifts(this.props,this.state.summary);
+    const num_rows = getRowsFromShifts(this.props, this.state.summary);
     return (
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
