@@ -39,9 +39,6 @@ import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
 const axios = require('axios');
-let requestDashOne = null;
-let requestVertDas = null;
-let requestInter = null;
 
 const modalStyle = {
   content: {
@@ -263,20 +260,12 @@ class DashboardOne extends React.Component {
 
         let responseArray = [];
 
-        if (requestDashOne) {
-          requestDashOne.cancel();
-        }
+        let requestVertDas = axios.CancelToken.source();
+        let requestInter = axios.CancelToken.source();
 
-        if (requestInter) {
-          requestInter.cancel();
-        }
-
-        if (requestVertDas) {
-          requestVertDas.cancel();
-        }
-
-        requestVertDas = axios.CancelToken.source();
-        requestInter = axios.CancelToken.source();
+        props.updateDashOne(null);
+        props.updateInter(requestInter);
+        props.updateVertDash(requestVertDas);
 
         _.forEach(props.user.shifts, shift => {
           let param = {
@@ -286,7 +275,7 @@ class DashboardOne extends React.Component {
             hr: hr,
             st: props.user.site
           }
-          responseArray.push(getResponseFromGeneric('get', API, '/data', { cancelToken: requestVertDas.token }, param, {}));
+          responseArray.push(getResponseFromGeneric('get', API, '/data', null, param, {}, requestVertDas.token));
         });
 
         const parameters = {
@@ -296,8 +285,8 @@ class DashboardOne extends React.Component {
           hr: hr
         };
 
-        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', { cancelToken: requestInter.token }, parameters, {}));
-        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', { cancelToken: requestVertDas.token }, parameters, {}));
+        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token));
+        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', null, parameters, {}, requestVertDas.token));
 
         Promise.all(responseArray).then(responses => {
           let data = [];
@@ -321,6 +310,8 @@ class DashboardOne extends React.Component {
           let uom_asset = responses[responses.length - 1] || [];
 
           this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
+        }, error => {
+          console.log(error);
         });
       }
     } else {
@@ -373,46 +364,38 @@ class DashboardOne extends React.Component {
         st: props.user.site
       }
 
-      if (requestDashOne) {
-        requestDashOne.cancel();
-      }
+      let requestDashOne = axios.CancelToken.source();
+      let requestInter = axios.CancelToken.source();
 
-      if (requestInter) {
-        requestInter.cancel();
-      }
-
-      if (requestVertDas) {
-        requestVertDas.cancel();
-      }
-
-      requestDashOne = axios.CancelToken.source();
-      requestInter = axios.CancelToken.source();
+      props.updateDashOne(requestDashOne);
+      props.updateInter(requestInter);
+      props.updateVertDash(null);
 
       let requestArray = [
-        genericRequest('get', API, '/data', { cancelToken: requestDashOne.token }, parameters, {}),
-        genericRequest('get', API, '/uom_asset', { cancelToken: requestDashOne.token }, parameters, {}),
+        genericRequest('get', API, '/data', null, parameters, {}, requestDashOne.token),
+        genericRequest('get', API, '/uom_asset', null, parameters, {}, requestDashOne.token),
       ];
 
       axios.all(requestArray).then(
         axios.spread((...responses) => {
           let data = responses[0].data;
           let uom_asset = responses[1].data;
+          let alertModalOverProd = false;
+          let alertMessageOverProd = '';
           if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
             (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
             alertModalOverProd = true;
             alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
           }
-          this.setState({ data, uom_asset });
+          this.setState({ data, uom_asset, signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd });
         })
-      );
+        , (error) => {
+          console.log(error)
+        });
 
-      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', { cancelToken: requestInter.token }, parameters, {}) || [];
-
-      let alertModalOverProd = false;
-      let alertMessageOverProd = '';
-
-
-      this.setState({ signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd, comments });
+      getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token).then(response => {
+        this.setState({ comments: response || [] });
+      });
     }
   }
 

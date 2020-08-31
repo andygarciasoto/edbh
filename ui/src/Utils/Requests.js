@@ -4,45 +4,44 @@ import _ from 'lodash';
 
 const axios = require('axios');
 
-function genericRequest(method, baseURL, route, headers, parameters, body) {
+function genericRequest(method, baseURL, route, headers, parameters, body, cancelTok) {
   return axios({
     method: method,
     url: `${baseURL}${route}`,
     headers: headers,
     params: parameters,
-    data: body
+    data: body,
+    cancelToken: cancelTok
   });
 }
 
-async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body) {
-  const res = await axios({
+async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body, cancelTok) {
+  //return new Promise((resolve, reject) => {
+  return axios({
     method: method,
     url: `${baseURL}${route}`,
     headers: headers,
     params: parameters,
-    data: body
+    data: body,
+    cancelToken: cancelTok
   })
     .then(response => {
       // handle success
-      return response;
+      if (method === 'get') {
+        return response.data;
+        //resolve(response.data);
+      } else {
+        //resolve(response);
+        return response;
+      }
     })
     .catch(error => {
       // handle error
+      //console.log(error.message);
+      //reject(error.response);
       return error.response;
     });
-  if (res && res.status === 200) {
-    if (method === 'get') {
-      return res.data;
-    } else {
-      return res;
-    }
-  } else {
-    if (method === 'get') {
-      return [];
-    } else {
-      return res;
-    }
-  }
+  //});
 }
 
 function assignValuesToUser(user, newAttributes) {
