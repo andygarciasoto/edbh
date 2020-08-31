@@ -75,7 +75,7 @@ export class ProductionDataService {
     public async putScrapValues(req: Request, res: Response) {
         const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
-        const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
+        let dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : 0;
         const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : 0;
@@ -85,8 +85,9 @@ export class ProductionDataService {
         const quantity = req.body.quantity ? req.body.quantity : null;
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
+        let asset_code = req.body.asset_code ? req.body.asset_code : undefined;
 
-        if (dxh_data_id === undefined || productiondata_id === undefined || (quantity > 0 && dt_reason_id === undefined)) {
+        if (dxh_data_id === undefined || productiondata_id === undefined || (quantity > 0 && dt_reason_id === undefined) || asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         if (!clocknumber) {
@@ -95,6 +96,16 @@ export class ProductionDataService {
             }
         }
         try {
+            if (dt_reason_id === 0){
+                let dtreason: any;
+                try {
+                    dtreason = await this.dtreasonrepository.getSetupReason(asset_code);
+                    dt_reason_id = dtreason[0].dtreason_id;
+                } catch (err) {
+                    res.status(500).json({ message: err.message });
+                    return;
+                }
+            }
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
                 if (quantity > 0) {

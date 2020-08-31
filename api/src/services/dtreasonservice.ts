@@ -54,8 +54,8 @@ export class DTReasonService {
 
     public async putDtData(req: Request, res: Response) {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-        let productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
-        const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
+        let productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
+        let dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const clocknumber = req.body.clocknumber;
         const first_name = req.body.first_name;
@@ -66,7 +66,7 @@ export class DTReasonService {
         const row_timestamp = req.body.row_timestamp;
         const quantity = req.body.quantity ? req.body.quantity : null;
 
-        if (dt_reason_id === undefined || dxh_data_id === undefined || productiondata_id === undefined) {
+        if (dt_reason_id === undefined) {
             return res.status(400).send("Bad Request - Missing Parameters");
         }
         if (!clocknumber) {
@@ -77,6 +77,16 @@ export class DTReasonService {
         let asset: any;
         let dxhData: any;
         try {
+            if (dt_reason_id === 0){
+                let dtdata: any;
+                try {
+                    dtdata = await this.dtreasonrepository.getSetupReason(asset_code);
+                    dt_reason_id = dtdata[0].dtreason_id;
+                } catch (err) {
+                    res.status(500).json({ message: err.message });
+                    return;
+                }
+            }
             if (dxh_data_id === undefined) {
                 if (asset_code === undefined) {
                     return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });
@@ -105,7 +115,7 @@ export class DTReasonService {
 
     public async putDtDataUpdate(req: Request, res: Response) {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-        let productiondata_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+        let productiondata_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : null;
         const dt_reason_id = req.body.dt_reason_id ? parseInt(req.body.dt_reason_id) : undefined;
         const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
         const clocknumber = req.body.clocknumber;
