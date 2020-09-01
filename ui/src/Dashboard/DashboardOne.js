@@ -267,16 +267,24 @@ class DashboardOne extends React.Component {
         props.updateInter(requestInter);
         props.updateVertDash(requestVertDas);
 
-        _.forEach(props.user.shifts, shift => {
-          let param = {
-            mc: filter[0],
-            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-            sf: shift.shift_id,
-            hr: hr,
-            st: props.user.site
-          }
-          responseArray.push(getResponseFromGeneric('get', API, '/data', null, param, {}, requestVertDas.token));
-        });
+        // _.forEach(props.user.shifts, shift => {
+        //   let param = {
+        //     mc: filter[0],
+        //     dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+        //     sf: shift.shift_id,
+        //     hr: hr,
+        //     st: props.user.site
+        //   }
+        //   responseArray.push(getResponseFromGeneric('get', API, '/data', null, param, {}, requestVertDas.token));
+        // });
+        const parameters2 = {
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: 28,
+          hr: 23,
+          st: props.user.site
+        };
+        responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, requestVertDas.token));
 
         const parameters = {
           mc: filter[0],
@@ -290,24 +298,30 @@ class DashboardOne extends React.Component {
 
         Promise.all(responseArray).then(responses => {
           let data = [];
-          _.forEach(responses, (res, index) => {
-            if (index < (responses.length - 2)) {
-              let shift = {
-                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+          let current_shift = null;
+          let startShift = 0;
+          _.forEach(responses[0], (value) => {
+            if (current_shift && (current_shift.shift_code === value.shift_code || value.shift_code === null)) {
+              data = _.concat(data, [value]);
+            } else {
+              current_shift = {
+                'shift_code': props.user.shifts[startShift].shift_code,
+                'hour_interval': props.user.shifts[startShift].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                 'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
                 'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
               };
               if (data === []) {
-                data = _.concat([shift], res);
+                data = _.concat([current_shift], [value]);
               } else {
-                data = _.concat(data, [shift], res);
+                data = _.concat(data, [current_shift], [value]);
               }
+              startShift += 1;
             }
           });
 
-          let comments = responses[responses.length - 2] || [];
-          let uom_asset = responses[responses.length - 1] || [];
+          let comments = responses[1] || [];
+          let uom_asset = responses[2] || [];
 
           this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
         }, error => {
