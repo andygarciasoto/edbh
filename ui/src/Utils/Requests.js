@@ -59,6 +59,7 @@ function assignValuesToUser(user, newAttributes) {
   user.language = newAttributes.language;
   user.date_of_shift = newAttributes.date_of_shift;
   user.current_date_time = newAttributes.current_date_time;
+  user.vertical_shift_id = newAttributes.vertical_shift_id;
   return user;
 }
 

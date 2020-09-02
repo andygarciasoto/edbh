@@ -280,7 +280,7 @@ class DashboardOne extends React.Component {
         const parameters2 = {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),
-          sf: 28,
+          sf: props.user.vertical_shift_id,
           hr: 23,
           st: props.user.site
         };
