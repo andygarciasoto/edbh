@@ -37,21 +37,22 @@ class ScrapModal extends React.Component {
             editScrapReason: false,
             currentScrapReason: {},
             newScrapReason: {},
-            allScrapsReason: []
+            allScrapsReason: [],
+            setup_scrap_data: {}
         }
     }
 
     getTextTranslations(props) {
         return {
             setupScrapText: props.t('Setup Scrap'),
-            otherScrapText: props.t('Other Scrap'),
+            scrapCountText: props.t('Scrap Count'),
             scraptCodeText: props.t('Scrap Code'),
             scrapDefinitionText: props.t('Scrap Definition')
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.currentRow && nextProps.currentRow.productiondata_id !== null) {
+        if (nextProps.currentRow && nextProps.currentRow.productiondata_id !== null && nextProps.isOpen) {
             this.loadData(nextProps);
         }
     }
@@ -90,10 +91,13 @@ class ScrapModal extends React.Component {
         });
 
         let responseScrap = await getResponseFromGeneric('get', API, '/timelost_dxh_data', {}, parameters, {}) || [];
+        let setup_scrap_data = _.find(responseScrap, { dtreason_category: 'Setup' }) || {};
+        responseScrap = _.remove(responseScrap, (reason) => { return reason.dtreason_category !== 'Setup' });
 
         this.setState({
             modal_loading_IsOpen: false,
-            scrapList: responseScrap
+            scrapList: responseScrap,
+            setup_scrap_data
         });
 
     }
@@ -129,7 +133,7 @@ class ScrapModal extends React.Component {
     getColumns() {
         let columns = [
             {
-                Header: this.getHeader(this.state.otherScrapText),
+                Header: this.getHeader(this.state.scrapCountText),
                 accessor: 'quantity',
                 maxWidth: 256,
                 Cell: c => this.renderCell(c.original, 'quantity')
@@ -236,6 +240,9 @@ class ScrapModal extends React.Component {
     acceptNewScrap() {
         if ((this.state.currentScrapReason.quantity !== this.state.newScrapReason.quantity) ||
             (this.state.currentScrapReason.dtreason_id !== this.state.newScrapReason.dtreason_id)) {
+
+            let asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
+
             const data = {
                 dxh_data_id: this.state.actualRow.dxhdata_id,
                 productiondata_id: this.state.actualRow.productiondata_id,
@@ -247,7 +254,8 @@ class ScrapModal extends React.Component {
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
                 quantity: this.state.newScrapReason.quantity,
                 dtdata_id: parseInt(this.state.currentScrapReason.dtdata_id),
-                timestamp: getCurrentTime(this.props.user.timezone)
+                timestamp: getCurrentTime(this.props.user.timezone),
+                asset_code: asset.asset_code
             }
             this.setState({ modal_loading_IsOpen: true }, async () => {
                 let res = await getResponseFromGeneric('put', API, '/scrap_values', {}, {}, data);
@@ -277,7 +285,39 @@ class ScrapModal extends React.Component {
         });
     }
 
-    submit = (e) => {
+    submitSetupScrap = () => {
+
+        let asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
+
+        let data = {
+            dxh_data_id: this.state.actualRow.dxhdata_id,
+            productiondata_id: this.state.actualRow.productiondata_id,
+            dt_reason_id: this.state.setup_scrap_data.dtreason_id || 0,//logic in the api to know this data is for insert production scrap
+            setup_scrap: this.state.setup_scrap,
+            other_scrap: this.state.other_scrap,
+            clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
+            first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
+            last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+            quantity: this.state.setup_scrap,
+            timestamp: getCurrentTime(this.props.user.timezone),
+            asset_code: asset.asset_code
+        }
+
+        if (this.state.setup_scrap_data.dtdata_id) {
+            data.dtdata_id = this.state.setup_scrap_data.dtdata_id;
+        }
+        this.setState({ modal_loading_IsOpen: true }, async () => {
+            let res = await getResponseFromGeneric('put', API, '/scrap_values', {}, {}, data);
+            if (res.status !== 200) {
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' });
+            } else {
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Value was inserted' });
+                this.props.Refresh(this.props.parentData);
+            }
+        });
+    }
+
+    submitProdutionScrap = () => {
         if (this.state.new_tl_scrap.scrap_reason_id || this.state.quantity > 0) {
             if ((this.state.new_tl_scrap.scrap_reason_id && this.state.quantity === 0) ||
                 (!this.state.new_tl_scrap.scrap_reason_id && this.state.quantity > 0)) {
@@ -285,7 +325,10 @@ class ScrapModal extends React.Component {
                 return;
             }
         }
-        const data = {
+
+        let asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
+
+        let data = {
             dxh_data_id: this.state.actualRow.dxhdata_id,
             productiondata_id: this.state.actualRow.productiondata_id,
             dt_reason_id: this.state.new_tl_scrap.scrap_reason_id,
@@ -295,24 +338,29 @@ class ScrapModal extends React.Component {
             first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
             last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
             quantity: this.state.quantity,
-            timestamp: getCurrentTime(this.props.user.timezone)
+            timestamp: getCurrentTime(this.props.user.timezone),
+            asset_code: asset.asset_code
         }
+
+        let productionScrap = _.find(this.state.scrapList, { dtreason_id: this.state.new_tl_scrap.scrap_reason_id }) || {};
+        if (productionScrap.dtreason_id) {
+            data.quantity += productionScrap.quantity;
+            data.dtdata_id = productionScrap.dtdata_id;
+        }
+
         this.setState({ modal_loading_IsOpen: true }, async () => {
             let res = await getResponseFromGeneric('put', API, '/scrap_values', {}, {}, data);
             if (res.status !== 200) {
                 this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' });
             } else {
-                this.props.Refresh(this.props.parentData);
                 this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Value was inserted' });
+                this.props.Refresh(this.props.parentData);
             }
         });
     }
 
     closeModal = () => {
         this.setState({ modal_message_isOpen: false, modal_loading_IsOpen: false });
-        if (this.state.modal_type === 'Success') {
-            this.props.onRequestClose();
-        }
     }
 
     render() {
@@ -361,6 +409,17 @@ class ScrapModal extends React.Component {
                                     </Form.Control>
                                 </span>
                             </Col>
+                        </Row>
+                        <ReactTable
+                            className={'reactTableTReason'}
+                            data={this.state.scrapList}
+                            columns={this.getColumns()}
+                            defaultPageSize={this.state.scrapList.length > 3 ? this.state.scrapList.length : 4}
+                            showPaginationBottom={false}
+                            noDataText={this.props.t('No Scrap entries yet')}
+                        />
+                        <span className={"new-timelost-label"}>{t('New Setup Scrap Entry')}</span>
+                        <div className="new-timeloss">
                             <Col sm={4} md={4}>
                                 <span className="dashboard-modal-field-group"><p>{this.props.t('Setup Scrap')}:</p>
                                     <input
@@ -373,20 +432,20 @@ class ScrapModal extends React.Component {
                                         disabled={this.props.readOnly || this.state.editScrapReason} />
                                 </span>
                             </Col>
-                        </Row>
-                        <ReactTable
-                            className={'reactTableTReason'}
-                            data={this.state.scrapList}
-                            columns={this.getColumns()}
-                            defaultPageSize={this.state.scrapList.length > 3 ? this.state.scrapList.length : 4}
-                            showPaginationBottom={false}
-                            noDataText={this.props.t('No Scrap entries yet')}
-                        />
-                        <span className={"new-timelost-label"}>{t('New Scrap Entry')}</span>
+                            <div className={'new-timeloss-button'}>
+                                <Button
+                                    variant="outline-primary"
+                                    style={{ marginTop: '10px' }}
+                                    disabled={this.props.readOnly || this.state.editScrapReason}
+                                    onClick={this.submitSetupScrap}>{this.props.t('Submit')}</Button>
+                                {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
+                            </div>
+                        </div>
+                        <span className={"new-timelost-label"}>{t('New Production Scrap Entry')}</span>
                         <div className="new-timeloss">
                             <Row style={{ marginBottom: '1px' }}>
                                 <Col sm={4} md={4}>
-                                    <span className="dashboard-modal-field-group"><p>{this.props.t('Other Scrap')}:</p>
+                                    <span className="dashboard-modal-field-group"><p>{this.props.t('Production Scrap')}:</p>
                                         <input
                                             value={this.state.quantity}
                                             type="number"
@@ -411,15 +470,12 @@ class ScrapModal extends React.Component {
                                     </Form.Group>
                                 </Col>
                             </Row>
-                            <div className="new-timeloss-reasoncode">
-
-                            </div>
                             <div className={'new-timeloss-button'}>
                                 <Button
                                     variant="outline-primary"
                                     style={{ marginTop: '10px' }}
                                     disabled={this.props.readOnly || this.state.editScrapReason}
-                                    onClick={this.submit}>{this.props.t('Submit')}</Button>
+                                    onClick={this.submitProdutionScrap}>{this.props.t('Submit')}</Button>
                                 {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                             </div>
                             <Col sm={4} md={4}>

@@ -298,10 +298,15 @@ class DashboardOne extends React.Component {
             }
           });
 
+          let currentRow = this.state.currentRow;
+          if (currentRow) {
+            currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+          }
+
           let comments = responses[responses.length - 2] || [];
           let uom_asset = responses[responses.length - 1] || [];
 
-          this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
+          this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset, currentRow });
         });
       }
     } else {
@@ -368,7 +373,13 @@ class DashboardOne extends React.Component {
             alertModalOverProd = true;
             alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
           }
-          this.setState({ data, uom_asset });
+
+          let currentRow = this.state.currentRow;
+          if (currentRow) {
+            currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+          }
+
+          this.setState({ data, uom_asset, currentRow });
         })
       );
 
@@ -412,7 +423,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
-    const num_rows = getRowsFromShifts(this.props,this.state.summary);
+    const num_rows = getRowsFromShifts(this.props, this.state.summary);
     return (
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
