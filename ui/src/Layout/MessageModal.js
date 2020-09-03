@@ -54,6 +54,7 @@ class MessageModal extends React.Component {
     }
 
     render() {
+        const t = this.props.t;
         return (
             <Modal
                 isOpen={this.props.isOpen}
@@ -61,14 +62,14 @@ class MessageModal extends React.Component {
                 style={this.state.style}
                 contentLabel="Example Modal">
                 <span className="close-modal-icon" onClick={this.props.onRequestClose}>X</span>
-                <div><p>{this.state.title}</p>
+                <div><p>{t(this.state.title)}</p>
                     <div>
                         {this.state.type === 'Error' ?
                             <FontAwesome className="warning-message icon" name="exclamation-triangle" />
                             :
                             <FontAwesome className="success-message icon" name="check" />
                         }&nbsp;&nbsp;
-                <p className={this.state.classMessage}>{this.state.message}</p></div>
+                <p className={this.state.classMessage}>{t(this.state.message)}</p></div>
                 </div>
                 <Button variant={this.state.classButton} style={{ marginTop: '20px' }} className={'close-button'} onClick={this.props.onRequestClose}>{this.state.closeText}</Button>
             </Modal>
