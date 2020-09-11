@@ -42,7 +42,6 @@ export class ProductionDataService {
                 return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
             }
         }
-
         let asset: any;
         let dxhData: any;
         try {
@@ -96,16 +95,6 @@ export class ProductionDataService {
             }
         }
         try {
-            if (dt_reason_id === 0) {
-                let dtreason: any;
-                try {
-                    dtreason = await this.dtreasonrepository.getSetupReason(asset_code);
-                    dt_reason_id = dtreason[0].dtreason_id;
-                } catch (err) {
-                    res.status(500).json({ message: err.message });
-                    return;
-                }
-            }
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
                 await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
