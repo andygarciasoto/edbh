@@ -42,7 +42,6 @@ export class ProductionDataService {
                 return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
             }
         }
-
         let asset: any;
         let dxhData: any;
         try {
