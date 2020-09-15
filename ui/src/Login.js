@@ -32,7 +32,7 @@ class Login extends React.Component {
             <div id="main" style={this.state.style}>
                 <div id="signIn">
                     <img src={EYlogo} className="App-logo" alt="logo" />
-                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Parker Hannifin Day by Hour Application')}</h3>
+                    <h3 style={{ fontSize: '0.9em', paddingTop: '5px' }} className='drop-shadow'>{this.props.t('Day by Hour Application')}</h3>
                     <Form action={AUTH} method="post">
                         <Form.Group controlId="formGroupEmail" style={{ textAlign: 'right' }}>
                             <Form.Label>Username: &nbsp;</Form.Label>
