@@ -318,9 +318,9 @@ const helpers = {
             } else if (currentRow) {
 
                 switch (modalType) {
-                    case 'manualentry':
+                    //case 'manualentry':
                     case 'actual':
-                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType === 'Manual';
+                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated';
                         break;
                     case 'timelost':
                     case 'comments':
