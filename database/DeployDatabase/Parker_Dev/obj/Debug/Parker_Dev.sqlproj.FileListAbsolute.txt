@@ -1,0 +1,5 @@
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\Parker_Dev\bin\Debug\Parker_Dev.dacpac
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\Parker_Dev\bin\Debug\Parker_Dev.dll
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\Parker_Dev\bin\Debug\Parker_Dev.pdb
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\Parker_Dev\obj\Debug\Parker_Dev.dll
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\Parker_Dev\obj\Debug\Parker_Dev.pdb

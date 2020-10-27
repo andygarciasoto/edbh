@@ -1,0 +1,25 @@
+﻿CREATE TABLE [dbo].[CommonParameters] (
+    [parameter_id]                    INT            IDENTITY (1, 1) NOT NULL,
+    [site_id]                         INT            NOT NULL,
+    [site_name]                       NVARCHAR (100) NOT NULL,
+    [production_day_offset_minutes]   FLOAT (53)     NULL,
+    [site_timezone]                   NVARCHAR (100) NULL,
+    [ui_timezone]                     NVARCHAR (100) NULL,
+    [escalation_level1_minutes]       FLOAT (53)     NULL,
+    [escalation_level2_minutes]       FLOAT (53)     NULL,
+    [default_target_percent_of_ideal] FLOAT (53)     NULL,
+    [default_setup_minutes]           FLOAT (53)     NULL,
+    [default_routed_cycle_time]       FLOAT (53)     NULL,
+    [setup_lookback_minutes]          FLOAT (53)     NULL,
+    [inactive_timeout_minutes]        FLOAT (53)     NULL,
+    [language]                        NVARCHAR (100) NULL,
+    [status]                          VARCHAR (100)  NULL,
+    [entered_by]                      VARCHAR (100)  NULL,
+    [entered_on]                      DATETIME       NULL,
+    [last_modified_by]                VARCHAR (100)  NULL,
+    [last_modified_on]                DATETIME       NULL,
+    [summary_timeout]                 INT            NULL,
+    CONSTRAINT [PK_CommonParametersTest_Parameter_Id] PRIMARY KEY NONCLUSTERED ([parameter_id] ASC),
+    CONSTRAINT [FK_CommonParametersTest_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id])
+);
+

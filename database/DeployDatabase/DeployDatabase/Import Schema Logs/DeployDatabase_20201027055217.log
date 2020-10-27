@@ -1,0 +1,81 @@
+27/10/2020 11:52:17	This log contains information about the import schema operation into project 'DeployDatabase' on computer 'CR2080700W2' by user 'Adrian.Mendez'.
+27/10/2020 11:52:17	Import of database schema has started.
+27/10/2020 11:52:34	Gathering database credentials
+27/10/2020 11:52:34	Gathering database options
+27/10/2020 11:52:34	Gathering generic database scoped configuration option
+27/10/2020 11:52:34	Gathering users
+27/10/2020 11:52:34	Gathering roles
+27/10/2020 11:52:34	Gathering application roles
+27/10/2020 11:52:34	Gathering role memberships
+27/10/2020 11:52:34	Gathering filegroups
+27/10/2020 11:52:34	Gathering full-text catalogs
+27/10/2020 11:52:34	Gathering assemblies
+27/10/2020 11:52:34	Gathering certificates
+27/10/2020 11:52:34	Gathering symmetric keys
+27/10/2020 11:52:34	Gathering encrypted symmetric keys
+27/10/2020 11:52:34	Gathering schemas
+27/10/2020 11:52:34	Gathering XML schema collections
+27/10/2020 11:52:34	Gathering user-defined data types
+27/10/2020 11:52:34	Gathering user-defined types
+27/10/2020 11:52:34	Gathering table types
+27/10/2020 11:52:34	Gathering unique keys for table types
+27/10/2020 11:52:34	Gathering primary keys for table types
+27/10/2020 11:52:35	Gathering indexes for table types
+27/10/2020 11:52:35	Gathering check constraints for table types
+27/10/2020 11:52:35	Gathering default constraints for table types
+27/10/2020 11:52:35	Gathering partition functions
+27/10/2020 11:52:35	Gathering partition schemes
+27/10/2020 11:52:35	Gathering functions
+27/10/2020 11:52:35	Gathering encrypted functions
+27/10/2020 11:52:35	Gathering aggregates
+27/10/2020 11:52:35	Gathering procedures
+27/10/2020 11:52:35	Gathering encrypted procedures
+27/10/2020 11:52:35	Gathering tables
+27/10/2020 11:52:35	Gathering primary keys
+27/10/2020 11:52:35	Gathering unique constraints
+27/10/2020 11:52:35	Gathering foreign keys
+27/10/2020 11:52:35	Gathering default constraints
+27/10/2020 11:52:35	Gathering check constraints
+27/10/2020 11:52:35	Gathering views
+27/10/2020 11:52:35	Gathering encrypted views
+27/10/2020 11:52:35	Gathering indexes
+27/10/2020 11:52:36	Gathering statistics
+27/10/2020 11:52:36	Gathering full-text index stoplists
+27/10/2020 11:52:36	Gathering search property lists
+27/10/2020 11:52:36	Gathering search properties
+27/10/2020 11:52:36	Gathering full-text indexes
+27/10/2020 11:52:36	Gathering column store indexes
+27/10/2020 11:52:36	Gathering spatial indexes
+27/10/2020 11:52:36	Gathering XML indexes
+27/10/2020 11:52:36	Gathering Selective XML indexes
+27/10/2020 11:52:36	Gathering encrypted triggers
+27/10/2020 11:52:36	Gathering triggers
+27/10/2020 11:52:36	Gathering encrypted and clr ddl triggers
+27/10/2020 11:52:36	Gathering ddl triggers
+27/10/2020 11:52:36	Creating edge constraints
+27/10/2020 11:52:36	Gathering synonyms
+27/10/2020 11:52:36	Gathering defaults
+27/10/2020 11:52:36	Gathering data constraint uddt bindings
+27/10/2020 11:52:36	Gathering rules
+27/10/2020 11:52:36	Gathering data constraint uddt bindings
+27/10/2020 11:52:36	Gathering message types
+27/10/2020 11:52:36	Gathering queues
+27/10/2020 11:52:36	Gathering contracts
+27/10/2020 11:52:36	Gathering services
+27/10/2020 11:52:36	Gathering event notifications
+27/10/2020 11:52:36	Gathering remote service bindings
+27/10/2020 11:52:36	Gathering broker priorities
+27/10/2020 11:52:36	Gathering signatures
+27/10/2020 11:52:36	Gathering data compression options
+27/10/2020 11:52:36	Gathering sequence types
+27/10/2020 11:52:36	Gathering security policies
+27/10/2020 11:52:36	Gather column encryption keys
+27/10/2020 11:52:36	Gathering column master keys
+27/10/2020 11:52:36	Gathering external data sources
+27/10/2020 11:52:36	Gathering external tables
+27/10/2020 11:52:36	Gathering extended properties
+27/10/2020 11:52:42	Scanning project for duplicate elements
+27/10/2020 11:52:42	Finished duplicate element processing
+27/10/2020 11:52:44	Finished importing database.
+27/10/2020 11:52:44	A summary of the import was saved to the following location: C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\Import Schema Logs\DeployDatabase_20201027055217.log
+27/10/2020 11:52:44	Click Finish to continue...
