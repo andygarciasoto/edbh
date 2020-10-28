@@ -164,7 +164,7 @@ AS
                         END AS new_ideal,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal))
+                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(OD.target_percent_of_ideal, ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal)))
                             ELSE NULL
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
