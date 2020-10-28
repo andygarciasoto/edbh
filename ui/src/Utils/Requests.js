@@ -260,12 +260,16 @@ function formatNumber(number, decimals) {
   }
 }
 
-function convertNumber(num, uom_asset) {
+function convertNumber(num, uom_asset, target) {
   let result = 0;
   if (uom_asset && uom_asset.decimals) {
     result = (Math.round(Math.round(num) * 10 + Number.EPSILON) / 10);
   } else {
-    result = Math.floor(Math.round(num));
+    if (target && (target === 'target' || target === 'summary_target')) {
+      result = Math.floor(num);
+    } else {
+      result = Math.floor(Math.round(num));
+    }
   }
   return result;
 }
