@@ -1,9 +1,0 @@
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\bin\Debug\Parker_Test.dacpac
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\bin\Debug\DeployDatabase.dll
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\bin\Debug\DeployDatabase.pdb
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\Model.xml
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\refactor.xml
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\postdeploy.sql
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\predeploy.sql
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\DeployDatabase.dll
-C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\ADV-DXH\database\DeployDatabase\DeployDatabase\obj\Debug\DeployDatabase.pdb
