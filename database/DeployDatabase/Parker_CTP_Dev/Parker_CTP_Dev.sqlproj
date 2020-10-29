@@ -69,7 +69,6 @@
     <Build Include="dbo\Tables\DxHData.sql" />
     <Build Include="dbo\Tables\ExampleJTraxData_.sql" />
     <Build Include="dbo\Tables\InterShiftData.sql" />
-    <Build Include="dbo\Tables\Language.sql" />
     <Build Include="dbo\Tables\OrderData.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductionData.sql" />
@@ -79,7 +78,6 @@
     <Build Include="dbo\Tables\Tag.sql" />
     <Build Include="dbo\Tables\TagData.sql" />
     <Build Include="dbo\Tables\TFDUsers.sql" />
-    <Build Include="dbo\Tables\Translation.sql" />
     <Build Include="dbo\Tables\Unavailable.sql" />
     <Build Include="dbo\Tables\UOM.sql" />
     <Build Include="dbo\Tables\Workcell.sql" />
