@@ -61,7 +61,6 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Views\" />
-    <Folder Include="Security\" />
     <Folder Include="dbo\Functions\" />
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
@@ -114,18 +113,6 @@
     <Build Include="dbo\Views\ProdDataAggregateByHour_VH.sql" />
     <Build Include="dbo\Views\ProdDataAggregateByShift_VH.sql" />
     <Build Include="dbo\Views\ProductionData_view.sql" />
-    <Build Include="Security\vw_reader.sql" />
-    <Build Include="Security\COR089GGIoTAzureAdmins.sql" />
-    <Build Include="Security\COR089GGIoTTFD.sql" />
-    <Build Include="Security\appUser.sql" />
-    <Build Include="Security\powerbiUser.sql" />
-    <Build Include="Security\edxhPowerbiUser.sql" />
-    <Build Include="Security\edxhPowerbiUser2.sql" />
-    <Build Include="Security\COR089UGIoTEDxHSQLvwReadPrd.sql" />
-    <Build Include="Security\vwRead_TFD.sql" />
-    <Build Include="Security\vwRead_Manhattan.sql" />
-    <Build Include="Security\COR089UGIoTEDxHSQLOwnerPrd.sql" />
-    <Build Include="Security\RoleMemberships.sql" />
     <Build Include="dbo\Functions\AddIntervalToDate.sql" />
     <Build Include="dbo\Functions\fn_diagramobjects.sql" />
     <Build Include="dbo\Functions\UpRoundDate.sql" />

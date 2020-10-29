@@ -61,7 +61,6 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Views\" />
-    <Folder Include="Security\" />
     <Folder Include="dbo\Functions\" />
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
@@ -91,13 +90,6 @@
     <Build Include="dbo\Tables\DTReason.sql" />
     <Build Include="dbo\Views\ProdDataAggregateByHour.sql" />
     <Build Include="dbo\Views\ProdDataAggregateByShift.sql" />
-    <Build Include="Security\appUser.sql" />
-    <Build Include="Security\COR089GGIoTAzureAdmins.sql" />
-    <Build Include="Security\COR089GGIoTTFD.sql" />
-    <Build Include="Security\COR089UGIoTL81777.sql" />
-    <Build Include="Security\powerbiUser.sql" />
-    <Build Include="Security\UserForImportingData.sql" />
-    <Build Include="Security\RoleMemberships.sql" />
     <Build Include="dbo\Functions\UpRoundDate.sql" />
     <Build Include="dbo\Functions\AddIntervalToDate.sql" />
     <Build Include="dbo\Functions\GetRangesBetweenDates.sql" />
@@ -228,7 +220,5 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Security\https___ussqlauditstgacct01.blob.core.windows.net_sqldbauditlogs.sql" />
-    <Build Include="Security\https___ussqlauditstgacct01.blob.core.windows.net_sqldbtdlogs.sql" />
   </ItemGroup>
 </Project>

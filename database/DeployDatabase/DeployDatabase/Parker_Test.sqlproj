@@ -62,7 +62,6 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Views\" />
-    <Folder Include="Security\" />
     <Folder Include="dbo\Functions\" />
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
@@ -114,16 +113,6 @@
     <Build Include="dbo\Views\CommentData_vw.sql" />
     <Build Include="dbo\Views\Unavailable_vw.sql" />
     <Build Include="dbo\Views\InterShiftData_vw.sql" />
-    <Build Include="Security\vw_reader.sql" />
-    <Build Include="Security\COR089GGIoTAzureAdmins.sql" />
-    <Build Include="Security\COR089GGIoTTFD.sql" />
-    <Build Include="Security\appUser.sql" />
-    <Build Include="Security\UserForImportingData.sql" />
-    <Build Include="Security\powerbiUser.sql" />
-    <Build Include="Security\COR089UGIoTEDxHSQLvwReadTst.sql" />
-    <Build Include="Security\vwRead_TFD.sql" />
-    <Build Include="Security\COR089UGIoTEDxHSQLOwnerTst.sql" />
-    <Build Include="Security\RoleMemberships.sql" />
     <Build Include="dbo\Functions\AddIntervalToDate.sql" />
     <Build Include="dbo\Functions\fn_diagramobjects.sql" />
     <Build Include="dbo\Functions\UpRoundDate.sql" />
