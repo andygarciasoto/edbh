@@ -1,7 +1,0 @@
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\bin\Debug\Parker_CTP_Dev.dacpac
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\Model.xml
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\refactor.xml
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\postdeploy.sql
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\predeploy.sql
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\Parker_CTP_Dev.dll
-C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\obj\Debug\Parker_CTP_Dev.pdb
