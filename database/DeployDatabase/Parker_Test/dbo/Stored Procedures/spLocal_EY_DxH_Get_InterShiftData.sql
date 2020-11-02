@@ -45,7 +45,7 @@
 --	20200415		C00V05 - Change logic to create new way to get the information
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_InterShiftData_new_1 35,'2020-04-15',3
+-- exec spLocal_EY_DxH_Get_InterShiftData 35,'2020-04-15',3
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_InterShiftData]
 --Declare

@@ -79,9 +79,6 @@ BEGIN
 		And ads.displaysystem_name like CONCAT(IsNull(@DisplaySystem_Name,''),'%')
 		ORDER BY a.asset_name
 
-
---Select * From @Output
-
 Return
 
 END

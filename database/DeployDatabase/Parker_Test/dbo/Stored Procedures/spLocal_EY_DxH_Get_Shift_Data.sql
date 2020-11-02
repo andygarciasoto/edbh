@@ -47,6 +47,7 @@
 --	20191204		C00V10 - Change Shift_Code to Shift_Id because this information is from the database
 --	20200225		C00V11 - Add order information to all production rows and the actual production quantity
 --	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
+--	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -166,7 +167,7 @@ AS
                         END AS new_ideal,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(OD.target_percent_of_ideal, ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal)))
+                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal))
                             ELSE NULL
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
