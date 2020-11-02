@@ -18,6 +18,7 @@ export function getCorsConfiguration(config): cors.CorsOptions {
             'Content-disposition',
             'X-Requested-With',
             'X-XSRF-TOKEN',
+            'cancelToken'
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
         exposedHeaders: ['Location', 'Content-Disposition'],
@@ -36,7 +37,7 @@ export function routerWhithoutToken(config): Router {
         }
         res.setHeader("Access-Control-Allow-Credentials", "true")
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,cancelToken");
         next();
     });
     return router;
@@ -51,7 +52,7 @@ export function routerWithToken(config): Router {
         }
         res.setHeader("Access-Control-Allow-Credentials", "true")
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,cancelToken");
         next();
     });
     routerToken.use((req: Request, res: Response, next: NextFunction) => {

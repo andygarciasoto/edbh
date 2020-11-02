@@ -26,7 +26,8 @@ import {
   formatNumber,
   getDateAccordingToShifts,
   genericRequest,
-  getResponseFromGeneric
+  getResponseFromGeneric,
+  getRowsFromShifts
 } from '../Utils/Requests';
 import _ from 'lodash';
 import config from '../config.json';
@@ -259,16 +260,31 @@ class DashboardOne extends React.Component {
 
         let responseArray = [];
 
-        _.forEach(props.user.shifts, shift => {
-          let param = {
-            mc: filter[0],
-            dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-            sf: shift.shift_id,
-            hr: hr,
-            st: props.user.site
-          }
-          responseArray.push(getResponseFromGeneric('get', API, '/data', {}, param, {}));
-        });
+        let requestVertDas = axios.CancelToken.source();
+        let requestInter = axios.CancelToken.source();
+
+        props.updateDashOne(null);
+        props.updateInter(requestInter);
+        props.updateVertDash(requestVertDas);
+
+        // _.forEach(props.user.shifts, shift => {
+        //   let param = {
+        //     mc: filter[0],
+        //     dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
+        //     sf: shift.shift_id,
+        //     hr: hr,
+        //     st: props.user.site
+        //   }
+        //   responseArray.push(getResponseFromGeneric('get', API, '/data', null, param, {}, requestVertDas.token));
+        // });
+        const parameters2 = {
+          mc: filter[0],
+          dt: formatDate(filter[1]).split("-").join(""),
+          sf: props.user.vertical_shift_id,
+          hr: 23,
+          st: props.user.site
+        };
+        responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, requestVertDas.token));
 
         const parameters = {
           mc: filter[0],
@@ -276,31 +292,40 @@ class DashboardOne extends React.Component {
           sf: mapShift(filter[2]),
           hr: hr
         };
-        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}));
-        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', {}, parameters, {}));
+
+        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token));
+        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', null, parameters, {}, requestVertDas.token));
 
         Promise.all(responseArray).then(responses => {
           let data = [];
-          _.forEach(responses, (res, index) => {
-            if (index < (responses.length - 2)) {
-              let shift = {
-                'hour_interval': props.user.shifts[index].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
+          let current_shift = null;
+          let startShift = 0;
+          _.forEach(responses[0], (value) => {
+            if (current_shift && (current_shift.shift_code === value.shift_code || value.shift_code === null)) {
+              data = _.concat(data, [value]);
+            } else {
+              current_shift = {
+                'shift_code': props.user.shifts[startShift].shift_code,
+                'hour_interval': props.user.shifts[startShift].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                 'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                 'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
                 'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
               };
               if (data === []) {
-                data = _.concat([shift], res);
+                data = _.concat([current_shift], [value]);
               } else {
-                data = _.concat(data, [shift], res);
+                data = _.concat(data, [current_shift], [value]);
               }
+              startShift += 1;
             }
           });
 
-          let comments = responses[responses.length - 2] || [];
-          let uom_asset = responses[responses.length - 1] || [];
+          let comments = responses[1] || [];
+          let uom_asset = responses[2] || [];
 
           this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset });
+        }, error => {
+          console.log(error);
         });
       }
     } else {
@@ -353,31 +378,38 @@ class DashboardOne extends React.Component {
         st: props.user.site
       }
 
+      let requestDashOne = axios.CancelToken.source();
+      let requestInter = axios.CancelToken.source();
+
+      props.updateDashOne(requestDashOne);
+      props.updateInter(requestInter);
+      props.updateVertDash(null);
+
       let requestArray = [
-        genericRequest('get', API, '/data', {}, parameters, {}),
-        genericRequest('get', API, '/uom_asset', {}, parameters, {}),
+        genericRequest('get', API, '/data', null, parameters, {}, requestDashOne.token),
+        genericRequest('get', API, '/uom_asset', null, parameters, {}, requestDashOne.token),
       ];
 
       axios.all(requestArray).then(
         axios.spread((...responses) => {
           let data = responses[0].data;
           let uom_asset = responses[1].data;
+          let alertModalOverProd = false;
+          let alertMessageOverProd = '';
           if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
             (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
             alertModalOverProd = true;
             alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
           }
-          this.setState({ data, uom_asset });
+          this.setState({ data, uom_asset, signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd });
         })
-      );
+        , (error) => {
+          console.log(error)
+        });
 
-      let comments = await getResponseFromGeneric('get', API, '/intershift_communication', {}, parameters, {}) || [];
-
-      let alertModalOverProd = false;
-      let alertMessageOverProd = '';
-
-
-      this.setState({ signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd, comments });
+      getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token).then(response => {
+        this.setState({ comments: response || [] });
+      });
     }
   }
 
@@ -411,6 +443,7 @@ class DashboardOne extends React.Component {
     const rows = t('Rows');
     const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
     const obj = this;
+    const num_rows = getRowsFromShifts(this.props, this.state.summary);
     return (
       <React.Fragment>
         {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
@@ -446,7 +479,7 @@ class DashboardOne extends React.Component {
                         this.clickWholeCell(rowInfo, column)
                       },
                       style: {
-                        cursor: rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
+                        cursor: rowInfo && rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
                       }
                     }
                   }}
@@ -454,7 +487,7 @@ class DashboardOne extends React.Component {
                   data={data}
                   columns={columns}
                   showPaginationBottom={false}
-                  pageSize={this.state.summary ? (this.state.shifts.length * (this.state.shifts[0].duration_in_minutes / 60)) + this.state.shifts.length : (this.state.shifts[0].duration_in_minutes / 60)}
+                  pageSize={num_rows}
                   headerStyle={{ fontSize: '0.5em' }}
                   previousText={back}
                   nextText={next}
