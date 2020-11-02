@@ -1,5 +1,5 @@
 ﻿
---exec spLocal_EY_DxH_Put_Production_From_IoT '168-0065.Blowout.Length', '413591', 'SQL manual entry', '2020-07-29 11:50:59.813'
+--exec spLocal_EY_DxH_Put_Production_From_IoT 'Braider_52.PLC.FOOTAGE_COUNT', '100000', 'SQL manual entry', '2020-03-30 11:50:59.813'
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
 (@tag_name AS      VARCHAR(200), 
  @tagdata_value AS VARCHAR(256), 
@@ -28,8 +28,9 @@ AS
         END;
         IF @tagdata_value IS NULL
            OR @tagdata_value = '0'
+		   OR CONVERT(float, @tagdata_value) > 100000 
             BEGIN
-                SELECT 'Wrong message. Production won''t be inserted';
+                SELECT 'Wrong message';
         END;
             ELSE
             BEGIN
@@ -105,12 +106,6 @@ AS
                                         SELECT @value = @current_value;
                                 END;
                         END;
-						IF @value > 100000
-							BEGIN
-								SELECT 'Production won''t be inserted. Value is greater than 100000'
-							END
-							ELSE
-							BEGIN
                         IF EXISTS
                         (
                             SELECT TOP 1 productiondata_id
@@ -153,7 +148,6 @@ AS
                                      @timezone, 
                                      0;
                         END;
-						END;
         END;
         END;
         END;

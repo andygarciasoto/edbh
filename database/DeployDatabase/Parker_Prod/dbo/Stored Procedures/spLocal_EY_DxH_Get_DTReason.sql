@@ -40,7 +40,7 @@
 --  20200203		C00V03 - Change result result to normal table result
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_DTReason 303
+-- exec spLocal_EY_DxH_Get_DTReason 453
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
 --Declare
@@ -69,4 +69,3 @@ BEGIN
 		dt.dtreason_code;
 
 END
-

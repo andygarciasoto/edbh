@@ -18,6 +18,6 @@
     [asset_id]         INT           NULL,
     [max_change]       INT           NULL,
     CONSTRAINT [PK_Tag_Tag_Id] PRIMARY KEY NONCLUSTERED ([tag_id] ASC),
-    FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [FK__Tag__Asset_ID] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
 

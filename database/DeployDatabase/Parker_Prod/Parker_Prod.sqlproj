@@ -78,7 +78,6 @@
     <Build Include="dbo\Tables\ExampleJTraxData_.sql" />
     <Build Include="dbo\Tables\GlobalParameters.sql" />
     <Build Include="dbo\Tables\InterShiftData.sql" />
-    <Build Include="dbo\Tables\Language.sql" />
     <Build Include="dbo\Tables\OrderData.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductionData_History.sql" />
@@ -88,7 +87,6 @@
     <Build Include="dbo\Tables\Tag.sql" />
     <Build Include="dbo\Tables\TagData.sql" />
     <Build Include="dbo\Tables\TFDUsers.sql" />
-    <Build Include="dbo\Tables\Translation.sql" />
     <Build Include="dbo\Tables\Unavailable.sql" />
     <Build Include="dbo\Tables\UOM.sql" />
     <Build Include="dbo\Tables\Workcell.sql" />
@@ -152,9 +150,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset_By_Code.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_AssetDisplaySystem.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
@@ -171,9 +166,6 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason_new_1.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DxHDataId.sql">
@@ -200,9 +192,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM_By_Site.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Asset.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_AssetDisplaySystem.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -219,22 +208,13 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_OperatorSignOff.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_OperatorSignOff_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_New_1.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scrap_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff_new_1.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\sp_get_workcell.sql" />

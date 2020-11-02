@@ -11,6 +11,6 @@
     [last_modified_on] DATETIME      NOT NULL,
     [asset_id]         INT           NULL,
     CONSTRAINT [PK_InterShift_InterShift_Id] PRIMARY KEY NONCLUSTERED ([intershift_id] ASC),
-    FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [FK_InterShif_Asset_ID] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
 

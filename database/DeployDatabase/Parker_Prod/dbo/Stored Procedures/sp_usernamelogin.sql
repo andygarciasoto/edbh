@@ -1,11 +1,10 @@
 ﻿
---exec sp_usernamelogin 'administratoreaton', '0'
+--exec sp_usernamelogin 'Ryan', '0'
 
- CREATE     PROCEDURE [dbo].[sp_usernamelogin] (@username as VARCHAR(100), @machine as VARCHAR(100))
+ CREATE PROCEDURE [dbo].[sp_usernamelogin] (@username as VARCHAR(100), @machine as VARCHAR(100))
 
   AS  BEGIN 
  DECLARE
- @json_out			NVARCHAR(max),
  @site				INT,
  @name				VARCHAR(100),
  @timezone			VARCHAR(100),
@@ -22,11 +21,6 @@
  @StartDayCurrent	DATETIME,
  @DateOfShift		DATETIME;
 
-IF EXISTS (SELECT TOP 1 site FROM dbo.TFDUsers
-WHERE
-username = @username)
-BEGIN
-
 IF @machine = '0'
 BEGIN
 
@@ -39,10 +33,8 @@ SELECT TOP 1 @name = asset_code
 FROM dbo.Asset 
 WHERE asset_id = @site;
 END
-
 ELSE
 BEGIN
-
 SELECT @site = asset_id, 
 @name = site_code
 FROM DBO.Asset 
@@ -117,12 +109,11 @@ FROM CTE WHERE
 @CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday OR
 @CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
 
-SET @json_out = (SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name,
+SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name,
  @timezone as timezone, @Shift_Id as shift_id, @Shift_Name as shift_name, FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, 
 FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @summary_timeout as summary_timeout,
 @inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration 
-FROM dbo.TFDUsers where username = @username AND Site = @site for JSON AUTO, INCLUDE_NULL_VALUES)
-END
+FROM dbo.TFDUsers where username = @username AND Site = @site;
 
-SELECT @json_out as 'GetDataByUsername'
+
 END

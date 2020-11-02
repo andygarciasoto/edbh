@@ -47,6 +47,7 @@
 --	20190809		C00V00 - Intial code created		
 --	20191204		C00V01 - Change CommonParameters to CommonParameters
 --	20201028		C00V02 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
+--	20201102		C00V03 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Put_ProductionData 261042, 35, 0, 0, 0, '123456789123', Null, Null, '2019/11/26 12:18', 0
@@ -185,8 +186,7 @@ AS
                      @UOM_Code = o.UOM_code, 
                      @Order_Quantity = o.order_quantity, 
                      @Routed_Cycle_Time = o.routed_cycle_time,
-					 @Order_Start_Time = o.start_time,
-                     @Target_Percent_Of_Ideal = o.target_percent_of_ideal
+					 @Order_Start_Time = o.start_time
         FROM dbo.OrderData o WITH(NOLOCK), 
              dbo.DxHData dxh WITH(NOLOCK)
         WHERE dxh.dxhdata_id = @DxHData_Id
@@ -204,8 +204,7 @@ AS
                              @UOM_Code = o.UOM_code, 
                              @Order_Quantity = o.order_quantity, 
                              @Routed_Cycle_Time = o.routed_cycle_time,
-							 @Order_Start_Time = o.start_time,
-                             @Target_Percent_Of_Ideal = o.target_percent_of_ideal
+							 @Order_Start_Time = o.start_time
                 FROM dbo.OrderData o WITH(NOLOCK), 
                      dbo.DxHData dxh WITH(NOLOCK)
                 WHERE dxh.dxhdata_id = @DxHData_Id
@@ -222,12 +221,10 @@ AS
                 GOTO ErrExit;
         END;
 
-        IF ISNULL(@Target_Percent_Of_Ideal, 0) = 0
-            BEGIN
-		        SELECT @Target_Percent_Of_Ideal = target_percent_of_ideal
-		        FROM dbo.Asset
-		        WHERE asset_id = @Asset_Id
-            END;
+        
+		SELECT @Target_Percent_Of_Ideal = target_percent_of_ideal
+		FROM dbo.Asset
+		WHERE asset_id = @Asset_Id;
 
         SELECT @Site_Id = asset_id
         FROM [dbo].[Asset]

@@ -11,7 +11,6 @@
     [last_modified_on]   DATETIME      NOT NULL,
     [asset_id]           INT           NULL,
     CONSTRAINT [PK_SupervisorAsset_Id] PRIMARY KEY NONCLUSTERED ([supervisorasset_id] ASC),
-    FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
-    FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [FK__Supervisor__Asset_ID] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
 

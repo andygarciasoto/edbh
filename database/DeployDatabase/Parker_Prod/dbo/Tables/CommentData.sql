@@ -8,7 +8,8 @@
     [entered_on]       DATETIME      NOT NULL,
     [last_modified_by] VARCHAR (100) NOT NULL,
     [last_modified_on] DATETIME      NOT NULL,
-    CONSTRAINT [PK_CommentData_CommentData_Id] PRIMARY KEY NONCLUSTERED ([commentdata_id] ASC)
+    CONSTRAINT [PK_CommentData_CommentData_Id] PRIMARY KEY NONCLUSTERED ([commentdata_id] ASC),
+    CONSTRAINT [FK_CommentData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id])
 );
 
 

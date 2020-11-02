@@ -22,20 +22,8 @@
     [last_modified_on]          DATETIME      NOT NULL,
     [asset_id]                  INT           NULL,
     CONSTRAINT [PK_OrderData_Order_Id] PRIMARY KEY NONCLUSTERED ([order_id] ASC),
-    FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [FK__OrderData__Asset_ID] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
-
-
-GO
-CREATE NONCLUSTERED INDEX [OrderData_IsCurr_Asset_NC_Index]
-    ON [dbo].[OrderData]([is_current_order] ASC, [asset_id] ASC)
-    INCLUDE([order_id], [order_number], [product_code], [order_quantity], [routed_cycle_time], [setup_start_time], [setup_end_time], [start_time]);
-
-
-GO
-CREATE NONCLUSTERED INDEX [OrderData_Asset_NC_Index]
-    ON [dbo].[OrderData]([asset_id] ASC)
-    INCLUDE([end_time]);
 
 
 GO
@@ -48,4 +36,16 @@ GO
 CREATE NONCLUSTERED INDEX [nci_wi_OrderData_B4F7E8FFB819F0384574A0761D3A9CEA]
     ON [dbo].[OrderData]([asset_id] ASC, [order_number] ASC, [is_current_order] ASC, [production_status] ASC)
     INCLUDE([end_time], [entered_by], [entered_on], [ideal], [last_modified_by], [last_modified_on], [minutes_allowed_per_setup], [order_id], [order_quantity], [product_code], [production_end_time], [production_start_time], [routed_cycle_time], [setup_end_time], [setup_start_time], [start_time], [target_percent_of_ideal], [UOM_code]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [OrderData_Asset_NC_Index]
+    ON [dbo].[OrderData]([asset_id] ASC)
+    INCLUDE([end_time]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [OrderData_IsCurr_Asset_NC_Index]
+    ON [dbo].[OrderData]([is_current_order] ASC, [asset_id] ASC)
+    INCLUDE([order_id], [order_number], [product_code], [order_quantity], [routed_cycle_time], [setup_start_time], [setup_end_time], [start_time]);
 

@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] '2291', '0'
 
-CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] (@badge as VARCHAR(100), @machine as VARCHAR(100))
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] (@badge as VARCHAR(100), @machine as VARCHAR(100))
 
   AS  BEGIN 
 DECLARE
@@ -19,7 +19,8 @@ DECLARE
 @inactive_timeout_minutes FLOAT,
 @socket_timeout		FLOAT,
 @max_regression		FLOAT,
-@token_expiration	FLOAT;
+@token_expiration	FLOAT,
+@vertical_shift_id	INT;
 
 IF @machine = '0'
 BEGIN
@@ -57,6 +58,11 @@ SELECT
 @max_regression = max_regression,
 @token_expiration = token_expiration
 FROM dbo.GlobalParameters;
+
+SELECT
+@vertical_shift_id = shift_id
+FROM dbo.Shift WHERE asset_id = @site
+AND status = 'Inactive' AND shift_name = 'Vertical';
 
 WITH CTE AS
 (SELECT shift_id, shift_name, is_first_shift_of_day,
@@ -109,7 +115,8 @@ FROM CTE WHERE
 
 SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name, @timezone as timezone, @Shift_Id as shift_id, @Shift_Name as shift_name, 
 FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @summary_timeout as summary_timeout,
-@inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration 
+@inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration,
+@vertical_shift_id as vertical_shift_id
 FROM dbo.TFDUsers where badge = @badge AND Site = @site
 
 
