@@ -108,6 +108,10 @@
     <Build Include="dbo\Views\Shift_vw.sql" />
     <Build Include="dbo\Views\site_code_vw.sql" />
     <Build Include="dbo\Views\Unavailable_vw.sql" />
+    <Build Include="dbo\Views\DTData_vw.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByShift_MN.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByShift_VH.sql" />
+    <Build Include="dbo\Functions\fn_diagramobjects.sql" />
     <Build Include="dbo\Functions\UpRoundDate.sql" />
     <Build Include="dbo\Functions\AddIntervalToDate.sql" />
     <Build Include="dbo\Functions\GetRangesBetweenDates.sql" />
