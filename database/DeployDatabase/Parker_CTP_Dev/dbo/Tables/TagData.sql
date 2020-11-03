@@ -7,14 +7,15 @@
     [last_modified_by] VARCHAR (100) NOT NULL,
     [last_modified_on] DATETIME      NOT NULL,
     [timestamp]        DATETIME      NULL,
-    CONSTRAINT [PK_TagData_TagData_Id] PRIMARY KEY NONCLUSTERED ([tagdata_id] ASC),
+    CONSTRAINT [PK_TagData_TagData_Id] PRIMARY KEY CLUSTERED ([tagdata_id] ASC),
     CONSTRAINT [FK_TagData_Tag_Name] FOREIGN KEY ([tag_name]) REFERENCES [dbo].[Tag] ([tag_name])
 );
 
 
 GO
-CREATE NONCLUSTERED INDEX [tagdata_index]
-    ON [dbo].[TagData]([tag_name] ASC);
+CREATE NONCLUSTERED INDEX [NCI_TagData_Tag_Name]
+    ON [dbo].[TagData]([tag_name] ASC)
+    INCLUDE([tagdata_id], [tagdata_value]);
 
 
 GO

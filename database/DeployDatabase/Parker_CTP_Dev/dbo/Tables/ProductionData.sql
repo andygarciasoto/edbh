@@ -18,7 +18,7 @@
     [other_scrap]       FLOAT (53)    NULL,
     [adjusted_actual]   FLOAT (53)    NULL,
     [name]              VARCHAR (100) NULL,
-    CONSTRAINT [PK_ProductionData_ProductionData_Id] PRIMARY KEY NONCLUSTERED ([productiondata_id] ASC),
+    CONSTRAINT [PK_ProductionData_ProductionData_Id] PRIMARY KEY CLUSTERED ([productiondata_id] ASC),
     CONSTRAINT [FK_ProductionData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id]),
     CONSTRAINT [FK_ProductionData_Product_Code] FOREIGN KEY ([product_code]) REFERENCES [dbo].[Product] ([product_code]),
     CONSTRAINT [FK_ProductionData_UOM_Code] FOREIGN KEY ([UOM_code]) REFERENCES [dbo].[UOM] ([UOM_code])
@@ -26,8 +26,19 @@
 
 
 GO
-CREATE NONCLUSTERED INDEX [productiondata_index]
-    ON [dbo].[ProductionData]([dxhdata_id] ASC, [actual] ASC);
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_DxHData_Id]
+    ON [dbo].[ProductionData]([dxhdata_id] ASC)
+    INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Id]
+    ON [dbo].[ProductionData]([order_id] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Num_Start_T]
+    ON [dbo].[ProductionData]([order_number] ASC, [start_time] ASC);
 
 
 GO

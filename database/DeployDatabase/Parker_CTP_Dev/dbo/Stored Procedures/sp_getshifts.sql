@@ -1,11 +1,10 @@
 ﻿
 --exec [dbo].[sp_getshifts] 119
 
- CREATE   PROCEDURE [dbo].[sp_getshifts] (@Site as int)
+ CREATE PROCEDURE [dbo].[sp_getshifts] (@Site as int)
 
  AS  BEGIN 
  DECLARE
- @json_out							nVarchar(max),
  @CurrentDateTime	DATETIME,
  @StartDayCurrent	DATETIME,
  @DateOfShift		DATETIME;
@@ -15,22 +14,6 @@ FROM dbo.CommonParameters where site_id = @Site;
 SET @StartDayCurrent = FORMAT(@CurrentDateTime, 'yyyy-MM-dd');
 
 
-IF EXISTS
-(
-    SELECT shift_id, 
-           shift_code, 
-           shift_name, 
-           shift_sequence, 
-           asset_id AS Site, 
-           DATEPART(hour, start_time) AS hour, 
-           [duration_in_minutes]
-    FROM [dbo].[Shift]
-    WHERE STATUS = 'Active'
-          AND asset_id = @site
-)
-    BEGIN
-        SET @json_out =
-        (
             SELECT shift_id, 
                    shift_code, 
                    shift_name, 
@@ -71,8 +54,6 @@ IF EXISTS
 						ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, 1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
 				   END AS end_date_time_tomorrow
 				   FROM [dbo].[Shift]
-				   WHERE STATUS = 'Active' AND asset_id = @site ORDER BY shift_sequence FOR JSON AUTO, INCLUDE_NULL_VALUES);
-END;
+				   WHERE STATUS = 'Active' AND asset_id = @site ORDER BY shift_sequence;
 
-SELECT @json_out as 'GetShiftsBySite'
 END

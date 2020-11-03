@@ -16,16 +16,8 @@
     [last_modified_by]    VARCHAR (100) NOT NULL,
     [last_modified_on]    DATETIME      NOT NULL,
     [asset_id]            INT           NULL,
-    CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY NONCLUSTERED ([product_id] ASC)
+    CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY CLUSTERED ([product_id] ASC),
+    CONSTRAINT [UNC_Product_Product_Code] UNIQUE NONCLUSTERED ([product_code] ASC),
+    CONSTRAINT [UNC_Product_Product_Name] UNIQUE NONCLUSTERED ([product_name] ASC)
 );
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Product_Product_Code]
-    ON [dbo].[Product]([product_code] ASC);
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Product_Product_Name]
-    ON [dbo].[Product]([product_name] ASC);
 

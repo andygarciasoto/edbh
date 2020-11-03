@@ -46,6 +46,8 @@
 --	20191204		C00V09 - Change CommonParameters to CommonParameters
 --	20191204		C00V10 - Change Shift_Code to Shift_Id because this information is from the database
 --	20200225		C00V11 - Add order information to all production rows and the actual production quantity
+--	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
+--	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -54,7 +56,7 @@
 --52,7586221694946
 --23,9655113220215
 
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data]
 --Declare
 @Asset_Id        INT, 
 @Production_date DATETIME, 
@@ -77,7 +79,8 @@ AS
         WITH CTE
              AS (SELECT CONVERT(VARCHAR, BD.started_on_chunck, 20) AS started_on_chunck, 
                         CONVERT(VARCHAR, BD.ended_on_chunck, 20) AS ended_on_chunck, 
-                        LOWER(CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt'))) AS hour_interval, 
+                        LOWER(CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt'))) AS hour_interval,
+						SF.shift_code,
                         DH.dxhdata_id, 
                         DH.operator_signoff, 
                         DH.operator_signoff_timestamp, 
@@ -172,16 +175,25 @@ AS
                         ORDER BY BD.started_on_chunck) AS Row#
                  FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 1, @Production_date), 60, 1) AS BD
                  --GET HOURS OF SELECTED SHIFT
-                      INNER JOIN dbo.Shift SF ON SF.shift_id = @Shift_Id
+                      INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id
                                                  AND BD.started_on_chunck >= CASE
-                                                                                 WHEN SF.start_time > SF.end_time
-                                                                                 THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
-                                                                                 ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
+                                                                                 WHEN SF1.start_time > SF1.end_time OR SF1.start_time = SF1.end_time
+                                                                                 THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
+                                                                                 ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), @Production_date)
                                                                              END
-                                                 AND BD.started_on_chunck < DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
+                                                 AND BD.started_on_chunck < DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), @Production_date)
+					  --VALIDATE SELECTED SHIFT AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= CASE
+																			WHEN SF.start_time > SF.end_time OR SF.start_time = SF.end_time
+																			THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
+																			ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
+																			END
+													AND BD.started_on_chunck < DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
+													AND SF.asset_id = @Site
+													AND SF.status = 'Active'
                       --SEARCH ALL DXHDATA CREATE IN THE SELECTED SHIFT
                       LEFT JOIN dbo.DxHData DH ON DH.asset_id = @Asset_Id
-                                                  AND DH.shift_code = SF.shift_code
+                                                  --AND DH.shift_code = SF.shift_code
                                                   AND production_day = @Production_date
                                                   AND CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt')) = UPPER(DH.hour_interval)
                       --SEARCH ALL PRODUCTION FOR THE SELECTED DXHDATA
@@ -265,6 +277,7 @@ AS
              SELECT started_on_chunck, 
                     ended_on_chunck, 
                     hour_interval, 
+					shift_code,
                     dxhdata_id, 
                     operator_signoff, 
                     operator_signoff_timestamp, 

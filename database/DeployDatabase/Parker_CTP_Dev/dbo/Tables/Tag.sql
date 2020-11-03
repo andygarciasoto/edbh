@@ -17,18 +17,10 @@
     [site_id]          INT           DEFAULT ((1)) NOT NULL,
     [asset_id]         INT           NULL,
     [max_change]       INT           NULL,
-    CONSTRAINT [PK_Tag_Tag_Id] PRIMARY KEY NONCLUSTERED ([tag_id] ASC),
+    CONSTRAINT [PK_Tag_Tag_Id] PRIMARY KEY CLUSTERED ([tag_id] ASC),
     CONSTRAINT [FK_Tag_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
-    CONSTRAINT [FK_Tag_UOM_Code] FOREIGN KEY ([UOM_code]) REFERENCES [dbo].[UOM] ([UOM_code])
+    CONSTRAINT [FK_Tag_UOM_Code] FOREIGN KEY ([UOM_code]) REFERENCES [dbo].[UOM] ([UOM_code]),
+    CONSTRAINT [UNC_Tag_Tag_Code] UNIQUE NONCLUSTERED ([tag_code] ASC),
+    CONSTRAINT [UNC_Tag_Tag_Name] UNIQUE NONCLUSTERED ([tag_name] ASC)
 );
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Tag_Tag_Code]
-    ON [dbo].[Tag]([tag_code] ASC);
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Tag_Tag_Name]
-    ON [dbo].[Tag]([tag_name] ASC);
 

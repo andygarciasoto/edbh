@@ -1,7 +1,7 @@
 ﻿
 --exec sp_get_workcell 'CR2080435W1', 1
 
-CREATE   PROCEDURE [dbo].[sp_get_workcell] (@station as VARCHAR(100),
+CREATE       PROCEDURE [dbo].[sp_get_workcell] (@station as VARCHAR(100),
 @site_id as INT)
 
 AS  BEGIN 
@@ -36,6 +36,7 @@ FROM dbo.Asset
 WHERE grouping1 = @workcell_id
 AND asset_level = 'Cell'
 AND status = 'Active'
+ORDER BY asset_name
 END
 
 ELSE
@@ -46,5 +47,6 @@ FROM dbo.Asset
 WHERE site_code = @site
 AND asset_level = 'Cell'
 AND status = 'Active'
+ORDER BY asset_name
 END
 END

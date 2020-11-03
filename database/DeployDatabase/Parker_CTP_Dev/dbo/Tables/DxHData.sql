@@ -24,14 +24,20 @@
     [start_time]                   DATETIME      NULL,
     [end_time]                     DATETIME      NULL,
     [asset_id]                     INT           NULL,
-    CONSTRAINT [PK_DxHData_DxHData_Id] PRIMARY KEY NONCLUSTERED ([dxhdata_id] ASC),
+    CONSTRAINT [PK_DxHData_DxHData_Id] PRIMARY KEY CLUSTERED ([dxhdata_id] ASC),
     CONSTRAINT [FK_DxHData_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
     CONSTRAINT [FK_DxHData_Shift_Code] FOREIGN KEY ([shift_code]) REFERENCES [dbo].[Shift] ([shift_code])
 );
 
 
 GO
-CREATE NONCLUSTERED INDEX [index_dxhdata]
+CREATE NONCLUSTERED INDEX [NCI_DxHData_PROD_DAY_ASSET_ID]
     ON [dbo].[DxHData]([production_day] ASC, [asset_id] ASC)
-    INCLUDE([dxhdata_id], [hour_interval], [shift_code]);
+    INCLUDE([dxhdata_id], [hour_interval], [shift_code], [operator_signoff], [operator_signoff_timestamp], [supervisor_signoff], [supervisor_signoff_timestamp]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [NCI_DxHData_ASSET_ID]
+    ON [dbo].[DxHData]([asset_id] ASC)
+    INCLUDE([dxhdata_id], [entered_by], [entered_on], [hour_interval], [last_modified_by], [last_modified_on], [operator_signoff], [operator_signoff_timestamp], [production_day], [shift_code], [summary_action_taken], [summary_actual], [summary_comments], [summary_dtminutes], [summary_dtreason_code], [summary_ideal], [summary_order_number], [summary_product_code], [summary_target], [summary_UOM_code], [supervisor_signoff], [supervisor_signoff_timestamp]);
 

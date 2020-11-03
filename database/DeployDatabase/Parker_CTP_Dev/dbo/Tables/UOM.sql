@@ -10,11 +10,7 @@
     [last_modified_on] DATETIME      NOT NULL,
     [site_id]          INT           DEFAULT ((1)) NOT NULL,
     [decimals]         BIT           NULL,
-    CONSTRAINT [PK_UOM_UOM_Id] PRIMARY KEY NONCLUSTERED ([UOM_id] ASC)
+    CONSTRAINT [PK_UOM_UOM_ID] PRIMARY KEY CLUSTERED ([UOM_id] ASC),
+    CONSTRAINT [UNC_UOM_UOM_Code] UNIQUE NONCLUSTERED ([UOM_code] ASC)
 );
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_UOM_UOM_Code]
-    ON [dbo].[UOM]([UOM_code] ASC);
 

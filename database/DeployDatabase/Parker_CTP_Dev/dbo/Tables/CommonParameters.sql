@@ -19,7 +19,7 @@
     [last_modified_by]                VARCHAR (100)  NULL,
     [last_modified_on]                DATETIME       NULL,
     [summary_timeout]                 INT            NULL,
-    CONSTRAINT [PK_CommonParameters_Parameter_Id] PRIMARY KEY NONCLUSTERED ([parameter_id] ASC),
+    CONSTRAINT [PK_CommonParameters_Parameter_Id] PRIMARY KEY CLUSTERED ([parameter_id] ASC),
     CONSTRAINT [FK_CommonParameters_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
 

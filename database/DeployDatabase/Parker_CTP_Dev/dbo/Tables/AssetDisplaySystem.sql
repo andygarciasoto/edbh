@@ -7,12 +7,8 @@
     [last_modified_by]      VARCHAR (100) CONSTRAINT [DF_AssetDisplaySystem_last_modified_by] DEFAULT ('Unknown') NOT NULL,
     [last_modified_on]      DATETIME      CONSTRAINT [DF_AssetDisplaySystem_last_modified_on] DEFAULT (getdate()) NOT NULL,
     [asset_id]              INT           NULL,
-    CONSTRAINT [PK_AssetDisplaySystem_AssetDisplaySystem_Id] PRIMARY KEY NONCLUSTERED ([assetdisplaysystem_id] ASC),
-    CONSTRAINT [FK_ADS_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [PK_AssetDisplaySystem_AssetDisplaySystem_Id] PRIMARY KEY CLUSTERED ([assetdisplaysystem_id] ASC),
+    CONSTRAINT [FK_ADS_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
+    CONSTRAINT [UNC_ADS_Name_DisplaySystem_Name] UNIQUE NONCLUSTERED ([displaysystem_name] ASC, [status] ASC)
 );
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_AssetDisplaySystem_DisplaySystem_Name]
-    ON [dbo].[AssetDisplaySystem]([displaysystem_name] ASC, [status] ASC);
 

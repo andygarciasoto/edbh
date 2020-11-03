@@ -13,7 +13,7 @@
     [entered_on]                DATETIME      NOT NULL,
     [last_modified_by]          VARCHAR (100) NOT NULL,
     [last_modified_on]          DATETIME      NOT NULL,
-    CONSTRAINT [PK_AssetProductTarget_Id] PRIMARY KEY NONCLUSTERED ([assetproducttarget_id] ASC),
+    CONSTRAINT [PK_AssetProductTarget_Id] PRIMARY KEY CLUSTERED ([assetproducttarget_id] ASC),
     CONSTRAINT [FK_APT_Asset_Code] FOREIGN KEY ([asset_code]) REFERENCES [dbo].[Asset] ([asset_code]),
     CONSTRAINT [FK_APT_Product_Code] FOREIGN KEY ([product_code]) REFERENCES [dbo].[Product] ([product_code]),
     CONSTRAINT [FK_APT_UOM_Code] FOREIGN KEY ([UOM_code]) REFERENCES [dbo].[UOM] ([UOM_code])

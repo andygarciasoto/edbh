@@ -17,12 +17,8 @@
     [last_modified_by]      VARCHAR (100) NOT NULL,
     [last_modified_on]      DATETIME      NOT NULL,
     [asset_id]              INT           NULL,
-    CONSTRAINT [PK_Shift_Shift_Id] PRIMARY KEY NONCLUSTERED ([shift_id] ASC),
-    UNIQUE NONCLUSTERED ([shift_code] ASC)
+    CONSTRAINT [PK_Shift_Shift_Id] PRIMARY KEY CLUSTERED ([shift_id] ASC),
+    CONSTRAINT [FK_Shift_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
+    CONSTRAINT [UNC_Shift_Shift_Code] UNIQUE NONCLUSTERED ([shift_code] ASC)
 );
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Shift_Shift_Code]
-    ON [dbo].[Shift]([shift_code] ASC);
 

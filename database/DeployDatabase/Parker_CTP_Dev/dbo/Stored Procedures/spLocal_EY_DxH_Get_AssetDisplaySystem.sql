@@ -42,7 +42,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_AssetDisplaySystem 'CR2080435W1'
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]
 --Declare
 	@DisplaySystem_Name	Varchar(100)	-- the name of the computer system or other identifier
 AS
@@ -76,10 +76,8 @@ BEGIN
 	Where a.asset_id = ads.asset_id
 		And a.status = 'Active'
 		And ads.status = 'Active'
-		And ads.displaysystem_name = @DisplaySystem_Name
+		And ads.displaysystem_name like CONCAT(IsNull(@DisplaySystem_Name,''),'%')
 		ORDER BY a.asset_name
-
---Select * From @Output
 
 Return
 
