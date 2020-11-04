@@ -48,6 +48,7 @@
 --	20200225		C00V11 - Add order information to all production rows and the actual production quantity
 --	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
 --	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
+--	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -173,22 +174,34 @@ AS
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
                         ORDER BY BD.started_on_chunck) AS Row#
-                 FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 1, @Production_date), 60, 1) AS BD
+                 FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
                  --GET HOURS OF SELECTED SHIFT
                       INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id
-                                                 AND BD.started_on_chunck >= CASE
-                                                                                 WHEN SF1.start_time > SF1.end_time OR SF1.start_time = SF1.end_time
-                                                                                 THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
-                                                                                 ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), @Production_date)
-                                                                             END
-                                                 AND BD.started_on_chunck < DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), @Production_date)
-					  --VALIDATE SELECTED SHIFT AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= CASE
-																			WHEN SF.start_time > SF.end_time OR SF.start_time = SF.end_time
-																			THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
-																			ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
+                                                 AND BD.started_on_chunck >=	CASE
+																					WHEN SF1.start_time > SF1.end_time AND SF1.is_first_shift_of_day = 1
+																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
+																					WHEN SF1.start_time = SF1.end_time AND SF1.start_time > '20:00:00'
+																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
+																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), @Production_date)
+																				END
+                                                 AND BD.started_on_chunck <	CASE
+																				WHEN SF1.end_time < SF1.start_time AND SF1.is_first_shift_of_day = 0
+																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
+																				WHEN SF1.start_time = SF1.end_time AND SF1.end_time <= '10:00:00'
+																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
+																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), @Production_date)
 																			END
-													AND BD.started_on_chunck < DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
+					  --VALIDATE SELECTED SHIFT AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >=	CASE
+																				WHEN SF.start_time > SF.end_time AND SF.is_first_shift_of_day = 1
+																					THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
+																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
+																			END
+													AND BD.started_on_chunck <	CASE
+																					WHEN SF.end_time < SF.start_time AND SF.is_first_shift_of_day = 0
+																						THEN DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, 1, @Production_date))
+																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
+																				END
 													AND SF.asset_id = @Site
 													AND SF.status = 'Active'
                       --SEARCH ALL DXHDATA CREATE IN THE SELECTED SHIFT
