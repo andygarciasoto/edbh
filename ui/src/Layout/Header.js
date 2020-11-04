@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { getCurrentShift, getResponseFromGeneric, assignValuesToUser } from '../Utils/Requests';
 import { API } from '../Utils/Constants';
 import $ from 'jquery';
+import configuration from '../config.json';
 
 
 class Header extends React.Component {
@@ -65,8 +66,9 @@ class Header extends React.Component {
     redirectTo = (page) => {
         let { search } = qs.parse(this.props.history.location.search);
         let queryItem = Object.assign({}, search);
-        if (page !== 'dashboard') {
-            this.props.history.push(`${page}${this.props.history.location.search}`);
+        if (page !== 'dashboard' || page !== 'summary') {
+            const newUrl = configuration['root'] + `/${page}${this.props.history.location.search}`;
+            window.location.href = newUrl;
         } else {
             queryItem["mc"] = this.state.mc;
             queryItem["dt"] = moment(this.state.dt).format('YYYY/MM/DD HH:mm');
@@ -217,7 +219,7 @@ class Header extends React.Component {
                             </span>
                             : null}
                         {isComponentValid(this.props.user.role, 'neworder') && this.props.history.location.pathname !== '/summary' ?
-                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp !== 'Automated')) ?
+                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual')) ?
                                 <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
                                 </Nav.Link>
                                 : null : null

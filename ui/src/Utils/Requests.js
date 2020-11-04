@@ -4,45 +4,44 @@ import _ from 'lodash';
 
 const axios = require('axios');
 
-function genericRequest(method, baseURL, route, headers, parameters, body) {
+function genericRequest(method, baseURL, route, headers, parameters, body, cancelTok) {
   return axios({
     method: method,
     url: `${baseURL}${route}`,
     headers: headers,
     params: parameters,
-    data: body
+    data: body,
+    cancelToken: cancelTok
   });
 }
 
-async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body) {
-  const res = await axios({
+async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body, cancelTok) {
+  //return new Promise((resolve, reject) => {
+  return axios({
     method: method,
     url: `${baseURL}${route}`,
     headers: headers,
     params: parameters,
-    data: body
+    data: body,
+    cancelToken: cancelTok
   })
     .then(response => {
       // handle success
-      return response;
+      if (method === 'get') {
+        return response.data;
+        //resolve(response.data);
+      } else {
+        //resolve(response);
+        return response;
+      }
     })
     .catch(error => {
       // handle error
+      //console.log(error.message);
+      //reject(error.response);
       return error.response;
     });
-  if (res.status === 200) {
-    if (method === 'get') {
-      return res.data;
-    } else {
-      return res;
-    }
-  } else {
-    if (method === 'get') {
-      return [];
-    } else {
-      return res;
-    }
-  }
+  //});
 }
 
 function assignValuesToUser(user, newAttributes) {
@@ -60,6 +59,7 @@ function assignValuesToUser(user, newAttributes) {
   user.language = newAttributes.language;
   user.date_of_shift = newAttributes.date_of_shift;
   user.current_date_time = newAttributes.current_date_time;
+  user.vertical_shift_id = newAttributes.vertical_shift_id;
   return user;
 }
 
@@ -260,12 +260,16 @@ function formatNumber(number, decimals) {
   }
 }
 
-function convertNumber(num, uom_asset) {
+function convertNumber(num, uom_asset, target) {
   let result = 0;
   if (uom_asset && uom_asset.decimals) {
     result = (Math.round(Math.round(num) * 10 + Number.EPSILON) / 10);
   } else {
-    result = Math.floor(Math.round(num));
+    if (target && (target === 'target' || target === 'summary_target')) {
+      result = Math.floor(num);
+    } else {
+      result = Math.floor(Math.round(num));
+    }
   }
   return result;
 }
@@ -323,12 +327,12 @@ function getCurrentShift(shifts, current_date_time) {
 
 function getRowsFromShifts(props, summary) {
   let rows = 0;
-  if(summary){
+  if (summary) {
     let totalMinutes = _.sumBy(props.user.shifts, 'duration_in_minutes');
     rows = (totalMinutes / 60) + props.user.shifts.length;
-  }else{
+  } else {
     let currentShift = props.search.sf ? props.search.sf : props.user.current_shift;
-    let shift = _.find(props.user.shifts, {shift_name: currentShift});
+    let shift = _.find(props.user.shifts, { shift_name: currentShift });
     rows = (shift.duration_in_minutes / 60);
   }
   return rows;
