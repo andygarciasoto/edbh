@@ -36,6 +36,7 @@ class LanguagePickerCustom extends React.Component {
         <Dropdown.Item eventKey="ES" onSelect={(e) => this.onSelect(e)}>ES</Dropdown.Item>
         <Dropdown.Item eventKey="IT" onSelect={(e) => this.onSelect(e)}>IT</Dropdown.Item>
         <Dropdown.Item eventKey="DE" onSelect={(e) => this.onSelect(e)}>DE</Dropdown.Item>
+        <Dropdown.Item eventKey="KO" onSelect={(e) => this.onSelect(e)}>KO</Dropdown.Item>
       </DropdownButton>
     )
   }

@@ -208,12 +208,12 @@ class SignoffModal extends React.Component {
                             <li><p className={'signoff-list'}>{this.props.t('Target') + ': '}</p><p className={'signoff-list'}>
                                 {row.summary_target === '' ? 0 : convertNumber(row.summary_target, this.props.uom_asset)}
                             </p></li>
-                            <li><p className={'signoff-list'}>{'Actual Recorded: '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Recorded Actual') + ': '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
                                 {row.summary_actual === '' ? 0 : convertNumber(row.summary_actual, this.props.uom_asset)}
                             </p></li>
-                            <li><p className={'signoff-list'}>{'Scrap: '}</p><p className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Scrap') + ': '}</p><p className={'signoff-list'}>
                                 {parseInt(row.summary_scrap || 0, 10)}</p></li>
-                            <li><p className={'signoff-list'}>{'Adjusted Actual: '}</p><p className={'signoff-list'}>
+                            <li><p className={'signoff-list'}>{this.props.t('Adjusted Actual') + ': '}</p><p className={'signoff-list'}>
                                 {parseInt(row.summary_adjusted_actual || row.summary_actual || 0, 10)}</p></li>
                         </ul>
                         <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>

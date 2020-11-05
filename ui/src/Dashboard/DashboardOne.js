@@ -38,6 +38,7 @@ import $ from 'jquery';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
+import('moment/locale/ko');
 const axios = require('axios');
 
 const modalStyle = {
