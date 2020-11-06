@@ -219,7 +219,7 @@ class Header extends React.Component {
                             </span>
                             : null}
                         {isComponentValid(this.props.user.role, 'neworder') && this.props.history.location.pathname !== '/summary' ?
-                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual')) ?
+                            ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual' || this.state.tp === 'Partially_Manual_Scan_Order')) ?
                                 <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
                                 </Nav.Link>
                                 : null : null
