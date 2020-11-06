@@ -183,9 +183,7 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_ProductionDay_Data.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
