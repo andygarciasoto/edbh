@@ -8,6 +8,7 @@ api/.vscode
 old_api/node_modules
 old_api/bin
 old_api/.vscode
+database/DeployDatabase/DeployDatabase/.vs
 database/DeployDatabase/DeployDatabase/bin
 database/DeployDatabase/DeployDatabase/obj
 database/DeployDatabase/Parker_CTP_Dev/bin
