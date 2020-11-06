@@ -1,5 +1,5 @@
 ﻿--exec spLocal_EY_DxH_Put_Production_From_IoT '168-0065.Blowout.Length', '413591', 'SQL manual entry', '2020-07-29 11:50:59.813'
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
+CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
 (@tag_name AS      VARCHAR(200), 
  @tagdata_value AS VARCHAR(256), 
  @entered_by AS    VARCHAR(100), 
