@@ -39,7 +39,13 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
       // handle error
       //console.log(error.message);
       //reject(error.response);
-      return error.response;
+      if (method === 'get') {
+        return [];
+        //resolve(response.data);
+      } else {
+        //resolve(response);
+        return {};
+      }
     });
   //});
 }
