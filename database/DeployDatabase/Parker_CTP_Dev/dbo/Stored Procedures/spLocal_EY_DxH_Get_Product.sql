@@ -41,7 +41,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Product 
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_Product]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Product]
 --Declare
 AS
 

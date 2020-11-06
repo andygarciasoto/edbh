@@ -40,7 +40,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_OrderData 65, '14I084', Null
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_OrderData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_OrderData]
 --Declare
 @Asset_Id         INT, 
 @Order_Number     VARCHAR(100), --leave Null if you send Is Current Order = 1

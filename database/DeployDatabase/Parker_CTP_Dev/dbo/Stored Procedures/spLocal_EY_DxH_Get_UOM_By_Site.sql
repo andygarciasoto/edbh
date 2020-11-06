@@ -39,7 +39,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_UOM_By_Site 1 
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_UOM_By_Site]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_UOM_By_Site]
 --Declare
 
 @Site_Id INT

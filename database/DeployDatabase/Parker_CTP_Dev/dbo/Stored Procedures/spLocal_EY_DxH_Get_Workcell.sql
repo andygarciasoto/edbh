@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_Workcell] 'CR2080435W1', 1
 
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as VARCHAR(100),
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as VARCHAR(100),
 @site_id as INT)
 
 AS  BEGIN 

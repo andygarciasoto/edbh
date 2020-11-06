@@ -55,7 +55,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Create_OrderData 40, '1 1/4 FF-SS PS',25,'PCS', 325, 18, 0.75,'setup','821795000101', Null, Null
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Create_OrderData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Create_OrderData]
 --Declare
 	@Asset_Id					INT,			-- required and must be in Asset table
 	@Product_Code				Varchar(100),	-- required and must be in Product table

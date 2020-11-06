@@ -1,6 +1,6 @@
 ﻿
 
- CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_Users_By_Badge] (@badge as NVARCHAR(100))
+ CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Users_By_Badge] (@badge as NVARCHAR(100))
 
  AS  BEGIN 
 

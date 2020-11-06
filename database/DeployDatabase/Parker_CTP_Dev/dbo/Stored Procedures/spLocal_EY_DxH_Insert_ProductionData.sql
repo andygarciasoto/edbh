@@ -45,7 +45,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Insert_ProductionData 261042, 35, 0, 0, 0, '123456789123', Null, Null, '2019/11/26 12:18', 0
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Insert_ProductionData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Insert_ProductionData]
 --Declare
 @DxHData_Id          INT, -- the hour Id
 @Order_Id            INT, 

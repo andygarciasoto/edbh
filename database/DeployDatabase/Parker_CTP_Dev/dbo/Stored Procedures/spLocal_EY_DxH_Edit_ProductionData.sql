@@ -52,7 +52,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Edit_ProductionData 3, 3, '1 1/2L4MNS PS', 18,14,11, '23456', Null,'2477', Null, Null, '2019-07-25 01:02:03'
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Edit_ProductionData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Edit_ProductionData]
 --Declare
 	@DxHData_Id				Int,			-- the hour Id
 	@ProductionData_Id		Int,

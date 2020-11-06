@@ -45,7 +45,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_CommonParameters 1
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParameters]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParameters]
 --Declare
 	@Site_Id			INT
 AS

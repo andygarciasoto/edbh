@@ -40,7 +40,7 @@
 -- exec dbo.spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site '2020-04-17 07:00', '2020-04-17 11:00:00.000', 1
 --
 
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site] @start_shift     DATETIME, 
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site] @start_shift     DATETIME, 
                                                                            @site_round_time DATETIME, 
                                                                            @site_id         INT
 AS

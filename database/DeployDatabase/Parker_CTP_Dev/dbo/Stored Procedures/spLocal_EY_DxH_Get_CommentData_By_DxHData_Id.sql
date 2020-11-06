@@ -40,7 +40,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_CommentData_By_DxHData_Id 324042
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommentData_By_DxHData_Id]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommentData_By_DxHData_Id]
 --Declare
 	@DxHData_id			INT
 AS

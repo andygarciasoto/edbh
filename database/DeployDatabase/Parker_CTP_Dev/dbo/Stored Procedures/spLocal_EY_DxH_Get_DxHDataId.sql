@@ -53,7 +53,7 @@
 -- Exec dbo.spLocal_EY_DxH_Get_DxHDataId 69, '2020-01-07 10:23', 0
 --
 
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_DxHDataId]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DxHDataId]
 --Declare
 	@Asset_Id				INT,
 	@Timestamp				Datetime,

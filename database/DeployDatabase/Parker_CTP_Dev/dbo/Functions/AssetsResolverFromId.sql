@@ -1,4 +1,4 @@
-﻿CREATE     FUNCTION [dbo].[AssetsResolverFromId] 
+﻿CREATE   FUNCTION [dbo].[AssetsResolverFromId] 
 (                   @asset_id           INT,
                     @aggregation_type   TINYINT
 )

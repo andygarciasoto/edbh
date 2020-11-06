@@ -39,7 +39,7 @@
 -- Example Call:
 -- exec dbo.spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval 6, '2020-03-28 14:00:00','2020-03-28 21:00:00'
 --
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
                                                                                  @start_time DATETIME, 
                                                                                  @end_time   DATETIME
 AS

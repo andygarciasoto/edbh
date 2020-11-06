@@ -39,7 +39,7 @@
 -- Example Call:
 -- exec dbo.spLocal_EY_DxH_Get_ProductionData_By_Interval_And_OrderId 2945, '2020-03-28 14:00:00','2020-03-28 21:00:00', 6
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_ProductionData_By_Interval_And_OrderId] @Order_Id   INT, 
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_ProductionData_By_Interval_And_OrderId] @Order_Id   INT, 
                                                                                    @start_time DATETIME, 
                                                                                    @end_time   DATETIME, 
                                                                                    @Asset_Id   INT

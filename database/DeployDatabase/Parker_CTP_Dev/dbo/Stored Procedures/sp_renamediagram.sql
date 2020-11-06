@@ -1,5 +1,5 @@
 ﻿
-	CREATE   PROCEDURE [dbo].[sp_renamediagram]
+	CREATE PROCEDURE [dbo].[sp_renamediagram]
 	(
 		@diagramname 		sysname,
 		@owner_id		int	= null,

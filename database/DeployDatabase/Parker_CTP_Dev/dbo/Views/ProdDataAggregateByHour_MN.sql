@@ -8,7 +8,6 @@ FROM   dbo.DxHData INNER JOIN
 GROUP BY dbo.DxHData.production_day, dbo.DxHData.shift_code, dbo.DxHData.hour_interval, dbo.DxHData.asset_id, dbo.Asset.asset_code, dbo.Asset.site_code
 HAVING (dbo.Asset.site_code = 'Manhattan')
 
-
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 

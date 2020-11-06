@@ -7,7 +7,6 @@ FROM   dbo.DxHData INNER JOIN
              dbo.Asset ON dbo.DxHData.asset_id = dbo.Asset.asset_id
 GROUP BY dbo.DxHData.production_day, dbo.DxHData.hour_interval, dbo.Asset.asset_name, dbo.Asset.site_code, dbo.Asset.asset_id, dbo.Asset.asset_code, dbo.ProductionData.order_number
 
-
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 

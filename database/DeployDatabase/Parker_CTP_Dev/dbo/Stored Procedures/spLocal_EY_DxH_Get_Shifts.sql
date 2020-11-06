@@ -1,7 +1,7 @@
 ﻿
 --exec dbo.spLocal_EY_DxH_Get_Shifts 119
 
- CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
+ CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
 
  AS  BEGIN 
  DECLARE

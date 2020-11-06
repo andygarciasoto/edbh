@@ -46,7 +46,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Put_AssetDisplaySystem 40, 'CR2080435W4'
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_AssetDisplaySystem]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_AssetDisplaySystem]
 --Declare
 	@Asset_Id			Varchar(100),	-- must exist in Asset table and be active
 	@DisplaySystem_Name	Varchar(100)	-- the name of the computer system or other identifier

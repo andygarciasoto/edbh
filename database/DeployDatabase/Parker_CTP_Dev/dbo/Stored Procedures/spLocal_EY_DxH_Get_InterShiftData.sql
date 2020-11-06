@@ -47,7 +47,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_InterShiftData 35,'2020-04-15',3
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_InterShiftData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_InterShiftData]
 --Declare
 @Asset_Id       INT, 
 @Production_Day DATETIME, 

@@ -52,7 +52,7 @@
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
 --Declare
 @DxHData_Id   INT, -- any hour Id of the shift associated with this data
 @Comment      VARCHAR(256), -- the main info for the display

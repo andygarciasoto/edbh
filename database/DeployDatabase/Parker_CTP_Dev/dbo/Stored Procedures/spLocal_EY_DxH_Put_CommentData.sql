@@ -53,7 +53,7 @@
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_CommentData 3, 'Any ole comment', '2136', Null, Null, '2019-07-25 00:00:00.000', 0
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommentData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommentData]
 --Declare
 	@DxHData_Id				Int,			-- the hour Id
 	@Comment				Varchar(256),	-- the main info for the display
