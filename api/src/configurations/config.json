@@ -1,8 +1,8 @@
 {
     "sql_section": {
         "user": "appUser",
-        "password": "d??VzYv7r-^n$EA58V2$#ZUa",
-        "server": "phc-diviot01-tst-sql.database.windows.net",
+        "password": "5sHEMk45PEtPqxjv8uk9w5gS",
+        "server": "phc-diviot01-prd-sql.database.windows.net",
         "database": "FCGFOTF"
     },
     "app_section": {
@@ -24,9 +24,9 @@
         "signingKey": "JhbGciOiJSUzI1NiJ9"
     },
     "ad_authentication_section": {
-        "app_reg_name": "PHIOTFCGFOTFDev",
-        "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
-        "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
+        "app_reg_name": "PHIOTEDxH",
+        "client_id": "773c82d8-4a87-488b-80f1-f6d955f5f62e",
+        "secret": "tgnY6?j1.-mg-21-NA_CLgbRR7.Ut5.o",
         "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127"
     },
     "azure_section": {
