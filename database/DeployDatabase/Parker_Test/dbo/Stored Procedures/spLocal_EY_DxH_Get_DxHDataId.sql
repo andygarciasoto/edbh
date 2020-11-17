@@ -48,12 +48,13 @@
 --	20190822		C00V01 - Tweaked Hour_Interval via TSHourStart and End fix
 --  20191203		C00V02 - Change Asset_Code for Asset_Id
 --	20191204		C00V03 - Change CommonParameters to CommonParameters
+--	20201111		C00V04 - Change Insert sentence for merge and add site id and status to the max sequence shift logic
 --		
 -- Example Call:
 -- Exec dbo.spLocal_EY_DxH_Get_DxHDataId 69, '2020-01-07 10:23', 0
 --
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DxHDataId]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DxHDataId]
 --Declare
 	@Asset_Id				INT,
 	@Timestamp				Datetime,
@@ -146,10 +147,10 @@ Select
 	@IsFirst = is_first_shift_of_day 
 From dbo.Shift with (nolock)
 Where shift_code = @Shift_Code
-	And status = 'Active'
+	And status = 'Active';
 
 Select @MaxShiftSequence = max(shift_sequence)
-From dbo.Shift with (nolock)
+From dbo.Shift with (nolock) WHERE status = 'Active' and asset_id = @Site_Id;
 
 --Given a Timestamp, determine the production day
 --only one shift can span midnight and it is either the first shift or the last one
@@ -238,48 +239,30 @@ Select @Hour_Interval =
 --Select @Shift_Code, @Production_Day, @Hour_Interval, @TSHourStart
 --return
 
---Select * From @Output
---return
+	MERGE
+		dbo.DxHData AS target
+		USING (SELECT @Asset_Id, @Production_Day, @Hour_Interval, @Shift_Code, 'spLocal_EY_DxH_Get_DxHDataId', getdate(), 'spLocal_EY_DxH_Get_DxHDataId',getdate()) AS source
+		(asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
+	ON (ISNULL(@RequireOrderToCreate,0) > 0 AND target.asset_id = source.asset_id AND target.production_day = source.production_day AND 
+		target.hour_interval = source.hour_interval AND target.shift_code = source.shift_code)
+			WHEN NOT MATCHED
+				THEN INSERT (asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
+					VALUES (source.asset_id, source.production_day, source.hour_interval, source.shift_code, source.entered_by, source.entered_on, 
+						source.last_modified_by, source.last_modified_on);
 
-Select @DxHData_Id = dxh.dxhdata_id
-From dbo.DxHData dxh with (nolock)
-Where dxh.asset_id = @Asset_Id
-	And dxh.production_day = @Production_Day
-	And dxh.shift_code = @Shift_Code
-	And dxh.hour_interval = @Hour_Interval
+	SELECT 
+		asset_id,
+		@Timestamp AS timestamp,
+		dxhdata_id,
+		production_day,
+		shift_code,
+		hour_interval
+	FROM dbo.DxHData dxh with (nolock)
+			WHERE dxh.asset_id = @Asset_Id
+				AND dxh.production_day = @Production_Day
+				AND dxh.shift_code = @Shift_Code
+				AND dxh.hour_interval = @Hour_Interval
 
-If IsNull(@DxHData_Id,0) <= 0
-Begin
-	------------ Need to look up orders here if this is to be used for hourly stuff
-	If IsNull(@RequireOrderToCreate,0) < 1
-	Begin
-		Insert dbo.DxHData
-			(
-			asset_id,
-			production_day,
-			hour_interval,
-			shift_code,
-			entered_by, 
-			entered_on, 
-			last_modified_by, 
-			last_modified_on
-			)
-		Select 
-			@Asset_Id,
-			@Production_Day,
-			@Hour_Interval,
-			@Shift_Code,
-			'spLocal_EY_DxH_Get_DxHDataId',
-			getdate(),
-			'spLocal_EY_DxH_Get_DxHDataId',
-			getdate()
-
-		Set @DxHData_Id = SCOPE_IDENTITY()
-
-	End 
-End
-
-Select @Asset_Id AS asset_id, @Timestamp AS timestamp, @DxHData_Id AS dxhdata_id, @Production_Day AS production_day, @Shift_Code AS shift_code,@Hour_Interval AS hour_interval
 
 --Select * From @Output
 --Select * From @Shifts_To_Consider
