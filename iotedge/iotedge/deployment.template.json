@@ -11,9 +11,9 @@
             "loggingOptions": "",
             "registryCredentials": {
               "phcfcgfotf01devcr": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_phcfcgfotf01devcr",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_phcfcgfotf01devcr",
-                "address": "phcfcgfotf01devcr.azurecr.io"
+                "username": "phcfcgedxh01prdcr",
+                "password": "wX00isA/VtzeD7IOrYxTHV4ZCTJcwYaK",
+                "address": "phcfcgedxh01prdcr.azurecr.io"
               }
             }
           }

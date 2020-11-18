@@ -2,7 +2,7 @@
     "$schema-version": "0.0.1",
     "description": "",
     "image": {
-        "repository": "phcfcgfotf01devcr.azurecr.io/temperaturesensor",
+        "repository": "phcfcgedxh01prdcr.azurecr.io/temperaturesensor",
         "tag": {
             "version": "0.0.1",
             "platforms": {
