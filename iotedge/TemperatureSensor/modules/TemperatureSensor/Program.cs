@@ -18,7 +18,6 @@ namespace TemperatureSensor
     {
         static int counter;
         static int temperatureThreshold { get; set; } = 25;
-
         class MessageBody
         {
             public Machine machine { get; set; }
@@ -35,7 +34,32 @@ namespace TemperatureSensor
             public double temperature { get; set; }
             public int humidity { get; set; }
         }
+        static Task OnDesiredPropertiesUpdate(TwinCollection desiredProperties, object userContext)
+        {
+            try
+            {
+                Console.WriteLine("Desired property change:");
+                Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
 
+                if (desiredProperties["TemperatureThreshold"] != null)
+                    temperatureThreshold = desiredProperties["TemperatureThreshold"];
+
+            }
+            catch (AggregateException ex)
+            {
+                foreach (Exception exception in ex.InnerExceptions)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Error when receiving desired property: {0}", exception);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Error when receiving desired property: {0}", ex.Message);
+            }
+            return Task.CompletedTask;
+        }
         static void Main(string[] args)
         {
             Init().Wait();
@@ -63,8 +87,8 @@ namespace TemperatureSensor
         /// </summary>
         static async Task Init()
         {
-            AmqpTransportSettings amqpSetting = new AmqpTransportSettings(TransportType.Amqp_Tcp_Only);
-            ITransportSettings[] settings = { amqpSetting };
+            MqttTransportSettings mqttSetting = new MqttTransportSettings(TransportType.Mqtt_Tcp_Only);
+            ITransportSettings[] settings = { mqttSetting };
 
             // Open a connection to the Edge runtime
             ModuleClient ioTHubModuleClient = await ModuleClient.CreateFromEnvironmentAsync(settings);
@@ -90,35 +114,6 @@ namespace TemperatureSensor
         /// It just pipe the messages without any change.
         /// It prints all the incoming messages.
         /// </summary>
-        /// 
-
-        static Task OnDesiredPropertiesUpdate(TwinCollection desiredProperties, object userContext)
-        {
-            try
-            {
-                Console.WriteLine("Desired property change:");
-                Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
-
-                if (desiredProperties["TemperatureThreshold"] != null)
-                    temperatureThreshold = desiredProperties["TemperatureThreshold"];
-
-            }
-            catch (AggregateException ex)
-            {
-                foreach (Exception exception in ex.InnerExceptions)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("Error when receiving desired property: {0}", exception);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Error when receiving desired property: {0}", ex.Message);
-            }
-            return Task.CompletedTask;
-        }
-
         static async Task<MessageResponse> FilterMessages(Message message, object userContext)
         {
             var counterValue = Interlocked.Increment(ref counter);
@@ -136,14 +131,16 @@ namespace TemperatureSensor
                 {
                     Console.WriteLine($"Machine temperature {messageBody.machine.temperature} " +
                         $"exceeds threshold {temperatureThreshold}");
-                    var filteredMessage = new Message(messageBytes);
-                    foreach (KeyValuePair<string, string> prop in message.Properties)
+                    using (var filteredMessage = new Message(messageBytes))
                     {
-                        filteredMessage.Properties.Add(prop.Key, prop.Value);
-                    }
+                        foreach (KeyValuePair<string, string> prop in message.Properties)
+                        {
+                            filteredMessage.Properties.Add(prop.Key, prop.Value);
+                        }
 
-                    filteredMessage.Properties.Add("MessageType", "Alert");
-                    await moduleClient.SendEventAsync("output1", filteredMessage);
+                        filteredMessage.Properties.Add("MessageType", "Alert");
+                        await moduleClient.SendEventAsync("output1", filteredMessage);
+                    }
                 }
 
                 // Indicate that the message treatment is completed.
