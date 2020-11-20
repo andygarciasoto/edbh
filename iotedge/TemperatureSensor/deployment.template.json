@@ -1,5 +1,5 @@
 {
-  "$schema-template": "1.0.1",
+  "$schema-template": "2.0.0",
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
@@ -10,10 +10,10 @@
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
             "registryCredentials": {
-              "phcfcgfotf01devcr": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_phcfcgfotf01devcr",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_phcfcgfotf01devcr",
-                "address": "phcfcgfotf01devcr.azurecr.io"
+              "phcfcgedxh01prdcr": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_phcfcgedxh01prdcr",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_phcfcgedxh01prdcr",
+                "address": "phcfcgedxh01prdcr.azurecr.io"
               }
             }
           }
@@ -57,23 +57,23 @@
           }
         },
         "modules": {
-          "tempSensor": {
+          "TemperatureSensor": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.TemperatureSensor}",
+              "createOptions": {}
+            }
+          },
+          "SimulatedTemperatureSensor": {
             "version": "1.0",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
-              "createOptions": {}
-            }
-          },
-          "TemperatureSensor": {
-            "version": "1.0.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULEDIR<../TemperatureSensor>}",
               "createOptions": {}
             }
           }
@@ -85,7 +85,7 @@
         "schemaVersion": "1.0",
         "routes": {
           "TemperatureSensorToIoTHub": "FROM /messages/modules/TemperatureSensor/outputs/* INTO $upstream",
-          "sensorToTemperatureSensor": "FROM /messages/modules/tempSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/TemperatureSensor/inputs/input1\")"
+          "sensorToTemperatureSensor": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/TemperatureSensor/inputs/input1\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
