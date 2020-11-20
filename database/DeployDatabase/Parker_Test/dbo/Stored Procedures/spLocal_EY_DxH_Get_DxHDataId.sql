@@ -96,7 +96,8 @@ Declare
 	@Hour_Interval						Varchar(100),
 	@TSHourStart						Datetime,
 	@TSHourEnd							Datetime,
-	@Site_id							Int
+	@Site_id							Int,
+	@Shift_Code_Found					BIT = 0;
 
 SELECT @Site_Id = asset_id
 FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id = @Asset_Id);
@@ -111,35 +112,42 @@ Set @Rows = 24 + @Row
 
 -- Given a Timestamp, determine the Shift_Code
 -- find the end time of the shift containing the hour of the @Timestamp
-While @Row <= @Rows
+While @Shift_Code_Found = 0
 Begin
 	-- If Timestamp is in the first hour of a shift, then we know the shift already
 	If exists (Select shift_id From dbo.Shift with (nolock) Where datepart(hour,start_time) = @Timestamp_Hour and 
-	asset_id = @Site_Id)
+	asset_id = @Site_Id AND status = 'Active')
 	Begin
 		Select @Shift_Code = shift_code
 		From dbo.Shift with (nolock) 
 		Where datepart(hour,start_time) = @Row
 			And status = 'Active' And asset_id = @Site_Id
 --		Select @Shift_Code, ' In start Loop', datepart(hour,end_time) as 'Hour End Time' From dbo.Shift with (nolock) Where datepart(hour,end_time) = @Row
-		break
+		SET @Shift_Code_Found = 1;
 	End
 
 	--If Timestamp is not in the first hour of a shift, then keep adding an hour until you find the end_time
 	If exists (Select shift_id From dbo.Shift with (nolock) Where datepart(hour,end_time) = @Row
-	and asset_id = @Site_Id)
+	and asset_id = @Site_Id AND status = 'Active')
 	Begin
 		Select @Shift_Code = shift_code
 		From dbo.Shift with (nolock) 
 		Where datepart(hour,end_time) = @Row
 			And status = 'Active' and asset_id = @Site_Id
 --		Select @Shift_Code, ' In Loop', datepart(hour,end_time) as 'Hour End Time' From dbo.Shift with (nolock) Where datepart(hour,end_time) = @Row
-		break
+		SET @Shift_Code_Found = 1;
 	End
 
-	Set @Row = @Row + 1
+	IF @Shift_Code_Found = 0
+	BEGIN
+		Set @Row = @Row + 1
+		IF(@Row = 25 AND @Shift_Code_Found = 0)
+		BEGIN
+			SET @Row = 1;
+		END;
+	END;
 
-End
+END;
 
 Select 
 	@Shift_Start_Hour = datepart(hour,start_time),
@@ -239,17 +247,19 @@ Select @Hour_Interval =
 --Select @Shift_Code, @Production_Day, @Hour_Interval, @TSHourStart
 --return
 
-	MERGE
-		dbo.DxHData AS target
-		USING (SELECT @Asset_Id, @Production_Day, @Hour_Interval, @Shift_Code, 'spLocal_EY_DxH_Get_DxHDataId', getdate(), 'spLocal_EY_DxH_Get_DxHDataId',getdate()) AS source
-		(asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
-	ON (ISNULL(@RequireOrderToCreate,0) > 0 AND target.asset_id = source.asset_id AND target.production_day = source.production_day AND 
-		target.hour_interval = source.hour_interval AND target.shift_code = source.shift_code)
-			WHEN NOT MATCHED
-				THEN INSERT (asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
-					VALUES (source.asset_id, source.production_day, source.hour_interval, source.shift_code, source.entered_by, source.entered_on, 
-						source.last_modified_by, source.last_modified_on);
-
+	IF ISNULL(@RequireOrderToCreate,0) < 1
+	BEGIN
+		MERGE
+			dbo.DxHData AS target
+			USING (SELECT @Asset_Id, @Production_Day, @Hour_Interval, @Shift_Code, 'spLocal_EY_DxH_Get_DxHDataId', getdate(), 'spLocal_EY_DxH_Get_DxHDataId',getdate()) AS source
+			(asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
+		ON (target.asset_id = source.asset_id AND target.production_day = source.production_day AND 
+			target.hour_interval = source.hour_interval AND target.shift_code = source.shift_code)
+				WHEN NOT MATCHED
+					THEN INSERT (asset_id, production_day, hour_interval, shift_code, entered_by, entered_on, last_modified_by, last_modified_on)
+						VALUES (source.asset_id, source.production_day, source.hour_interval, source.shift_code, source.entered_by, source.entered_on, 
+							source.last_modified_by, source.last_modified_on);
+	END;
 	SELECT 
 		asset_id,
 		@Timestamp AS timestamp,
@@ -269,6 +279,3 @@ Select @Hour_Interval =
 
 END
 
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_InterShiftData]    Script Date: 4/12/2019 15:17:10 ******/
-SET ANSI_NULLS ON
