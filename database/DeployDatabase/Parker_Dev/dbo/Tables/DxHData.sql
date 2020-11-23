@@ -26,8 +26,7 @@
     [end_time]                     DATETIME      NULL,
     [asset_id]                     INT           NULL,
     CONSTRAINT [PK_DxHData_DxHData_Id] PRIMARY KEY NONCLUSTERED ([dxhdata_id] ASC),
-    CONSTRAINT [FK__DxHData__asset_i__0E04126B] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
-    CONSTRAINT [FK_DxHData_Asset_Code] FOREIGN KEY ([asset_code]) REFERENCES [dbo].[Asset] ([asset_code]),
+    CONSTRAINT [FK_DxHData_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id]),
     CONSTRAINT [FK_DxHData_Shift_Code] FOREIGN KEY ([shift_code]) REFERENCES [dbo].[Shift] ([shift_code])
 );
 
@@ -41,4 +40,9 @@ GO
 CREATE NONCLUSTERED INDEX [IX_DxHData_AssetId]
     ON [dbo].[DxHData]([asset_id] ASC, [production_day] ASC, [shift_code] ASC)
     INCLUDE([dxhdata_id]);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [UIX_DxHData_Asset_Id_Prod_Day_Hour_Shift]
+    ON [dbo].[DxHData]([asset_id] ASC, [production_day] ASC, [hour_interval] ASC, [shift_code] ASC);
 
