@@ -75,7 +75,7 @@ class BarcodeScanner extends Component {
         <BarcodeReader
           onError={this.handleError}
           onScan={this.handleScan}
-          minLength={4}
+          minLength={2}
         />
         <p style={{ display: 'inline' }} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots />
 
