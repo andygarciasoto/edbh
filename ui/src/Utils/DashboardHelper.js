@@ -85,7 +85,7 @@ const helpers = {
             //validation for timelost and latest comment, don't work on render the value of each one only the text in the vertical view
             prop = !row.hour_interval.includes('Shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
             let valueToDisplay = (row[prop] ?
-                (isNaN(row[prop]) ? row[prop] : convertNumber(row[prop], this.state.uom_asset))
+                (isNaN(row[prop]) ? row[prop] : convertNumber(row[prop], this.state.uom_asset, prop))
                 : defaultValue);
             return valueToDisplay || valueToDisplay === 0 ?
                 <span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
@@ -318,9 +318,9 @@ const helpers = {
             } else if (currentRow) {
 
                 switch (modalType) {
-                    case 'manualentry':
+                    //case 'manualentry':
                     case 'actual':
-                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType === 'Manual';
+                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated';
                         break;
                     case 'timelost':
                     case 'comments':

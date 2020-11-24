@@ -19,6 +19,27 @@ function App(propsApp) {
   const updateCurrentUser = (newUser) => {
     changeCurrentUser({ ...currentUser, currentUser: newUser });
   }
+  let [requestDashOne, changeDashOne] = useState(null);
+  const updateDashOne = (newRequest) => {
+    if (requestDashOne && requestDashOne.requestDashOne) {
+      requestDashOne.requestDashOne.cancel('Previous request canceled, new request is send');
+    }
+    changeDashOne({ ...requestDashOne, requestDashOne: newRequest });
+  }
+  let [requestInter, changeInter] = useState(null);
+  const updateInter = (newRequest) => {
+    if (requestInter && requestInter.requestInter) {
+      requestInter.requestInter.cancel('Previous request canceled, new request is send');
+    }
+    changeInter({ ...requestInter, requestInter: newRequest });
+  }
+  let [requestVertDas, changeVertDash] = useState(null);
+  const updateVertDash = (newRequest) => {
+    if (requestVertDas && requestVertDas.requestVertDas) {
+      requestVertDas.requestVertDas.cancel('Previous request canceled, new request is send');
+    }
+    changeVertDash({ ...requestVertDas, requestVertDas: newRequest });
+  }
   const { t } = useTranslation();
   return (
     <Router>
@@ -37,7 +58,8 @@ function App(propsApp) {
               user={currentUser}
               machineData={propsApp.machineData}
               openModal={displayModal}
-              changeCurrentUser={updateCurrentUser} />}
+              changeCurrentUser={updateCurrentUser}
+            />}
         />
         {currentUser && isComponentValid(currentUser.role, 'dashboardOne') ?
           <Route
@@ -53,6 +75,9 @@ function App(propsApp) {
                   closeOrderModal={displayModal}
                   defaultAsset={propsApp.defaultAsset}
                   machineData={propsApp.machineData}
+                  updateDashOne={updateDashOne}
+                  updateInter={updateInter}
+                  updateVertDash={updateVertDash}
                 />
               )
             }
@@ -90,7 +115,11 @@ function App(propsApp) {
               search={qs.parse(props.history.location.search)}
               summary={true}
               defaultAsset={propsApp.defaultAsset}
-              machineData={propsApp.machineData} />}
+              machineData={propsApp.machineData}
+              updateDashOne={updateDashOne}
+              updateInter={updateInter}
+              updateVertDash={updateVertDash}
+            />}
           />
           : null
         }

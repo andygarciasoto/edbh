@@ -159,7 +159,7 @@ export class AuthService {
                 let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
                 jwt.setExpiration(new Date().getTime() + ((responseUser[0].role === 'Summary' ? responseUser[0].summary_timeout : responseUser[0].inactive_timeout_minutes) * 60000));
                 let token = jwt.compact();
-                const url = `${this.config.app_section.URL}/${responseUser[0].role === 'Summary' ? 'summary' : 'dashboard'}#token=${token}`;
+                const url = `${req.get('origin')}/${responseUser[0].role === 'Summary' ? 'summary' : 'dashboard'}#token=${token}`;
                 return res.redirect(302, url);
             }
             return res.redirect(401, this.config.app_section.loginURL);

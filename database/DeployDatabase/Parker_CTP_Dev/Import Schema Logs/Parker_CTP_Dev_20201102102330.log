@@ -1,0 +1,82 @@
+2/11/2020 16:23:30	This log contains information about the import schema operation into project 'Parker_CTP_Dev' on computer 'CR2234087W1' by user 'JX254ZR'.
+2/11/2020 16:23:30	Import of database schema has started.
+2/11/2020 16:23:36	Gathering logins
+2/11/2020 16:23:36	Gathering database credentials
+2/11/2020 16:23:36	Gathering database options
+2/11/2020 16:23:36	Gathering generic database scoped configuration option
+2/11/2020 16:23:36	Gathering users
+2/11/2020 16:23:36	Gathering roles
+2/11/2020 16:23:36	Gathering application roles
+2/11/2020 16:23:36	Gathering role memberships
+2/11/2020 16:23:36	Gathering filegroups
+2/11/2020 16:23:36	Gathering full-text catalogs
+2/11/2020 16:23:36	Gathering assemblies
+2/11/2020 16:23:36	Gathering certificates
+2/11/2020 16:23:36	Gathering symmetric keys
+2/11/2020 16:23:36	Gathering encrypted symmetric keys
+2/11/2020 16:23:36	Gathering schemas
+2/11/2020 16:23:36	Gathering XML schema collections
+2/11/2020 16:23:36	Gathering user-defined data types
+2/11/2020 16:23:36	Gathering user-defined types
+2/11/2020 16:23:36	Gathering table types
+2/11/2020 16:23:36	Gathering unique keys for table types
+2/11/2020 16:23:36	Gathering primary keys for table types
+2/11/2020 16:23:36	Gathering indexes for table types
+2/11/2020 16:23:36	Gathering check constraints for table types
+2/11/2020 16:23:36	Gathering default constraints for table types
+2/11/2020 16:23:37	Gathering partition functions
+2/11/2020 16:23:37	Gathering partition schemes
+2/11/2020 16:23:37	Gathering functions
+2/11/2020 16:23:37	Gathering encrypted functions
+2/11/2020 16:23:37	Gathering aggregates
+2/11/2020 16:23:37	Gathering procedures
+2/11/2020 16:23:37	Gathering encrypted procedures
+2/11/2020 16:23:37	Gathering tables
+2/11/2020 16:23:37	Gathering primary keys
+2/11/2020 16:23:37	Gathering unique constraints
+2/11/2020 16:23:37	Gathering foreign keys
+2/11/2020 16:23:37	Gathering default constraints
+2/11/2020 16:23:37	Gathering check constraints
+2/11/2020 16:23:37	Gathering views
+2/11/2020 16:23:37	Gathering encrypted views
+2/11/2020 16:23:37	Gathering indexes
+2/11/2020 16:23:37	Gathering statistics
+2/11/2020 16:23:37	Gathering full-text index stoplists
+2/11/2020 16:23:37	Gathering search property lists
+2/11/2020 16:23:37	Gathering search properties
+2/11/2020 16:23:37	Gathering full-text indexes
+2/11/2020 16:23:37	Gathering column store indexes
+2/11/2020 16:23:37	Gathering spatial indexes
+2/11/2020 16:23:37	Gathering XML indexes
+2/11/2020 16:23:37	Gathering Selective XML indexes
+2/11/2020 16:23:37	Gathering encrypted triggers
+2/11/2020 16:23:37	Gathering triggers
+2/11/2020 16:23:37	Gathering encrypted and clr ddl triggers
+2/11/2020 16:23:37	Gathering ddl triggers
+2/11/2020 16:23:37	Creating edge constraints
+2/11/2020 16:23:37	Gathering synonyms
+2/11/2020 16:23:37	Gathering defaults
+2/11/2020 16:23:37	Gathering data constraint uddt bindings
+2/11/2020 16:23:37	Gathering rules
+2/11/2020 16:23:37	Gathering data constraint uddt bindings
+2/11/2020 16:23:37	Gathering message types
+2/11/2020 16:23:37	Gathering queues
+2/11/2020 16:23:37	Gathering contracts
+2/11/2020 16:23:37	Gathering services
+2/11/2020 16:23:37	Gathering event notifications
+2/11/2020 16:23:37	Gathering remote service bindings
+2/11/2020 16:23:37	Gathering broker priorities
+2/11/2020 16:23:37	Gathering signatures
+2/11/2020 16:23:37	Gathering data compression options
+2/11/2020 16:23:37	Gathering sequence types
+2/11/2020 16:23:37	Gathering security policies
+2/11/2020 16:23:37	Gather column encryption keys
+2/11/2020 16:23:37	Gathering column master keys
+2/11/2020 16:23:37	Gathering external data sources
+2/11/2020 16:23:37	Gathering external tables
+2/11/2020 16:23:37	Gathering extended properties
+2/11/2020 16:23:38	Scanning project for duplicate elements
+2/11/2020 16:23:38	Finished duplicate element processing
+2/11/2020 16:23:40	Finished importing database.
+2/11/2020 16:23:40	A summary of the import was saved to the following location: C:\Users\JX254ZR\Documents\Projects\ADV-DXH\database\DeployDatabase\Parker_CTP_Dev\Import Schema Logs\Parker_CTP_Dev_20201102102330.log
+2/11/2020 16:23:40	Click Finish to continue...
