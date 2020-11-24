@@ -41,3 +41,8 @@ CREATE NONCLUSTERED INDEX [NCI_DxHData_ASSET_ID]
     ON [dbo].[DxHData]([asset_id] ASC)
     INCLUDE([dxhdata_id], [entered_by], [entered_on], [hour_interval], [last_modified_by], [last_modified_on], [operator_signoff], [operator_signoff_timestamp], [production_day], [shift_code], [summary_action_taken], [summary_actual], [summary_comments], [summary_dtminutes], [summary_dtreason_code], [summary_ideal], [summary_order_number], [summary_product_code], [summary_target], [summary_UOM_code], [supervisor_signoff], [supervisor_signoff_timestamp]);
 
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [UIX_DxHData_Asset_Id_Prod_Day_Hour_Shift]
+    ON [dbo].[DxHData]([asset_id] ASC, [production_day] ASC, [hour_interval] ASC, [shift_code] ASC);
+
