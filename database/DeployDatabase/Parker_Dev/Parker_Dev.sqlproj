@@ -73,14 +73,12 @@
     <Build Include="dbo\Tables\DTReason.sql" />
     <Build Include="dbo\Tables\CommonParameters.sql" />
     <Build Include="dbo\Tables\ExampleJTraxData_.sql" />
-    <Build Include="dbo\Tables\Language.sql" />
     <Build Include="dbo\Tables\parker_site_access.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\SupervisorAsset.sql" />
     <Build Include="dbo\Tables\Tag.sql" />
     <Build Include="dbo\Tables\ProductionData_History.sql" />
     <Build Include="dbo\Tables\TagData.sql" />
-    <Build Include="dbo\Tables\Translation.sql" />
     <Build Include="dbo\Tables\UOM.sql" />
     <Build Include="dbo\Tables\AssetDisplaySystem.sql" />
     <Build Include="dbo\Tables\DxHData.sql" />
@@ -101,22 +99,7 @@
     <Build Include="dbo\Functions\UpRoundDate.sql" />
     <Build Include="dbo\Functions\AddIntervalToDate.sql" />
     <Build Include="dbo\Functions\GetRangesBetweenDates.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_OperatorSignOff_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\sp_get_workcell.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_DTData_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Clocknumber_Asset.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Clocknumber.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Users_By_Badge.sql" />
@@ -183,13 +166,7 @@
     </Build>
     <Build Include="dbo\Stored Procedures\sp_importproducts.sql" />
     <Build Include="dbo\Stored Procedures\sp_importorders.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data_new_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\sp_getshifts.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_New_1.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommentData_By_DxHData_Id.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
@@ -197,9 +174,6 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_InterShiftData.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason_new_1.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql">
