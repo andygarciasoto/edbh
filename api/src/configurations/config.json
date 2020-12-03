@@ -8,7 +8,7 @@
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service",
+        "service_name": "Dxh Service API",
         "cors": [
             "http://localhost:3000",
             "http://localhost:3001"
