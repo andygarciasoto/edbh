@@ -58,7 +58,10 @@ class Pagination extends React.Component {
             let selectedDateTime = moment(search.dt);//ONLY SELECTED DATA. WE NEED THE TME OF THE SHIFT TOO
             let indexSelectedShift = _.findIndex(site_shifts, ['shift_name', search.sf]);
 
-            if (currentSiteTime.format('YYYY-MM-DD') !== selectedDateTime.format('YYYY-MM-DD') || indexActualShift !== indexSelectedShift) {
+            let productionDayCurrentSiteDate = currentSiteTime.isBefore(moment(site_shifts[0].start_date_time_today)) ? currentSiteTime.add(-1, 'days').format('YYYY-MM-DD') :
+                (currentSiteTime.isAfter(moment(site_shifts[site_shifts.length - 1].end_date_time_today)) ? currentSiteTime.add(1, 'days').format('YYYY-MM-DD') : currentSiteTime.format('YYYY-MM-DD'));
+
+            if (productionDayCurrentSiteDate !== selectedDateTime.format('YYYY-MM-DD') || indexActualShift !== indexSelectedShift) {
                 //console.log('selected information is not the current shift');
                 //logic to get the days difference between the current date and the selected date
                 newState.diffDays = currentSiteTime.format('YYYY-MM-DD') === selectedDateTime.format('YYYY-MM-DD') ? 0 :
