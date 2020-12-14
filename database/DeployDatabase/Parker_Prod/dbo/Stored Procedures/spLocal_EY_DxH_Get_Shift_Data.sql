@@ -72,10 +72,11 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        --Select @Asset_Id = 1,
-        --	@Production_Day = '2019-09-18',
-        --	@Shift_Code = '1'
-        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone (SELECT site_timezone FROM dbo.CommonParameters where site_id = @Site);
+        DECLARE @timezone VARCHAR(50);
+		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
+
+        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,
+		@Active_Status VARCHAR(50) = 'Active';
 
         WITH CTE
              AS (SELECT CONVERT(VARCHAR, BD.started_on_chunck, 20) AS started_on_chunck, 
@@ -175,38 +176,17 @@ AS
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
                         ORDER BY BD.started_on_chunck) AS Row#
                  FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
-                 --GET HOURS OF SELECTED SHIFT
-                      INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id
-                                                 AND BD.started_on_chunck >=	CASE
-																					WHEN SF1.start_time > SF1.end_time AND SF1.is_first_shift_of_day = 1
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
-																					WHEN SF1.start_time = SF1.end_time AND SF1.start_time > '20:00:00'
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
-																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), @Production_date)
-																				END
-                                                 AND BD.started_on_chunck <	CASE
-																				WHEN SF1.end_time < SF1.start_time AND SF1.is_first_shift_of_day = 0
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
-																				WHEN SF1.start_time = SF1.end_time AND SF1.end_time <= '10:00:00'
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
-																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), @Production_date)
-																			END
-					  --VALIDATE SELECTED SHIFT AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >=	CASE
-																				WHEN SF.start_time > SF.end_time AND SF.is_first_shift_of_day = 1
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
-																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
-																			END
-													AND BD.started_on_chunck <	CASE
-																					WHEN SF.end_time < SF.start_time AND SF.is_first_shift_of_day = 0
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, 1, @Production_date))
-																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
-																				END
+						--VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id AND
+													BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, SF1.start_time_offset_days, @Production_date))
+													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, SF1.end_time_offset_days, @Production_date))
+					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
+													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
 													AND SF.asset_id = @Site
-													AND SF.status = 'Active'
-                      --SEARCH ALL DXHDATA CREATE IN THE SELECTED SHIFT
+													AND SF.status = @Active_Status
+                      --SEARCH ALL DXHDATA FOR EACH INTERVAL HOUR
                       LEFT JOIN dbo.DxHData DH ON DH.asset_id = @Asset_Id
-                                                  --AND DH.shift_code = SF.shift_code
                                                   AND production_day = @Production_date
                                                   AND CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt')) = UPPER(DH.hour_interval)
                       --SEARCH ALL PRODUCTION FOR THE SELECTED DXHDATA

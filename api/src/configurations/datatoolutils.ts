@@ -67,7 +67,9 @@ export let headers = {
         { header: 'shift_description', type: 'VARCHAR', key: 'shift_description', width: 27 },
         { header: 'shift_sequence', type: 'INT', key: 'shift_sequence', width: 14 },
         { header: 'start_time', type: 'TIME', key: 'start_time', width: 16 },
+        { header: 'start_time_offset_days', type: 'INT', key: 'start_time_offset_days', width: 22 },
         { header: 'end_time', type: 'TIME', key: 'end_time', width: 27 },
+        { header: 'end_time_offset_days', type: 'INT', key: 'end_time_offset_days', width: 22 },
         { header: 'duration_in_minutes', type: 'INT', key: 'duration_in_minutes', width: 22 },
         { header: 'valid_from', type: 'DATETIME', key: 'valid_from', width: 16 },
         { header: 'valid_to', type: 'DATETIME', key: 'valid_to', width: 27 },
@@ -196,8 +198,8 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', a.asset_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code WHERE a.asset_level = 'Site'`;
             parametersObject.matchParameters = 's.shift_code = t.shift_code AND s.asset_id = t.asset_id';
-            parametersObject.updateSentence = `t.[shift_name] = s.[shift_name], t.[shift_description] = s.[shift_description], t.[shift_sequence] = s.[shift_sequence], t.[start_time] = s.[start_time], t.[end_time] = s.[end_time], t.[duration_in_minutes] = s.[duration_in_minutes], t.[valid_from] = s.[valid_from], t.[valid_to] = s.[valid_to], t.[team_code] = s.[team_code], t.[is_first_shift_of_day] = s.[is_first_shift_of_day], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
-            parametersObject.insertSentence = `([shift_code], [shift_name], [shift_description], [shift_sequence], [start_time], [end_time], [duration_in_minutes], [valid_from], [valid_to], [team_code], [is_first_shift_of_day], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[shift_code], s.[shift_name], s.[shift_description], s.[shift_sequence], s.[start_time], s.[end_time], s.[duration_in_minutes], s.[valid_from], s.[valid_to], s.[team_code], s.[is_first_shift_of_day], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id])`;
+            parametersObject.updateSentence = `t.[shift_name] = s.[shift_name], t.[shift_description] = s.[shift_description], t.[shift_sequence] = s.[shift_sequence], t.[start_time] = s.[start_time], t.[start_time_offset_days] = s.[start_time_offset_days], t.[end_time] = s.[end_time], t.[end_time_offset_days] = s.[end_time_offset_days], t.[duration_in_minutes] = s.[duration_in_minutes], t.[valid_from] = s.[valid_from], t.[valid_to] = s.[valid_to], t.[team_code] = s.[team_code], t.[is_first_shift_of_day] = s.[is_first_shift_of_day], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
+            parametersObject.insertSentence = `([shift_code], [shift_name], [shift_description], [shift_sequence], [start_time], [start_time_offset_days], [end_time], [end_time_offset_days], [duration_in_minutes], [valid_from], [valid_to], [team_code], [is_first_shift_of_day], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[shift_code], s.[shift_name], s.[shift_description], s.[shift_sequence], s.[start_time], s.[start_time_offset_days], s.[end_time], s.[end_time_offset_days], s.[duration_in_minutes], s.[valid_from], s.[valid_to], s.[team_code], s.[is_first_shift_of_day], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id])`;
             break;
         case 'UOM':
             parametersObject.extraColumns = ', a.asset_id AS site_id';

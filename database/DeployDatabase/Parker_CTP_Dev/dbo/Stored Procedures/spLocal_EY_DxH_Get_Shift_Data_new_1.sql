@@ -49,29 +49,29 @@
 --	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
 --	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
+--	20201103		C00V15 - Change Shift id for starttime and endtime parameters (add fexibiltiy in the logic to search the data)
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
--- exec spLocal_EY_DxH_Get_Shift_Data 35,'2020-03-03',2,1
+-- exec spLocal_EY_DxH_Get_Shift_Data 231, '', '', '', 1
 --
 --52,7586221694946
 --23,9655113220215
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data_new_1]
 --Declare
-@Asset_Id        INT, 
-@Production_date DATETIME, 
-@Shift_id        INT, 
-@Site            INT
+@Asset_Id			INT, 
+@Production_date	DATETIME, 
+@Start_DateTime		DATETIME,
+@End_DateTime		DATETIME,
+@Site				INT
 AS
-    --exec spLocal_EY_DXH_GET_SHIFT_dATA 0, '20191111', 8
-    --exec spLocal_EY_DxH_Get_Shift_Data 1, '20191101', 9
 
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
+        
         DECLARE @timezone VARCHAR(50);
 		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
 
@@ -175,14 +175,10 @@ AS
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
                         ORDER BY BD.started_on_chunck) AS Row#
-                 FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
-						--VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id AND
-													BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, SF1.start_time_offset_days, @Production_date))
-													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, SF1.end_time_offset_days, @Production_date))
+                 FROM [dbo].[GetRangesBetweenDates](@Start_DateTime, @End_DateTime, 60, 1) AS BD
 					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
 					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
-													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
+													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
 													AND SF.asset_id = @Site
 													AND SF.status = @Active_Status
                       --SEARCH ALL DXHDATA FOR EACH INTERVAL HOUR
