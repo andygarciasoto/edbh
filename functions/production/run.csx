@@ -6,8 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using Microsoft.Azure.EventHubs;
+using System.Text;
 
-public static async void Run(string eventHubMessage, ILogger log)
+public static async void Run(EventData eventHubMessage, ILogger log)
 {
     // nullable variables declaration
     string tagdata_value = "";
@@ -15,18 +18,28 @@ public static async void Run(string eventHubMessage, ILogger log)
     int datetime = 0;
     DateTime timestamp = DateTime.MinValue;
     string entered_by = "KEPServerEx";
+
+    string message = Regex.Unescape(Encoding.UTF8.GetString(eventHubMessage.Body));
+    if(message.First() == '"' && message.Last() == '"'){
+        message = message.Substring(1,message.Length-2);
+    }
     // validates if the message sent has a body
-    if(String.IsNullOrWhiteSpace(eventHubMessage))
+    if(String.IsNullOrWhiteSpace(message))
         return;
     try{
-        JObject jObject = JObject.Parse(eventHubMessage);
+        JObject jObject = JObject.Parse(message);
         if (jObject["productFilter"].ToString() == "kepserver") {
+            log.LogInformation(message);
+            // creates the connection to the database
+            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+            var connection = new SqlConnection(ConnString);
+            
             string data = "{'data':" + jObject["data"].ToString() + "}";
             // getting all the values in the data array
             var resultObjects = AllChildren(JObject.Parse(data)).First(c => c.Type == JTokenType.Array && c.Path.Contains("data")).Children<JObject>();
             // processing all the properties in each array value and mapping those values to local variables
             foreach (JObject result in resultObjects) {
-                log.LogInformation(result.ToString());
+                //log.LogInformation(result.ToString());
                 foreach (JProperty singleProp in result.Properties())
                 {
                     if (singleProp.Name == "value"){
@@ -41,11 +54,8 @@ public static async void Run(string eventHubMessage, ILogger log)
                         timestamp = dateTimeOffset.UtcDateTime;
                     }
                 }
-            // creates the connection to the database
-            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3"); // CUSTOMCONNSTR_parkerdbconnection for Production
-            var connection = new SqlConnection(ConnString);
             // insert products and orders
-            InsertTagData(connection, tag_name, tagdata_value, entered_by, timestamp);  
+            InsertTagData(log, connection, tag_name, tagdata_value, entered_by, timestamp);
             } 
         }
     } catch (Exception ex) { 
@@ -53,7 +63,7 @@ public static async void Run(string eventHubMessage, ILogger log)
     }
 }
     // runs a stored procedure that udpdates or inserts data into Products table
-    public static void InsertTagData (SqlConnection connection, string tag_name, string tagdata_value, string entered_by, DateTime timestamp)
+    public static void InsertTagData (ILogger log, SqlConnection connection, string tag_name, string tagdata_value, string entered_by, DateTime timestamp)
     {
         var sqlCmd = new SqlCommand("spLocal_EY_DxH_Put_Production_From_IoT", connection);
         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;

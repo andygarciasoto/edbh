@@ -2,9 +2,10 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
-    
     <ItemGroup>
         <PackageReference Include="Microsoft.ProjectOxford.Face" Version="1.1.0" />
-        <PackageReference Include="Belgrade.Sql.Client" Version="0.6.5" />   
+        <PackageReference Include="Belgrade.Sql.Client" Version="0.6.5" /> 
+        <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.3.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />  
     </ItemGroup>
 </Project>

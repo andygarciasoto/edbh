@@ -1,3 +1,4 @@
+using System.Text;
 using System.Configuration;
 using System.Data.SqlClient;
 using Belgrade.SqlClient.SqlDb;
@@ -6,8 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using Microsoft.Azure.EventHubs;
 
-public static async void Run(string eventHubMessage, ILogger log)
+public static async void Run(EventData eventHubMessage, ILogger log)
 {
     // nullable variables declaration
     string product_description = "";
@@ -26,15 +29,21 @@ public static async void Run(string eventHubMessage, ILogger log)
     float ideal = 0;
     float target_percent_of_ideal = 0;
     DateTime valid_to = Convert.ToDateTime("1900-01-01T00:00:00");
+
+    // validates " in the string
+    string message = Regex.Unescape(Encoding.UTF8.GetString(eventHubMessage.Body));
+    if(message.First() == '"' && message.Last() == '"'){
+        message = message.Substring(1,message.Length-2);
+    }
     // validates if the message sent has a body
-    if(String.IsNullOrWhiteSpace(eventHubMessage))
+    if(String.IsNullOrWhiteSpace(message))
         return;
             
     try{
-        JObject full = JObject.Parse(eventHubMessage);
+        JObject full = JObject.Parse(message);
         if (full["productFilter"].ToString() != "kepserver") {
-        log.LogInformation(eventHubMessage);
-        JObject data = (JObject)full["data"];        
+        log.LogInformation(message);
+        JObject data = (JObject)full["data"];
     // validation of nullable values in order to send them to SQL with the message value or empty
         if (data["product_description"] != null){
             product_description = data["product_description"].ToString();
@@ -96,7 +105,7 @@ public static async void Run(string eventHubMessage, ILogger log)
         DateTime valid_from = Convert.ToDateTime(data["valid_from"].ToString());
 
         // creates the connection to the database
-        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3"); // CUSTOMCONNSTR_parkerdbconnection for Production
+        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
         var connection = new SqlConnection(ConnString);
 
         // insert products and orders
