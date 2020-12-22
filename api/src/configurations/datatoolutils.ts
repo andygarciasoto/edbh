@@ -225,7 +225,7 @@ export function getParametersOfTable(tableName, siteId) {
         case 'Unavailable':
             parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code JOIN dbo.Asset aas ON s.site_code = aas.asset_code AND aas.asset_level = 'Site'`;
-            parametersObject.matchParameters = 's.unavailable_code = t.unavailable_code AND s.asset_id = t.asset_id AND s.site_id = t.site_id';//consultar con Andres
+            parametersObject.matchParameters = 's.unavailable_code = t.unavailable_code AND s.asset_id = t.asset_id AND s.site_id = t.site_id';
             parametersObject.updateSentence = `t.[unavailable_name] = s.[unavailable_name], t.[unavailable_description] = s.[unavailable_description], t.[start_time] = s.[start_time], t.[end_time] = s.[end_time], t.[duration_in_minutes] = s.[duration_in_minutes], t.[valid_from] = s.[valid_from], t.[valid_to] = s.[valid_to], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
             parametersObject.insertSentence = `([unavailable_code], [unavailable_name], [unavailable_description], [start_time], [end_time], [duration_in_minutes], [valid_from], [valid_to], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [site_id], [asset_id]) VALUES (s.[unavailable_code], s.[unavailable_name], s.[unavailable_description], s.[start_time], s.[end_time], s.[duration_in_minutes], s.[valid_from], s.[valid_to], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[site_id], s.[asset_id])`;
             break;

@@ -16,7 +16,7 @@ export class DTReasonService {
         this.dxhdatarepository = dxhdatarepository;
     }
 
-    public async getTimelostReasons(req: Request, res: Response) {
+    public async getReasons(req: Request, res: Response) {
         let machine = req.query.mc;
         let type = req.query.type;
         if (!machine || machine === null || machine === undefined || !type) {
@@ -27,7 +27,7 @@ export class DTReasonService {
             let timelost: any;
             try {
                 asset = await this.assetrepository.getAssetByCode(machine);
-                timelost = await this.dtreasonrepository.getTimelostReasons(asset[0].asset_id, type);
+                timelost = await this.dtreasonrepository.getReasons(asset[0].asset_id, type);
             } catch (err) {
                 res.status(500).json({ message: err.message });
                 return;
@@ -36,7 +36,7 @@ export class DTReasonService {
         }
     }
 
-    public async getTimelostDxhData(req: Request, res: Response) {
+    public async getDxhData(req: Request, res: Response) {
         let dxh_data_id = req.query.dxh_data_id;
         let productiondata_id = req.query.productiondata_id ? req.query.productiondata_id : null; 
         if (!dxh_data_id || dxh_data_id === null || dxh_data_id === undefined) {
@@ -44,7 +44,7 @@ export class DTReasonService {
         }
         let dtdata: any;
         try {
-            dtdata = await this.dtreasonrepository.getTimelostDxhData(dxh_data_id, productiondata_id);
+            dtdata = await this.dtreasonrepository.getDxhData(dxh_data_id, productiondata_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

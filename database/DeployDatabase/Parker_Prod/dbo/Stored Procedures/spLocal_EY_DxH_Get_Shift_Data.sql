@@ -49,6 +49,8 @@
 --	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
 --	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
+--	20201212		C00V15 - Add new shift logic in the main join sentence
+--	20201221		C00V16 - Add join with Product table to return product name instead of product code
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -90,7 +92,7 @@ AS
                         DH.supervisor_signoff_timestamp, 
                         PD.start_time, 
                         PD.productiondata_id, 
-                        PD.product_code, 
+                        P.product_name, 
                         PD.ideal, 
                         PD.target, 
                         PD.actual, 
@@ -202,6 +204,8 @@ AS
                                                            AND CP.STATUS = 'Active'
                       --GET ALL INFORMATION OF THE CURRENT ASSET
                       LEFT JOIN dbo.Asset AST ON AST.asset_id = @Asset_Id
+                      --GET INFORMATION OF THE PRODUCT
+                      LEFT JOIN dbo.Product P ON PD.product_code = P.product_code
                       --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
                       OUTER APPLY
                  (
@@ -278,7 +282,7 @@ AS
                     supervisor_signoff_timestamp, 
                     start_time, 
                     productiondata_id, 
-                    product_code, 
+                    product_name AS product_code, 
                     ideal, 
                     target, 
                     actual, 

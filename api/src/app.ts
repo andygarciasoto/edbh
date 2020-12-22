@@ -137,11 +137,11 @@ const appConfig = {
         new http.RestEndpoint('/api/dxh_new_comment', 'post', async (req: Request, res: Response) => {
             await commentdataService.putCommentData(req, res);
         }, true),
-        new http.RestEndpoint('/api/timelost_reasons', 'get', async (req: Request, res: Response) => {
-            await dtreasonService.getTimelostReasons(req, res);
+        new http.RestEndpoint('/api/reasons', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getReasons(req, res);
         }, true),
-        new http.RestEndpoint('/api/timelost_dxh_data', 'get', async (req: Request, res: Response) => {
-            await dtreasonService.getTimelostDxhData(req, res);
+        new http.RestEndpoint('/api/dxh_data', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getDxhData(req, res);
         }, true),
         new http.RestEndpoint('/api/dt_data', 'put', async (req: Request, res: Response) => {
             await dtreasonService.putDtData(req, res);

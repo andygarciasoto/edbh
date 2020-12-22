@@ -38,6 +38,7 @@
 --	20190814		C00V00 - Intial code created
 --  20191203		C00V01 - Change Asset_Code for Asset_Id
 --  20200203		C00V03 - Change result result to normal table result
+--  20201218		C00V04 - Add new level column
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'
@@ -60,6 +61,7 @@ BEGIN
 		dt.dtreason_name as 'dtreason_name',
 		dt.dtreason_category as 'dtreason_category',
 		dt.type as 'type',
+		dt.level,
 		a.site_code as 'site_code'
 
 	FROM dbo.DTReason dt with (nolock)
