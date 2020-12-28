@@ -59,7 +59,8 @@ export let headers = {
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
         { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 },
-        { header: 'type', type: 'VARCHAR', key: 'type', width: 12 }
+        { header: 'type', type: 'VARCHAR', key: 'type', width: 12 },
+        { header: 'level', type: 'VARCHAR', key: 'level', width: 14 }
     ],
     Shift: [
         { header: 'shift_code', type: 'VARCHAR', key: 'shift_code', width: 14 },
@@ -130,7 +131,10 @@ export let headers = {
         { header: 'entered_by', type: 'VARCHAR', key: 'entered_by', width: 19 },
         { header: 'entered_on', type: 'DATETIME', key: 'entered_on', width: 14 },
         { header: 'last_modified_by', type: 'VARCHAR', key: 'last_modified_by', width: 19 },
-        { header: 'last_modified_on', type: 'DATETIME', key: 'last_modified_on', width: 17 }
+        { header: 'summary_timeout', type: 'INT', key: 'summary_timeout', width: 19 },
+        { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
+        { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 }
+        
     ],
     Unavailable: [
         { header: 'unavailable_code', type: 'VARCHAR', key: 'unavailable_code', width: 24 },
@@ -191,8 +195,8 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', h.asset_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code OUTER APPLY [dbo].[AssetsResolverFromId] (a.asset_id, CASE WHEN (a.asset_level='Area' or a.asset_level='Site') then 3 else 0 end ) as H`;
             parametersObject.matchParameters = 's.dtreason_code = t.dtreason_code AND s.asset_id = t.asset_id';
-            parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[type] = s.[type]`;
-            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[type])`;
+            parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[type] = s.[type], t.[level] = s.[level]`;
+            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[type], s.[level])`;
             break;
         case 'Shift':
             parametersObject.extraColumns = ', a.asset_id';
@@ -219,8 +223,8 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', a.asset_id as site_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'`;
             parametersObject.matchParameters = 's.site_id = t.site_id';
-            parametersObject.updateSentence = `t.site_id = s.site_id, t.[site_name] = s.[site_name], t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[site_timezone] = s.[site_timezone], t.[ui_timezone] = s.[ui_timezone], t.[escalation_level1_minutes] = s.[escalation_level1_minutes], t.[escalation_level2_minutes] = s.[escalation_level2_minutes], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], t.[setup_lookback_minutes] = s.[setup_lookback_minutes], t.[language] = s.[language], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on]`;
-            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], [escalation_level1_minutes], [escalation_level2_minutes], [default_target_percent_of_ideal], [default_setup_minutes], [default_routed_cycle_time], [setup_lookback_minutes], [language], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on]) VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], s.[escalation_level1_minutes], s.[escalation_level2_minutes], s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[setup_lookback_minutes], s.[language], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on])`;
+            parametersObject.updateSentence = `t.site_id = s.site_id, t.[site_name] = s.[site_name], t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[site_timezone] = s.[site_timezone], t.[ui_timezone] = s.[ui_timezone], t.[escalation_level1_minutes] = s.[escalation_level1_minutes], t.[escalation_level2_minutes] = s.[escalation_level2_minutes], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], t.[setup_lookback_minutes] = s.[setup_lookback_minutes], t.[language] = s.[language], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes]`;
+            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], [escalation_level1_minutes], [escalation_level2_minutes], [default_target_percent_of_ideal], [default_setup_minutes], [default_routed_cycle_time], [setup_lookback_minutes], [language], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on]) VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], s.[escalation_level1_minutes], s.[escalation_level2_minutes], s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[setup_lookback_minutes], s.[language], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[summary_timeout], s.[break_minutes], s.[lunch_minutes])`;
             break;
         case 'Unavailable':
             parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';

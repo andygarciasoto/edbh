@@ -1,4 +1,9 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_CommonParametersTest]    Script Date: 28/12/2020 10:06:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -45,7 +50,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_CommonParametersTest 1
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParametersTest]
+ALTER    PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParametersTest]
 --Declare
 	@Site_Id			INT
 AS
@@ -73,7 +78,10 @@ Declare @Output table
 	setup_lookback_minutes			FLOAT,
 	inactive_timeout_minutes		FLOAT,
 	language						NVARCHAR(100),
-	message							Varchar(100)
+	message							Varchar(100),
+	summary_timeout					Int,
+	break_minutes					FLOAT,
+	lunch_minutes					FLOAT
 	)
 
 Declare
@@ -108,7 +116,10 @@ End
 			setup_lookback_minutes,
 			inactive_timeout_minutes,
 			language,
-			Null
+			Null,
+			summary_timeout,
+			break_minutes,
+			lunch_minutes
 		From dbo.CommonParametersTest with (nolock)
 		Where site_id = IsNull(@Site_Id,site_id) AND status = 'Active'
 
@@ -149,7 +160,10 @@ Select @json_out =
 		setup_lookback_minutes				as 'CommonParametersTest.setup_lookback_minutes',
 		inactive_timeout_minutes			as 'CommonParametersTest.inactive_timeout_minutes',
 		language							as 'CommonParametersTest.language',
-		message								as 'CommonParametersTest.message'	
+		message								as 'CommonParametersTest.message',
+		summary_timeout						as 'CommonParametersTest.summary_timeout',
+		break_minutes						as 'CommonParametersTest.break_minutes',
+		lunch_minutes						as 'CommonParametersTest.lunch_minutes'	
 	From @Output o 
 	Order By 
 		o.parameter_id

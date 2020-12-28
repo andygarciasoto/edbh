@@ -1,4 +1,9 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -38,11 +43,12 @@
 --	20190814		C00V00 - Intial code created
 --  20191203		C00V01 - Change Asset_Code for Asset_Id
 --  20200203		C00V03 - Change result result to normal table result
+--  20201218		C00V04 - Add new level column
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
+ALTER   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
 --Declare
 	@Asset_Id			INT,
 	@type				VARCHAR(100)
@@ -60,6 +66,7 @@ BEGIN
 		dt.dtreason_name as 'dtreason_name',
 		dt.dtreason_category as 'dtreason_category',
 		dt.type as 'type',
+		dt.level,
 		a.site_code as 'site_code'
 
 	FROM dbo.DTReason dt with (nolock)
