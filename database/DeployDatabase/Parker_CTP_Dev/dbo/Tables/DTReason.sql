@@ -4,6 +4,7 @@
     [dtreason_name]        VARCHAR (200) NOT NULL,
     [dtreason_description] VARCHAR (256) NULL,
     [dtreason_category]    VARCHAR (100) NULL,
+    [level]                VARCHAR (100) NULL,
     [reason1]              VARCHAR (100) NULL,
     [reason2]              VARCHAR (100) NULL,
     [status]               VARCHAR (50)  NOT NULL,
