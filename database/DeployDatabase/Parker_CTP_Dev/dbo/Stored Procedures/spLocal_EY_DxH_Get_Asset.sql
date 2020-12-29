@@ -1,4 +1,9 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 29/12/2020 11:31:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -41,7 +46,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset 'Cell','Partially_Manual_Scan_Order', 1
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
+ALTER PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
 --Declare
 @Level            VARCHAR(100), --All, Site, Area, or Cell. Most of the time send Cell 
 @Automation_Level VARCHAR(100), --All, Automated, Partially_Manual_Scan_Order, Manual
@@ -80,7 +85,8 @@ AS
                grouping2, 
                grouping3, 
                grouping4, 
-               grouping5
+               grouping5,
+			   is_multiple
         FROM dbo.Asset WITH(NOLOCK)
         WHERE STATUS = 'Active'
               AND site_code = @site_code
