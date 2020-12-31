@@ -1,9 +1,4 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 29/12/2020 11:31:05 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -46,7 +41,7 @@ GO
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset 'Cell','Partially_Manual_Scan_Order', 1
 --
-ALTER PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
 --Declare
 @Level            VARCHAR(100), --All, Site, Area, or Cell. Most of the time send Cell 
 @Automation_Level VARCHAR(100), --All, Automated, Partially_Manual_Scan_Order, Manual

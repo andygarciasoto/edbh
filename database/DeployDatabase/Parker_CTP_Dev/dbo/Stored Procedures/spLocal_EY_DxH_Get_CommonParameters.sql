@@ -1,9 +1,4 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_CommonParameters]    Script Date: 28/12/2020 10:01:56 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -50,7 +45,7 @@ GO
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_CommonParameters 1
 --
-ALTER    PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParameters]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommonParameters]
 --Declare
 	@Site_Id			INT
 AS

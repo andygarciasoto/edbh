@@ -13,8 +13,7 @@
     [last_modified_by]     VARCHAR (100) NOT NULL,
     [last_modified_on]     DATETIME      NOT NULL,
     [asset_id]             INT           NULL,
-    [type]                 VARCHAR (255) DEFAULT ('downtime') NOT NULL,
-    [level] VARCHAR(100) NULL, 
+    [type]                 VARCHAR (255) DEFAULT ('downtime') NOT NULL
     CONSTRAINT [PK_DTReason_DTReason_Id] PRIMARY KEY CLUSTERED ([dtreason_id] ASC),
     CONSTRAINT [FK_DTReason_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );

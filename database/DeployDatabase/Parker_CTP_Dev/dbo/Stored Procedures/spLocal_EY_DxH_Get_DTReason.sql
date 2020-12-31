@@ -1,8 +1,4 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -48,7 +44,7 @@ GO
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'
 --
-ALTER   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
 --Declare
 	@Asset_Id			INT,
 	@type				VARCHAR(100)

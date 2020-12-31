@@ -1,11 +1,4 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]    Script Date: 29/12/2020 11:29:06 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-
-
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -48,7 +41,7 @@ GO
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset_By_Code '34002'
 --
-ALTER PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
 --Declare
 	@Asset_Code				VARCHAR(100)				--Asset_Code of the Site
 AS

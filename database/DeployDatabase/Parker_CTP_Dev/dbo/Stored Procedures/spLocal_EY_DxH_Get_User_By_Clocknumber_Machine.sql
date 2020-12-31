@@ -1,4 +1,5 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine]    Script Date: 31/12/2020 10:05:48 ******/
+
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] '2291', '0'
 
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] (@badge as VARCHAR(100), @machine as VARCHAR(100))
@@ -15,6 +16,8 @@ DECLARE
 	@Shift_Name			VARCHAR(100),
 	@Shift_Id			INT,
 	@language			VARCHAR(100),
+	@break_minutes		FLOAT,
+	@lunch_minutes		FLOAT,
 	@summary_timeout	FLOAT,
 	@inactive_timeout_minutes FLOAT,
 	@socket_timeout		FLOAT,
@@ -52,7 +55,9 @@ END
 SELECT 
 	@timezone = ui_timezone,
 	@timezone2 = site_timezone,
-	@language = language
+	@language = language,
+	@break_minutes = break_minutes,
+	@lunch_minutes = lunch_minutes
 FROM dbo.CommonParameters WHERE site_id = @site;
 
 SELECT @CurrentDateTime = SYSDATETIME() at time zone 'UTC' at time zone @timezone2;
@@ -128,13 +133,10 @@ WITH CTE AS
 			@CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
 
 SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name, @timezone as timezone, @Shift_Id as shift_id, @Shift_Name as shift_name, 
-FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @summary_timeout as summary_timeout,
-@inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration,
-@vertical_shift_id as vertical_shift_id
+FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @break_minutes as 
+break_minutes, @lunch_minutes as lunch_minutes, @summary_timeout as summary_timeout, @inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, 
+@max_regression as max_regression, @token_expiration as token_expiration, @vertical_shift_id as vertical_shift_id
 FROM dbo.TFDUsers where badge = @badge AND Site = @site
 
 
 END
-
-
-
