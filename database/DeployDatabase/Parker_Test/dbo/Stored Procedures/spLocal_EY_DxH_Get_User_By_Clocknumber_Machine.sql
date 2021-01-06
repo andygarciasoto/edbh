@@ -1,17 +1,64 @@
 ﻿
---exec [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] '2291', '0'
+
+
+--
+-- Copyright © 2019 Ernst & Young LLP
+-- All Rights Reserved
+-- spLocal_EY_DxH_Get_User_By_Clocknumber_Machine
+--
+--  Purpose:
+
+--	Given an asset and a timestamp, return the existing dxhdata_id, production_day, hour_interval, and shift_code 
+--	or create a new one and return that same info.
+--
+--	This code could be used as part of the start of the new hour process but ... it would need to have an open order 
+--	to allow creating a row. So... using RequireAnOrderToCreate
+--			Send 1 if this is called as as part of the start of the new hour process
+--			Send 0 if you have some data like productiondata, comment, or possibly timelost
+--
+--	To Do:
+--
+--  Output Parameters:
+---
+--  Input Parameters:
+--- None
+---
+---	
+--  Trigger:
+---
+--  Data Read Other Inputs:  
+--- 
+---	
+--  Data Written Results:
+---
+--  Assumptions:
+--- 
+--  Dependencies: 
+---	None
+---
+--  Variables:
+---
+---
+--  Tables Modified:
+--	Possibly DxHData
+---
+-- Modification Change History:
+--------------------------------------------------------------------------------
+--	20190807		C00V00 - Intial code create
+--	20210106		C00V01 - Add new logic to get the production day and the shift code using GetShiftProductionDayFromSiteAndDate Function
+--		
+-- Example Call:
+--  EXEC [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] '2291', '0'
+--
 
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Machine] (@badge as VARCHAR(100), @machine as VARCHAR(100))
-
   AS  BEGIN 
 DECLARE
 	@site				INT,
 	@name				VARCHAR(100),
 	@timezone			VARCHAR(100),
 	@CurrentDateTime	DATETIME,
-	@StartDayCurrent	DATETIME,
 	@DateOfShift		DATETIME,
-	@timezone2			VARCHAR(100),
 	@Shift_Name			VARCHAR(100),
 	@Shift_Id			INT,
 	@language			VARCHAR(100),
@@ -20,13 +67,7 @@ DECLARE
 	@socket_timeout		FLOAT,
 	@max_regression		FLOAT,
 	@token_expiration	FLOAT,
-	@vertical_shift_id	INT,
-	@first_shift_start_time DATETIME,
-	@last_shift_end_time DATETIME,
-	@last_shift_sequence INT,
-	@CurrentProductionDay		DATETIME,
-	@YesterdayProductionDay	DATETIME,
-	@TomorrowProductionDay		DATETIME;
+	@vertical_shift_id	INT;
 
 IF @machine = '0'
 BEGIN
@@ -51,37 +92,16 @@ END
 
 SELECT 
 	@timezone = ui_timezone,
-	@timezone2 = site_timezone,
 	@language = language
 FROM dbo.CommonParameters WHERE site_id = @site;
 
-SELECT @CurrentDateTime = SYSDATETIME() at time zone 'UTC' at time zone @timezone2;
-SELECT @StartDayCurrent = FORMAT(@CurrentDateTime, 'yyyy-MM-dd');
-
-SELECT
-@first_shift_start_time = DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @StartDayCurrent))
-FROM dbo.Shift
-WHERE STATUS = 'Active' AND asset_id = @site AND is_first_shift_of_day = 1;
-
-SELECT
-@last_shift_sequence = MAX(shift_sequence)
-FROM dbo.Shift
-WHERE STATUS = 'Active' AND asset_id = @site
-GROUP BY asset_id;
-
-SELECT
-@last_shift_end_time = DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @StartDayCurrent))
-FROM dbo.Shift
-WHERE STATUS = 'Active' AND asset_id = @site AND shift_sequence = @last_shift_sequence;
-
-IF(@StartDayCurrent < @first_shift_start_time)
-BEGIN
-	SET @StartDayCurrent = DATEADD(DAY, -1, @StartDayCurrent);
-END
-ELSE IF (@StartDayCurrent > @last_shift_sequence)
-BEGIN
-	SET @StartDayCurrent = DATEADD(DAY, 1, @StartDayCurrent);
-END
+-- New Logic to get production day and shift code
+	SELECT
+		@DateOfShift = ProductionDay,
+		@Shift_Id = ShiftId,
+		@Shift_Name = ShiftName,
+		@CurrentDateTime = CurrentDateTime
+	FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@site, NULL);
 
 SELECT
 @summary_timeout = summary_timeout,
@@ -96,36 +116,6 @@ SELECT
 FROM dbo.Shift WHERE asset_id = @site
 AND status = 'Inactive' AND shift_name = 'Vertical';
 
-SET @CurrentProductionDay = FORMAT(@StartDayCurrent, 'yyyy-MM-dd');
-SET @YesterdayProductionDay = FORMAT(DATEADD(DAY, -1, @StartDayCurrent), 'yyyy-MM-dd');
-SET @TomorrowProductionDay = FORMAT(DATEADD(DAY, 1, @StartDayCurrent), 'yyyy-MM-dd');
-
-WITH CTE AS
-	(SELECT
-		shift_id, shift_name, is_first_shift_of_day,
-		--GET INTERVAL SHIFT FOR TODAY
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_today,
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_today,
-		--GET INTERVAL SHIFT FOR YESTERDAY
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @YesterdayProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_yesterday,
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @YesterdayProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_yesterday,
-		--GET INTERVAL SHIFT FOR TOMORROW
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @TomorrowProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_tomorrow,
-		FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @TomorrowProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_tomorrow
-	FROM dbo.Shift WHERE asset_id = @Site AND STATUS = 'Active')
-	SELECT 
-		@Shift_Id = [shift_id],
-		@Shift_Name = [shift_name],
-		@DateOfShift =
-			CASE
-				WHEN @CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday THEN  DATEADD(DAY, -1, @StartDayCurrent)
-				WHEN @CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow THEN DATEADD(DAY, 1, @StartDayCurrent)
-				ELSE @StartDayCurrent
-			END
-		FROM CTE WHERE 
-			@CurrentDateTime BETWEEN start_date_time_today AND end_date_time_today OR 
-			@CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday OR
-			@CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
 
 SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name, @timezone as timezone, @Shift_Id as shift_id, @Shift_Name as shift_name, 
 FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @summary_timeout as summary_timeout,

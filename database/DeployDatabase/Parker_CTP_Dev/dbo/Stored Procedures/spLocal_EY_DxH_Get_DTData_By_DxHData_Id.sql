@@ -63,7 +63,8 @@ BEGIN
 		DTR.dtreason_code,
 		DTR.dtreason_category,
 		DTR.dtreason_name,
-		DTR.type
+		DTR.type,
+		DTR.level
 	FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
 	DT.dtreason_id = DTR.dtreason_id AND DT.dxhdata_id = @DxHData_id AND DT.productiondata_id = @productiondata_id);
 	END
@@ -77,7 +78,8 @@ BEGIN
 		DT.productiondata_id,
 		DTR.dtreason_code,
 		DTR.dtreason_name,
-		DTR.type
+		DTR.type,
+		DTR.level
 	FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
 	DT.dtreason_id = DTR.dtreason_id AND DT.dxhdata_id = @DxHData_id AND DT.productiondata_id IS NULL);
 
