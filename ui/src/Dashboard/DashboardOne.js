@@ -7,7 +7,7 @@ import 'react-table/react-table.css';
 import moment from 'moment';
 import CommentsModal from '../Layout/CommentModal';
 import ValueModal from '../Layout/ValueModal';
-import TimelossModal from '../Layout/TimelossModal';
+import TimelossModal from '../Layout/Reason/TimelostModal';
 import SignoffModal from '../Layout/SignoffModal';
 import OrderModal from '../Layout/OrderModal';
 import ManualEntryModal from '../Layout/ManualEntryModal';
@@ -16,7 +16,7 @@ import Comments from './Comments';
 import ErrorModal from '../Layout/ErrorModal';
 import AlertModalOverProd from '../Layout/ErrorModal';
 import Pagination from '../Layout/Pagination';
-import ScrapModal from '../Layout/ScrapModal';
+import ScrapModal from '../Layout/Reason/ScrapModal';
 import openSocket from 'socket.io-client';
 import {
   formatDate,
@@ -267,17 +267,7 @@ class DashboardOne extends React.Component {
         props.updateDashOne(null);
         props.updateInter(requestInter);
         props.updateVertDash(requestVertDas);
-
-        // _.forEach(props.user.shifts, shift => {
-        //   let param = {
-        //     mc: filter[0],
-        //     dt: moment(filter[1]).format('YYYY/MM/DD') + ' ' + (shift.hour >= 10 ? shift.hour + ':00' : '0' + shift.hour + ':00'),
-        //     sf: shift.shift_id,
-        //     hr: hr,
-        //     st: props.user.site
-        //   }
-        //   responseArray.push(getResponseFromGeneric('get', API, '/data', null, param, {}, requestVertDas.token));
-        // });
+        
         const parameters2 = {
           mc: filter[0],
           dt: formatDate(filter[1]).split("-").join(""),

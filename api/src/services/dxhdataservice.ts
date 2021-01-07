@@ -32,7 +32,7 @@ export class DxHDataService {
             asset = asset[0] || {};
             asset.asset_id = asset.asset_id || null;
             data = await this.dxhdatarepository.getShiftData(asset.asset_id, params.dt, params.sf, params.st);
-            data = utils.createUnallocatedTime2(data, params.hr, date);
+            data = utils.createUnallocatedTime(data, params.hr, date);
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
