@@ -108,7 +108,7 @@
     <Build Include="dbo\Stored Procedures\sp_clocknumberlogin.sql" />
     <Build Include="dbo\Stored Procedures\sp_clocknumber_asset_login.sql" />
     <Build Include="dbo\Stored Procedures\sp_get_users_by_badge.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Product.sql">
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Product.sql"> 
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_ProductionDay_Data.sql">

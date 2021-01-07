@@ -226,6 +226,9 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scrap_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scan.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build> 
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
