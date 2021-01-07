@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export function createUnallocatedTime2(obj, tz, dt) {
+export function createUnallocatedTime(obj, tz, dt) {
     let actualElement = null;
     let actualUnallocatedTime = null;
     let actualAllocatedTime = null;
