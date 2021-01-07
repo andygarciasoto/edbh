@@ -238,5 +238,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Functions\GetShiftProductionDayFromSiteAndDate.sql" />
   </ItemGroup>
 </Project>

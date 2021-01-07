@@ -239,5 +239,6 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data_new_1.sql" />
+    <Build Include="dbo\Functions\GetShiftProductionDayFromSiteAndDate.sql" />
   </ItemGroup>
 </Project>
