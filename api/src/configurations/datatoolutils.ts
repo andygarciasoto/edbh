@@ -52,7 +52,7 @@ export let headers = {
         { header: 'dtreason_name', type: 'VARCHAR', key: 'dtreason_name', width: 34 },
         { header: 'dtreason_description', type: 'VARCHAR', key: 'dtreason_description', width: 34 },
         { header: 'dtreason_category', type: 'VARCHAR', key: 'dtreason_category', width: 19 },
-        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 12 },
+        { header: 'asset_code', type: 'VARCHAR', key: 'asset_code', width: 14 },
         { header: 'reason1', type: 'VARCHAR', key: 'reason1' },
         { header: 'reason2', type: 'VARCHAR', key: 'reason2' },
         { header: 'status', type: 'VARCHAR', key: 'status' },

@@ -44,27 +44,27 @@ const helpers = {
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
             if (useIndividualValues) {
-                style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset)) ? '#b80600' : 'green';
-                style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+                style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
+                style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
                     'url("../arabesque.png")';
             } else {
-                style.backgroundColor = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset)) ? '#b80600' : 'green';
-                style.backgroundImage = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset) === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+                style.backgroundColor = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
+                style.backgroundImage = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
+                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
                     'url("../arabesque.png")';
             }
             style.color = 'white';
 
         } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset)) ? '#b80600' : 'green';
-            style.backgroundImage = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset)) ? 'url("../dark-circles.png")' :
+            style.backgroundColor = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
+            style.backgroundImage = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
