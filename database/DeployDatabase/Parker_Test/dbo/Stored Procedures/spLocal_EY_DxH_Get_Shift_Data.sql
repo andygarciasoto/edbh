@@ -166,12 +166,12 @@ AS
                         DTD.summary_minutes AS timelost_summary,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN(3600 / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time))
+                            THEN CONVERT(INT, (3600 / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)))
                             ELSE NULL
                         END AS new_ideal,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal))
+                            THEN CONVERT(INT, ((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal)))
                             ELSE NULL
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
@@ -223,7 +223,7 @@ AS
                      SELECT SUM(CASE
                                     WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH')
                                          AND PD1.target > (PD1.actual - PD1.setup_scrap - PD1.other_scrap)
-                                    THEN FLOOR(PD1.target)
+                                    THEN PD1.target
                                     ELSE PD1.actual - PD1.setup_scrap - PD1.other_scrap
                                 END) AS summary_actual_quantity
                      FROM dbo.ProductionData PD1

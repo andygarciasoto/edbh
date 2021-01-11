@@ -10,15 +10,15 @@
         "prefix": "/",
         "service_name": "Dxh Service API",
         "cors": [
-            "https://edxhapitst.us.parker.corp",
-            "https://edxhtst.us.parker.corp"
+            "http://localhost:8080",
+            "http://localhost:3000"
         ],
-        "redirect_uri": "https://edxhapitst.us.parker.corp/auth/token",
+        "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",
-        "URL": "https://edxhtst.us.parker.corp",
-        "badLogin": "https://edxhtst.us.parker.corp?err=true",
-        "badLoginUser": "https://edxhtst.us.parker.corp/login?err=true",
-        "loginURL": "https://edxhtst.us.parker.corp/dashboard"
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
