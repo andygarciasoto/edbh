@@ -34,6 +34,8 @@ import { TagRepository } from './repositories/tag-repository';
 import { CommonParametersRepository } from './repositories/commonparameters-repository';
 import { UnavailableRepository } from './repositories/unavailable-repository';
 import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-repository';
+import { ScanRepository } from './repositories/scan-repository';
+import { ScanService } from './services/scanservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
@@ -56,6 +58,7 @@ const tagRepository = new TagRepository(sqlServerStore);
 const commonparametersRepository = new CommonParametersRepository(sqlServerStore);
 const unavailableRepository = new UnavailableRepository(sqlServerStore);
 const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerStore);
+const scanRepository = new ScanRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, config);
@@ -71,6 +74,7 @@ const productiondataService = new ProductionDataService(productionDataRepository
 const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
+const scanService = new ScanService(scanRepository);    
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -175,6 +179,9 @@ const appConfig = {
         }, true, true),
         new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
             await dataToolService.exportData(req, res);
+        }, true),
+        new http.RestEndpoint('/api/new_scan', 'put', async (req: Request, res: Response) => {
+            await scanService.putScan(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
