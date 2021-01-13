@@ -32,7 +32,7 @@ i18n
   .init({
     resources,
     lng: "en_us",
-    fallbackLng: ['en', 'es', 'it', 'de', 'ko'],
+    fallbackLng: ['en_us', 'es', 'it', 'de', 'ko'],
 
     keySeparator: false, // we do not use keys in form messages.welcome
 

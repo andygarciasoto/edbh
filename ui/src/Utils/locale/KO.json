@@ -101,5 +101,11 @@
     "Adjusted Actual": "실적 조정",
     "Go Back To Current Shift": "현재 근무조로 돌아 가기",
     "Go To Current Shift": "현재 근무조로 이동",
-    "Showing Data for": "데이터 표시"
+    "Showing Data for": "데이터 표시",
+    "Site Configuration Import/Export Tool": "가져오기/내보내기 사이트 구성 도구",
+    "Select an action": "작업 선택",
+    "Please choose the Configuration Items to": "구성 항목을 선택하십시오",
+    "All Configuration Items": "모든 구성 항목",
+    "Available Configuration Items": "사용 가능한 구성 항목",
+    "Selected Configuration Items to": "선택한 구성 항목에서"
 }
