@@ -40,7 +40,7 @@
 -- exec dbo.spLocal_EY_DxH_Get_OrdersToCreateProduction
 --
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_OrdersToCreateProduction]
+CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_OrdersToCreateProduction]
 AS
 
     BEGIN

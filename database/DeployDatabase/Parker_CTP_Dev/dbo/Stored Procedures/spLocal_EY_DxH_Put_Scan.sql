@@ -1,5 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 12/1/2021 15:26:34 ******/
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 31/12/2020 09:35:04 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_Scan 'EYAdministrator', 'Administrator', 'EY', 228, '2020-12-31 10:50:28.220', 'lunch', 'Active', 225, 15, 30

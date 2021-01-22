@@ -31,6 +31,7 @@ AS
         @value FLOAT,
         @actual FLOAT,
         @site_code VARCHAR(100),
+        @site_id INT,
         @timezone DATETIME,
         @setup_scrap FLOAT,
         @other_scrap FLOAT,
@@ -59,12 +60,13 @@ AS
             IF ISNULL(@asset_id, 0) != 0 AND ISNULL(@rollover_point, 0) != 0 AND ISNULL(@max_change, 0) != 0
 			BEGIN
 
-                SELECT @site_code = site_code
-                FROM dbo.Asset
-                WHERE asset_id = @asset_id;
+                 SELECT
+                 @site_code = asset_code,
+                 @site_id = asset_id
+                 FROM dbo.Asset WHERE asset_code = ( SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id)
 
                 SELECT @timezone = (SELECT GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE site_timezone)
-                FROM dbo.CommonParameters where site_name = @site_code;
+                FROM dbo.CommonParameters where site_id = @site_id;
 
                 INSERT INTO dbo.TagData
                     (tag_name, 

@@ -129,6 +129,3 @@ FROM dbo.TFDUsers where badge = @badge AND Site = @site
 
 
 END
-
-
-

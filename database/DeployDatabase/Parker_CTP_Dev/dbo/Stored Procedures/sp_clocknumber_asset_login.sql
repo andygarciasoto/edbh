@@ -1,7 +1,7 @@
 ﻿
 --exec [sp_clocknumber_asset_login] '2291', '168H-0006'
 
- CREATE PROCEDURE [dbo].[sp_clocknumber_asset_login] (@badge as VARCHAR(100), @asset_code as VARCHAR(100))
+ CREATE   PROCEDURE [dbo].[sp_clocknumber_asset_login] (@badge as VARCHAR(100), @asset_code as VARCHAR(100))
 
   AS  BEGIN 
  DECLARE

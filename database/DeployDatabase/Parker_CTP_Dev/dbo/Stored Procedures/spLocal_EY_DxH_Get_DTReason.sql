@@ -76,4 +76,3 @@ BEGIN
 		dt.dtreason_code;
 
 END
-

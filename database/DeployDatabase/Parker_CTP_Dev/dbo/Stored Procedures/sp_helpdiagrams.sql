@@ -1,5 +1,5 @@
 ﻿
-	CREATE PROCEDURE [dbo].[sp_helpdiagrams]
+	CREATE   PROCEDURE [dbo].[sp_helpdiagrams]
 	(
 		@diagramname sysname = NULL,
 		@owner_id int = NULL

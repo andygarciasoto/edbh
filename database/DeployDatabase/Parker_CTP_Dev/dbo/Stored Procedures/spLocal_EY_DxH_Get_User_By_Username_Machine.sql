@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'Ryan', '0'
 
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as VARCHAR(100), @machine as VARCHAR(100))
+CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as VARCHAR(100), @machine as VARCHAR(100))
 
   AS  BEGIN 
  DECLARE

@@ -73,4 +73,3 @@ BEGIN
 		AND asset_code = @Asset_Code
 		ORDER BY asset_name
 END
-

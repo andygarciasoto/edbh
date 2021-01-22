@@ -1,7 +1,7 @@
 ﻿
 
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (@asset_code as Varchar(100),			
+CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (@asset_code as Varchar(100),			
 	@asset_name				as Varchar(200),	
 	@asset_description		as Varchar(256),	
 	@asset_level			as Varchar(100),	
