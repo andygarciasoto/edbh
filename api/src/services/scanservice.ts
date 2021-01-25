@@ -35,4 +35,22 @@ export class ScanService {
         }
         return res.status(200).send('Message Entered Succesfully');
     }
+
+    public async getScanByAsset(req: Request, res: Response) {
+        const params = req.query;
+        if (params.start_time == undefined || params.end_time == undefined || params.asset_id == undefined) {
+            return res.status(400).send("Missing parameters");
+        }
+        let start_time = params.start_time.format(this.format);
+        let end_time = params.end_time.format(this.format);
+        let asset_id = params.asset_id;
+        
+        let scan: any;
+        try {
+            scan = await this.scanrepository.getScan(start_time, end_time, asset_id);
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+        return res.status(200).json(scan);
+    }
 }
