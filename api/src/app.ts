@@ -188,6 +188,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/find_user_information', 'get', async (req: Request, res: Response) => {
             await userService.findUserInformation(req, res);
+        }, true),
+        new http.RestEndpoint('/api/get_scan', 'get', async (req: Request, res: Response) => {
+            await scanService.getScanByAsset(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
