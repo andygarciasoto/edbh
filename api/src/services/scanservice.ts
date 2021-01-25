@@ -19,7 +19,7 @@ export class ScanService {
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
         const reason = req.body.reason ? req.body.reason : undefined;
         const status = req.body.status ? req.body.status : undefined;
-        const site_id = req.body.asset_id ? req.body.site_id : undefined;
+        const site_id = req.body.site_id ? req.body.site_id : undefined;
         const break_minutes = req.body.break_minutes ? req.body.break_minutes : 0;
         const lunch_minutes = req.body.lunch_minutes ? req.body.lunch_minutes : 0;
 

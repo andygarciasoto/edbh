@@ -61,7 +61,7 @@ const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerS
 const scanRepository = new ScanRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
-const authService = new AuthService(userRepository, config);
+const authService = new AuthService(userRepository, assetRepository, scanRepository, config);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);
@@ -74,7 +74,7 @@ const productiondataService = new ProductionDataService(productionDataRepository
 const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
-const scanService = new ScanService(scanRepository);    
+const scanService = new ScanService(scanRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -101,6 +101,9 @@ const appConfig = {
         }, false),
         new http.RestEndpoint('/api/me', 'get', async (req: Request, res: Response) => {
             await authService.extractInformationFromToken(req, res);
+        }, true),
+        new http.RestEndpoint('/auth/assignRoleToken', 'get', async (req: Request, res: Response) => {
+            await authService.assignRoleToken(req, res);
         }, true),
         new http.RestEndpoint('/api/asset_display_system', 'get', async (req: Request, res: Response) => {
             await assetService.getAssetByAssetDisplaySystem(req, res);
@@ -182,6 +185,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/new_scan', 'put', async (req: Request, res: Response) => {
             await scanService.putScan(req, res);
+        }, true),
+        new http.RestEndpoint('/api/find_user_information', 'get', async (req: Request, res: Response) => {
+            await userService.findUserInformation(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
