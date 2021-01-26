@@ -41,8 +41,8 @@ export class ScanService {
         if (params.start_time == undefined || params.end_time == undefined || params.asset_id == undefined) {
             return res.status(400).send("Missing parameters");
         }
-        let start_time = params.start_time.format(this.format);
-        let end_time = params.end_time.format(this.format);
+        let start_time = moment(new Date(params.start_time)).format(this.format);
+        let end_time = moment(new Date(params.end_time)).format(this.format);
         let asset_id = params.asset_id;
         
         let scan: any;
