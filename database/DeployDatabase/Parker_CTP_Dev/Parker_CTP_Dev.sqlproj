@@ -247,5 +247,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql" />
   </ItemGroup>
 </Project>
