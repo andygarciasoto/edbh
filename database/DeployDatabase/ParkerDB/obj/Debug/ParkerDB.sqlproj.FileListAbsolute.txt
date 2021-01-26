@@ -1,0 +1,5 @@
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\PK DevOps\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\bin\Debug\ParkerDB.dacpac
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\PK DevOps\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\bin\Debug\ParkerDB.dll
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\PK DevOps\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\bin\Debug\ParkerDB.pdb
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\PK DevOps\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\obj\Debug\ParkerDB.dll
+C:\Users\adrian.mendez\OneDrive - EY\Documents\Projects\Parker\PK DevOps\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\obj\Debug\ParkerDB.pdb
