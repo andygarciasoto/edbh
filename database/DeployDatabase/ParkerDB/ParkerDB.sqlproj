@@ -237,6 +237,9 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Tables\Scan.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scan.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parker-PROD.publish.xml" />

@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 27/1/2021 10:54:05 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -54,7 +54,7 @@
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
--- exec spLocal_EY_DxH_Get_Shift_Data 35,'2020-03-03',2,1
+-- exec spLocal_EY_DxH_Get_Shift_Data 230,'2021-01-26',47,225
 --
 --52,7586221694946
 --23,9655113220215
@@ -146,6 +146,7 @@ AS
                         OD.setup_start_time, 
                         OD.setup_end_time, 
                         OD.product_code AS product_code_order, 
+						S.active_operators as active_operators,
                         SUM(CASE
                                 WHEN OD.order_id IS NULL
                                 THEN 0
@@ -206,7 +207,17 @@ AS
                       LEFT JOIN dbo.Asset AST ON AST.asset_id = @Asset_Id
                       --GET INFORMATION OF THE PRODUCT
                       LEFT JOIN dbo.Product P ON PD.product_code = P.product_code
-                      --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
+					  --GET ACTIVE OPERATORS WITH MULTIPLE ASSETS
+					  OUTER APPLY
+				(
+					SELECT COUNT (DISTINCT S.badge) as active_operators
+					FROM dbo.Scan S
+					WHERE S.asset_id = @Asset_Id
+							AND S.status = 'Active'
+							AND S.start_time < BD.ended_on_chunck
+							AND (S.end_time IS NULL OR S.end_time > BD.started_on_chunck)
+				) S
+					   --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
                       OUTER APPLY
                  (
                      SELECT SUM(U.duration_in_minutes) AS summary_breakandlunch_minutes
@@ -369,7 +380,8 @@ AS
                     timelost_summary,
                     --new_ideal,
                     --new_target,
-                    summary_actual_quantity
+                    summary_actual_quantity,
+					active_operators
              --Row#,
              --summary_actual_target,
              --result_final

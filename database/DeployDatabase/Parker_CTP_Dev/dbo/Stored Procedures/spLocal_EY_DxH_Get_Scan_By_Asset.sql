@@ -1,5 +1,5 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 25/1/2021 15:43:36 ******/
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 29/12/2020 11:31:05 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 27/1/2021 11:20:43 ******/
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 26/01/2021 11:31:05 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -36,9 +36,9 @@
 -- Modification Change History:
 --------------------------------------------------------------------------------	
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Scan_By_Asset '2021-01-25 10:35:00.000','2021-01-26 10:35:00.000', 230
+-- exec spLocal_EY_DxH_Get_Scan_By_Asset '2021-01-26 12:51:00','2021-01-27 12:51:00', 230
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]
 @start_time       DATETIME, 
 @end_time		  DATETIME, 
 @asset_id         INT				
@@ -47,19 +47,21 @@ AS
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-        SELECT scan_id, 
-               badge, 
+        SELECT scan_id,
+			   badge,
                name, 
                asset_id, 
-               start_time, 
-               end_time, 
+               CONVERT(VARCHAR, start_time, 20) as start_time, 
+               CONVERT(VARCHAR, end_time, 20) as end_time, 
                possible_end_time,
 			   DATEDIFF(minute, possible_end_time, end_time) as minutes,
                is_current_scan, 
                reason, 
                status
         FROM dbo.Scan WITH(NOLOCK)
-        WHERE (start_time >= @start_time AND start_time < @end_time AND (end_time <= @end_time OR end_time is NULL))
+        WHERE start_time < @end_time 
+		AND
+		(end_time is NULL OR end_time > @start_time)
 		ORDER BY badge, entered_on;
         RETURN;
     END;

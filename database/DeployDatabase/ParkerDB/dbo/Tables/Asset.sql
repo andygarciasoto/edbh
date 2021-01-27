@@ -20,7 +20,9 @@
     [last_modified_by]        VARCHAR (100) NOT NULL,
     [last_modified_on]        DATETIME      NOT NULL,
     [target_percent_of_ideal] FLOAT (53)    NULL,
-    CONSTRAINT [PK_Asset_Asset_Id] PRIMARY KEY NONCLUSTERED ([asset_id] ASC),
-    CONSTRAINT [UC_Asset_Code] UNIQUE NONCLUSTERED ([asset_code] ASC)
+    [is_multiple]             BIT           NULL,
+    CONSTRAINT [PK_Asset_Asset_Id] PRIMARY KEY CLUSTERED ([asset_id] ASC),
+    CONSTRAINT [UNC_Asset_Asset_Code] UNIQUE NONCLUSTERED ([asset_code] ASC),
+    CONSTRAINT [UNC_Asset_Asset_Name] UNIQUE NONCLUSTERED ([asset_name] ASC)
 );
 
