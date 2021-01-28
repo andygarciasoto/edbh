@@ -191,7 +191,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/get_scan', 'get', async (req: Request, res: Response) => {
             await scanService.getScanByAsset(req, res);
-        }, false)
+        }, true)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)
