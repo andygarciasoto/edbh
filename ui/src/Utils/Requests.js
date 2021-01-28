@@ -205,6 +205,7 @@ function isComponentValid(user_role, name) {
       'scrap'
     ],
     operator: [
+      'actual',
       'timelost',
       'comments',
       'pagination',
