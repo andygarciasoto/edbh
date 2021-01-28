@@ -38,7 +38,6 @@ public static async void Run(EventData eventHubMessage, ILogger log)
     // validates if the message sent has a body
     if(String.IsNullOrWhiteSpace(message))
         return;
-            
     try{
         JObject full = JObject.Parse(message);
         if (full["productFilter"].ToString() != "kepserver") {
@@ -105,7 +104,7 @@ public static async void Run(EventData eventHubMessage, ILogger log)
         DateTime valid_from = Convert.ToDateTime(data["valid_from"].ToString());
 
         // creates the connection to the database
-        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+        var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection");
         var connection = new SqlConnection(ConnString);
 
         // insert products and orders
