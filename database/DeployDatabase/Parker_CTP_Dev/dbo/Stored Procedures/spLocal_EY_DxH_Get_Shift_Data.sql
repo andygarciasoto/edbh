@@ -1,4 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 27/1/2021 10:54:05 ******/
+﻿
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved

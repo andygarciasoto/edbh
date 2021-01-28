@@ -44,7 +44,8 @@
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
 --Declare
 	@DxHData_id			INT,
-	@productiondata_id	INT
+	@productiondata_id	INT,
+	@type				VARCHAR(100)
 AS
 
 BEGIN
@@ -53,34 +54,42 @@ BEGIN
 	SET NOCOUNT ON;
 	IF @productiondata_id IS NOT NULL
 	BEGIN
-(SELECT
-		DT.dtdata_id,
-		DT.dxhdata_id,
-		DT.dtreason_id,
-		DT.dtminutes,
-		DT.quantity,
-		DT.productiondata_id,
-		DTR.dtreason_code,
-		DTR.dtreason_category,
-		DTR.dtreason_name,
-		DTR.type,
-		DTR.level
-	FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
-	DT.dtreason_id = DTR.dtreason_id AND DT.dxhdata_id = @DxHData_id AND DT.productiondata_id = @productiondata_id);
+		(SELECT
+			DT.dtdata_id,
+			DT.dxhdata_id,
+			DT.dtreason_id,
+			DT.dtminutes,
+			DT.quantity,
+			DT.productiondata_id,
+			DTR.dtreason_code,
+			DTR.dtreason_category,
+			DTR.dtreason_name,
+			DTR.type,
+			DTR.level
+		FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
+			DT.dtreason_id = DTR.dtreason_id AND
+			DT.dxhdata_id = @DxHData_id AND
+			DT.productiondata_id = @productiondata_id AND
+			DTR.type = @type
+		);
 	END
 	ELSE
-	(SELECT
-		DT.dtdata_id,
-		DT.dxhdata_id,
-		DT.dtreason_id,
-		DT.dtminutes,
-		DT.quantity,
-		DT.productiondata_id,
-		DTR.dtreason_code,
-		DTR.dtreason_name,
-		DTR.type,
-		DTR.level
-	FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
-	DT.dtreason_id = DTR.dtreason_id AND DT.dxhdata_id = @DxHData_id AND DT.productiondata_id IS NULL);
+		(SELECT
+			DT.dtdata_id,
+			DT.dxhdata_id,
+			DT.dtreason_id,
+			DT.dtminutes,
+			DT.quantity,
+			DT.productiondata_id,
+			DTR.dtreason_code,
+			DTR.dtreason_name,
+			DTR.type,
+			DTR.level
+		FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
+			DT.dtreason_id = DTR.dtreason_id AND
+			DT.dxhdata_id = @DxHData_id AND
+			DT.productiondata_id IS NULL AND
+			DTR.type = @type
+		);
 
 END
