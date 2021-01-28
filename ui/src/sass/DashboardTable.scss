@@ -1,0 +1,55 @@
+@import "./colors";
+
+.empty-field {
+    padding-right: 24px;
+}
+
+.table-click:hover {
+    cursor: pointer;
+    color : $color-link;
+}
+
+.wordwrap {
+    white-space: pre-line !important;
+    word-wrap  : break-word;
+}
+
+.editable:hover {
+    color : $color-orange;
+    cursor: pointer;
+}
+
+.editable {
+    cursor          : pointer;
+    background-color: rgb(246, 246, 246);
+    padding         : 100%;
+    overflow        : scroll;
+    color           : red;
+}
+
+.ideal {
+    padding: 5px 30px 5px 30px;
+}
+
+.ideal:hover {
+    color : $color-link !important;
+    cursor: pointer;
+
+    * {
+        color: $color-link !important;
+    }
+}
+
+.signoff-reminder-true {
+    color      : red;
+    font-weight: bolder;
+    animation  : blinker 1s linear infinite;
+    text-align : center;
+}
+
+.signoff-reminder-icon {
+    color     : red;
+    animation : blinker 1s linear infinite;
+    text-align: center;
+    width     : 100%;
+}

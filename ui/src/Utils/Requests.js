@@ -51,10 +51,12 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
 }
 
 function assignValuesToUser(user, newAttributes) {
+  user.id = newAttributes.id;
   user.first_name = newAttributes.first_name;
   user.last_name = newAttributes.last_name;
   user.username = newAttributes.username;
   user.role = newAttributes.role;
+  user.assing_role = newAttributes.assing_role;
   user.clock_number = newAttributes.badge;
   user.site = newAttributes.site;
   user.max_regression = newAttributes.max_regression;
@@ -66,6 +68,8 @@ function assignValuesToUser(user, newAttributes) {
   user.date_of_shift = newAttributes.date_of_shift;
   user.current_date_time = newAttributes.current_date_time;
   user.vertical_shift_id = newAttributes.vertical_shift_id;
+  user.break_minutes = newAttributes.break_minutes;
+  user.lunch_minutes = newAttributes.lunch_minutes;
   return user;
 }
 
@@ -142,6 +146,10 @@ function formatDateWithTime(date) {
   return moment(date).format('YYYY/MM/DD HH:mm');
 }
 
+function formatTime(date) {
+  return moment(date).format('HH:mm:ss');
+}
+
 function getCurrentTime(timezone) {
   if (timezone) {
     return moment().tz(timezone).format('YYYY/MM/DD HH:mm');
@@ -180,11 +188,14 @@ function isComponentValid(user_role, name) {
       'intershifts',
       'pagination',
       'neworder',
-      'manualentry',
+      // 'manualentry',
       'import',
       'scrap',
       'dashboardOne',
-      'summary'
+      'summary',
+      'operatorInformation',
+      // 'operatorCheckIn'//conservar por pruebas
+      'active_operators'
     ],
     supervisor: [
       'menu',
@@ -199,12 +210,14 @@ function isComponentValid(user_role, name) {
       'intershifts',
       'pagination',
       'neworder',
-      'manualentry',
       'dashboardOne',
       'summary',
-      'scrap'
+      'scrap',
+      'operatorInformation',
+      'active_operators'
     ],
     operator: [
+      'actual',
       'timelost',
       'comments',
       'pagination',
@@ -213,23 +226,28 @@ function isComponentValid(user_role, name) {
       'intershifts',
       'neworder',
       'dashboardOne',
-      'scrap'
+      'scrap',
+      'operatorInformation',
+      'operatorCheckIn',
+      'active_operators'
     ],
     summary: [
       'megamenu',
       'timelost',
       'comments',
       'intershifts',
-      'summary'
+      'summary',
+      'operatorInformation',
+      'active_operators'
     ]
   }
 
   if (!['administrator', 'supervisor', 'operator', 'summary'].includes(role)) {
     return false;
   }
-  if (!componentStructure.administrator.includes(name)) {
-    return false;
-  }
+  // if (!componentStructure.administrator.includes(name)) {
+  //   return false;
+  // }
   let match = undefined;
   for (let i of componentStructure[role]) {
     if (name === i) {
@@ -363,5 +381,6 @@ export {
   genericRequest,
   getResponseFromGeneric,
   assignValuesToUser,
-  getRowsFromShifts
+  getRowsFromShifts,
+  formatTime
 }
