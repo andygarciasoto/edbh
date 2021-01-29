@@ -11,9 +11,9 @@ old_api/.vscode
 database/DeployDatabase/.vs
 database/DeployDatabase/Parker_CTP_Dev/bin
 database/DeployDatabase/Parker_CTP_Dev/obj
-database/DeployDatabase/Parker_CTP_Dev/*.dbmdl
-database/DeployDatabase/Parker_CTP_Dev/*.jfm
+database/DeployDatabase/Parker_CTP_Dev/Parker_CTP_Dev.dbmdl
+database/DeployDatabase/Parker_CTP_Dev/Parker_CTP_Dev.jfm
 database/DeployDatabase/ParkerDB/bin
 database/DeployDatabase/ParkerDB/obj
-database/DeployDatabase/ParkerDB/*.dbmdl
-database/DeployDatabase/ParkerDB/*.jfm
+database/DeployDatabase/ParkerDB/ParkerDB.dbmdl
+database/DeployDatabase/ParkerDB/ParkerDB.jfm
