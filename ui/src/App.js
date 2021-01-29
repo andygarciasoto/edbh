@@ -1,11 +1,11 @@
 import React, { Suspense, useState } from 'react';
-import './sass/App.scss';
-import Spinner from './Spinner';
-import SignIn from './SignIn';
-import Login from './Login';
-import Import from './Dashboard/Import';
-import DashboardOne from './Dashboard/DashboardOne';
-import Header from './Layout/Header';
+import Spinner from './Components/Common/Spinner';
+import SignIn from './Views/SignIn';
+import Login from './Views/Login';
+import Header from './Components/Header/Header';
+import DashboardOne from './Views/DashboardOneExample';
+import Import from './Views/Import';
+import SesionManage from './Views/SesionManage';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -15,31 +15,13 @@ import * as qs from 'query-string';
 function App(propsApp) {
   // set default machine and type
   let [showModal, displayModal] = useState(false);
+  let [showModalLogOff, displayModalLogOff] = useState(false);
   let [currentUser, changeCurrentUser] = useState(propsApp.user);
   const updateCurrentUser = (newUser) => {
     changeCurrentUser({ ...currentUser, currentUser: newUser });
   }
-  let [requestDashOne, changeDashOne] = useState(null);
-  const updateDashOne = (newRequest) => {
-    if (requestDashOne && requestDashOne.requestDashOne) {
-      requestDashOne.requestDashOne.cancel('Previous request canceled, new request is send');
-    }
-    changeDashOne({ ...requestDashOne, requestDashOne: newRequest });
-  }
-  let [requestInter, changeInter] = useState(null);
-  const updateInter = (newRequest) => {
-    if (requestInter && requestInter.requestInter) {
-      requestInter.requestInter.cancel('Previous request canceled, new request is send');
-    }
-    changeInter({ ...requestInter, requestInter: newRequest });
-  }
-  let [requestVertDas, changeVertDash] = useState(null);
-  const updateVertDash = (newRequest) => {
-    if (requestVertDas && requestVertDas.requestVertDas) {
-      requestVertDas.requestVertDas.cancel('Previous request canceled, new request is send');
-    }
-    changeVertDash({ ...requestVertDas, requestVertDas: newRequest });
-  }
+  let [activeOperators, changeActiveOperators] = useState([]);
+
   const { t } = useTranslation();
   return (
     <Router>
@@ -51,33 +33,33 @@ function App(propsApp) {
       <Suspense fallback={<Spinner />}>
         <Route path="/"
           render={(props) =>
-            (props.location.pathname !== "/" && props.location.pathname !== "/login") &&
+            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary") &&
             <Header
               history={props.history}
               t={t}
               user={currentUser}
               machineData={propsApp.machineData}
               openModal={displayModal}
+              displayModalLogOff={displayModalLogOff}
               changeCurrentUser={updateCurrentUser}
             />}
         />
         {currentUser && isComponentValid(currentUser.role, 'dashboardOne') ?
           <Route
             path="/dashboard"
-            render={function (props) {
+            render={(props) => {
               return (
                 <DashboardOne
                   user={currentUser}
                   t={t}
                   history={props.history}
                   search={qs.parse(props.history.location.search)}
-                  showNewOrderModal={showModal}
+                  modal_order_IsOpen={showModal}
                   closeOrderModal={displayModal}
                   defaultAsset={propsApp.defaultAsset}
                   machineData={propsApp.machineData}
-                  updateDashOne={updateDashOne}
-                  updateInter={updateInter}
-                  updateVertDash={updateVertDash}
+                  changeActiveOperators={changeActiveOperators}
+                  activeOperators={activeOperators}
                 />
               )
             }
@@ -116,13 +98,26 @@ function App(propsApp) {
               summary={true}
               defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
-              updateDashOne={updateDashOne}
-              updateInter={updateInter}
-              updateVertDash={updateVertDash}
             />}
           />
           : null
         }
+        <Route path="/"
+          render={(props) =>
+            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary") &&
+            <SesionManage
+              history={props.history}
+              search={qs.parse(props.history.location.search)}
+              t={t}
+              user={currentUser}
+              machineData={propsApp.machineData}
+              tryToOpenModalLogOff={showModalLogOff}
+              displayModalLogOff={displayModalLogOff}
+              changeCurrentUser={updateCurrentUser}
+              changeActiveOperators={changeActiveOperators}
+              activeOperators={activeOperators}
+            />}
+        />
       </Suspense>
     </Router>
   );

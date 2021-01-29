@@ -36,36 +36,46 @@ export class AuthService {
         let responseUser: any;
         try {
             responseUser = await this.userrepository.findUserInformation(params.badge, machine, 0, 0);
+            responseUser = responseUser[0];
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
         }
 
-        if (responseUser[0] === undefined) {
+        if (responseUser === undefined) {
             return res.redirect(303, this.config.app_section.badLogin);
         }
 
-        let role = responseUser[0].role;
+        let role = responseUser.role;
         if (role === 'Supervisor' || role === 'Administrator') {
-            localStorage.setItem('user_id', responseUser[0].id);
-            localStorage.setItem('user_badge', responseUser[0].badge);
+            localStorage.setItem('user_id', responseUser.id);
+            localStorage.setItem('user_badge', responseUser.badge);
             localStorage.setItem('user_machine', machine);
-            localStorage.setItem('inactive_timeout_minutes', responseUser[0].inactive_timeout_minutes);
+            localStorage.setItem('inactive_timeout_minutes', responseUser.inactive_timeout_minutes);
             const url = `https://login.microsoftonline.com/${this.config.ad_authentication_section.tenant_id}/oauth2/authorize?client_id=${this.config.ad_authentication_section.client_id}&response_type=code&scope=openid&redirect_uri=${this.config.app_section.redirect_uri}`;
             return res.redirect(302, url);
         } else {
             let claimsList = {
                 user: {
                     iss: this.config.app_section.URL,
-                    sub: 'users/' + responseUser[0].badge,
+                    sub: 'users/' + responseUser.badge,
                     scope: role,
-                    user_id: responseUser[0].id,
-                    user_badge: responseUser[0].badge,
-                    user_machine: machine
+                    user_id: responseUser.id,
+                    user_badge: responseUser.badge,
+                    user_machine: machine,
+                    assign_role: null
                 },
             }
+            if (machine) {
+                let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
+                assetInformation = assetInformation[0];
+                if (assetInformation.is_multiple) {
+                    this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                        'Check-In', 'Active', responseUser.site, 0, 0);
+                }
+            }
             let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
-            jwt.setExpiration(new Date().getTime() + (responseUser[0].inactive_timeout_minutes * 60000));
+            jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
             let token = jwt.compact();
             return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
         }
@@ -157,7 +167,8 @@ export class AuthService {
                 scope: role,
                 user_id: responseUser.id,
                 user_badge: responseUser.badge,
-                user_machine: machine
+                user_machine: machine,
+                assign_role: null
             },
         }
 
@@ -168,6 +179,8 @@ export class AuthService {
                     assetInformation = assetInformation[0];
                     this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
                         'login', 'Active', responseUser.site, 0, 0);
+                } else {
+                    claimsList.user.assign_role = role;
                 }
                 let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
                 jwt.setExpiration(new Date().getTime() + ((responseUser.role === 'Summary' ? responseUser.summary_timeout : responseUser.inactive_timeout_minutes) * 60000));

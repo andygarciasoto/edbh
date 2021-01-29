@@ -258,15 +258,30 @@ const helpers = {
                 Cell: c => this.renderCell(c.original, '', ''),
                 Aggregated: a => this.renderCell(a.subRows[0]._original, 'operator_signoff', ''),
                 getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
-            }, {
-                Header: this.getHeader(state.supervisorText),
-                accessor: 'supervisor_signoff',
-                minWidth: 90,
-                Cell: c => this.renderCell(c.original, '', ''),
-                Aggregated: a => this.renderCell(a.subRows[0]._original, 'supervisor_signoff', ''),
-                getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
             }
         ];
+
+        if (this.props.selectedAssetOption && this.props.selectedAssetOption.is_multiple) {
+            columns.push(
+                {
+                    Header: this.getHeader(state.operatorCountText),
+                    accessor: 'active_operators',
+                    minWidth: 80,
+                    Cell: c => this.renderCell(c.original, 'active_operators', !moment(c.original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : ''),
+                    Aggregated: a => this.renderCell(a.subRows[0]._original, !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 'active_operators' : '', !moment(a.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) ? 0 : ''),
+                    getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
+                }
+            );
+        }
+
+        columns.push({
+            Header: this.getHeader(state.supervisorText),
+            accessor: 'supervisor_signoff',
+            minWidth: 90,
+            Cell: c => this.renderCell(c.original, '', ''),
+            Aggregated: a => this.renderCell(a.subRows[0]._original, 'supervisor_signoff', ''),
+            getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
+        });
 
         return { columns };
     },
@@ -290,6 +305,7 @@ const helpers = {
                     break;
                 case 'actual':
                 case 'scrap':
+                case 'active_operators':
                     if ((rowInfo.level === 0 && rowInfo.subRows.length === 1) || rowInfo.level === 1) {
                         modalType = column.id;
                         row = rowInfo.level === 0 ? rowInfo.subRows[0]._original : rowInfo.original;
@@ -318,13 +334,14 @@ const helpers = {
             } else if (currentRow) {
 
                 switch (modalType) {
-                    //case 'manualentry':
+                    case 'manualentry':
                     case 'actual':
                         newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated';
                         break;
                     case 'timelost':
                     case 'comments':
                     case 'scrap':
+                    case 'active_operators':
                         newModalProps['modal_' + modalType + '_IsOpen'] = true;
                         break;
                     case 'supervisor_signoff':
