@@ -39,9 +39,6 @@ class ActiveOperatorsModal extends React.Component {
             Header: 'Expected Return',
             accessor: 'possible_end_time',
             Cell: c => this.getCellTime(c.original, 'possible_end_time', ''),
-        }, {
-            Header: 'Status',
-            accessor: 'status'
         }]
     }
 
@@ -82,7 +79,8 @@ class ActiveOperatorsModal extends React.Component {
         };
 
         getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
-            const activeOperators = response || [];
+            let activeOperators = response || [];
+            activeOperators = _.filter(activeOperators, (item) => { return item.reason !== 'Check-Out' });
             this.setState({
                 activeOperators
             });

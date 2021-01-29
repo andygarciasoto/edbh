@@ -573,5 +573,8 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
+    <Build Include="dbo\Tables\Component.sql" />
+    <Build Include="dbo\Tables\Role.sql" />
+    <Build Include="dbo\Tables\RoleComponent.sql" />
   </ItemGroup>
 </Project>

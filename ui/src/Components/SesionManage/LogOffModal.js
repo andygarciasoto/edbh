@@ -112,8 +112,8 @@ class LogOffModal extends React.Component {
                 reason: reason,
                 status: 'Inactive',
                 site_id: this.props.user.site,
-                break_minutes: reason === 'break' ? user.break_minutes : 0,
-                lunch_minutes: reason === 'lunch' ? user.lunch_minutes : 0
+                break_minutes: reason === 'Break' ? user.break_minutes : 0,
+                lunch_minutes: reason === 'Lunch' ? user.lunch_minutes : 0
             };
 
             let res = await getResponseFromGeneric('put', API, '/new_scan', {}, {}, data);
@@ -164,8 +164,8 @@ class LogOffModal extends React.Component {
                         <Row>
                             <Col md={12} lg={12}><span className='LogOffMessage'>{t('Please select what is the reason to sign out')}</span></Col>
                             <Col md={12} lg={12} className="d-flex justify-content-center logoffbuttons">
-                                <Button onClick={() => this.logOffReason('lunch')} variant='outline-warning'>{t('Begin Lunch')}</Button>
-                                <Button onClick={() => this.logOffReason('break')} variant='outline-success'>{t('Begin Break')}</Button>
+                                <Button onClick={() => this.logOffReason('Lunch')} variant='outline-warning'>{t('Begin Lunch')}</Button>
+                                <Button onClick={() => this.logOffReason('Break')} variant='outline-success'>{t('Begin Break')}</Button>
                                 <Button onClick={() => this.logOffReason('Check-Out')} variant='outline-primary'>{t('Exit Station')}</Button>
                             </Col>
                         </Row>
