@@ -1,4 +1,4 @@
-﻿CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Orders_From_IoT]
+﻿CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Put_Orders_From_IoT]
 (@order_number AS              VARCHAR(100), 
  @asset_code AS                VARCHAR(100), 
  @product_code AS              VARCHAR(100), 

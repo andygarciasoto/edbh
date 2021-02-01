@@ -1,12 +1,12 @@
 curl --request POST 
-  --url 'https://phc-edbh01-prd-iothub.azure-devices.net/devices/ZSQ483UK/messages/events?api-version=2018-06-30' 
-  --header 'authorization: SharedAccessSignature sr=phc-edbh01-prd-iothub.azure-devices.net%2Fdevices%2FZSQ483UK&sig=pmoWzPUPS2A5AC7T68VFBP94qZrKboomFXXOjN9C738%3D&se=1618827644' 
+  --url 'https://phc-edbh01-prd-iothub.azure-devices.net/devices/BF0M5U3K/messages/events?api-version=2018-06-30' 
+  --header 'authorization: SharedAccessSignature sr=phc-edbh01-prd-iothub.azure-devices.net%2Fdevices%2FBF0M5U3K&sig=3eotPgrchuc2m90UFP5fa2mXkY9Xdz6msygdW2cqjyc%3D&se=1611853128' 
   --data '{
-  "deviceId": "ZSQ483UK",
+  "deviceId": "BF0M5U3K",
   "productFilter": "fcgFotf",
   "data": {
-    "product_code": "16 LL6JA-S PS",
-    "product_name": "16 LL6JA-S PS",
+    "product_code": "Test",
+    "product_name": "Test",
     "product_description": "SEAL-LOK TEE",
     "product_family": "SEAL-LOK-S ST THD",
     "grouping1": null,
@@ -16,9 +16,9 @@ curl --request POST
     "grouping5": "N",
     "status": "Active",
     "order_number": "14N34",
-    "asset_code": "34002",
+    "asset_code": "1762208",
     "order_quantity": 100,
-    "UOM_code": "PCS",
+    "UOM_code": "Hose-Flex",
     "routed_cycle_time": 483,
     "target_percent_of_ideal": 0.85,
     "minutes_allowed_per_setup": 30,

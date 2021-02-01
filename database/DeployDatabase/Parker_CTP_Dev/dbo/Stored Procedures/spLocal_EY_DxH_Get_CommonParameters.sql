@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_CommonParameters]    Script Date: 28/12/2020 10:01:56 ******/
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -73,7 +73,10 @@ Declare @Output table
 	setup_lookback_minutes			FLOAT,
 	inactive_timeout_minutes		FLOAT,
 	language						NVARCHAR(100),
-	message							Varchar(100)
+	message							Varchar(100),
+	summary_timeout					Int,
+	break_minutes					FLOAT,
+	lunch_minutes					FLOAT
 	)
 
 Declare
@@ -108,7 +111,10 @@ End
 			setup_lookback_minutes,
 			inactive_timeout_minutes,
 			language,
-			Null
+			Null,
+			summary_timeout,
+			break_minutes,
+			lunch_minutes
 		From dbo.CommonParameters with (nolock)
 		Where site_id = IsNull(@Site_Id,site_id) AND status = 'Active'
 
@@ -149,7 +155,10 @@ Select @json_out =
 		setup_lookback_minutes				as 'CommonParameters.setup_lookback_minutes',
 		inactive_timeout_minutes			as 'CommonParameters.inactive_timeout_minutes',
 		language							as 'CommonParameters.language',
-		message								as 'CommonParameters.message'	
+		message								as 'CommonParameters.message',
+		summary_timeout						as 'CommonParameters.summary_timeout',
+		break_minutes						as 'CommonParameters.break_minutes',
+		lunch_minutes						as 'CommonParameters.lunch_minutes'	
 	From @Output o 
 	Order By 
 		o.parameter_id
@@ -163,7 +172,3 @@ Select @json_out as 'CommonParameters'
 Return
 
 END
-
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 4/12/2019 15:16:22 ******/
-SET ANSI_NULLS ON

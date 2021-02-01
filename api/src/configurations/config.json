@@ -8,10 +8,10 @@
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service",
+        "service_name": "Dxh Service API",
         "cors": [
-            "http://localhost:3000",
-            "http://localhost:3001"
+            "http://localhost:8080",
+            "http://localhost:3000"
         ],
         "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",

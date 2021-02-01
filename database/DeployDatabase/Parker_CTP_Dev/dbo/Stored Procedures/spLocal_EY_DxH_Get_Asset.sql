@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 29/12/2020 11:31:05 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -80,7 +80,8 @@ AS
                grouping2, 
                grouping3, 
                grouping4, 
-               grouping5
+               grouping5,
+			   is_multiple
         FROM dbo.Asset WITH(NOLOCK)
         WHERE STATUS = 'Active'
               AND site_code = @site_code

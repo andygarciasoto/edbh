@@ -153,9 +153,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommonParameters.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommonParametersTest.sql">
-      <QuotedIdentifier>Off</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTData_By_DxHData_Id.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
@@ -238,5 +235,9 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Functions\GetShiftProductionDayFromSiteAndDate.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scan.sql" />
+    <Build Include="dbo\Tables\Scan.sql" />
   </ItemGroup>
 </Project>

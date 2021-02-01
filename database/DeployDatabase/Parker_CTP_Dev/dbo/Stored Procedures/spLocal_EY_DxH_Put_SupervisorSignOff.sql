@@ -45,7 +45,7 @@
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_SupervisorSignOff 3, '2477', Null, Null, '2019-08-09 15:08:28.220'
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_SupervisorSignOff]
+CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_SupervisorSignOff]
 --Declare
 @DxHData_Id   INT, -- the hour Id
 @Clock_Number VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last

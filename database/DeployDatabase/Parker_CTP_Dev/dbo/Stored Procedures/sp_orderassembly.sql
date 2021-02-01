@@ -1,5 +1,5 @@
 ﻿
-CREATE     PROCEDURE [dbo].[sp_orderassembly] (@order_number as VARCHAR(100),
+CREATE       PROCEDURE [dbo].[sp_orderassembly] (@order_number as VARCHAR(100),
 @asset_code as VARCHAR(100))
 
  AS  BEGIN 

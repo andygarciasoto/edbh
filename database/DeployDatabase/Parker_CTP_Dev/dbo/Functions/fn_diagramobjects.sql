@@ -44,4 +44,3 @@
 		
 		return @InstalledObjects 
 	END
-	

@@ -37,4 +37,23 @@ export class UserService {
         return res.status(200).json(users);
     }
 
+    public async findUserInformation(req: Request, res: Response) {
+        let params = req.query;
+        if (!params.badge) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters Badge is require" });
+        }
+
+        let badge: string = params.badge;
+        let machine: string = params.machine || '0';
+        let asset_id: number = params.asset_id || 0;
+        let site_id: number = params.site_id || 0;
+        let user: any;
+        try {
+            user = await this.userrepository.findUserInformation(badge, machine, asset_id, site_id);
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+        return res.status(200).json(user);
+    }
+
 }

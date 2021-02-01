@@ -1,6 +1,4 @@
-﻿
-
-
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]    Script Date: 29/12/2020 11:29:06 ******/
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -68,15 +66,10 @@ BEGIN
 		grouping2,
 		grouping3,
 		grouping4,
-		grouping5
+		grouping5,
+		is_multiple
 	FROM dbo.Asset WITH (nolock)
 	WHERE status = 'Active'
 		AND asset_code = @Asset_Code
 		ORDER BY asset_name
-
-
 END
-
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]    Script Date: 4/12/2019 15:15:23 ******/
-SET ANSI_NULLS ON

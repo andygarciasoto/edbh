@@ -49,6 +49,8 @@
 --	20201028		C00V12 - Change Target_Percent_Of_Ideal order check for first Order table, second Asset table, and finally check Common Parameters table.
 --	20201102		C00V13 - Change Target_Percent_Of_Ideal to use Asset table, and finally check Common Parameters table.
 --	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
+--	20201212		C00V15 - Add new shift logic in the main join sentence
+--	20201221		C00V16 - Add join with Product table to return product name instead of product code
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -72,10 +74,11 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        --Select @Asset_Id = 1,
-        --	@Production_Day = '2019-09-18',
-        --	@Shift_Code = '1'
-        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone (SELECT site_timezone FROM dbo.CommonParameters where site_id = @Site);
+        DECLARE @timezone VARCHAR(50);
+		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
+
+        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,
+		@Active_Status VARCHAR(50) = 'Active';
 
         WITH CTE
              AS (SELECT CONVERT(VARCHAR, BD.started_on_chunck, 20) AS started_on_chunck, 
@@ -89,7 +92,7 @@ AS
                         DH.supervisor_signoff_timestamp, 
                         PD.start_time, 
                         PD.productiondata_id, 
-                        PD.product_code, 
+                        P.product_name, 
                         PD.ideal, 
                         PD.target, 
                         PD.actual, 
@@ -163,50 +166,29 @@ AS
                         DTD.summary_minutes AS timelost_summary,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN(3600 / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time))
+                            THEN CONVERT(INT, (3600 / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)))
                             ELSE NULL
                         END AS new_ideal,
                         CASE
                             WHEN OD.start_time <= BD.started_on_chunck
-                            THEN((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal))
+                            THEN CONVERT(INT, ((((60 - ISNULL(U.summary_breakandlunch_minutes, 0)) * 60) / ISNULL(OD.routed_cycle_time, CP.default_routed_cycle_time)) * ISNULL(AST.target_percent_of_ideal, CP.default_target_percent_of_ideal)))
                             ELSE NULL
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
                         ORDER BY BD.started_on_chunck) AS Row#
                  FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
-                 --GET HOURS OF SELECTED SHIFT
-                      INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id
-                                                 AND BD.started_on_chunck >=	CASE
-																					WHEN SF1.start_time > SF1.end_time AND SF1.is_first_shift_of_day = 1
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
-																					WHEN SF1.start_time = SF1.end_time AND SF1.start_time > '20:00:00'
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, -1, @Production_date))
-																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), @Production_date)
-																				END
-                                                 AND BD.started_on_chunck <	CASE
-																				WHEN SF1.end_time < SF1.start_time AND SF1.is_first_shift_of_day = 0
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
-																				WHEN SF1.start_time = SF1.end_time AND SF1.end_time <= '10:00:00'
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, 1, @Production_date))
-																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), @Production_date)
-																			END
-					  --VALIDATE SELECTED SHIFT AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >=	CASE
-																				WHEN SF.start_time > SF.end_time AND SF.is_first_shift_of_day = 1
-																					THEN DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, -1, @Production_date))
-																				ELSE DATEADD(HOUR, DATEPART(HOUR, SF.start_time), @Production_date)
-																			END
-													AND BD.started_on_chunck <	CASE
-																					WHEN SF.end_time < SF.start_time AND SF.is_first_shift_of_day = 0
-																						THEN DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, 1, @Production_date))
-																					ELSE DATEADD(HOUR, DATEPART(HOUR, SF.end_time), @Production_date)
-																				END
+						--VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id AND
+													BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, SF1.start_time_offset_days, @Production_date))
+													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, SF1.end_time_offset_days, @Production_date))
+					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
+					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
+													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
 													AND SF.asset_id = @Site
-													AND SF.status = 'Active'
-                      --SEARCH ALL DXHDATA CREATE IN THE SELECTED SHIFT
+													AND SF.status = @Active_Status
+                      --SEARCH ALL DXHDATA FOR EACH INTERVAL HOUR
                       LEFT JOIN dbo.DxHData DH ON DH.asset_id = @Asset_Id
-                                                  --AND DH.shift_code = SF.shift_code
                                                   AND production_day = @Production_date
                                                   AND CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt')) = UPPER(DH.hour_interval)
                       --SEARCH ALL PRODUCTION FOR THE SELECTED DXHDATA
@@ -222,6 +204,8 @@ AS
                                                            AND CP.STATUS = 'Active'
                       --GET ALL INFORMATION OF THE CURRENT ASSET
                       LEFT JOIN dbo.Asset AST ON AST.asset_id = @Asset_Id
+                      --GET INFORMATION OF THE PRODUCT
+                      LEFT JOIN dbo.Product P ON PD.product_code = P.product_code
                       --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
                       OUTER APPLY
                  (
@@ -239,7 +223,7 @@ AS
                      SELECT SUM(CASE
                                     WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH')
                                          AND PD1.target > (PD1.actual - PD1.setup_scrap - PD1.other_scrap)
-                                    THEN FLOOR(PD1.target)
+                                    THEN PD1.target
                                     ELSE PD1.actual - PD1.setup_scrap - PD1.other_scrap
                                 END) AS summary_actual_quantity
                      FROM dbo.ProductionData PD1
@@ -298,7 +282,7 @@ AS
                     supervisor_signoff_timestamp, 
                     start_time, 
                     productiondata_id, 
-                    product_code, 
+                    product_name AS product_code, 
                     ideal, 
                     target, 
                     actual, 

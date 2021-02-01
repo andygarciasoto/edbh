@@ -28,9 +28,9 @@
 
 
 GO
-CREATE NONCLUSTERED INDEX [NCI_OrderData_End_Time]
-    ON [dbo].[OrderData]([end_time] ASC)
-    INCLUDE([asset_id]);
+CREATE NONCLUSTERED INDEX [NCI_OrderData_Asset]
+    ON [dbo].[OrderData]([asset_id] ASC)
+    INCLUDE([end_time]);
 
 
 GO
@@ -40,9 +40,9 @@ CREATE NONCLUSTERED INDEX [NCI_OrderData_ASSET_ID_ODNUM_CURRENT_PRDSTAT]
 
 
 GO
-CREATE NONCLUSTERED INDEX [NCI_OrderData_Asset]
-    ON [dbo].[OrderData]([asset_id] ASC)
-    INCLUDE([end_time]);
+CREATE NONCLUSTERED INDEX [NCI_OrderData_End_Time]
+    ON [dbo].[OrderData]([end_time] ASC)
+    INCLUDE([asset_id]);
 
 
 GO

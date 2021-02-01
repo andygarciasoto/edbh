@@ -40,7 +40,7 @@
 -- exec dbo.spLocal_EY_DxH_Fill_Get_Active_Sites
 --
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Active_Sites]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Active_Sites]
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from

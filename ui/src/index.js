@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './sass/index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './i18n';
@@ -8,7 +7,12 @@ import axios from 'axios';
 import configuration from './config.json';
 import { API } from './Utils/Constants';
 import queryString from 'query-string';
-import { getCurrentShift, genericRequest, getResponseFromGeneric, assignValuesToUser } from './Utils/Requests';
+import {
+    getCurrentShift,
+    genericRequest,
+    getResponseFromGeneric,
+    assignValuesToUser
+} from './Utils/Requests';
 import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';

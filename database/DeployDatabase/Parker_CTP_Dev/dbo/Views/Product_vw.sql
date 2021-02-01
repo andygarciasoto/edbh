@@ -7,6 +7,7 @@ FROM            dbo.Product INNER JOIN
                          dbo.ProductCodeSite_vw ON dbo.Product.product_code = dbo.ProductCodeSite_vw.product_code INNER JOIN
                          dbo.parker_site_access ON dbo.ProductCodeSite_vw.site_code = dbo.parker_site_access.site_code AND dbo.parker_site_access.ad_account = USER
 
+
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 

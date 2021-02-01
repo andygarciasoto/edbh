@@ -6,6 +6,7 @@ SELECT        dbo.Asset.asset_id, dbo.Asset.asset_code, dbo.Asset.asset_name, db
 FROM            dbo.Asset INNER JOIN
                          dbo.parker_site_access ON dbo.Asset.site_code = dbo.parker_site_access.site_code AND dbo.parker_site_access.ad_account = USER
 
+
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 
