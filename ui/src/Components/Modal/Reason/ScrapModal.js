@@ -377,7 +377,7 @@ class ScrapModal extends React.Component {
                                 levelOptions={this.state.scrapTypeOptions}
                                 acceptNewReason={this.acceptNewScrap}
                                 parentData={this.props.parentData}
-                                readOnly={this.props.readOnly}
+                                isEditable={this.props.isEditable}
                             />
 
                             <span className={"new-timelost-label"}>{t('New ' + this.state.scrapType.value + ' Scrap Entry')}</span>
@@ -393,7 +393,7 @@ class ScrapModal extends React.Component {
                                                 style={{ paddingTop: '5px' }}
                                                 min='0'
                                                 max={this.state.currentRow.adjusted_actual}
-                                                disabled={this.props.readOnly || this.state.editReason} />
+                                                disabled={!this.props.isEditable} />
                                         </span>
                                     </Col>
                                     <Col sm={6} md={6}>
@@ -405,7 +405,7 @@ class ScrapModal extends React.Component {
                                                 options={this.state.scrapTypeOptions}
                                                 className={"react-select-container"}
                                                 styles={selectStyles}
-                                                isDisabled={this.props.readOnly || this.state.editReason}
+                                                isDisabled={!this.props.isEditable}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -432,7 +432,7 @@ class ScrapModal extends React.Component {
                                                 options={this.state.scrapType.value === 'Setup' ? this.state.setupReasonsOptions : this.state.productionReasonsOptions}
                                                 className={"react-select-container"}
                                                 styles={selectStyles}
-                                                isDisabled={this.props.readOnly || this.state.editReason}
+                                                isDisabled={!this.props.isEditable}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -454,7 +454,7 @@ class ScrapModal extends React.Component {
                                     <Button
                                         variant="outline-primary"
                                         style={{ marginTop: '10px' }}
-                                        disabled={this.props.readOnly || this.state.editReason}
+                                        disabled={!this.props.isEditable}
                                         onClick={() => this.submitReason()}>{this.props.t('Submit')}</Button>
                                     {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                                 </div>

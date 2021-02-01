@@ -174,7 +174,7 @@ const helpers = {
                     Cell: c => this.renderEditAcceptDeleteButton(c.original, 'cancel')
                 }
             );
-        } else {
+        } else if (this.props.isEditable) {
             columns.push(
                 {
                     maxWidth: 50,

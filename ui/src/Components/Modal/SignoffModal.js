@@ -184,16 +184,14 @@ class SignoffModal extends React.Component {
                     <Modal.Footer>
                         <Row className='divButtonsSignOff'>
                             <Col md={12}>
-                                <Button variant={this.props.readOnly ? "outline-default" : "outline-success"} style={{ marginTop: '20px', textAlign: 'center' }}
-                                    className="error-button signoff-buttons" disabled={this.props.readOnly} onClick={this.submitSignOff}>{this.props.t('Accept')}</Button>
+                                <Button variant={!this.props.isEditable ? "outline-default" : "outline-success"} style={{ marginTop: '20px', textAlign: 'center' }}
+                                    className="error-button signoff-buttons" disabled={!this.props.isEditable} onClick={this.submitSignOff}>{this.props.t('Accept')}</Button>
                             </Col>
                             <Col md={12}>
                                 <Button variant="outline-default" style={{ marginTop: '20px', textAlign: 'center' }}
                                     className="error-button signoff-buttons" onClick={this.props.onRequestClose}>{this.props.t('Cancel')}</Button>
                             </Col>
                         </Row>
-
-
                     </Modal.Footer>
                 </Modal> : null}
                 <LoadingModal

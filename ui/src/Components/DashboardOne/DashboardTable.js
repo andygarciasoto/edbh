@@ -30,7 +30,7 @@ class DashboardTable extends React.Component {
     constructor(props) {
         super(props);
         let temporalState = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
-        this.state = Object.assign(temporalState, this.getTableColumns(temporalState));
+        this.state = Object.assign(temporalState, this.getTableColumns(temporalState, props));
     }
 
     getInitialState(props) {
@@ -88,8 +88,9 @@ class DashboardTable extends React.Component {
             (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf)) {
             let temporalState = Object.assign(this.getTextTranslations(nextProps));
             temporalState.currentLanguage = nextProps.search.ln || this.state.currentLanguage;
-            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState)));
+            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps)));
         }
+        this.setState(Object.assign(this.getTableColumns(this.state, nextProps)));
 
         const selectedMachine = nextProps.selectedMachine || this.state.selectedMachine;
         const selectedDate = nextProps.selectedDate || this.state.selectedDate;
@@ -149,7 +150,7 @@ class DashboardTable extends React.Component {
                             'hour_interval': props.user.shifts[startShift].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
                             'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
                             'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                            'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
+                            'operator_signoff': this.state.operatorText, 'active_operators': this.state.operatorCountText, 'supervisor_signoff': this.state.supervisorText
                         };
                         if (data === []) {
                             data = _.concat([current_shift], [value]);
@@ -310,6 +311,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <ActualModal
                     isOpen={this.state.modal_actual_IsOpen}
@@ -321,6 +323,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <ScrapModal
                     isOpen={this.state.modal_scrap_IsOpen}
@@ -332,6 +335,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <TimelostModal
                     isOpen={this.state.modal_timelost_IsOpen}
@@ -343,6 +347,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <CommentModal
                     isOpen={this.state.modal_comments_IsOpen}
@@ -354,6 +359,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <SignoffModal
                     isOpen={this.state.modal_signoff_IsOpen}
@@ -366,6 +372,7 @@ class DashboardTable extends React.Component {
                     t={t}
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
+                    isEditable={this.state.isEditable}
                 />
                 <OrderModal
                     isOpen={this.state.modal_order_IsOpen}

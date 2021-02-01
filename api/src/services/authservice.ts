@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/user-repository';
 import { ScanRepository } from '../repositories/scan-repository';
 import { AssetRepository } from '../repositories/asset-repository';
+import { RoleRepository } from '../repositories/role-repository';
 import jwt from 'jsonwebtoken';
 import localStorage from 'localStorage';
 let nJwt = require('njwt');
@@ -13,12 +14,14 @@ export class AuthService {
     private readonly userrepository: UserRepository;
     private readonly assetrepository: AssetRepository;
     private readonly scanrepository: ScanRepository;
+    private readonly rolerepository: RoleRepository;
     private readonly config: any;
 
-    public constructor(userrepository: UserRepository, assetrepository: AssetRepository, scanrepository: ScanRepository, config: any) {
+    public constructor(userrepository: UserRepository, assetrepository: AssetRepository, scanrepository: ScanRepository, rolerepository: RoleRepository, config: any) {
         this.userrepository = userrepository;
         this.assetrepository = assetrepository;
         this.scanrepository = scanrepository;
+        this.rolerepository = rolerepository;
         this.config = config;
     }
 
@@ -221,6 +224,7 @@ export class AuthService {
                     responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
                     responseUser[0].role = payload.body.assign_role || responseUser[0].role;
                     responseUser[0].assing_role = payload.body.assign_role;
+                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole(responseUser[0].role_id);
                     return res.status(200).json(responseUser);
                 } catch (err) {
                     console.log(err);

@@ -5,9 +5,9 @@ import DashboardTable from '../Components/DashboardOne/DashboardTable';
 import Intershift from '../Components/DashboardOne/Intershift';
 import {
   getCurrentTime,
-  isComponentValid,
   getResponseFromGeneric,
-  formatDate
+  formatDate,
+  validPermission
 } from '../Utils/Requests';
 import { Row, Col } from 'react-bootstrap';
 import { SOCKET, API } from '../Utils/Constants';
@@ -62,9 +62,6 @@ class DashboardOne extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
-      console.log('update active operators');
-      console.log(nextProps.activeOperators);
-      console.log(prevState.activeOperators);
       return {
         activeOperators: nextProps.activeOperators
       }
@@ -140,7 +137,7 @@ class DashboardOne extends React.Component {
     const t = props.t;
     return (
       <React.Fragment>
-        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.props.summary ?
+        {validPermission(props.user, 'pagination', 'read') && !_.isEmpty(this.state.shifts) && !this.props.summary ?
           <Pagination
             history={props.history}
             user={props.user}
@@ -148,7 +145,7 @@ class DashboardOne extends React.Component {
             t={props.t}
           /> : null}
         <div className="wrapper-main">
-          {isComponentValid(props.user.role, 'operatorInformation') && this.state.selectedAssetOption.is_multiple ?
+          {validPermission(props.user, 'operatorInformation', 'read') && this.state.selectedAssetOption.is_multiple ?
             <OperatorComponent
               asset_code={this.state.selectedMachine}
               selectedAssetOption={this.state.selectedAssetOption}
@@ -156,6 +153,7 @@ class DashboardOne extends React.Component {
               t={props.t}
               activeOperators={this.state.activeOperators}
               Refresh={this.fetchData}
+              isEditable={validPermission(props.user, 'operatorInformation', 'write')}
             /> : null}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
@@ -196,6 +194,7 @@ class DashboardOne extends React.Component {
             selectedMachine={this.state.selectedMachine}
             selectedDate={this.state.selectedDate}
             selectedShift={this.state.selectedShift}
+            isEditable={validPermission(props.user, 'intershift', 'write')}
           />
         </div>
       </React.Fragment >

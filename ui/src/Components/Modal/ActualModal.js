@@ -158,12 +158,12 @@ class ActualModal extends React.Component {
                                 type={'number'}
                                 autoFocus
                                 onChange={(e) => this.onChangeInput(e)}
-                                disabled={this.props.readOnly}>
+                                disabled={!this.props.isEditable}>
                             </Form.Control>
                         </span>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={this.submit} variant="outline-success">{t('Submit')}</Button>
+                        <Button disabled={!this.props.isEditable} onClick={this.submit} variant="outline-success">{t('Submit')}</Button>
                         <Button onClick={props.onRequestClose} variant="outline-danger">{t('Cancel')}</Button>
                     </Modal.Footer>
                 </Modal>
