@@ -36,6 +36,9 @@ import { UnavailableRepository } from './repositories/unavailable-repository';
 import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-repository';
 import { ScanRepository } from './repositories/scan-repository';
 import { ScanService } from './services/scanservice';
+import { RoleRepository } from './repositories/role-repository';
+import { RoleService } from './services/roleservice';
+
 
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
@@ -59,6 +62,7 @@ const commonparametersRepository = new CommonParametersRepository(sqlServerStore
 const unavailableRepository = new UnavailableRepository(sqlServerStore);
 const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerStore);
 const scanRepository = new ScanRepository(sqlServerStore);
+const roleRepository = new RoleRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, config);
@@ -75,6 +79,7 @@ const orderdataService = new OrderDataService(orderDataRepository, assetReposito
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
 const scanService = new ScanService(scanRepository);
+const roleService = new RoleService(roleRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -191,6 +196,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/get_scan', 'get', async (req: Request, res: Response) => {
             await scanService.getScanByAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/get_components_by_role', 'get', async (req: Request, res: Response) => {
+            await roleService.getComponentsByRole(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

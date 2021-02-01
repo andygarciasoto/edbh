@@ -240,6 +240,10 @@
     <Build Include="dbo\Tables\Scan.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scan.sql" />
+    <Build Include="dbo\Tables\Component.sql" />
+    <Build Include="dbo\Tables\Role.sql" />
+    <Build Include="dbo\Tables\RoleComponent.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parker-PROD.publish.xml" />
