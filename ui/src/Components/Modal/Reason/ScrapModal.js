@@ -452,7 +452,7 @@ class ScrapModal extends React.Component {
                                 </Row>
                                 <div className={'new-timeloss-button'}>
                                     <Button
-                                        variant="outline-primary"
+                                        variant="outline-info"
                                         style={{ marginTop: '10px' }}
                                         disabled={!this.props.isEditable}
                                         onClick={() => this.submitReason()}>{this.props.t('Submit')}</Button>

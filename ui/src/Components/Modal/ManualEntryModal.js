@@ -216,7 +216,7 @@ class ManualEntryModal extends React.Component {
                                     />
                                 </Col>
                                 <Col sm={12} md={12}>
-                                    <Button variant="outline-primary"
+                                    <Button variant="outline-info"
                                         style={{ marginLeft: '45%', marginTop: '25px' }}
                                         onClick={this.submit}>{t('Submit')}</Button>
                                 </Col>

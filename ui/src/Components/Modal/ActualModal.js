@@ -163,7 +163,7 @@ class ActualModal extends React.Component {
                         </span>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button disabled={!this.props.isEditable} onClick={this.submit} variant="outline-success">{t('Submit')}</Button>
+                        <Button disabled={!this.props.isEditable} onClick={this.submit} variant="outline-info">{t('Submit')}</Button>
                         <Button onClick={props.onRequestClose} variant="outline-danger">{t('Cancel')}</Button>
                     </Modal.Footer>
                 </Modal>

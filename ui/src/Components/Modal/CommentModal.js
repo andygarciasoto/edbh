@@ -158,7 +158,7 @@ class CommentsModal extends React.Component {
                         </span>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="outline-primary" disabled={!this.props.isEditable} onClick={this.submitComment}>{t('Submit')}</Button>
+                        <Button variant="outline-info" disabled={!this.props.isEditable} onClick={this.submitComment}>{t('Submit')}</Button>
                         <Button variant="outline-danger" onClick={() => this.closeCommentModal()}>{t('Cancel')}</Button>
                         <Row>
                             <Col sm={12} md={12}>
