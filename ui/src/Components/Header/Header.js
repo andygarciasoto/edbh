@@ -12,7 +12,7 @@ import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { getCurrentShift, getResponseFromGeneric, assignValuesToUser, isComponentValid, getCurrentTime } from '../../Utils/Requests';
+import { getCurrentShift, getResponseFromGeneric, assignValuesToUser, getCurrentTime, validPermission } from '../../Utils/Requests';
 import { API } from '../../Utils/Constants';
 import $ from 'jquery';
 import configuration from '../../config.json';
@@ -81,7 +81,7 @@ class Header extends React.Component {
     }
 
     openMenu = (e) => {
-        isComponentValid(this.props.user.role, 'megamenu') ?
+        validPermission(this.props.user, 'megamenu', 'read') ?
             this.state.megaMenuToggle === 'dropdown-content opened' ?
                 this.setState({ megaMenuToggle: 'dropdown-content' }) :
                 this.setState({ megaMenuToggle: 'dropdown-content opened' }) : void (0);
@@ -197,43 +197,56 @@ class Header extends React.Component {
                 <Navbar.Brand><img src={logo} className="App-logo-header header-side" alt="logo" /></Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
-                    <Dropdown className="customToogleSite">
-                        <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
-                            {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]).asset_name}
-                        </Dropdown.Toggle>
-                        {this.props.user.sites.length > 1 ?
-                            <Dropdown.Menu>
-                                {this.getSiteOptions()}
-                            </Dropdown.Menu>
-                            : null}
-                    </Dropdown>
-                    {isComponentValid(this.props.user.role, 'megamenu') ?
+                    {validPermission(this.props.user, 'site-menu', 'read') ?
+                        <Dropdown className="customToogleSite">
+                            <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
+                                {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]).asset_name}
+                            </Dropdown.Toggle>
+                            {this.props.user.sites.length > 1 ?
+                                <Dropdown.Menu>
+                                    {this.getSiteOptions()}
+                                </Dropdown.Menu>
+                                : null}
+                        </Dropdown>
+                        : null}
+                    {validPermission(this.props.user, 'megamenu', 'read') ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>
                             <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history}>
-                                <MachinePickerCustom
-                                    collectInput={this.collectInputs}
-                                    t={this.props.t}
-                                    user={this.props.user}
-                                    value={this.state.mc}
-                                    history={this.props.history} />
-                                <DatePickerCustom
-                                    collectInput={this.collectInputs}
-                                    value={this.state.dt}
-                                />
-                                {this.props.history.location.pathname !== '/summary' ?
+                                {validPermission(this.props.user, 'megamenu-machine-option', 'read') ?
+                                    <MachinePickerCustom
+                                        collectInput={this.collectInputs}
+                                        t={this.props.t}
+                                        user={this.props.user}
+                                        value={this.state.mc}
+                                        history={this.props.history}
+                                        key={0} />
+                                    : null}
+                                {validPermission(this.props.user, 'megamenu-date-option', 'read') ?
+                                    <DatePickerCustom
+                                        collectInput={this.collectInputs}
+                                        value={this.state.dt}
+                                        key={1}
+                                    />
+                                    : null}
+                                {validPermission(this.props.user, 'megamenu-shift-option', 'read') && this.props.history.location.pathname !== '/summary' ?
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         value={this.state.sf}
                                         date={this.state.dt}
                                         user={this.props.user}
+                                        key={2}
                                     />
                                     : null}
-                                <LanguagePickerCustom
-                                    collectInput={this.collectInputs}
-                                    value={this.state.ln} />
+                                {validPermission(this.props.user, 'megamenu-language-option', 'read') ?
+                                    <LanguagePickerCustom
+                                        collectInput={this.collectInputs}
+                                        value={this.state.ln}
+                                        key={3}
+                                    />
+                                    : null}
                                 <QueryButton
                                     machine={this.state.mc}
                                     date={this.state.dt}
@@ -244,25 +257,26 @@ class Header extends React.Component {
                                     openMenu={this.openMenu}
                                     history={this.props.history}
                                     t={this.props.t}
-                                    changeLanguageBrowser={this.changeLanguageBrowser} />
+                                    changeLanguageBrowser={this.changeLanguageBrowser}
+                                />
                             </MegaMenu>
                         </span>
                         : null}
-                    {isComponentValid(this.props.user.role, 'neworder') && this.props.history.location.pathname !== '/summary' ?
+                    {validPermission(this.props.user, 'neworder', 'read') ?
                         ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual' || this.state.tp === 'Partially_Manual_Scan_Order')) ?
                             <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
                             </Nav.Link>
                             : null : null
                     }
-                    {isComponentValid(this.props.user.role, 'menu') ?
+                    {validPermission(this.props.user, 'menu', 'read') ?
                         <Dropdown className="customToogle">
                             <Dropdown.Toggle as={customToogle} id="dropdown-basic">
                                 {this.props.t('Menu')}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                {this.props.history.location.pathname !== '/dashboard' && isComponentValid(this.props.user.role, 'menu-dashbaord') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
-                                {this.props.history.location.pathname !== '/import' && isComponentValid(this.props.user.role, 'menu-import') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import/Export')}</Dropdown.Item> : null}
-                                {this.props.history.location.pathname !== '/summary' && isComponentValid(this.props.user.role, 'menu-summary') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
+                                {this.props.history.location.pathname !== '/dashboard' && validPermission(this.props.user, 'menu-dashboard', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
+                                {this.props.history.location.pathname !== '/import' && validPermission(this.props.user, 'menu-import', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import/Export')}</Dropdown.Item> : null}
+                                {this.props.history.location.pathname !== '/summary' && validPermission(this.props.user, 'menu-summary', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
                             </Dropdown.Menu>
                         </Dropdown>
                         : null}

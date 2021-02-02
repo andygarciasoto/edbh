@@ -110,6 +110,7 @@ BEGIN
 		TFDU.Last_Name AS last_name,
 		TFDU.Role AS role,
 		TFDU.Site AS site,
+		TFDU.role_id,
 		@site_code AS site_code,
 		CP.site_name,
 		CP.ui_timezone AS timezone,

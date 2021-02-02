@@ -9,7 +9,7 @@ import SesionManage from './Views/SesionManage';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { isComponentValid } from './Utils/Requests';
+import { validPermission } from './Utils/Requests';
 import * as qs from 'query-string';
 
 function App(propsApp) {
@@ -44,7 +44,7 @@ function App(propsApp) {
               changeCurrentUser={updateCurrentUser}
             />}
         />
-        {currentUser && isComponentValid(currentUser.role, 'dashboardOne') ?
+        {currentUser && validPermission(currentUser, 'dashboardView', 'read') ?
           <Route
             path="/dashboard"
             render={(props) => {
@@ -79,7 +79,7 @@ function App(propsApp) {
             search={qs.parse(props.history.location.search)}
             st={propsApp.defaultAsset}
           />} />
-        {currentUser && isComponentValid(currentUser.role, 'import') ?
+        {currentUser && validPermission(currentUser, 'importView', 'read') ?
           <Route exact path="/import" render={(props) =>
             <Import t={t}
               history={props.history}
@@ -88,16 +88,18 @@ function App(propsApp) {
             />} />
           : null
         }
-        {currentUser && isComponentValid(currentUser.role, 'summary') ?
+        {currentUser && validPermission(currentUser, 'verticalView', 'read') ?
           <Route exact path="/summary" render={(props) =>
             <DashboardOne
               user={currentUser}
               t={t}
               history={props.history}
               search={qs.parse(props.history.location.search)}
-              summary={true}
               defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
+              changeActiveOperators={changeActiveOperators}
+              activeOperators={activeOperators}
+              summary={true}
             />}
           />
           : null

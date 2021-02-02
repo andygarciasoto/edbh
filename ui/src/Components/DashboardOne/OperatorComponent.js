@@ -3,7 +3,6 @@ import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 import BadgeScannerModal from '../Common/BarcodeScannerModal';
 import {
-    isComponentValid,
     getResponseFromGeneric,
     getCurrentTime
 } from '../../Utils/Requests';
@@ -122,7 +121,7 @@ class OperatorComponent extends React.Component {
             <React.Fragment>
                 <Row className='d-flex justify-content-end operatorComponent'>
                     <Col md={3} lg={3}>
-                        {isComponentValid(this.props.user.role, 'operatorCheckIn') ?
+                        {this.props.isEditable ?
                             <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check-In')}</Button>
                             : null}
                         <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('modal_active_op_Is_Open')}>

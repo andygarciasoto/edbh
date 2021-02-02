@@ -152,17 +152,17 @@ class CommentsModal extends React.Component {
                                 style={{ paddingTop: '5px' }}
                                 type="text" value={this.state.value}
                                 autoFocus
-                                disabled={this.props.readOnly}
+                                disabled={!this.props.isEditable}
                                 onChange={this.onChange}>
                             </Form.Control>
                         </span>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="outline-primary" disabled={this.props.readOnly} onClick={this.submitComment}>{t('Submit')}</Button>
+                        <Button variant="outline-primary" disabled={!this.props.isEditable} onClick={this.submitComment}>{t('Submit')}</Button>
                         <Button variant="outline-danger" onClick={() => this.closeCommentModal()}>{t('Cancel')}</Button>
                         <Row>
                             <Col sm={12} md={12}>
-                                {this.props.readOnly ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
+                                {!this.props.isEditable ? <p style={{ marginTop: '15px', color: 'grey' }}>{t('Read-Only')}</p> : void (0)}
                             </Col>
                         </Row>
                     </Modal.Footer>

@@ -70,6 +70,7 @@ function assignValuesToUser(user, newAttributes) {
   user.vertical_shift_id = newAttributes.vertical_shift_id;
   user.break_minutes = newAttributes.break_minutes;
   user.lunch_minutes = newAttributes.lunch_minutes;
+  user.permissions = newAttributes.permissions;
   return user;
 }
 
@@ -162,101 +163,6 @@ function getCurrentTimeOnly(timezone) {
     return moment().tz(timezone).format('HH:mm');
   }
   return moment().format('HH:mm');
-}
-
-function isComponentValid(user_role, name) {
-  let role;
-  if (user_role) {
-    role = user_role.toLowerCase();
-  }
-  const componentStructure = {
-    administrator: [
-      'menu',
-      'menu-dashbaord',
-      'menu-import',
-      'menu-summary',
-      'megamenu',
-      'sitename',
-      'actual',
-      'partnumber',
-      'timelost',
-      'ideal',
-      'target',
-      'comments',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'pagination',
-      'neworder',
-      // 'manualentry',
-      'import',
-      'scrap',
-      'dashboardOne',
-      'summary',
-      'operatorInformation',
-      // 'operatorCheckIn'//conservar por pruebas
-      'active_operators'
-    ],
-    supervisor: [
-      'menu',
-      'menu-dashbaord',
-      'menu-summary',
-      'megamenu',
-      'actual',
-      'timelost',
-      'comments',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'pagination',
-      'neworder',
-      'dashboardOne',
-      'summary',
-      'scrap',
-      'operatorInformation',
-      'active_operators'
-    ],
-    operator: [
-      'actual',
-      'timelost',
-      'comments',
-      'pagination',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'neworder',
-      'dashboardOne',
-      'scrap',
-      'operatorInformation',
-      'operatorCheckIn',
-      'active_operators'
-    ],
-    summary: [
-      'megamenu',
-      'timelost',
-      'comments',
-      'intershifts',
-      'summary',
-      'operatorInformation',
-      'active_operators'
-    ]
-  }
-
-  if (!['administrator', 'supervisor', 'operator', 'summary'].includes(role)) {
-    return false;
-  }
-  // if (!componentStructure.administrator.includes(name)) {
-  //   return false;
-  // }
-  let match = undefined;
-  for (let i of componentStructure[role]) {
-    if (name === i) {
-      match = i;
-    }
-  }
-  if (match === undefined) {
-    return false;
-  } else { return true }
 }
 
 function isFieldAllowed(role, row, timezone) {
@@ -362,6 +268,10 @@ function getRowsFromShifts(props, summary) {
   return rows;
 }
 
+function validPermission(user, componentName, action) {
+  return _.find(user.permissions, { component_name: componentName, ['can_' + action]: true }) ? true : false;
+}
+
 export {
   getRequest,
   mapShift,
@@ -370,7 +280,6 @@ export {
   getCurrentTime,
   sendPost,
   sendPut,
-  isComponentValid,
   isFieldAllowed,
   formatNumber,
   getCurrentTimeOnly,
@@ -382,5 +291,6 @@ export {
   getResponseFromGeneric,
   assignValuesToUser,
   getRowsFromShifts,
-  formatTime
+  formatTime,
+  validPermission
 }

@@ -6,22 +6,14 @@ class MegaMenu extends React.Component {
 
     getFilterOptions(children) {
         const t = this.props.t;
-        let titles = [t('Machine Selector'), t('Date Selector')];
-
-        const summaryView = this.props.history.location.pathname === '/summary';
-
-        if (!summaryView) {
-            titles.push(t('Shift Selector'));
-        }
-        titles.push(t('Language Selector'));
-
+        let titles = [t('Machine Selector'), t('Date Selector'), t('Shift Selector'), t('Language Selector')];
 
         let filters = [];
-
         _.forEach(children, (item, key) => {
+            let titleIndex = item.key ? item.key.replace('.$', '') : '';
             filters.push(
                 <Col sm={3} md={3} key={key} className="mega-menu-children">
-                    <p className="title_child">{titles[key]}</p>
+                    <p className="title_child">{titles[titleIndex] || ''}</p>
                     {item}
                 </Col>
             );

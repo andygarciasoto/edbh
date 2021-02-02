@@ -65,7 +65,7 @@ const scanRepository = new ScanRepository(sqlServerStore);
 const roleRepository = new RoleRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
-const authService = new AuthService(userRepository, assetRepository, scanRepository, config);
+const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository);

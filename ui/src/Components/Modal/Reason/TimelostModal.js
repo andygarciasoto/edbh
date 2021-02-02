@@ -343,7 +343,7 @@ class TimelostModal extends React.Component {
                                 allReasonOptions={this.state.allReasonOptions}
                                 acceptNewReason={this.acceptNewReason}
                                 parentData={this.props.parentData}
-                                readOnly={this.props.readOnly}
+                                isEditable={this.props.isEditable}
                             />
 
                             <span className={"new-timelost-label"}>{t('New Time Lost Entry')}</span>
@@ -359,7 +359,7 @@ class TimelostModal extends React.Component {
                                                 style={{ paddingTop: '5px' }}
                                                 min='0'
                                                 max={this.state.currentRow.allocated_time}
-                                                disabled={this.props.readOnly || this.state.editReason} />
+                                                disabled={!this.props.isEditable} />
                                         </span>
                                     </Col>
                                     <Col sm={6} md={6}>
@@ -371,7 +371,7 @@ class TimelostModal extends React.Component {
                                                 options={this.state.allReasonOptions}
                                                 className={"react-select-container"}
                                                 styles={selectStyles}
-                                                isDisabled={this.props.readOnly || this.state.editReason}
+                                                isDisabled={!this.props.isEditable}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -408,7 +408,7 @@ class TimelostModal extends React.Component {
                                     <Button
                                         variant="outline-primary"
                                         style={{ marginTop: '10px' }}
-                                        disabled={this.props.readOnly || this.state.editReason}
+                                        disabled={!this.props.isEditable}
                                         onClick={() => this.submitReason()}>{this.props.t('Submit')}</Button>
                                     {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                                 </div>
