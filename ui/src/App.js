@@ -3,7 +3,7 @@ import Spinner from './Components/Common/Spinner';
 import SignIn from './Views/SignIn';
 import Login from './Views/Login';
 import Header from './Components/Header/Header';
-import DashboardOne from './Views/DashboardOneExample';
+import DashboardOne from './Views/DashboardOne';
 import Import from './Views/Import';
 import SesionManage from './Views/SesionManage';
 import { useTranslation } from 'react-i18next';

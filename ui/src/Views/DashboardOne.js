@@ -1,638 +1,205 @@
 import React from 'react';
-import { Row, Col } from 'react-bootstrap';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
-import moment from 'moment';
-import CommentsModal from '../Components/Modal/CommentModal';
-import ValueModal from '../Components/Modal/ValueModal';
-import TimelossModal from '../Components/Modal/Reason/TimelostModal';
-import SignoffModal from '../Components/Modal/SignoffModal';
-import OrderModal from '../Components/Modal/OrderModal';
-import ManualEntryModal from '../Components/Modal/ManualEntryModal';
-import Spinner from '../Components/Common/Spinner';
-import Comments from '../Components/DashboardOne/Comments';
-import ErrorModal from '../Components/Modal/ErrorModal';
-import AlertModalOverProd from '../Components/Modal/ErrorModal';
 import Pagination from '../Components/DashboardOne/Pagination';
-import ScrapModal from '../Components/Modal/Reason/ScrapModal';
 import OperatorComponent from '../Components/DashboardOne/OperatorComponent';
-import openSocket from 'socket.io-client';
+import DashboardTable from '../Components/DashboardOne/DashboardTable';
+import Intershift from '../Components/DashboardOne/Intershift';
 import {
-  formatDate,
-  isComponentValid,
-  mapShift,
   getCurrentTime,
-  formatNumber,
-  getDateAccordingToShifts,
-  genericRequest,
   getResponseFromGeneric,
-  getRowsFromShifts
+  formatDate,
+  validPermission
 } from '../Utils/Requests';
-import _ from 'lodash';
-import config from '../config.json';
+import { Row, Col } from 'react-bootstrap';
 import { SOCKET, API } from '../Utils/Constants';
-import dashboardHelper from '../Utils/DashboardHelper';
-import MessageForm from '../Components/Common/MessageModal';
-import $ from 'jquery';
+import moment from 'moment';
+import _ from 'lodash';
+import openSocket from 'socket.io-client';
 import '../sass/Dashboard.scss';
 import('moment/locale/es');
 import('moment/locale/it');
 import('moment/locale/de');
 import('moment/locale/ko');
-const axios = require('axios');
-const modalStyle = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    position: 'fixed'
-  },
-  overlay: {
-    backgroundColor: 'rgba(0,0,0, 0.6)'
-  }
-};
-
 
 class DashboardOne extends React.Component {
+
   constructor(props) {
     super(props);
-
-    let temporalState = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
-    this.state = Object.assign(temporalState, this.getTableColumns(temporalState));
+    this.state = Object.assign(this.getInitialState(props));
   }
 
   getInitialState(props) {
-    var hour = moment(getCurrentTime(props.user.timezone)).hours();
+    let selectedAssetOption = {};
+    _.forEach(props.user.machines, (machine) => {
+      if (machine.asset_code === props.search.mc || machine.asset_code === props.machineData.asset_code) {
+        selectedAssetOption = machine;
+      }
+    });
     return {
-      data: [],
-      columns: [],
-      modalStyle: modalStyle,
-      errorModal: false,
-      ErrorMessage: '',
-      modal_actual_IsOpen: false,
-      modal_authorize_IsOpen: false,
-      modal_comments_IsOpen: false,
-      modal_timelost_IsOpen: false,
-      modal_signoff_IsOpen: false,
-      modal_order_IsOpen: false,
-      modal_manualentry_IsOpen: false,
-      modal_scrap_IsOpen: false,
-      isMenuOpen: false,
-      valid_barcode: false,
-      signoff_reminder: false,
-      logoffHourCheck: localStorage.getItem("signoff") === false ? localStorage.getItem("signoff") : true,
-      barcode: 1001,
-      dataCall: {},
-      selectedDate: props.search.dt || props.user.date_of_shift || getCurrentTime(props.user.timezone),
-      selectedDateParsed: '',
       selectedMachine: props.search.mc || props.machineData.asset_code,
       selectedMachineType: props.search.tp || props.machineData.automation_level,
-      station: props.search.st || '00000',
-      currentLanguage: props.search.ln || props.user.language,
-      site: props.search.cs || props.user.site,
-      valueToEdit: '',
-      cumulativepcs: '',
-      expanded: {},
-      openDropdownAfter: false,
+      selectedDate: props.search.dt || props.user.date_of_shift || getCurrentTime(props.user.timezone),
       selectedShift: props.search.sf || props.user.current_shift,
-      selectedHour: props.search.hr,
-      dateFromData: false,
+      currentLanguage: props.search.ln || props.user.language,
       shifts: props.user.shifts,
-      timezone: props.user.timezone,
-      currentHour: hour,
-      summary: props.summary,
-      uom_asset: null,
-      signOffModalType: '',
-      readOnly: false,
-      alertModalOverProd: false,
-      alertMessageOverProd: '',
-      modal_message_Is_Open: false,
-      messageModalType: '',
-      messageModalMessage: ''
-    }
-  }
-
-  getTextTranslations(props) {
-    return {
-      shiftText: props.search.sf ? props.t(props.search.sf) : props.user.current_shift,
-      partNumberText: props.t('Part Number'),
-      idealText: props.t('Ideal'),
-      targetText: props.t('Target'),
-      actualText: props.t('Actual'),
-      scrapText: props.t('Scrap'),
-      cumulativeTargetText: props.t('Cumulative Target'),
-      cumulativeActualText: props.t('Cumulative Actual'),
-      timeLostText: props.t('Time Lost (Total Mins.)'),
-      commentsActionText: props.t('Comments And Actions Taken'),
-      operatorText: props.t('Operator'),
-      supervisorText: props.t('Supervisor')
-    }
-  }
-
-  closeModal = () => {
-    this.setState({
-      modal_authorize_IsOpen: false,
-      modal_comments_IsOpen: false,
-      modal_actual_IsOpen: false,
-      modal_timelost_IsOpen: false,
-      modal_signoff_IsOpen: false,
-      modal_order_IsOpen: false,
-      modal_manualentry_IsOpen: false,
-      modal_scrap_IsOpen: false,
-      errorModal: false,
-      readOnly: false,
-      alertModalOverProd: false,
-      modal_message_Is_Open: false
-    });
-    if (!this.state.summary) {
-      this.props.closeOrderModal(false);
-      this.props.displayModalLogOff(false);
-    }
-  }
-
-  menuToggle(flag) {
-    this.setState({
-      isMenuOpen: flag
-    })
+      selectedAssetOption,
+      activeOperators: []
+    };
   }
 
   async componentDidMount() {
-    this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
+    this.fetchData(this.props);
     const socket = openSocket.connect(SOCKET);
     socket.on('connect', () => console.log('Connected to the Websocket Service'));
     socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
     try {
       socket.on('message', response => {
         if (response.message === true) {
-          if (!this.state.isMenuOpen && !this.state.modal_signoff_IsOpen && !this.state.modal_actual_IsOpen && !this.state.modal_scrap_IsOpen) {
-            this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
-          }
+          this.fetchData(this.props);
         }
       });
     } catch (e) { console.log(e) }
-  };
+  }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.showNewOrderModal) {
-      if (!_.isEqual(nextProps.search, this.props.search)) {
-        let _this = this;
-        if (nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) {
-          let temporalState = Object.assign(_this.getTextTranslations(nextProps));
-          this.setState(Object.assign(temporalState, this.getTableColumns(temporalState)));
-        }
-        if (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf) {
-          let temporalState = Object.assign(_this.getTextTranslations(nextProps));
-          this.setState(Object.assign(temporalState, this.getTableColumns(temporalState)));
-        }
-
-        let selectedDate;
-        let selectedMachine;
-        let selectedShift;
-        if (nextProps.user.site === this.state.site) {
-          selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
-          selectedMachine = nextProps.search.mc || this.state.selectedMachine;
-          selectedShift = nextProps.search.sf || this.state.selectedShift;
-        } else {
-          selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
-          selectedMachine = nextProps.search.mc || nextProps.machineData.asset_code;
-          selectedShift = nextProps.search.sf || nextProps.user.current_shift;
-        }
-
-        this.fetchData([selectedMachine, selectedDate, selectedShift], nextProps);
-        this.setState({
-          selectedDate: selectedDate,
-          selectedMachine: selectedMachine,
-          currentLanguage: nextProps.search.ln || this.state.currentLanguage,
-          selectedShift: selectedShift,
-          selectedMachineType: nextProps.search.tp || this.state.selectedMachineType,
-          selectedHour: nextProps.search.hr,
-          site: nextProps.user.site === this.state.site ? this.state.site : nextProps.user.site,
-          shifts: nextProps.user.shifts,
-          expanded: {}
-        });
-
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
+      return {
+        activeOperators: nextProps.activeOperators
       }
-    } else {
-      this.setState({ modal_order_IsOpen: nextProps.showNewOrderModal });
+    } else if (prevState.selectedDate !== nextProps.search.dt || prevState.selectedMachine !== nextProps.search.mc || prevState.selectedShift !== nextProps.search.sf ||
+      prevState.site !== nextProps.user.site) {
+      let selectedDate;
+      let selectedMachine;
+      let selectedShift;
+      if (nextProps.user.site === prevState.site) {
+        selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
+        selectedMachine = nextProps.search.mc || prevState.selectedMachine;
+        selectedShift = nextProps.search.sf || prevState.selectedShift;
+      } else {
+        selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
+        selectedMachine = nextProps.search.mc || nextProps.machineData.asset_code;
+        selectedShift = nextProps.search.sf || nextProps.user.current_shift;
+      }
+
+      let selectedAssetOption = {};
+      _.forEach(nextProps.user.machines, (machine) => {
+        if (machine.asset_code === selectedMachine) {
+          selectedAssetOption = machine;
+        }
+      });
+
+      return {
+        selectedDate,
+        selectedMachine,
+        currentLanguage: nextProps.search.ln || prevState.currentLanguage,
+        selectedShift,
+        selectedMachineType: nextProps.search.tp || prevState.selectedMachineType,
+        site: nextProps.user.site === prevState.site ? prevState.site : nextProps.user.site,
+        shifts: nextProps.user.shifts,
+        selectedAssetOption
+      };
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption) && this.state.selectedAssetOption.is_multiple) {
+      this.fetchData(this.props);
     }
   }
 
-  fetchData = (data, props) => {
+  fetchData = (props) => {
     props = props ? props : this.props;
-    if (this.state.summary) {
-      this.loadDataAllShift(data, props);
-    } else {
-      this.loadDataCurrentShift(data, props);
-    }
-  }
-
-  loadDataAllShift(filter, props) {
-
-    let newDate = getDateAccordingToShifts(filter[1], props.user);
-
-    if (newDate === filter[1]) {
-      const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
-      var minutes = moment().minutes();
-
-      let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
-      let errorModal = false;
-      let errorMessage = '';
-
-      if (logoffHour === config['second_signoff_reminder']) {
-        if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
-          errorModal = true;
-          errorMessage = 'Please sign off for the previous hour';
-        }
-      }
-      var est = moment().tz(props.user.timezone).hours();
-      if (minutes > 6 && localStorage.getItem("currentHour")) {
-        if (localStorage.getItem("currentHour") !== est) {
-          localStorage.removeItem("signoff");
-          localStorage.removeItem("currentHour");
-        }
-      }
-
-      if (filter && filter[0]) {
-
-        let hr = moment().tz(props.user.timezone).hours();
-
-        let responseArray = [];
-
-        let requestVertDas = axios.CancelToken.source();
-        let requestInter = axios.CancelToken.source();
-
-        props.updateDashOne(null);
-        props.updateInter(requestInter);
-        props.updateVertDash(requestVertDas);
-
-        const parameters2 = {
-          mc: filter[0],
-          dt: formatDate(filter[1]).split("-").join(""),
-          sf: props.user.vertical_shift_id,
-          hr: 23,
-          st: props.user.site
-        };
-        responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, requestVertDas.token));
-
-        const parameters = {
-          mc: filter[0],
-          dt: formatDate(filter[1]).split("-").join(""),
-          sf: mapShift(filter[2]),
-          hr: hr
-        };
-
-        responseArray.push(getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token));
-        responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', null, parameters, {}, requestVertDas.token));
-
-        Promise.all(responseArray).then(responses => {
-          let data = [];
-          let current_shift = null;
-          let startShift = 0;
-          _.forEach(responses[0], (value) => {
-            if (current_shift && (current_shift.shift_code === value.shift_code || value.shift_code === null)) {
-              data = _.concat(data, [value]);
-            } else {
-              current_shift = {
-                'shift_code': props.user.shifts[startShift].shift_code,
-                'hour_interval': props.user.shifts[startShift].shift_name, 'summary_product_code': this.state.partNumberText, 'summary_ideal': this.state.idealText,
-                'summary_target': this.state.targetText, 'summary_adjusted_actual': this.state.actualText, 'summary_scrap': this.state.scrapText, 'cumulative_target': this.state.cumulativeTargetText,
-                'cumulative_adjusted_actual': this.state.cumulativeActualText, 'timelost_summary': this.state.timeLostText, 'latest_comment': this.state.commentsActionText,
-                'operator_signoff': this.state.operatorText, 'supervisor_signoff': this.state.supervisorText
-              };
-              if (data === []) {
-                data = _.concat([current_shift], [value]);
-              } else {
-                data = _.concat(data, [current_shift], [value]);
-              }
-              startShift += 1;
-            }
-          });
-
-          let currentRow = this.state.currentRow;
-          if (currentRow) {
-            currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
-          }
-
-          let comments = responses[1] || [];
-          let uom_asset = responses[2] || [];
-
-          this.setState({ signoff_reminder, errorModal, errorMessage, data, comments, uom_asset, currentRow });
-        }, error => {
-          console.log(error);
-        });
-      }
-    } else {
-      let queryItem = Object.assign({}, props.search);
-      queryItem["dt"] = newDate;
-      let parameters = $.param(queryItem);
-      props.history.push(`${props.history.location.pathname}?${parameters}`);
-    }
-
-  }
-
-  async loadDataCurrentShift(filter, props) {
-    const logoffHour = formatNumber(moment(getCurrentTime(props.user.timezone)).format('HH:mm').toString().slice(3, 5));
-    var minutes = moment().minutes();
-
-    let signoff_reminder = config['first_signoff_reminder'].includes(logoffHour);
-    let errorModal = false;
-    let errorMessage = '';
-
-    if (logoffHour === config['second_signoff_reminder']) {
-      if (this.state.logoffHourCheck === true && props.user.role === 'Operator') {
-        errorModal = true;
-        errorMessage = 'Please sign off for the previous hour';
-      }
-    }
-    var tz = this.state.commonParams ? this.state.commonParams.value : props.user.timezone;
-    var est = moment().tz(tz).hours();
-    if (minutes > 6 && localStorage.getItem("currentHour")) {
-      if (localStorage.getItem("currentHour") !== est) {
-        localStorage.removeItem("signoff");
-        localStorage.removeItem("currentHour");
-      }
-    }
-
-    if (filter && filter[0]) {
-
-      let sf = {};
-
-      _.forEach(props.user.shifts, shift => {
-        if (shift.shift_name === filter[2]) {
-          sf = shift;
-        }
-      });
-
+    if (this.state.selectedAssetOption.is_multiple) {
+      const currentShift = _.find(props.user.shifts, { shift_id: props.user.shift_id });
       const parameters = {
-        mc: filter[0],
-        dt: formatDate(filter[1]).split("-").join(""),
-        sf: sf.shift_id || props.user.shift_id,
-        hr: moment().tz(props.user.timezone).hours(),
-        st: props.user.site
-      }
+        asset_id: this.state.selectedAssetOption.asset_id,
+        start_time: formatDate(currentShift.start_date_time_today),
+        end_time: formatDate(currentShift.end_date_time_today)
+      };
 
-      let requestDashOne = axios.CancelToken.source();
-      let requestInter = axios.CancelToken.source();
-
-      props.updateDashOne(requestDashOne);
-      props.updateInter(requestInter);
-      props.updateVertDash(null);
-
-      let requestArray = [
-        genericRequest('get', API, '/data', null, parameters, {}, requestDashOne.token),
-        genericRequest('get', API, '/uom_asset', null, parameters, {}, requestDashOne.token),
-      ];
-
-      axios.all(requestArray).then(
-        axios.spread((...responses) => {
-          let data = responses[0].data;
-          let uom_asset = responses[1].data;
-          let alertModalOverProd = false;
-          let alertMessageOverProd = '';
-          if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
-            (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
-            alertModalOverProd = true;
-            alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
-          }
-
-          let currentRow = this.state.currentRow;
-          if (currentRow) {
-            currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
-          }
-
-          this.setState({ data, uom_asset, signoff_reminder, errorModal, errorMessage, alertModalOverProd, alertMessageOverProd, currentRow });
-        })
-        , (error) => {
-          console.log(error)
+      getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
+        let user_list = response || [];
+        const activeOperators = _.filter(user_list, { status: 'Active', is_current_scan: true });
+        props.changeActiveOperators(activeOperators);
+        this.setState({
+          activeOperators
         });
-
-      getResponseFromGeneric('get', API, '/intershift_communication', null, parameters, {}, requestInter.token).then(response => {
-        this.setState({ comments: response || [] });
+      });
+    } else {
+      this.setState({
+        activeOperators: []
       });
     }
-  }
-
-  openMessageModal = (type, message) => {
-    this.setState({
-      modal_message_Is_Open: true,
-      messageModalType: type,
-      messageModalMessage: message
-    });
   }
 
   render() {
-    const columns = this.state.columns;
-    let machineName = 'No Data';
-    _.forEach(this.props.user.machines, (machine) => {
-      if (machine.asset_code === this.state.selectedMachine) {
-        machineName = machine.asset_name;
-      }
-    });
-
-    const data = this.state.data;
-    // @DEV: *****************************
-    // Always assign data to variable then 
-    // ternary between data and spinner
-    // ***********************************
-    const t = this.props.t;
-    const back = t('Back');
-    const next = t('Next');
-    const page = t('Page');
-    const off = t('Of');
-    const rows = t('Rows');
-    const dxh_parent = !_.isEmpty(data) ? data[0] : undefined;
-    const obj = this;
-    const num_rows = getRowsFromShifts(this.props, this.state.summary);
+    const props = this.props;
+    const t = props.t;
     return (
       <React.Fragment>
-        {isComponentValid(this.props.user.role, 'pagination') && !_.isEmpty(this.state.shifts) && !this.state.summary ?
+        {validPermission(props.user, 'pagination', 'read') && !_.isEmpty(this.state.shifts) && !this.props.summary ?
           <Pagination
-            history={this.props.history}
-            user={this.props.user}
-            machineData={this.props.machineData}
-            t={t}
+            history={props.history}
+            user={props.user}
+            machineData={props.machineData}
+            t={props.t}
           /> : null}
-
         <div className="wrapper-main">
-          <OperatorComponent
-            asset_code={this.state.selectedMachine}
-            showModalLogOff={this.props.showModalLogOff}
-            closeSignOffModal={this.closeModal}
-            t={t}
-          />
+          {validPermission(props.user, 'operatorInformation', 'read') && this.state.selectedAssetOption.is_multiple ?
+            <OperatorComponent
+              asset_code={this.state.selectedMachine}
+              selectedAssetOption={this.state.selectedAssetOption}
+              user={props.user}
+              t={props.t}
+              activeOperators={this.state.activeOperators}
+              Refresh={this.fetchData}
+              isEditable={validPermission(props.user, 'operatorInformation', 'write')}
+            /> : null}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
               <Row style={{ paddingLeft: '5%' }}>
                 <Col md={3}><h5>{t('Day by Hour Tracking')}</h5></Col>
-                <Col md={3}><h5>{t('Machine/Cell')}: {t(machineName)}</h5></Col>
-                <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{this.props.user.first_name ?
-                  `${this.props.user.first_name} ${this.props.user.last_name.charAt(0)}, ` : void (0)}{`(${t(this.props.user.role)})`}</h5></Col>
+                <Col md={3}><h5>{t('Machine/Cell')}: {t(this.state.selectedAssetOption.asset_name || 'No Data')}</h5></Col>
+                <Col md={3}><h5 style={{ textTransform: 'Capitalize' }}>{
+                  this.state.selectedAssetOption.is_multiple && props.user.role === 'Operator' ?
+                    null :
+                    (props.user.first_name ?
+                      `${props.user.first_name} ${props.user.last_name.charAt(0)}, (${t(props.user.role)})` : null)}</h5></Col>
                 <Col md={3}><h5 style={{ fontSize: '1.0em' }}>{t('Showing Data for') + ': '}
-                  {!_.isEmpty(this.state.data) ? moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL') : null}</h5></Col>
+                  {moment(this.state.selectedDate).locale(this.state.currentLanguage).format('LL')}</h5></Col>
               </Row>
-              {!_.isEmpty(data) ?
-                <ReactTable
-                  getTheadThProps={(state, rowInfo, column) => {
-                    return this.state.summary ?
-                      {
-                        style: { display: 'none' } // override style for 'myHeaderTitle'.
-                      }
-                      : {}
-                  }}
-                  getTdProps={(state, rowInfo, column) => {
-                    return {
-                      onClick: () => {
-                        this.clickWholeCell(rowInfo, column)
-                      },
-                      style: {
-                        cursor: rowInfo && rowInfo.level === 0 && rowInfo.subRows[0]._original.hour_interval.includes('Shift') ? '' : 'pointer'
-                      }
-                    }
-                  }}
-                  sortable={false}
-                  data={data}
-                  columns={columns}
-                  showPaginationBottom={false}
-                  pageSize={num_rows}
-                  headerStyle={{ fontSize: '0.5em' }}
-                  previousText={back}
-                  nextText={next}
-                  pageText={page}
-                  ofText={off}
-                  headerClassName={"wordwrap"}
-                  rowsText={rows}
-                  pageSizeOptions={[8, 16, 24]}
-                  pivotBy={["hour_interval"]}
-                  onExpandedChange={newExpanded => this.onExpandedChange(newExpanded)}
-                  expanded={this.state.expanded}
-                  resizable={false}
-                /> : <Spinner />}
+              <DashboardTable
+                user={props.user}
+                search={props.search}
+                t={t}
+                summary={this.props.summary}
+                modal_order_IsOpen={this.props.modal_order_IsOpen}
+                closeOrderModal={this.props.closeOrderModal}
+                selectedMachine={this.state.selectedMachine}
+                selectedMachineType={this.state.selectedMachineType}
+                selectedDate={this.state.selectedDate}
+                selectedShift={this.state.selectedShift}
+                selectedAssetOption={this.state.selectedAssetOption}
+                activeOperators={this.state.activeOperators}
+              />
             </Col>
           </Row>
-          <Comments
+          <Intershift
+            user={props.user}
+            search={props.search}
             t={t}
-            user={this.props.user}
+            summary={this.props.summary}
+            selectedAssetOption={this.state.selectedAssetOption}
+            activeOperators={this.state.activeOperators}
+            selectedMachine={this.state.selectedMachine}
             selectedDate={this.state.selectedDate}
-            comments={this.state.comments}
-            dxh_parent={dxh_parent ? dxh_parent : null}
-            Refresh={this.fetchData}
-            parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
-            timezone={this.state.timezone}
-            readOnly={this.state.summary}
-            openMessageModal={this.openMessageModal}
+            selectedShift={this.state.selectedShift}
+            isEditable={validPermission(props.user, 'intershift', 'write')}
           />
         </div>
-        <ManualEntryModal
-          isOpen={this.state.modal_manualentry_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={this.props.t}
-          user={this.props.user}
-          currentRow={this.state.currentRow}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-        />
-        <ValueModal
-          isOpen={this.state.modal_actual_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={t}
-          user={this.props.user}
-          currentRow={this.state.currentRow}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          readOnly={this.state.readOnly || this.state.summary}
-        />
-        <CommentsModal
-          isOpen={this.state.modal_comments_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={t}
-          currentRow={this.state.currentRow}
-          user={this.props.user}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          selectedDate={this.state.selected}
-          readOnly={this.state.readOnly || this.state.summary}
-        />
-        <TimelossModal
-          isOpen={this.state.modal_timelost_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={t}
-          currentRow={this.state.currentRow}
-          user={this.props.user}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          readOnly={this.state.readOnly || this.state.summary}
-        />
-        <SignoffModal
-          isOpen={this.state.modal_signoff_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={this.props.t}
-          currentRow={this.state.currentRow}
-          user={this.props.user}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          signOffModalType={this.state.signOffModalType}
-          readOnly={this.state.readOnly || this.state.summary}
-          uom_asset={this.state.uom_asset}
-        />
-        <OrderModal
-          isOpen={this.state.modal_order_IsOpen}
-          open={this.openModal}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={t}
-          user={this.props.user}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-        />
-        <ScrapModal
-          isOpen={this.state.modal_scrap_IsOpen}
-          onRequestClose={this.closeModal}
-          style={this.state.modalStyle}
-          t={t}
-          currentRow={this.state.currentRow}
-          user={this.props.user}
-          Refresh={this.fetchData}
-          parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
-          readOnly={this.state.readOnly || this.state.summary}
-          openMessageModal={this.openMessageModal}
-        />
-        <ErrorModal
-          isOpen={this.state.errorModal}
-          onRequestClose={a => {
-            obj.setState({ logoffHourCheck: false })
-            this.closeModal();
-          }}
-          contentLabel="Example Modal"
-          t={t}
-          message={this.state.errorMessage}
-        />
-        <AlertModalOverProd
-          isOpen={this.state.alertModalOverProd}
-          onRequestClose={this.closeModal}
-          contentLabel="Example Modal"
-          t={t}
-          message={this.state.alertMessageOverProd}
-        />
-        <MessageForm
-          isOpen={this.state.modal_message_Is_Open}
-          onRequestClose={this.closeModal}
-          type={this.state.messageModalType}
-          message={this.state.messageModalMessage}
-          t={t}
-        />
       </React.Fragment >
     );
   }
 };
-
-Object.assign(DashboardOne.prototype, dashboardHelper);
 
 export default DashboardOne;

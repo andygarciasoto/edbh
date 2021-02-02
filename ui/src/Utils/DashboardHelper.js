@@ -336,7 +336,7 @@ const helpers = {
                 switch (modalType) {
                     case 'manualentry':
                     case 'actual':
-                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated';
+                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated' || this.props.user.role === 'Administrator';
                         break;
                     case 'timelost':
                     case 'comments':
@@ -353,7 +353,6 @@ const helpers = {
                         break;
                 }
 
-                console.log(newModalProps);
                 newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone);
 
                 this.setState(Object.assign(newModalProps));
