@@ -116,8 +116,8 @@ const appConfig = {
         new http.RestEndpoint('/api/shifts', 'get', async (req: Request, res: Response) => {
             await shiftService.getShiftBySite(req, res);
         }, true),
-        new http.RestEndpoint('/api/user_sites', 'get', async (req: Request, res: Response) => {
-            await userService.findUserByBadge(req, res);
+        new http.RestEndpoint('/api/find_sites', 'get', async (req: Request, res: Response) => {
+            await userService.findSitesByUser(req, res);
         }, true),
         new http.RestEndpoint('/api/user_info_login_by_site', 'get', async (req: Request, res: Response) => {
             await userService.findUserById(req, res);

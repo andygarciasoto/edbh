@@ -7,5 +7,5 @@
     [entered_on]			DATETIME NOT NULL,
     [last_modified_by]		NVARCHAR (100) NOT NULL,
     [last_modified_on]		DATETIME NOT NULL,
-	CONSTRAINT [PK_Component_Id] PRIMARY KEY CLUSTERED ([component_id] ASC)
+	CONSTRAINT [PK_Component_Component_Id] PRIMARY KEY CLUSTERED ([component_id] ASC)
 )

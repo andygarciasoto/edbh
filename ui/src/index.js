@@ -130,7 +130,7 @@ function init() {
 
             user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, shift, {}) || [];
             user.machines = await getResponseFromGeneric('get', API, '/machine', {}, shift, {}) || [];
-            user.sites = await getResponseFromGeneric('get', API, '/user_sites', {}, shift, {}) || [];
+            user.sites = await getResponseFromGeneric('get', API, '/find_sites', {}, shift, {}) || [];
             user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, shift, {}) || [];
 
             user.workcell = await getResponseFromGeneric('get', API, '/workcell', {}, shift, {}) || [];

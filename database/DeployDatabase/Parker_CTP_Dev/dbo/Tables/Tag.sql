@@ -14,7 +14,7 @@
     [entered_on]       DATETIME      NOT NULL,
     [last_modified_by] VARCHAR (100) NOT NULL,
     [last_modified_on] DATETIME      NOT NULL,
-    [site_id]          INT           DEFAULT ((1)) NOT NULL,
+    [site_id]          INT            NOT NULL,
     [asset_id]         INT           NULL,
     [max_change]       INT           NULL,
     CONSTRAINT [PK_Tag_Tag_Id] PRIMARY KEY CLUSTERED ([tag_id] ASC),

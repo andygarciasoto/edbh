@@ -16,7 +16,6 @@
     [last_modified_on]  DATETIME      NOT NULL,
     [setup_scrap]       FLOAT (53)    NULL,
     [other_scrap]       FLOAT (53)    NULL,
-    [adjusted_actual]   FLOAT (53)    NULL,
     [name]              VARCHAR (100) NULL,
     CONSTRAINT [PK_ProductionData_ProductionData_Id] PRIMARY KEY CLUSTERED ([productiondata_id] ASC),
     CONSTRAINT [FK_ProductionData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id]),

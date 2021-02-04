@@ -13,7 +13,7 @@
     [entered_on]              DATETIME      NOT NULL,
     [last_modified_by]        VARCHAR (100) NOT NULL,
     [last_modified_on]        DATETIME      NOT NULL,
-    [site_id]                 INT           DEFAULT ((1)) NOT NULL,
+    [site_id]                 INT            NOT NULL,
     [asset_id]                INT           NULL,
     CONSTRAINT [PK_Unavailable_Unavailable_Id] PRIMARY KEY CLUSTERED ([unavailable_id] ASC),
     CONSTRAINT [FK_Unavailable_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])

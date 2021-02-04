@@ -9,14 +9,14 @@ export class UserService {
         this.userrepository = userrepository;
     }
 
-    public async findUserByBadge(req: Request, res: Response) {
+    public async findSitesByUser(req: Request, res: Response) {
         let badge = req.query.clock_number;
         if (!badge) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let users: any;
         try {
-            users = await this.userrepository.findUserByBadge(badge);
+            users = await this.userrepository.findSitesByUser(badge);
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }

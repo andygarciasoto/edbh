@@ -9,16 +9,8 @@ export class UserRepository {
         this.sqlServerStore = sqlServerStore;
     }
 
-    public async findUserByBadgeAndMachine(badge: string, machine: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Clocknumber_Machine '${badge}', '${machine}'`);
-    }
-
     public async findUserByUsernameAndMachine(username: string, machine: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Username_Machine '${username}', '${machine}'`);
-    }
-
-    public async findUserByBadgeAndAsset(badge: string, asset_code: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Clocknumber_Asset '${badge}', '${asset_code}'`);
     }
 
     public async findUserBySite(site_id: number): Promise<any> {
@@ -26,8 +18,8 @@ export class UserRepository {
         ON [TFDUsers].[Site] = [Asset].[asset_id] AND [TFDUsers].[Site] = ${site_id}`);
     }
 
-    public async findUserByBadge(badge: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Users_By_Badge '${badge}'`);
+    public async findSitesByUser(badge: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Sites_By_User '${badge}'`);
     }
 
     public async findUserById(user_id: number): Promise<any> {

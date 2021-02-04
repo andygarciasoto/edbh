@@ -8,7 +8,7 @@
     [entered_on]       DATETIME      NOT NULL,
     [last_modified_by] VARCHAR (100) NOT NULL,
     [last_modified_on] DATETIME      NOT NULL,
-    [site_id]          INT           DEFAULT ((1)) NOT NULL,
+    [site_id]          INT            NOT NULL,
     [decimals]         BIT           NULL,
     CONSTRAINT [PK_UOM_UOM_ID] PRIMARY KEY CLUSTERED ([UOM_id] ASC),
     CONSTRAINT [UNC_UOM_UOM_Code] UNIQUE NONCLUSTERED ([UOM_code] ASC)

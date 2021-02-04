@@ -21,7 +21,6 @@
     [last_modified_by]          VARCHAR (100) NOT NULL,
     [last_modified_on]          DATETIME      NOT NULL,
     [asset_id]                  INT           NULL,
-    [cumulative_actual]         FLOAT (53)    NULL,
     CONSTRAINT [PK_OrderData_Order_Id] PRIMARY KEY CLUSTERED ([order_id] ASC),
     CONSTRAINT [FK_OrderData_Asset_ID] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
