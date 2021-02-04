@@ -60,6 +60,7 @@
     "badLogin": "https://parkerdaybyhour.us.parker.corp?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
     "loginURL": "https://parkerdaybyhour.us.parker.corp/dashboard",
+    "appInsights": "e9f305ee-5689-4e1a-b95e-8f4037b9d2c7",
     
     "user": "appUser",
     "password": "d??VzYv7r-^n$EA58V2$#ZUa",
@@ -74,5 +75,6 @@
     "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127",
     "badLogin": "https://edxhtst.us.parker.corp?err=true",
     "signingKey":"JhbGciOiJSUzI1NiJ9",
-    "loginURL": "https://edxhtst.us.parker.corp/dashboard"
+    "loginURL": "https://edxhtst.us.parker.corp/dashboard",
+    "appInsights": "e9f305ee-5689-4e1a-b95e-8f4037b9d2c7"
 }
