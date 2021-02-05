@@ -14,7 +14,7 @@ export class UserRepository {
     }
 
     public async findUserBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT [Badge],[Username],[First_Name],[Last_Name],[Role],[Asset].[site_code] FROM [dbo].[TFDUsers] JOIN [dbo].[Asset] 
+        return await this.sqlServerStore.ExecuteQuery(`SELECT [Badge],[Username],[First_Name],[Last_Name],[Role],[role_id],[Asset].[site_code] FROM [dbo].[TFDUsers] JOIN [dbo].[Asset] 
         ON [TFDUsers].[Site] = [Asset].[asset_id] AND [TFDUsers].[Site] = ${site_id}`);
     }
 

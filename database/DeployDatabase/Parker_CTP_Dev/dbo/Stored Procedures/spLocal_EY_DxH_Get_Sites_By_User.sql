@@ -10,7 +10,7 @@ SELECT
 [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], 
 [last_modified_on],
 --User columns
-[Badge], [Username], [First_Name], [Last_Name], [Role], [Site], [ID] as id
+[Badge], [Username], [First_Name], [Last_Name], [Role], [role_id], [Site], [ID] as id
 FROM [dbo].[Asset] JOIN [dbo].[TFDUsers] ON [Asset].[asset_id] = [TFDUsers].[Site] WHERE [TFDUsers].[Badge] = @badge
 
 
