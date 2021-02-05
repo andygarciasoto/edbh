@@ -132,17 +132,18 @@ function init() {
             user.machines = await getResponseFromGeneric('get', API, '/machine', {}, shift, {}) || [];
             user.sites = await getResponseFromGeneric('get', API, '/find_sites', {}, shift, {}) || [];
             user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, shift, {}) || [];
-
             user.workcell = await getResponseFromGeneric('get', API, '/workcell', {}, shift, {}) || [];
 
             if (site && Number(user.site) !== Number(site)) {
+                const userSiteInfo = _.find(user.sites, ['Site', parseInt(site)]);
                 const parameters = {
-                    user_id: _.find(user.sites, ['Site', parseInt(site)]).id
+                    badge: userSiteInfo.Badge,
+                    site_id: userSiteInfo.Site
                 };
 
-                res = await getResponseFromGeneric('get', API, '/user_info_login_by_site', {}, parameters, {}) || [];
+                res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
                 let newUserValues = res[0] || {};
-                user = assignValuesToUser(user, newUserValues);/////Double Check using Ryan login
+                user = assignValuesToUser(user, newUserValues);
             }
 
             if (!user.shift_id) {
