@@ -28,9 +28,13 @@ export class SqlServerStore {
         };
         this.pool = new Promise<ConnectionPool>((resolve, reject) => {
             const pool = new ConnectionPool(poolConfig, connConfig);
-            pool.on('error', reject);
+            pool.on('error', err => {
+                console.log(err);
+                reject(err);
+            });
             pool.acquire((err, conn) => {
                 if (err) {
+                    console.log(err);
                     reject(err);
                     return;
                 }

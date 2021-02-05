@@ -13,7 +13,8 @@ export class CommonParametersRepository {
         [CommonParameters].[ui_timezone],[CommonParameters].[escalation_level1_minutes],[CommonParameters].[escalation_level2_minutes],
         [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
         [CommonParameters].[setup_lookback_minutes],[CommonParameters].[language],[CommonParameters].[status],
-        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
+        [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on],
+        [CommonParameters].[summary_timeout],[CommonParameters].[break_minutes],[CommonParameters].[lunch_minutes]
         FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] AND [CommonParameters].[site_id] = ${site_id}`);
     }
 

@@ -3,18 +3,22 @@ import { ProductionDataRepository } from '../repositories/productiondata-reposit
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import moment from 'moment';
+import { DTReasonRepository } from '../repositories/dtreason-repository';
+import { timeStamp } from 'console';
 
 export class ProductionDataService {
 
     private readonly productiondatarepository: ProductionDataRepository;
     private readonly dxhdatarepository: DxHDataRepository;
     private readonly assetrepository: AssetRepository;
+    private readonly dtreasonrepository: DTReasonRepository;
     private readonly format: string = 'YYYY-MM-DD HH:mm:ss';
 
-    public constructor(productiondatarepository: ProductionDataRepository, dxhdatarepository: DxHDataRepository, assetrepository: AssetRepository) {
+    public constructor(productiondatarepository: ProductionDataRepository, dxhdatarepository: DxHDataRepository, assetrepository: AssetRepository, dtreasonrepository: DTReasonRepository) {
         this.productiondatarepository = productiondatarepository;
         this.dxhdatarepository = dxhdatarepository;
         this.assetrepository = assetrepository;
+        this.dtreasonrepository = dtreasonrepository;
     }
 
     public async putProductionData(req: Request, res: Response) {
@@ -38,7 +42,6 @@ export class ProductionDataService {
                 return res.status(400).json({ message: "Bad Request - Missing Parameters - No User Data" });
             }
         }
-
         let asset: any;
         let dxhData: any;
         try {
@@ -67,18 +70,24 @@ export class ProductionDataService {
             return res.status(500).json({ message: err.message });
         }
     }
-    
+
     public async putScrapValues(req: Request, res: Response) {
         const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
-        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : undefined;
-        const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : undefined;
-        const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : undefined;
+        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
+        let dt_reason_id = !isNaN(req.body.dt_reason_id) ? parseInt(req.body.dt_reason_id) : undefined;
+        const dt_minutes = req.body.dt_minutes ? parseFloat(req.body.dt_minutes) : null;
+        const setup_scrap = !isNaN(req.body.setup_scrap) ? parseFloat(req.body.setup_scrap) : 0;
+        const other_scrap = !isNaN(req.body.other_scrap) ? parseFloat(req.body.other_scrap) : 0;
         const clocknumber = req.body.clocknumber;
         const first_name = req.body.first_name;
         const last_name = req.body.last_name;
+        const quantity = !isNaN(req.body.quantity) ? req.body.quantity : null;
+        const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
+        const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
+        let asset_code = req.body.asset_code ? req.body.asset_code : undefined;
 
-        if (dxh_data_id === undefined || productiondata_id === undefined || setup_scrap === undefined || other_scrap === undefined) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters - dxh_data_id, productiondata_id, Setup Scrap, Other Scrap or Adjusted Actual Undefined" });
+        if (dxh_data_id === undefined || productiondata_id === undefined || (quantity >= 0 && dt_reason_id === undefined) || asset_code === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         if (!clocknumber) {
             if (!(first_name || last_name)) {
@@ -88,8 +97,10 @@ export class ProductionDataService {
         try {
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
             } else {
                 await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {

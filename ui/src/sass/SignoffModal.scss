@@ -1,0 +1,30 @@
+.dashboard-modal-signoff-header {
+    text-transform: capitalize
+}
+
+.signoff-buttons {
+    display: table;
+    margin : auto;
+    width  : 20%;
+}
+
+.signoff-list-parent li {
+    list-style-type: none;
+    margin-right   : 4%;
+}
+
+.signoff-list-parent li p {
+    display: inline;
+}
+
+.signoff-list-parent {
+    text-align: center;
+}
+
+.signOffModal .modal-dialog{
+    max-width: 50%;
+}
+
+.divButtonsSignOff{
+    width: 100%;
+}

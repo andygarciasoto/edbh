@@ -20,6 +20,7 @@
     "rollback": 1,
     "first_signoff_reminder": [1, 2, 3, 4, 5, 6, 7, 8, 9],
     "second_signoff_reminder": 5,
+    "appInsights": "cd486914-f59a-495e-bc5d-016468671ee1",
 
     "loginPage": "https://parkerdaybyhour.us.parker.corp",
     "root": "https://parkerdaybyhour.us.parker.corp",

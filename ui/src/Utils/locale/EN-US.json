@@ -120,5 +120,15 @@
     "Please choose the Configuration Items to": "Please choose the Configuration Items to",
     "All Configuration Items": "All Configuration Items",
     "Available Configuration Items": "Available Configuration Items",
-    "Selected Configuration Items to": "Selected Configuration Items to"
+    "Selected Configuration Items to": "Selected Configuration Items to",
+    "Scrap Count": "Scrap Count",
+    "Scrap Code": "Scrap Code",
+    "Scrap Definition": "Scrap Definition",
+    "New Setup Scrap Entry": "New Setup Scrap Entry",
+    "New Production Scrap Entry": "New Production Scrap Entry",
+    "Production Scrap": "Production Scrap",
+    "Search/Select Scrap Code": "Search/Select Scrap Code",
+    "Success": "Success",
+    "Error": "Error",
+    "Scrap Entries Saved": "Scrap Entries Saved"
 }
