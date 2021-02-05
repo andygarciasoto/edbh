@@ -107,11 +107,12 @@ export class DxHDataService {
         let asset: any;
         let dxhData: any;
         try {
-            user = await this.userrepository.findUserByBadgeAndAsset(clocknumber, asset_code);
+            asset = await this.assetrepository.getAssetByCode(asset_code);
+            user = await this.userrepository.findUserInformation(clocknumber, '', asset[0].asset_id, 0);
             const role = user[0].role;
             if (role === 'Supervisor') {
                 if (dxh_data_id == undefined) {
-                    asset = await this.assetrepository.getAssetByCode(asset_code);
+
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     dxh_data_id = dxhData[0].dxhdata_id;
                     if (clocknumber) {
