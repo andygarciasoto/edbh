@@ -109,7 +109,7 @@ FROM CTE WHERE
 @CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday OR
 @CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
 
-SELECT ID as id, badge, username, first_name, last_name, role, site, @name as site_name,
+SELECT ID as id, badge, username, first_name, last_name, role, role_id, site, @name as site_name,
  @timezone as timezone, @Shift_Id as shift_id, @Shift_Name as shift_name, FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, 
 FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, @language as language, @summary_timeout as summary_timeout,
 @inactive_timeout_minutes as inactive_timeout_minutes, @socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration 
