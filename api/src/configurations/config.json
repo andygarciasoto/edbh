@@ -1,32 +1,32 @@
 {
     "sql_section": {
-        "user": "appUser",
-        "password": "d??VzYv7r-^n$EA58V2$#ZUa",
-        "server": "phc-diviot01-tst-sql.database.windows.net",
+        "user": "parkeradmin",
+        "password": "VFM9rqSkunX4pFPm",
+        "server": "parker-ctpdev-test.database.windows.net",
         "database": "FCGFOTF"
     },
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service Test API",
+        "service_name": "Dxh Service Dev API",
         "cors": [
-            "https://edxhapitst.us.parker.corp",
-            "https://edxhtst.us.parker.corp"
+            "http://localhost:8080",
+            "http://localhost:3000"
         ],
-        "redirect_uri": "https://edxhapitst.us.parker.corp/auth/token",
+        "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",
-        "URL": "https://edxhtst.us.parker.corp",
-        "badLogin": "https://edxhtst.us.parker.corp?err=true",
-        "badLoginUser": "https://edxhtst.us.parker.corp/login?err=true",
-        "loginURL": "https://edxhtst.us.parker.corp/dashboard"
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
     },
     "ad_authentication_section": {
-        "app_reg_name": "PHIOTEDxHTest",
-        "client_id": "cc024396-80bd-4f24-be6d-28cedae59768",
-        "secret": "vkbhy5SjS=VBg7Nki-vLO30jmF_AqOn@",
+        "app_reg_name": "PHIOTFCGFOTFDev",
+        "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+        "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
         "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127"
     },
     "azure_section": {

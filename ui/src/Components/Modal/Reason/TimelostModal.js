@@ -109,7 +109,7 @@ class TimelostModal extends React.Component {
             axios.spread((...responses) => {
 
                 _.forEach(responses[0], reason => {
-                    reason.label = reason.dtreason_name;
+                    reason.label = reason.dtreason_code + ' - ' + reason.dtreason_name;
                     reason.value = reason.dtreason_id;
                 });
 
