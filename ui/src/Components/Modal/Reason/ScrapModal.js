@@ -127,7 +127,7 @@ class ScrapModal extends React.Component {
                 let productionReasonsOptions = [];
 
                 _.forEach(responses[0], reason => {
-                    reason.label = reason.dtreason_name;
+                    reason.label = reason.dtreason_code + ' - ' + reason.dtreason_name;
                     reason.value = reason.dtreason_id;
                     if (reason.level === 'Setup') {
                         setupReasonsOptions.push(reason);
