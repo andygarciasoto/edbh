@@ -1,6 +1,9 @@
 ui/node_modules
 ui/build
 ui/.vscode
+old_ui/node_modules
+old_ui/build
+old_ui/.vscode
 api/bin
 api/node_modules
 api/.deployment

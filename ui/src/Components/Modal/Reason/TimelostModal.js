@@ -50,7 +50,7 @@ class TimelostModal extends React.Component {
                 isOpen: nextProps.isOpen
             };
         }
-        if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow && nextProps.currentRow.dxhdata_id && nextProps.currentRow.productiondata_id) ||
+        if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow) ||
             (nextProps.isOpen && nextProps.isOpen === prevState.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow))) {
             return {
                 isOpen: nextProps.isOpen,
