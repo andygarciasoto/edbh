@@ -121,11 +121,13 @@ class Header extends React.Component {
         let user = this.props.user;
 
         const parameters = {
+            site_id: newSite.Site,
+            badge: newSite.Badge,
             site: newSite.Site,
-            user_id: newSite.id
+            clock_number: newSite.Badge
         };
 
-        let res = await getResponseFromGeneric('get', API, '/user_info_login_by_site', {}, parameters, {}) || [];
+        let res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
         let newUserValues = res[0] || {};
         user = assignValuesToUser(user, newUserValues);
 
