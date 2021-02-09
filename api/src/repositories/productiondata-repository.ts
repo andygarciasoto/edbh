@@ -22,5 +22,8 @@ export class ProductionDataRepository {
     public async putScrapValuesByUsername(dxh_data_id: number, productiondata_id: number, setup_scrap: number, other_scrap: number, first_name: string, last_name: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Scrap_ProductionData ${dxh_data_id}, ${productiondata_id}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}';`);
     }
+    public async putProductionDataForAnyOrder(dxh_data_id: number, productiondata_id: number, actual: number, clocknumber: string, first_name: string, last_name: string, timestamp: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${productiondata_id}, ${actual}, '${clocknumber}', '${first_name}', '${last_name}', '${timestamp}'`);
+    }
 
 }

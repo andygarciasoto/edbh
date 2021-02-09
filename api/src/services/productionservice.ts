@@ -4,7 +4,7 @@ import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import moment from 'moment';
 import { DTReasonRepository } from '../repositories/dtreason-repository';
-import { timeStamp } from 'console';
+import { time, timeStamp } from 'console';
 
 export class ProductionDataService {
 
@@ -102,6 +102,27 @@ export class ProductionDataService {
                 await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
                 await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
             }
+            return res.status(200).send('Message Entered Succesfully');
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+    }
+
+    public async putProductionForAnyOrder(req: Request, res: Response) {
+        const dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
+        const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
+        const actual = !isNaN(req.body.actual) ? parseFloat(req.body.actual) : 0;
+        const clocknumber = req.body.clocknumber ? req.body.clocknumber : undefined;
+        const first_name = req.body.first_name ? req.body.first_name : undefined;
+        const last_name = req.body.last_name ? req.body.last_name : undefined;
+        const timestamp = req.body.timestamp ? moment(new Date(req.body.timestamp)).format(this.format) : undefined;
+
+        if (dxh_data_id === undefined || actual < 0 || clocknumber === undefined || first_name === undefined || last_name === undefined || timestamp === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let production: any;
+        try {
+            production = await this.productiondatarepository.putProductionDataForAnyOrder(dxh_data_id, productiondata_id, actual, clocknumber, first_name, last_name, timestamp);
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });

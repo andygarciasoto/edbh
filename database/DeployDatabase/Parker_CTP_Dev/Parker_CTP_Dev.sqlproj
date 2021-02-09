@@ -511,6 +511,7 @@
     <Build Include="dbo\Tables\Role.sql" />
     <Build Include="dbo\Tables\RoleComponent.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Parker_CTP_Dev.refactorlog" />
