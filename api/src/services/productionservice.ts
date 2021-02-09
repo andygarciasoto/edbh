@@ -113,12 +113,9 @@ export class ProductionDataService {
         const productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;
         const actual = !isNaN(req.body.actual) ? parseFloat(req.body.actual) : 0;
         const clocknumber = req.body.clocknumber ? req.body.clocknumber : undefined;
-        const first_name = req.body.first_name ? req.body.first_name : undefined;
-        const last_name = req.body.last_name ? req.body.last_name : undefined;
         const timestamp = req.body.timestamp ? moment(new Date(req.body.timestamp)).format(this.format) : undefined;
         const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
-
-        if (asset_code === undefined || actual < 0 || clocknumber === undefined || first_name === undefined || last_name === undefined || timestamp === undefined) {
+        if (asset_code === undefined || actual < 0 || clocknumber === undefined || timestamp === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let production: any;
@@ -130,7 +127,7 @@ export class ProductionDataService {
                 dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, timestamp);
                 dxh_data_id = dxhData[0].dxhdata_id;
             }
-            production = await this.productiondatarepository.putProductionDataForAnyOrder(dxh_data_id, productiondata_id, actual, clocknumber, first_name, last_name, timestamp);
+            production = await this.productiondatarepository.putProductionDataForAnyOrder(dxh_data_id, productiondata_id, actual, clocknumber, timestamp);
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });

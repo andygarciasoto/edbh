@@ -21,10 +21,10 @@
 
 .editable {
     cursor          : pointer;
-    background-color: rgb(246, 246, 246);
+    background-color: $color-white-back;
     padding         : 100%;
     overflow        : scroll;
-    color           : red;
+    color           : $color-red;
 }
 
 .ideal {
@@ -41,14 +41,14 @@
 }
 
 .signoff-reminder-true {
-    color      : red;
+    color      : $color-red;
     font-weight: bolder;
     animation  : blinker 1s linear infinite;
     text-align : center;
 }
 
 .signoff-reminder-icon {
-    color     : red;
+    color     : $color-red;
     animation : blinker 1s linear infinite;
     text-align: center;
     width     : 100%;

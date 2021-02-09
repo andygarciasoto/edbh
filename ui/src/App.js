@@ -120,7 +120,7 @@ function App(propsApp) {
         }
         <Route path="/"
           render={(props) =>
-            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary") &&
+            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary" || props.location.pathname === "/digitalcups") &&
             <SesionManage
               history={props.history}
               search={qs.parse(props.history.location.search)}

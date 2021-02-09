@@ -1,4 +1,5 @@
 import React from 'react';
+import CupsContainer from '../Components/DigitalCups/CupsContainer';
 import FilterComponent from '../Components/DigitalCups/FilterComponent';
 
 class DigitalCups extends React.Component {
@@ -9,12 +10,14 @@ class DigitalCups extends React.Component {
 
     getInitialState(props) {
         return {
-
+            levelSelection: {},
+            assetSelection: {},
+            assetList: []
         };
     }
 
-    loadCups = () => {
-
+    loadCups = (levelSelection, assetSelection, assetList) => {
+        this.setState({ levelSelection, assetSelection, assetList });
     }
 
     render() {
@@ -26,6 +29,13 @@ class DigitalCups extends React.Component {
                         t={t}
                         user={this.props.user}
                         loadCups={this.loadCups}
+                    />
+                    <CupsContainer
+                        t={t}
+                        user={this.props.user}
+                        levelSelection={this.state.levelSelection}
+                        assetSelection={this.state.assetSelection}
+                        assetList={this.state.assetList}
                     />
                 </div>
             </React.Fragment>
