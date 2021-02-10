@@ -68,7 +68,7 @@ class ActualModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     modal_type: 'Error',
-                    modal_message: 'Error when try to find the user. Please Try again',
+                    modal_message: 'Error finding the user. Please try again',
                     modal_message_IsOpen: true
                 });
             } else {

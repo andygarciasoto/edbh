@@ -101,7 +101,7 @@ class Intershift extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     messageModalType: 'Error',
-                    messageModalMessage: 'Error when try to find the user. Please Try again',
+                    messageModalMessage: 'Error finding the user. Please try again',
                     modal_message_Is_Open: true
                 });
             } else {
@@ -124,9 +124,9 @@ class Intershift extends React.Component {
 
             let res = await getResponseFromGeneric('put', API, '/intershift_communication', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Error', messageModalMessage: 'Fail on insert the new comment intershift communication' });
+                this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Error', messageModalMessage: 'Intershift communication was not inserted. Please try again' });
             } else {
-                this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Success', messageModalMessage: 'Success on insert the new comment intershift communication', value: '' });
+                this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Success', messageModalMessage: 'Intershift communication inserted successfully', value: '' });
                 this.fecthData();
             }
         })

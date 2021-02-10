@@ -11,8 +11,8 @@ class LoadingModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loadingMessage: this.props.t(this.props.message) || this.props.t('Loading'),
-            headerMessage: 'Please Wait'
+            loadingMessage: this.props.t(this.props.message) || this.props.t('Loading...'),
+            headerMessage: 'Please Wait...'
         }
     }
 

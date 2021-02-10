@@ -160,8 +160,8 @@ class TimelostModal extends React.Component {
         } else {
             this.setState({
                 modal_message_IsOpen: true,
-                modal_type: 'Error',
-                modal_message: `Any change detected`
+                modal_type: 'Warning',
+                modal_message: `No changes detected. Please close the window or edit your values`
             });
         }
     }
@@ -177,7 +177,7 @@ class TimelostModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     modal_type: 'Error',
-                    modal_message: 'Error when try to find the user. Please Try again',
+                    modal_message: 'Error finding the user. Please Try again',
                     modal_message_IsOpen: true
                 });
             } else {
@@ -215,9 +215,9 @@ class TimelostModal extends React.Component {
         this.setState({ modal_loading_IsOpen: true }, async () => {
             let res = await getResponseFromGeneric('put', API, '/dt_data', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Time Lost Entries unsaved', insert: false });
+                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Time Lost was not updated. Please try again', insert: false });
             } else {
-                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Time Lost Entries Saved', insert: false });
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Time Lost was updated successfully', insert: false });
             }
         });
     }

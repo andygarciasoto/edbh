@@ -62,7 +62,7 @@ class SignoffModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     modal_type: 'Error',
-                    modal_message: 'Error when try to find the user. Please Try again',
+                    modal_message: 'Error finding the user. Please Try again',
                     modal_message_IsOpen: true
                 });
             } else {
@@ -72,7 +72,7 @@ class SignoffModal extends React.Component {
                 if (this.state.signOffRole === 'Supervisor' && res[0].role !== 'Supervisor') {
                     this.setState({
                         modal_type: 'Error',
-                        modal_message: 'Error the user is not a Supervisor. Please Try again',
+                        modal_message: 'The user is not a Supervisor. Please Try again',
                         modal_message_IsOpen: true
                     });
                     return;

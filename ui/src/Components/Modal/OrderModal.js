@@ -64,7 +64,7 @@ class OrderModal extends React.Component {
         if (!isNaN(err)) {
             this.handleScan(err);
         } else {
-            this.setState({ modal_message_Is_Open: true, messageModalType: 'Error', messageModalMessage: 'Scan failed: Barcode not Valid' });
+            this.setState({ modal_message_Is_Open: true, messageModalType: 'Error', messageModalMessage: 'Scan failed: Barcode is not Valid' });
         }
     }
 
