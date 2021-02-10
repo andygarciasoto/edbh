@@ -78,15 +78,24 @@ class Intershift extends React.Component {
     }
 
     enterCommunication = (e) => {
-        const props = this.props;
-        if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
-            if (props.activeOperators.length > 1) {
-                this.setState({ modal_validate_IsOpen: true });
+        if (!_.isEmpty(this.state.value)) {
+            const props = this.props;
+            if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
+                if (props.activeOperators.length > 1) {
+                    this.setState({ modal_validate_IsOpen: true });
+                } else {
+                    this.submitIntershiftCommunication(props.activeOperators[0].badge);
+                }
             } else {
-                this.submitIntershiftCommunication(props.activeOperators[0].badge);
+                this.submitIntershiftCommunication(props.user.clock_number);
             }
         } else {
-            this.submitIntershiftCommunication(props.user.clock_number);
+            this.setState({
+                modal_loading_IsOpen: false,
+                messageModalType: 'Error',
+                messageModalMessage: 'Please type an intershift communication',
+                modal_message_Is_Open: true
+            });
         }
     }
 

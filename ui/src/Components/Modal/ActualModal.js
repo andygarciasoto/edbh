@@ -153,6 +153,7 @@ class ActualModal extends React.Component {
                                 value={this.state.newActual}
                                 style={{ paddingTop: '5px' }}
                                 type={'number'}
+                                min={0}
                                 autoFocus
                                 onChange={(e) => this.onChangeInput(e)}
                                 disabled={!this.props.isEditable}>
