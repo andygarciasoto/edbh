@@ -88,7 +88,7 @@ class DashboardTable extends React.Component {
             (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf)) {
             let temporalState = Object.assign(this.getTextTranslations(nextProps));
             temporalState.currentLanguage = nextProps.search.ln || this.state.currentLanguage;
-            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps)));
+            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps), { expanded: {} }));
         }
         this.setState(Object.assign(this.getTableColumns(this.state, nextProps)));
 
@@ -174,8 +174,7 @@ class DashboardTable extends React.Component {
                     currentRow,
                     selectedMachine: filter[0],
                     selectedDate: filter[1],
-                    selectedShift: filter[2],
-                    expanded: {}
+                    selectedShift: filter[2]
                 });
             }, error => {
                 console.log(error);
@@ -241,8 +240,7 @@ class DashboardTable extends React.Component {
                         currentRow,
                         selectedMachine: filter[0],
                         selectedDate: filter[1],
-                        selectedShift: filter[2],
-                        expanded: {}
+                        selectedShift: filter[2]
                     });
                 })
                 , (error) => {
