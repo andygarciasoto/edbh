@@ -59,6 +59,8 @@ class ScrapModal extends React.Component {
         }
         if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow && nextProps.currentRow.dxhdata_id && nextProps.currentRow.productiondata_id) ||
             (nextProps.isOpen && nextProps.isOpen === prevState.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow))) {
+            console.log('modal open');
+            console.log('prev state', prevState);
             return {
                 isOpen: nextProps.isOpen,
                 currentRow: nextProps.currentRow,
@@ -67,7 +69,11 @@ class ScrapModal extends React.Component {
                 quantityValue: 0,
                 reasonVisible: false,
                 actualReasonValue: 0,
-                selectedReason: null
+                selectedReason: null,
+                setupReasonsOptions: prevState.setupReasonsOptions,
+                productionReasonsOptions: prevState.productionReasonsOptions,
+                allReasonOptions: prevState.allReasonOptions,
+                scrapTableList: prevState.scrapTableList
             };
         }
         return null;
@@ -75,6 +81,7 @@ class ScrapModal extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (!_.isEqual(this.state.currentRow, prevState.currentRow)) {
+            console.log('load data call');
             this.setState({ modal_loading_IsOpen: true }, () => {
                 this.loadData(this.props);
             });
@@ -82,10 +89,12 @@ class ScrapModal extends React.Component {
     }
 
     onChangeInput = (e, field) => {
-        this.setState({
-            [field]: parseInt(e.target.value),
-            adjustedActualValue: parseInt(this.state.adjusted_actual) - parseInt(e.target.value)
-        });
+        if (parseInt(this.state.adjusted_actual) - parseInt(e.target.value) >= 0) {
+            this.setState({
+                [field]: parseInt(e.target.value),
+                adjustedActualValue: parseInt(this.state.adjusted_actual) - parseInt(e.target.value)
+            });
+        }
     }
 
     onChangeSelectType = (e, field) => {
@@ -170,7 +179,6 @@ class ScrapModal extends React.Component {
     acceptNewScrap = (currentReason, newReason) => {
         if ((currentReason.quantity !== newReason.quantity) ||
             (currentReason.dtreason_id !== newReason.dtreason_id)) {
-
             const props = this.props;
             if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
                 if (props.activeOperators.length > 1) {
@@ -181,7 +189,6 @@ class ScrapModal extends React.Component {
             } else {
                 this.submitNewScrapUpdate(props.user.clock_number, currentReason, newReason);
             }
-
         } else {
             this.setState({
                 modal_message_IsOpen: true,
@@ -220,7 +227,6 @@ class ScrapModal extends React.Component {
 
     submitScrap(badge) {
         const type = this.state.scrapType.value;
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
 
         let data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
@@ -235,7 +241,7 @@ class ScrapModal extends React.Component {
             clocknumber: badge,
             quantity: parseInt(this.state.quantityValue),
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            asset_code: this.props.parentData[0]
         };
 
         const scrap = _.find(this.state.scrapTableList, { dtreason_id: data.dt_reason_id }) || {};
@@ -255,7 +261,6 @@ class ScrapModal extends React.Component {
     }
 
     submitNewScrapUpdate(badge, currentReason, newReason) {
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
         const data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
             productiondata_id: this.state.currentRow.productiondata_id,
@@ -270,7 +275,7 @@ class ScrapModal extends React.Component {
             quantity: parseInt(newReason.quantity),
             dtdata_id: parseInt(currentReason.dtdata_id),
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            asset_code: this.props.parentData[0]
         }
 
         this.setState({ modal_loading_IsOpen: true }, async () => {
@@ -314,6 +319,7 @@ class ScrapModal extends React.Component {
     }
 
     render() {
+        console.log('render state scrap modal', this.state);
         const selectStyles = {
             control: base => ({
                 ...base,

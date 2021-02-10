@@ -168,7 +168,15 @@ class DashboardTable extends React.Component {
 
                 let uom_asset = responses[1] || [];
 
-                this.setState({ data, uom_asset, currentRow, selectedMachine: filter[0], selectedDate: filter[1], selectedShift: filter[2] });
+                this.setState({
+                    data,
+                    uom_asset,
+                    currentRow,
+                    selectedMachine: filter[0],
+                    selectedDate: filter[1],
+                    selectedShift: filter[2],
+                    expanded: {}
+                });
             }, error => {
                 console.log(error);
             });
@@ -225,7 +233,17 @@ class DashboardTable extends React.Component {
                         currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
                     }
 
-                    this.setState({ data, uom_asset, alertModalOverProd, alertMessageOverProd, currentRow, selectedMachine: filter[0], selectedDate: filter[1], selectedShift: filter[2] });
+                    this.setState({
+                        data,
+                        uom_asset,
+                        alertModalOverProd,
+                        alertMessageOverProd,
+                        currentRow,
+                        selectedMachine: filter[0],
+                        selectedDate: filter[1],
+                        selectedShift: filter[2],
+                        expanded: {}
+                    });
                 })
                 , (error) => {
                     console.log(error);
