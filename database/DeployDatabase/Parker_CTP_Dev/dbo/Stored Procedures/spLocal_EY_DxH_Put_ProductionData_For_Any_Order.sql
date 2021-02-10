@@ -46,8 +46,6 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]
 @ProductionData_Id      INT, -- the productionData Id
 @Actual					FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
 @Clock_Number			VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
-@First_Name				VARCHAR(100), -- 
-@Last_Name				VARCHAR(100), --
 @Timestamp				DATETIME 
 AS
     BEGIN
@@ -93,7 +91,7 @@ AS
 		UPDATE dbo.ProductionData
                         SET 
 							actual = @Actual,
-							last_modified_by = @First_Name + " " + @Last_Name, 
+							last_modified_by = @Clock_Number, 
 							last_modified_on = GETDATE()
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id AND pd.dxhdata_id = @DxHData_Id;

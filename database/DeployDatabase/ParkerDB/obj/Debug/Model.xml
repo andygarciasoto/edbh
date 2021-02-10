@@ -30347,6 +30347,7 @@ SET @TomorrowProductionDay = FORMAT(DATEADD(DAY, 1, @CurrentDateTime), 'yyyy-MM-
 				   DATEPART(hour, end_time) AS end_hour,
 				   [end_time_offset_days],
                    [duration_in_minutes],
+				   [duration_in_minutes]/60 as duration_in_hours,
                    --GET INTERVAL SHIFT FOR TODAY
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_today,
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_today,
@@ -30450,11 +30451,11 @@ END]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="45" />
-				<Property Name="Length" Value="2275" />
+				<Property Name="CreateOffset" Value="155" />
+				<Property Name="Length" Value="2438" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--exec dbo.spLocal_EY_DxH_Get_Shifts 1&#xD;&#xA;&#xD;&#xA; CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)&#xD;&#xA;&#xD;&#xA; AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shifts]    Script Date: 10/2/2021 08:55:00 ******/&#xD;&#xA;&#xD;&#xA;--exec dbo.spLocal_EY_DxH_Get_Shifts 1&#xD;&#xA;&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)&#xD;&#xA;&#xD;&#xA; AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Get_UOM]">
@@ -38365,7 +38366,7 @@ SET ANSI_NULLS ON]]></Value>
 		UPDATE dbo.ProductionData
                         SET 
 							actual = @Actual,
-							last_modified_by = @First_Name + ' ' + @Last_Name, 
+							last_modified_by = @Clock_Number, 
 							last_modified_on = GETDATE()
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id AND pd.dxhdata_id = @DxHData_Id;
@@ -38434,12 +38435,6 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[ProductionData].[last_modified_by]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order].[@First_Name]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order].[@Last_Name]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[ProductionData].[last_modified_on]" />
@@ -38521,38 +38516,6 @@ SET ANSI_NULLS ON]]></Value>
 					</Element>
 				</Entry>
 				<Entry>
-					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order].[@First_Name]">
-						<Relationship Name="Type">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Length" Value="100" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[varchar]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order].[@Last_Name]">
-						<Relationship Name="Type">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Length" Value="100" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[varchar]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
 					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order].[@Timestamp]">
 						<Relationship Name="Type">
 							<Entry>
@@ -38575,10 +38538,10 @@ SET ANSI_NULLS ON]]></Value>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
 				<Property Name="CreateOffset" Value="971" />
-				<Property Name="Length" Value="3621" />
+				<Property Name="Length" Value="3538" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]    Script Date: 9/2/2021 13:04:19 ******/&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Put_Production_For_Any_Order&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Insert Production no matter if you have a DXH row or not&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#x9;&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;ProductionData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200130&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Put_ProductionData_For_Any_Order 29239, NULL, 10, '47132', Null, Null&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]&#xD;&#xA;--Declare&#xD;&#xA;@DxHData_Id&#x9;&#x9;&#x9;&#x9;INT, -- the hour Id&#xD;&#xA;@ProductionData_Id      INT, -- the productionData Id&#xD;&#xA;@Actual&#x9;&#x9;&#x9;&#x9;&#x9;FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override&#xD;&#xA;@Clock_Number&#x9;&#x9;&#x9;VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last&#xD;&#xA;@First_Name&#x9;&#x9;&#x9;&#x9;VARCHAR(100), -- &#xD;&#xA;@Last_Name&#x9;&#x9;&#x9;&#x9;VARCHAR(100), --&#xD;&#xA;@Timestamp&#x9;&#x9;&#x9;&#x9;DATETIME &#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]    Script Date: 9/2/2021 13:04:19 ******/&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Put_Production_For_Any_Order&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Insert Production no matter if you have a DXH row or not&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#x9;&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;ProductionData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200130&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Put_ProductionData_For_Any_Order 29239, NULL, 10, '47132', Null, Null&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]&#xD;&#xA;--Declare&#xD;&#xA;@DxHData_Id&#x9;&#x9;&#x9;&#x9;INT, -- the hour Id&#xD;&#xA;@ProductionData_Id      INT, -- the productionData Id&#xD;&#xA;@Actual&#x9;&#x9;&#x9;&#x9;&#x9;FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override&#xD;&#xA;@Clock_Number&#x9;&#x9;&#x9;VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last&#xD;&#xA;@Timestamp&#x9;&#x9;&#x9;&#x9;DATETIME &#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Put_Products_From_IoT]">
