@@ -1,3 +1,5 @@
+@import '../sass/colors';
+
 .close-modal-icon {
     position: absolute;
     top     : 0;
@@ -26,14 +28,14 @@
 
     input {
         border-radius: 3px;
-        border       : 1px solid rgb(185, 185, 185);
+        border       : 1px solid $color-grey-border;
         width        : 15%;
         text-align   : center;
     }
 }
 
 .new-timeloss {
-    border       : 1px solid rgb(185, 185, 185);
+    border       : 1px solid $color-grey-border;
     border-radius: 3px;
     padding      : 10px;
 }
@@ -77,7 +79,7 @@
 }
 
 .timelost-field {
-    border       : 1px solid rgb(185, 185, 185);
+    border       : 1px solid $color-grey-border;
     border-radius: 3px;
     padding      : 5px;
     text-align   : center;

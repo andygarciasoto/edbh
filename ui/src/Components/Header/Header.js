@@ -211,7 +211,8 @@ class Header extends React.Component {
                                 : null}
                         </Dropdown>
                         : null}
-                    {validPermission(this.props.user, 'megamenu', 'read') ?
+                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups'
+                        && this.props.history.location.pathname !== '/import' ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>

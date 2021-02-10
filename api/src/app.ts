@@ -196,6 +196,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/get_components_by_role', 'get', async (req: Request, res: Response) => {
             await roleService.getComponentsByRole(req, res);
+        }, true),
+        new http.RestEndpoint('/api/production_any_order', 'put', async (req: Request, res: Response) => {
+            await productiondataService.putProductionForAnyOrder(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

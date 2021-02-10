@@ -83,12 +83,9 @@ class ActualModal extends React.Component {
     submitActual(badge) {
         const data = {
             dxh_data_id: this.state.currentRow && this.state.currentRow.dxhdata_id ? this.state.currentRow.dxhdata_id : undefined,
+            productiondata_id: this.state.currentRow && this.state.currentRow.productiondata_id ? this.state.currentRow.productiondata_id : undefined,
             actual: this.state.newActual ? this.state.newActual : null,
-            setup_scrap: this.state.currentRow.setup_scrap || 'signoff',
-            other_scrap: this.state.currentRow.other_scrap || 'signoff',
             clocknumber: badge,
-            override: this.state.currentRow.productiondata_id ? parseInt(this.state.currentRow.productiondata_id) : 0,
-            row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
             asset_code: this.props.parentData[0]
         }
@@ -96,7 +93,7 @@ class ActualModal extends React.Component {
             this.setState({ modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'You have not entered a value' });
         } else {
             this.setState({ modal_loading_IsOpen: true }, async () => {
-                let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
+                let res = await getResponseFromGeneric('put', API, '/production_any_order', {}, {}, data);
                 this.setState({ modal_loading_IsOpen: false });
                 if (res.status !== 200) {
                     this.setState({ modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' });
