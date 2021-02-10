@@ -94,10 +94,10 @@ a:hover {
 
 .dropdown-toggle,
 .btn-primary {
-    border          : solid 1px lightgrey;
+    border          : solid 1px $color-grey-border;
     width           : 60%;
-    background-color: white;
-    color           : black;
+    background-color: $color-white-back;
+    color           : $color-black;
     text-align      : left;
 }
 

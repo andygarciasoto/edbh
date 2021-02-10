@@ -23,13 +23,15 @@ export class AssetService {
 
     public async getAssetBySite(req: Request, res: Response) {
         const site = req.query.site;
+        const level = req.query.level ? req.query.level : 'Cell';
+        const automation_level = req.query.automation_level ? req.query.automation_level : 'All';
         if (!site) {
             res.status(400).json({ message: "Bad Request - Missing Parameters" });
             return;
         }
         let assets: any;
         try {
-            assets = await this.assetrepository.getAssetBySite(site);
+            assets = await this.assetrepository.getAssetBySite(site, level, automation_level);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

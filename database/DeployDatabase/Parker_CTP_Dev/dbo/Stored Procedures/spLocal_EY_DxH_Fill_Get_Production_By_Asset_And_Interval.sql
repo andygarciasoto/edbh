@@ -60,9 +60,10 @@ AS
                         --DHD.dxhdata_id, 
                         SUM(PD.actual - PD.setup_scrap - PD.other_scrap) OVER(PARTITION BY OD.product_code) AS production,
                         CASE
-                            WHEN OD.end_time IS NOT NULL
+                            WHEN (OD.end_time IS NOT NULL
                                  AND OD.end_time >= BD.started_on_chunck
-                                 AND OD.end_time < BD.ended_on_chunck
+                                 AND OD.end_time < BD.ended_on_chunck)
+                                 OR OD.end_time IS NULL
                             THEN 1
                             ELSE 0
                         END AS finish_order_hour

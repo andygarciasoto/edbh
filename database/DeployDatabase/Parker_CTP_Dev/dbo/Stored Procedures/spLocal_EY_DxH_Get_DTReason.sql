@@ -70,7 +70,6 @@ BEGIN
 			AND dt.status = 'Active' 
 			AND dt.type = @type
 	Order By 
-		dt.dtreason_category,
 		CASE WHEN a.site_code in ('Eaton', 'Veniano_HA', 'Veniano_Hose', 'Nussdorf') THEN len(dt.dtreason_code) END,	--trying to sort alpha numeric values as numbers
 		dt.dtreason_code;
 

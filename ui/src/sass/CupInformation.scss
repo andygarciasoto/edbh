@@ -1,0 +1,40 @@
+@import "_colors";
+
+.cupInformationDiv {
+    margin-top   : 1%;
+    border       : 1px solid $color-grey-border;
+    border-radius: 2em;
+    padding      : 1%;
+}
+
+.childrenCupDiv {
+    margin-left: 1%;
+    margin-top: 1%;
+}
+
+.previousHours .col {
+    max-width: 1px;
+    min-height: 20px;
+    margin-right: 2%;
+}
+
+.green {
+    background-color: $color-green;
+}
+
+.red {
+    background-color: $color-red;
+}
+
+.assetName {
+    margin-top  : 3%;
+    border      : 1px solid $color-grey-border;
+    min-width   : 100%;
+    min-height  : 100px;
+    padding-left: 15%;
+    padding-top : 13%;
+}
+
+.currentInformation {
+    padding-left: 40%;
+}
