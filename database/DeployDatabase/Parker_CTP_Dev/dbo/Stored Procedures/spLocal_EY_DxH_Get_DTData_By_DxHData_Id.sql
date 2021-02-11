@@ -1,4 +1,5 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]    Script Date: 11/2/2021 11:45:39 ******/
+
 --
 -- Copyright © 2020 Ernst & Young LLP
 -- All Rights Reserved
@@ -41,7 +42,7 @@
 -- exec spLocal_EY_DxH_Get_DTData_By_DxHData_Id 437106, 44188
 --
 
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
 --Declare
 	@DxHData_id			INT,
 	@productiondata_id	INT,
@@ -61,6 +62,7 @@ BEGIN
 			DT.dtminutes,
 			DT.quantity,
 			DT.productiondata_id,
+			DT.responsible,
 			DTR.dtreason_code,
 			DTR.dtreason_category,
 			DTR.dtreason_name,
@@ -81,6 +83,7 @@ BEGIN
 			DT.dtminutes,
 			DT.quantity,
 			DT.productiondata_id,
+			DT.responsible,
 			DTR.dtreason_code,
 			DTR.dtreason_name,
 			DTR.type,

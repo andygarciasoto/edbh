@@ -1,4 +1,5 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_DTData]    Script Date: 11/2/2021 11:46:22 ******/
+
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights 
@@ -52,13 +53,15 @@
 --	20200225		C00V04 - Change out result for noraml variables, remove JSON response
 --		
 -- Example Call:
--- Exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null
---
+-- Exec spLocal_EY_DxH_Put_DTData 437106, 44188, 8109, null, 3, 'Crimper 1', 'EYAdministrator', Null, Null, '2020-08-28 14:44:50.930', 0
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
 --Declare
 @DxHData_Id   INT, -- the hour Id
+@productiondata_id INT,
 @DTReason_Id  INT, 
 @DTMinutes    FLOAT, 
+@Quantity	  FLOAT,
+@Responsible  NVARCHAR(100),
 @Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
 @First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
 @Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
@@ -86,6 +89,7 @@ AS
 		@DTData_Id INT,
 		@Existing_DTReason_Id INT,
 		@Existing_DTMinutes FLOAT,
+		@Existing_Quantity FLOAT,
 		@Site_Timezone VARCHAR(100),
 		@Timestamp_UTC DATETIME,
 		@asset_id INT,
@@ -130,7 +134,7 @@ AS
             FROM dbo.DTReason dr WITH(NOLOCK), 
                  dbo.DxHData dxh WITH(NOLOCK)
             WHERE dxh.dxhdata_id = @DxHData_Id
-                  AND dxh.asset_id = dr.asset_id
+                  AND (dxh.asset_id = dr.asset_id OR @Site_Id = dr.asset_id)
                   AND dr.dtreason_id = ISNULL(@DTReason_Id, -1)
         )
             BEGIN
@@ -138,11 +142,17 @@ AS
                        @ReturnMessage = 'Invalid DTReason_Id ' + CONVERT(VARCHAR, ISNULL(@DTReason_Id, ''));
                 GOTO ErrExit;
         END;
-        IF(ISNULL(@DTMinutes, -1) < 0
-           OR ISNULL(@DTMinutes, -1) > 60.0)
+        IF(@DTMinutes < 0
+           OR @DTMinutes > 60.0)
             BEGIN
                 SELECT @ReturnStatus = -1, 
                        @ReturnMessage = 'Invalid DTMinutes ' + CONVERT(VARCHAR, ISNULL(@DTMinutes, ''));
+                GOTO ErrExit;
+        END;
+        IF(@Quantity < 0)
+            BEGIN
+                SELECT @ReturnStatus = -1, 
+                       @ReturnMessage = 'Invalid Quantity ' + CONVERT(VARCHAR, ISNULL(@Quantity, ''));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -202,20 +212,26 @@ AS
                 (dxhdata_id, 
                  dtreason_id, 
                  dtminutes, 
+				 quantity,
+				 productiondata_id,
                  entered_by, 
                  entered_on, 
                  last_modified_by, 
                  last_modified_on, 
-                 name
+                 name,
+				 responsible
                 )
                        SELECT @DxHData_Id, 
                               @DTReason_Id, 
                               @DTMinutes, 
+							  @Quantity,
+							  @productiondata_id,
                               @Initials, 
                               @Timestamp_UTC, 
                               @Initials, 
                               GETDATE(), 
-                              @First_Name + ' ' + @Last_Name;
+                              @First_Name + ' ' + @Last_Name,
+							  @Responsible;
                 SET @DTData_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
                        @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @DTData_Id);
@@ -230,19 +246,23 @@ AS
                 )
                     BEGIN
                         SELECT @Existing_DTReason_Id = dtreason_id, 
-                               @Existing_DTMinutes = dtminutes
+                               @Existing_DTMinutes = dtminutes,
+							   @Existing_Quantity = quantity
                         FROM dbo.DTData WITH(NOLOCK)
                         WHERE dtdata_id = ISNULL(@Update, -1);
                         IF(ISNULL(@Existing_DTReason_Id, -1) <> ISNULL(@DTReason_Id, -1)
-                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1))
+                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1)
+						   OR ISNULL(@Existing_Quantity, -1) <> ISNULL(@Quantity, -1))
                             BEGIN
                                 UPDATE dbo.DTData
                                   SET 
                                       dtreason_id = @DTReason_Id, 
                                       dtminutes = @DTMinutes, 
+									  quantity = @Quantity,
                                       last_modified_by = @Initials, 
                                       last_modified_on = GETDATE(), 
-                                      name = @First_Name + ' ' + @Last_Name
+                                      name = @First_Name + ' ' + @Last_Name,
+									  responsible = @Responsible
                                 WHERE dtdata_id = @Update;
                                 SELECT @ReturnStatus = 0, 
                                        @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));

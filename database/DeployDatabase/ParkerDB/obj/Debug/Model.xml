@@ -118,6 +118,22 @@
 			</Relationship>
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="7" />
 		</Element>
+		<Element Type="SqlDefaultConstraint">
+			<Property Name="DefaultExpressionScript">
+				<Value><![CDATA[((0))]]></Value>
+			</Property>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[dbo].[DTData]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForColumn">
+				<Entry>
+					<References Name="[dbo].[DTData].[quantity]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="8" />
+		</Element>
 		<Element Type="SqlForeignKeyConstraint">
 			<Relationship Name="Columns">
 				<Entry>
@@ -139,7 +155,7 @@
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="8" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="9" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint">
 			<Relationship Name="Columns">
@@ -162,7 +178,7 @@
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="9" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="10" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint">
 			<Relationship Name="ColumnSpecifications">
@@ -181,7 +197,7 @@
 					<References Name="[dbo].[sysdiagrams]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="10" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="11" />
 		</Element>
 		<Element Type="SqlScalarFunction" Name="[dbo].[AddIntervalToDate]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -662,9 +678,9 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="11" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="12" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="13" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="14" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[Asset_vw]">
 			<Property Name="QueryScript">
@@ -1008,7 +1024,7 @@ FROM            dbo.Asset INNER JOIN
 								</Element>
 							</Entry>
 						</Relationship>
-						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="14" />
+						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="15" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -1026,7 +1042,7 @@ FROM            dbo.Asset INNER JOIN
 								</Element>
 							</Entry>
 						</Relationship>
-						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="15" />
+						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="16" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -1043,7 +1059,7 @@ FROM            dbo.Asset INNER JOIN
 								</Element>
 							</Entry>
 						</Relationship>
-						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="16" />
+						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="17" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -1061,7 +1077,7 @@ FROM            dbo.Asset INNER JOIN
 								</Element>
 							</Entry>
 						</Relationship>
-						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="17" />
+						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="18" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -1078,7 +1094,7 @@ FROM            dbo.Asset INNER JOIN
 								</Element>
 							</Entry>
 						</Relationship>
-						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="18" />
+						<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="19" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -1102,8 +1118,8 @@ FROM            dbo.Asset INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="19" />
-			<AttachedAnnotation Disambiguator="9" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="20" />
+			<AttachedAnnotation Disambiguator="10" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[AssetDisplaySystem_vw]">
 			<Property Name="QueryScript">
@@ -1469,7 +1485,7 @@ FROM            dbo.AssetDisplaySystem INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="20" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="21" />
 		</Element>
 		<Element Type="SqlInlineTableValuedFunction" Name="[dbo].[AssetsResolverFromId]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -1830,8 +1846,8 @@ FROM            dbo.AssetDisplaySystem INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="21" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="22" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="23" />
 		</Element>
 		<Element Type="SqlIndex" Name="[dbo].[CommentData].[CommentData_DxHData_Id_NC_Index]">
 			<Relationship Name="ColumnSpecifications">
@@ -2400,8 +2416,8 @@ FROM            dbo.CommentData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="23" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="24" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="25" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Component]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -2529,7 +2545,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="25" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="26" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_AssetDisplaySystem_entered_by]">
 			<Property Name="DefaultExpressionScript">
@@ -2545,7 +2561,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem].[entered_by]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="15" />
+			<AttachedAnnotation Disambiguator="16" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_AssetDisplaySystem_entered_on]">
 			<Property Name="DefaultExpressionScript">
@@ -2561,7 +2577,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem].[entered_on]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="16" />
+			<AttachedAnnotation Disambiguator="17" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_AssetDisplaySystem_last_modified_by]">
 			<Property Name="DefaultExpressionScript">
@@ -2577,7 +2593,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem].[last_modified_by]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="17" />
+			<AttachedAnnotation Disambiguator="18" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_AssetDisplaySystem_last_modified_on]">
 			<Property Name="DefaultExpressionScript">
@@ -2593,7 +2609,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem].[last_modified_on]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="18" />
+			<AttachedAnnotation Disambiguator="19" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_AssetDisplaySystem_status]">
 			<Property Name="DefaultExpressionScript">
@@ -2609,7 +2625,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem].[status]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="14" />
+			<AttachedAnnotation Disambiguator="15" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_Workcell_entered_on]">
 			<Property Name="DefaultExpressionScript">
@@ -2625,7 +2641,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[Workcell].[entered_on]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="26" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="27" />
 		</Element>
 		<Element Type="SqlDefaultConstraint" Name="[dbo].[DF_Workcell_last_modified_on]">
 			<Property Name="DefaultExpressionScript">
@@ -2641,7 +2657,7 @@ FROM            dbo.CommentData INNER JOIN
 					<References Name="[dbo].[Workcell].[last_modified_on]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="27" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="28" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[DTData]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -2696,70 +2712,6 @@ FROM            dbo.CommentData INNER JOIN
 				</Entry>
 				<Entry>
 					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[dtminutes]">
-						<Relationship Name="TypeSpecifier">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Precision" Value="53" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[float]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[dtminutes_provisional]">
-						<Relationship Name="TypeSpecifier">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Precision" Value="53" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[float]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[dtminutes_total]">
-						<Relationship Name="TypeSpecifier">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Precision" Value="53" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[float]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[dtminutes_breaks]">
-						<Relationship Name="TypeSpecifier">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Property Name="Precision" Value="53" />
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[float]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[dtminutes_setup]">
 						<Relationship Name="TypeSpecifier">
 							<Entry>
 								<Element Type="SqlTypeSpecifier">
@@ -2857,11 +2809,43 @@ FROM            dbo.CommentData INNER JOIN
 					</Element>
 				</Entry>
 				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[quantity]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Precision" Value="53" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[float]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+						<AttachedAnnotation Disambiguator="8" />
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[productiondata_id]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
 					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[responsible]">
 						<Relationship Name="TypeSpecifier">
 							<Entry>
 								<Element Type="SqlTypeSpecifier">
-									<Property Name="IsMax" Value="True" />
+									<Property Name="Length" Value="50" />
 									<Relationship Name="Type">
 										<Entry>
 											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
@@ -2878,11 +2862,11 @@ FROM            dbo.CommentData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="28" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="29" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="30" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="31" />
 		</Element>
-		<Element Type="SqlIndex" Name="[dbo].[DTData].[DTDATA_DxHData_Id_NC_Index]">
+		<Element Type="SqlIndex" Name="[dbo].[DTData].[NCI_DTDATA_DxHData_Id]">
 			<Relationship Name="ColumnSpecifications">
 				<Entry>
 					<Element Type="SqlIndexedColumnSpecification">
@@ -2903,8 +2887,8 @@ FROM            dbo.CommentData INNER JOIN
 		<Element Type="SqlView" Name="[dbo].[DTData_vw]">
 			<Property Name="QueryScript">
 				<Value><![CDATA[
-SELECT        dbo.DTData.dtdata_id, dbo.DTData.dxhdata_id, dbo.DTData.dtreason_id, dbo.DTData.dtminutes, dbo.DTData.dtminutes_provisional, dbo.DTData.dtminutes_total, dbo.DTData.dtminutes_breaks, dbo.DTData.dtminutes_setup, 
-                         dbo.DTData.entered_by, dbo.DTData.entered_on, dbo.DTData.last_modified_by, dbo.DTData.last_modified_on, dbo.DTData.name, dbo.Asset.asset_id, dbo.Asset.site_code
+SELECT        dbo.DTData.dtdata_id, dbo.DTData.dxhdata_id, dbo.DTData.dtreason_id, dbo.DTData.dtminutes, dbo.DTData.entered_by, dbo.DTData.entered_on, dbo.DTData.last_modified_by, 
+							dbo.DTData.last_modified_on, dbo.DTData.name, dbo.Asset.asset_id, dbo.Asset.site_code
 FROM            dbo.DTData INNER JOIN
                          dbo.DxHData ON dbo.DTData.dxhdata_id = dbo.DxHData.dxhdata_id INNER JOIN
                          dbo.Asset ON dbo.DxHData.asset_id = dbo.Asset.asset_id INNER JOIN
@@ -2944,42 +2928,6 @@ FROM            dbo.DTData INNER JOIN
 						<Relationship Name="ExpressionDependencies">
 							<Entry>
 								<References Name="[dbo].[DTData].[dtminutes]" />
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlComputedColumn" Name="[dbo].[DTData_vw].[dtminutes_provisional]">
-						<Relationship Name="ExpressionDependencies">
-							<Entry>
-								<References Name="[dbo].[DTData].[dtminutes_provisional]" />
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlComputedColumn" Name="[dbo].[DTData_vw].[dtminutes_total]">
-						<Relationship Name="ExpressionDependencies">
-							<Entry>
-								<References Name="[dbo].[DTData].[dtminutes_total]" />
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlComputedColumn" Name="[dbo].[DTData_vw].[dtminutes_breaks]">
-						<Relationship Name="ExpressionDependencies">
-							<Entry>
-								<References Name="[dbo].[DTData].[dtminutes_breaks]" />
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
-					<Element Type="SqlComputedColumn" Name="[dbo].[DTData_vw].[dtminutes_setup]">
-						<Relationship Name="ExpressionDependencies">
-							<Entry>
-								<References Name="[dbo].[DTData].[dtminutes_setup]" />
 							</Entry>
 						</Relationship>
 					</Element>
@@ -3095,18 +3043,6 @@ FROM            dbo.DTData INNER JOIN
 					<References Name="[dbo].[DTData].[dtminutes]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_provisional]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_total]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_breaks]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_setup]" />
-				</Entry>
-				<Entry>
 					<References Name="[dbo].[DTData].[entered_by]" />
 				</Entry>
 				<Entry>
@@ -3131,7 +3067,7 @@ FROM            dbo.DTData INNER JOIN
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="824" />
+				<Property Name="Length" Value="687" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE VIEW dbo.DTData_vw&#xD;&#xA;AS" />
@@ -3393,8 +3329,8 @@ FROM            dbo.DTData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="31" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="32" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="33" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[DTReason_vw]">
 			<Property Name="QueryScript">
@@ -4036,8 +3972,8 @@ FROM            dbo.DTReason INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="33" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="34" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="35" />
 		</Element>
 		<Element Type="SqlIndex" Name="[dbo].[DxHData].[DxHData_PROD_DAY_ASSET_NC_Index]">
 			<Relationship Name="ColumnSpecifications">
@@ -4797,7 +4733,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="34" />
+			<AttachedAnnotation Disambiguator="35" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK__OrderData__Asset_ID]">
 			<Relationship Name="Columns">
@@ -4820,7 +4756,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="35" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="36" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK__Supervisor__Asset_ID]">
 			<Relationship Name="Columns">
@@ -4843,7 +4779,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="36" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="37" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK__Tag__Asset_ID]">
 			<Relationship Name="Columns">
@@ -4866,7 +4802,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="37" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="38" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_CommentData_DxHData_ID]">
 			<Relationship Name="Columns">
@@ -4889,7 +4825,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[DxHData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="22" />
+			<AttachedAnnotation Disambiguator="23" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_CommonParameters_Site_Id]">
 			<Relationship Name="Columns">
@@ -4912,7 +4848,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="24" />
+			<AttachedAnnotation Disambiguator="25" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_DTData_DTReason_ID]">
 			<Relationship Name="Columns">
@@ -4935,7 +4871,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[DTReason]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="29" />
+			<AttachedAnnotation Disambiguator="30" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_DTData_DxHData_ID]">
 			<Relationship Name="Columns">
@@ -4958,7 +4894,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[DxHData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="30" />
+			<AttachedAnnotation Disambiguator="31" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_DTReason_Asset_Id]">
 			<Relationship Name="Columns">
@@ -4981,7 +4917,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="32" />
+			<AttachedAnnotation Disambiguator="33" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_InterShif_Asset_ID]">
 			<Relationship Name="Columns">
@@ -5004,7 +4940,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="38" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="39" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_ProductionData_DxHData_ID]">
 			<Relationship Name="Columns">
@@ -5027,7 +4963,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[DxHData]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="39" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="40" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_Role_Component_Id]">
 			<Relationship Name="Columns">
@@ -5050,7 +4986,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Component]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="40" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="41" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_Role_Role_Id]">
 			<Relationship Name="Columns">
@@ -5073,7 +5009,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Role]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="41" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="42" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_Scan_asset_id]">
 			<Relationship Name="Columns">
@@ -5096,7 +5032,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="42" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="43" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_Shift_Asset_Id]">
 			<Relationship Name="Columns">
@@ -5119,7 +5055,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="43" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="44" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[dbo].[FK_TFDUsers_Asset]">
 			<Relationship Name="Columns">
@@ -5142,7 +5078,7 @@ FROM            dbo.DxHData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="44" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="45" />
 		</Element>
 		<Element Type="SqlScalarFunction" Name="[dbo].[fn_diagramobjects]">
 			<Property Name="IsCaller" Value="False" />
@@ -6083,8 +6019,8 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="45" />
-			<AttachedAnnotation Disambiguator="38" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="46" />
+			<AttachedAnnotation Disambiguator="39" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[InterShiftData_vw]">
 			<Property Name="QueryScript">
@@ -6637,8 +6573,8 @@ FROM            dbo.InterShiftData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="46" />
-			<AttachedAnnotation Disambiguator="35" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="47" />
+			<AttachedAnnotation Disambiguator="36" />
 		</Element>
 		<Element Type="SqlIndex" Name="[dbo].[OrderData].[nci_wi_OrderData_B4F7E8FFB819F0384574A0761D3A9CEA]">
 			<Relationship Name="ColumnSpecifications">
@@ -7208,7 +7144,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="47" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="48" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Asset_Asset_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7227,7 +7163,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="11" />
+			<AttachedAnnotation Disambiguator="12" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_AssetDisplaySystem_AssetDisplaySystem_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7247,7 +7183,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[AssetDisplaySystem]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="19" />
+			<AttachedAnnotation Disambiguator="20" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_AssetProductTarget_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7267,7 +7203,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[AssetProductTarget]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="20" />
+			<AttachedAnnotation Disambiguator="21" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_CommentData_CommentData_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7287,7 +7223,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[CommentData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="21" />
+			<AttachedAnnotation Disambiguator="22" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_CommonParameters_Parameter_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7306,7 +7242,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[CommonParameters]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="23" />
+			<AttachedAnnotation Disambiguator="24" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Component_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7325,10 +7261,9 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Component]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="25" />
+			<AttachedAnnotation Disambiguator="26" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_DTData_DTData_Id]">
-			<Property Name="IsClustered" Value="False" />
 			<Relationship Name="ColumnSpecifications">
 				<Entry>
 					<Element Type="SqlIndexedColumnSpecification">
@@ -7345,7 +7280,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[DTData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="28" />
+			<AttachedAnnotation Disambiguator="29" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_DTReason_DTReason_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7364,7 +7299,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[DTReason]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="31" />
+			<AttachedAnnotation Disambiguator="32" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_DxHData_DxHData_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7384,7 +7319,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[DxHData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="33" />
+			<AttachedAnnotation Disambiguator="34" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_InterShift_InterShift_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7404,7 +7339,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[InterShiftData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="45" />
+			<AttachedAnnotation Disambiguator="46" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_OrderData_Order_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7424,7 +7359,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[OrderData]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="46" />
+			<AttachedAnnotation Disambiguator="47" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_parker_site_access]">
 			<Relationship Name="ColumnSpecifications">
@@ -7452,7 +7387,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[parker_site_access]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="47" />
+			<AttachedAnnotation Disambiguator="48" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Product_Product_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7472,7 +7407,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Product]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="48" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="49" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_ProductionData_ProductionData_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7492,7 +7427,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[ProductionData]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="49" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="50" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_ProductionDataHistory_ProductionDataHistory_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7512,7 +7447,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[ProductionData_History]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="50" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="51" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Role_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7531,7 +7466,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Role]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="51" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="52" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_RoleComponent_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7550,7 +7485,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[RoleComponent]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="52" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="53" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Scan_scan_id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7569,7 +7504,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Scan]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="53" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="54" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Shift_Shift_Id]">
 			<Relationship Name="ColumnSpecifications">
@@ -7588,7 +7523,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Shift]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="54" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="55" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_SupervisorAsset_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7608,7 +7543,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[SupervisorAsset]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="55" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="56" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Tag_Tag_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7628,7 +7563,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Tag]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="56" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="57" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_TagData_TagData_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7648,7 +7583,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[TagData]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="57" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="58" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Unavailable_Unavailable_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7668,7 +7603,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Unavailable]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="58" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="59" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_UOM_UOM_Id]">
 			<Property Name="IsClustered" Value="False" />
@@ -7688,7 +7623,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[UOM]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="59" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="60" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[dbo].[PK_Workcell]">
 			<Relationship Name="ColumnSpecifications">
@@ -7707,7 +7642,7 @@ FROM            dbo.OrderData INNER JOIN
 					<References Name="[dbo].[Workcell]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="60" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="61" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[ProdDataAggregateByHour]">
 			<Property Name="QueryScript">
@@ -8728,7 +8663,7 @@ HAVING        (dbo.Asset.site_code IN ('Veniano_Hose', 'Veniano_HA'))]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="48" />
+			<AttachedAnnotation Disambiguator="49" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[Product_vw]">
 			<Property Name="QueryScript">
@@ -9375,8 +9310,8 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="49" />
-			<AttachedAnnotation Disambiguator="39" />
+			<AttachedAnnotation Disambiguator="50" />
+			<AttachedAnnotation Disambiguator="40" />
 		</Element>
 		<Element Type="SqlIndex" Name="[dbo].[ProductionData].[ProductionData_DxHData_Id_NC_Index]">
 			<Relationship Name="ColumnSpecifications">
@@ -9772,7 +9707,7 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="50" />
+			<AttachedAnnotation Disambiguator="51" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[ProductionData_view]">
 			<Property Name="QueryScript">
@@ -10339,7 +10274,7 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="51" />
+			<AttachedAnnotation Disambiguator="52" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[RoleComponent]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -10433,10 +10368,10 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="52" />
+			<AttachedAnnotation Disambiguator="53" />
+			<AttachedAnnotation Disambiguator="42" />
 			<AttachedAnnotation Disambiguator="41" />
-			<AttachedAnnotation Disambiguator="40" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="61" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="62" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Scan]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -10674,8 +10609,8 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="53" />
-			<AttachedAnnotation Disambiguator="42" />
+			<AttachedAnnotation Disambiguator="54" />
+			<AttachedAnnotation Disambiguator="43" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Shift]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -11011,9 +10946,9 @@ FROM            dbo.ProductionData INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="54" />
-			<AttachedAnnotation Disambiguator="43" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="62" />
+			<AttachedAnnotation Disambiguator="55" />
+			<AttachedAnnotation Disambiguator="44" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="63" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[Shift_vw]">
 			<Property Name="QueryScript">
@@ -22165,22 +22100,56 @@ BEGIN
 -- SET NOCOUNT ON added to prevent extra result sets from
 -- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
-SELECT
-		DT.dtdata_id,
-		DT.dxhdata_id,
-		DT.dtreason_id,
-		DT.dtminutes,
-		DTR.dtreason_code,
-		DTR.dtreason_name
-	FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
-	DT.dtreason_id = DTR.dtreason_id AND DT.dxhdata_id = @DxHData_id;
+	IF @productiondata_id IS NOT NULL
+	BEGIN
+		(SELECT
+			DT.dtdata_id,
+			DT.dxhdata_id,
+			DT.dtreason_id,
+			DT.dtminutes,
+			DT.quantity,
+			DT.productiondata_id,
+			DT.responsible,
+			DTR.dtreason_code,
+			DTR.dtreason_category,
+			DTR.dtreason_name,
+			DTR.type,
+			DTR.level
+		FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
+			DT.dtreason_id = DTR.dtreason_id AND
+			DT.dxhdata_id = @DxHData_id AND
+			DT.productiondata_id = @productiondata_id AND
+			DTR.type = @type
+		);
+	END
+	ELSE
+		(SELECT
+			DT.dtdata_id,
+			DT.dxhdata_id,
+			DT.dtreason_id,
+			DT.dtminutes,
+			DT.quantity,
+			DT.productiondata_id,
+			DT.responsible,
+			DTR.dtreason_code,
+			DTR.dtreason_name,
+			DTR.type,
+			DTR.level
+		FROM dbo.DTData DT INNER JOIN DTReason DTR ON 
+			DT.dtreason_id = DTR.dtreason_id AND
+			DT.dxhdata_id = @DxHData_id AND
+			DT.productiondata_id IS NULL AND
+			DTR.type = @type
+		);
 
 END]]></Value>
 			</Property>
 			<Property Name="IsAnsiNullsOn" Value="True" />
 			<Property Name="IsQuotedIdentifierOn" Value="False" />
 			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id].[@productiondata_id]" />
+				</Entry>
 				<Entry>
 					<References Name="[dbo].[DTData]" />
 				</Entry>
@@ -22200,16 +22169,37 @@ END]]></Value>
 					<References Name="[dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id].[@DxHData_id]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[DTData].[productiondata_id]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTReason].[type]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id].[@type]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[DTData].[dtdata_id]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[DTData].[dtminutes]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[DTData].[quantity]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTData].[responsible]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[DTReason].[dtreason_code]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[DTReason].[dtreason_category]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[DTReason].[dtreason_name]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTReason].[level]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="Parameters">
@@ -22228,6 +22218,37 @@ END]]></Value>
 						</Relationship>
 					</Element>
 				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id].[@productiondata_id]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id].[@type]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="100" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
 			</Relationship>
 			<Relationship Name="Schema">
 				<Entry>
@@ -22235,11 +22256,11 @@ END]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="732" />
-				<Property Name="Length" Value="1205" />
+				<Property Name="CreateOffset" Value="866" />
+				<Property Name="Length" Value="2074" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2020 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_DTData_By_DxHData_Id&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;&#xD;&#xA;--&#x9;Given an dxhdata_id, provide the info for displaying DTData&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200114&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_DTData_By_DxHData_Id 324476&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]&#xD;&#xA;--Declare&#xD;&#xA;&#x9;@DxHData_id&#x9;&#x9;&#x9;INT&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]    Script Date: 11/2/2021 11:45:39 ******/&#xD;&#xA;&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2020 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_DTData_By_DxHData_Id&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;&#xD;&#xA;--&#x9;Given an dxhdata_id, provide the info for displaying DTData&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200114&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_DTData_By_DxHData_Id 437106, 44188&#xD;&#xA;--&#xD;&#xA;&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]&#xD;&#xA;--Declare&#xD;&#xA;&#x9;@DxHData_id&#x9;&#x9;&#x9;INT,&#xD;&#xA;&#x9;@productiondata_id&#x9;INT,&#xD;&#xA;&#x9;@type&#x9;&#x9;&#x9;&#x9;VARCHAR(100)&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Get_DTReason]">
@@ -25884,18 +25905,10 @@ SET ANSI_NULLS ON]]></Value>
 				<Entry>
 					<References Name="[dbo].[DTData].[dtminutes]" />
 				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_provisional]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_total]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_breaks]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTData].[dtminutes_setup]" />
-				</Entry>
+				<Entry />
+				<Entry />
+				<Entry />
+				<Entry />
 				<Entry>
 					<References Name="[dbo].[spLocal_EY_DxH_Get_ProductionDay_Data].[@Output].[dxhdata_id]" />
 				</Entry>
@@ -34576,6 +34589,7 @@ SET ANSI_NULLS ON]]></Value>
 		@DTData_Id INT,
 		@Existing_DTReason_Id INT,
 		@Existing_DTMinutes FLOAT,
+		@Existing_Quantity FLOAT,
 		@Site_Timezone VARCHAR(100),
 		@Timestamp_UTC DATETIME,
 		@asset_id INT,
@@ -34620,7 +34634,7 @@ SET ANSI_NULLS ON]]></Value>
             FROM dbo.DTReason dr WITH(NOLOCK), 
                  dbo.DxHData dxh WITH(NOLOCK)
             WHERE dxh.dxhdata_id = @DxHData_Id
-                  AND dxh.asset_id = dr.asset_id
+                  AND (dxh.asset_id = dr.asset_id OR @Site_Id = dr.asset_id)
                   AND dr.dtreason_id = ISNULL(@DTReason_Id, -1)
         )
             BEGIN
@@ -34628,11 +34642,17 @@ SET ANSI_NULLS ON]]></Value>
                        @ReturnMessage = 'Invalid DTReason_Id ' + CONVERT(VARCHAR, ISNULL(@DTReason_Id, ''));
                 GOTO ErrExit;
         END;
-        IF(ISNULL(@DTMinutes, -1) < 0
-           OR ISNULL(@DTMinutes, -1) > 60.0)
+        IF(@DTMinutes < 0
+           OR @DTMinutes > 60.0)
             BEGIN
                 SELECT @ReturnStatus = -1, 
                        @ReturnMessage = 'Invalid DTMinutes ' + CONVERT(VARCHAR, ISNULL(@DTMinutes, ''));
+                GOTO ErrExit;
+        END;
+        IF(@Quantity < 0)
+            BEGIN
+                SELECT @ReturnStatus = -1, 
+                       @ReturnMessage = 'Invalid Quantity ' + CONVERT(VARCHAR, ISNULL(@Quantity, ''));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -34692,20 +34712,26 @@ SET ANSI_NULLS ON]]></Value>
                 (dxhdata_id, 
                  dtreason_id, 
                  dtminutes, 
+				 quantity,
+				 productiondata_id,
                  entered_by, 
                  entered_on, 
                  last_modified_by, 
                  last_modified_on, 
-                 name
+                 name,
+				 responsible
                 )
                        SELECT @DxHData_Id, 
                               @DTReason_Id, 
                               @DTMinutes, 
+							  @Quantity,
+							  @productiondata_id,
                               @Initials, 
                               @Timestamp_UTC, 
                               @Initials, 
                               GETDATE(), 
-                              @First_Name + ' ' + @Last_Name;
+                              @First_Name + ' ' + @Last_Name,
+							  @Responsible;
                 SET @DTData_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
                        @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @DTData_Id);
@@ -34720,19 +34746,23 @@ SET ANSI_NULLS ON]]></Value>
                 )
                     BEGIN
                         SELECT @Existing_DTReason_Id = dtreason_id, 
-                               @Existing_DTMinutes = dtminutes
+                               @Existing_DTMinutes = dtminutes,
+							   @Existing_Quantity = quantity
                         FROM dbo.DTData WITH(NOLOCK)
                         WHERE dtdata_id = ISNULL(@Update, -1);
                         IF(ISNULL(@Existing_DTReason_Id, -1) <> ISNULL(@DTReason_Id, -1)
-                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1))
+                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1)
+						   OR ISNULL(@Existing_Quantity, -1) <> ISNULL(@Quantity, -1))
                             BEGIN
                                 UPDATE dbo.DTData
                                   SET 
                                       dtreason_id = @DTReason_Id, 
                                       dtminutes = @DTMinutes, 
+									  quantity = @Quantity,
                                       last_modified_by = @Initials, 
                                       last_modified_on = GETDATE(), 
-                                      name = @First_Name + ' ' + @Last_Name
+                                      name = @First_Name + ' ' + @Last_Name,
+									  responsible = @Responsible
                                 WHERE dtdata_id = @Update;
                                 SELECT @ReturnStatus = 0, 
                                        @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
@@ -34782,6 +34812,9 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[float]" />
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[float]" />
@@ -34874,6 +34907,12 @@ SET ANSI_NULLS ON]]></Value>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@Quantity]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[varchar]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[TFDUsers]" />
 				</Entry>
 				<Entry>
@@ -34934,6 +34973,12 @@ SET ANSI_NULLS ON]]></Value>
 					<References Name="[dbo].[DTData].[dtminutes]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[DTData].[quantity]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTData].[productiondata_id]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[DTData].[entered_by]" />
 				</Entry>
 				<Entry>
@@ -34947,6 +34992,15 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[DTData].[name]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTData].[responsible]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@productiondata_id]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@Responsible]" />
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
@@ -34964,6 +35018,21 @@ SET ANSI_NULLS ON]]></Value>
 			<Relationship Name="Parameters">
 				<Entry>
 					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@DxHData_Id]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@productiondata_id]">
 						<Relationship Name="Type">
 							<Entry>
 								<Element Type="SqlTypeSpecifier">
@@ -35001,6 +35070,38 @@ SET ANSI_NULLS ON]]></Value>
 									<Relationship Name="Type">
 										<Entry>
 											<References ExternalSource="BuiltIns" Name="[float]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@Quantity]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Precision" Value="53" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[float]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_DTData].[@Responsible]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="100" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
 										</Entry>
 									</Relationship>
 								</Element>
@@ -35093,11 +35194,11 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="1298" />
-				<Property Name="Length" Value="9491" />
+				<Property Name="CreateOffset" Value="1447" />
+				<Property Name="Length" Value="10308" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights &#xD;&#xA;-- spLocal_EY_DxH_Put_DTData&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given a dxhdata_id and downtime info, store the DTData &#xD;&#xA;--&#xD;&#xA;--&#x9;Note that this does some data validation&#xD;&#xA;--&#x9;&#x9;Minutes must not be negative&#xD;&#xA;--&#x9;&#x9;Minutes must not be greater than 60&#xD;&#xA;-- &#xD;&#xA;--&#x9;This code DOES NOT manage the total minutes&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;DTData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190814&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;20190820&#x9;&#x9;C00V01 - Timestamp used as entered_on for inserts&#x9;&#x9;&#xD;&#xA;--&#x9;20190822&#x9;&#x9;C00V02 - Timestamp adjusted to UTC to be used as entered_on &#xD;&#xA;--&#x9;20191204&#x9;&#x9;C00V03 - Change CommonParameters to CommonParameters&#xD;&#xA;--&#x9;20200225&#x9;&#x9;C00V04 - Change out result for noraml variables, remove JSON response&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]&#xD;&#xA;--Declare&#xD;&#xA;@DxHData_Id   INT, -- the hour Id&#xD;&#xA;@DTReason_Id  INT, &#xD;&#xA;@DTMinutes    FLOAT, &#xD;&#xA;@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last&#xD;&#xA;@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Timestamp    DATETIME, -- generally the current time in site timezone&#xD;&#xA;@Update       INT&#x9;&#x9;&#x9;&#x9;-- generally Null or 0, send dtdata_id to update&#xD;&#xA;&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_DTData]    Script Date: 11/2/2021 11:46:22 ******/&#xD;&#xA;&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights &#xD;&#xA;-- spLocal_EY_DxH_Put_DTData&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given a dxhdata_id and downtime info, store the DTData &#xD;&#xA;--&#xD;&#xA;--&#x9;Note that this does some data validation&#xD;&#xA;--&#x9;&#x9;Minutes must not be negative&#xD;&#xA;--&#x9;&#x9;Minutes must not be greater than 60&#xD;&#xA;-- &#xD;&#xA;--&#x9;This code DOES NOT manage the total minutes&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;DTData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190814&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;20190820&#x9;&#x9;C00V01 - Timestamp used as entered_on for inserts&#x9;&#x9;&#xD;&#xA;--&#x9;20190822&#x9;&#x9;C00V02 - Timestamp adjusted to UTC to be used as entered_on &#xD;&#xA;--&#x9;20191204&#x9;&#x9;C00V03 - Change CommonParameters to CommonParameters&#xD;&#xA;--&#x9;20200225&#x9;&#x9;C00V04 - Change out result for noraml variables, remove JSON response&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_DTData 437106, 44188, 8109, null, 3, 'Crimper 1', 'EYAdministrator', Null, Null, '2020-08-28 14:44:50.930', 0&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]&#xD;&#xA;--Declare&#xD;&#xA;@DxHData_Id   INT, -- the hour Id&#xD;&#xA;@productiondata_id INT,&#xD;&#xA;@DTReason_Id  INT, &#xD;&#xA;@DTMinutes    FLOAT, &#xD;&#xA;@Quantity&#x9;  FLOAT,&#xD;&#xA;@Responsible  NVARCHAR(100),&#xD;&#xA;@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last&#xD;&#xA;@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Timestamp    DATETIME, -- generally the current time in site timezone&#xD;&#xA;@Update       INT&#x9;&#x9;&#x9;&#x9;-- generally Null or 0, send dtdata_id to update&#xD;&#xA;&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData]">
@@ -40101,8 +40202,8 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="55" />
-			<AttachedAnnotation Disambiguator="36" />
+			<AttachedAnnotation Disambiguator="56" />
+			<AttachedAnnotation Disambiguator="37" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[sysdiagrams]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -40193,8 +40294,8 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="10" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="63" />
+			<AttachedAnnotation Disambiguator="11" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="64" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Tag]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -40496,8 +40597,8 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="56" />
-			<AttachedAnnotation Disambiguator="37" />
+			<AttachedAnnotation Disambiguator="57" />
+			<AttachedAnnotation Disambiguator="38" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[TagData]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -40639,7 +40740,7 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="57" />
+			<AttachedAnnotation Disambiguator="58" />
 		</Element>
 		<Element Type="SqlIndex" Name="[dbo].[TagData].[nci_wi_TagData_837CA6E0CC88E5CA58438CADAC108229]">
 			<Relationship Name="ColumnSpecifications">
@@ -40789,7 +40890,7 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="44" />
+			<AttachedAnnotation Disambiguator="45" />
 		</Element>
 		<Element Type="SqlUniqueConstraint" Name="[dbo].[UK_principal_name]">
 			<Relationship Name="ColumnSpecifications">
@@ -40817,7 +40918,7 @@ END]]></Value>
 					<References Name="[dbo].[sysdiagrams]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="63" />
+			<AttachedAnnotation Disambiguator="64" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Unavailable]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -41087,8 +41188,8 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="58" />
-			<AttachedAnnotation Disambiguator="8" />
+			<AttachedAnnotation Disambiguator="59" />
+			<AttachedAnnotation Disambiguator="9" />
 		</Element>
 		<Element Type="SqlView" Name="[dbo].[Unavailable_vw]">
 			<Property Name="QueryScript">
@@ -41359,7 +41460,7 @@ FROM            dbo.Unavailable INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="12" />
+			<AttachedAnnotation Disambiguator="13" />
 		</Element>
 		<Element Type="SqlUniqueConstraint" Name="[dbo].[UNC_Asset_Asset_Name]">
 			<Relationship Name="ColumnSpecifications">
@@ -41378,7 +41479,7 @@ FROM            dbo.Unavailable INNER JOIN
 					<References Name="[dbo].[Asset]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="13" />
+			<AttachedAnnotation Disambiguator="14" />
 		</Element>
 		<Element Type="SqlUniqueConstraint" Name="[dbo].[UNC_Shift_Shift_Code]">
 			<Relationship Name="ColumnSpecifications">
@@ -41397,7 +41498,7 @@ FROM            dbo.Unavailable INNER JOIN
 					<References Name="[dbo].[Shift]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="62" />
+			<AttachedAnnotation Disambiguator="63" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[UOM]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -41588,7 +41689,7 @@ FROM            dbo.Unavailable INNER JOIN
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="59" />
+			<AttachedAnnotation Disambiguator="60" />
 		</Element>
 		<Element Type="SqlScalarFunction" Name="[dbo].[UpRoundDate]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -41724,7 +41825,7 @@ END]]></Value>
 					<References Name="[dbo].[RoleComponent]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="61" />
+			<AttachedAnnotation Disambiguator="62" />
 		</Element>
 		<Element Type="SqlTable" Name="[dbo].[Workcell]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -41808,7 +41909,7 @@ END]]></Value>
 								</Element>
 							</Entry>
 						</Relationship>
-						<AttachedAnnotation Disambiguator="26" />
+						<AttachedAnnotation Disambiguator="27" />
 					</Element>
 				</Entry>
 				<Entry>
@@ -41840,7 +41941,7 @@ END]]></Value>
 								</Element>
 							</Entry>
 						</Relationship>
-						<AttachedAnnotation Disambiguator="27" />
+						<AttachedAnnotation Disambiguator="28" />
 					</Element>
 				</Entry>
 			</Relationship>
@@ -41849,7 +41950,7 @@ END]]></Value>
 					<References ExternalSource="BuiltIns" Name="[dbo]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="60" />
+			<AttachedAnnotation Disambiguator="61" />
 		</Element>
 		<Element Type="SqlExtendedProperty" Name="[SqlView].[dbo].[Asset_vw].[MS_DiagramPane1]">
 			<Property Name="Value">

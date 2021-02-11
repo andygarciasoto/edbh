@@ -1,4 +1,6 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 11/2/2021 11:55:36 ******/
+
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -44,7 +46,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
 --Declare
 	@Asset_Id			INT,
 	@type				VARCHAR(100)
