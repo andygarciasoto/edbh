@@ -58,9 +58,11 @@ const helpers = {
         }
     },
     changeInputValue(e, prop) {
-        let newReason = this.state.newReason;
-        newReason[prop] = parseInt(e.target.value);
-        this.setState({ newReason });
+        if (formatNumber(this.state.base) + formatNumber(this.state.currentReason[prop]) >= parseInt(e.target.value)) {
+            let newReason = this.state.newReason;
+            newReason[prop] = parseInt(e.target.value);
+            this.setState({ newReason });
+        }
     },
     changeSelectLevel(e) {
         let newReason = this.state.newReason;

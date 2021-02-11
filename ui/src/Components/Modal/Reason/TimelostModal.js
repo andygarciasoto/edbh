@@ -3,7 +3,7 @@ import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 import MessageModal from '../../Common/MessageModal';
 import LoadingModal from '../../Common/LoadingModal';
 import BarcodeScannerModal from '../../Common/BarcodeScannerModal';
-import { getResponseFromGeneric, getCurrentTime } from '../../../Utils/Requests';
+import { getResponseFromGeneric, getCurrentTime, formatDateWithTime } from '../../../Utils/Requests';
 import ReactSelect from 'react-select';
 import { validateTimeLostSubmit } from '../../../Utils/FormValidations';
 import { API } from '../../../Utils/Constants';
@@ -75,10 +75,12 @@ class TimelostModal extends React.Component {
     }
 
     onChangeInput = (e, field) => {
-        this.setState({
-            [field]: parseInt(e.target.value),
-            adjustedValue: parseInt(this.state.allocated_time) - parseInt(e.target.value)
-        });
+        if (parseInt(this.state.allocated_time) - parseInt(e.target.value) >= 0) {
+            this.setState({
+                [field]: parseInt(e.target.value),
+                adjustedValue: parseInt(this.state.allocated_time) - parseInt(e.target.value)
+            });
+        }
     }
 
     onChangeSelect = (e, field) => {
@@ -194,8 +196,6 @@ class TimelostModal extends React.Component {
     }
 
     submitTimelost(badge) {
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
-
         let data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
             productiondata_id: this.state.currentRow.productiondata_id,
@@ -203,7 +203,8 @@ class TimelostModal extends React.Component {
             dt_minutes: parseInt(this.state.quantityValue),
             clocknumber: badge,
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            row_timestamp: formatDateWithTime(this.state.currentRow.started_on_chunck),
+            asset_code: this.props.parentData[0]
         };
 
         const reasonCode = _.find(this.state.timelossTableList, { dtreason_id: data.dt_reason_id }) || {};
@@ -223,7 +224,6 @@ class TimelostModal extends React.Component {
     }
 
     submitNewTimelostUpdate(badge, currentReason, newReason) {
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
         const data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
             productiondata_id: this.state.currentRow.productiondata_id,
@@ -232,7 +232,7 @@ class TimelostModal extends React.Component {
             dtdata_id: parseInt(currentReason.dtdata_id),
             clocknumber: badge,
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            asset_code: this.props.parentData[0]
         }
 
         this.setState({ modal_loading_IsOpen: true }, async () => {

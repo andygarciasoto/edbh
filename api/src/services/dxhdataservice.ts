@@ -110,7 +110,7 @@ export class DxHDataService {
             asset = await this.assetrepository.getAssetByCode(asset_code);
             user = await this.userrepository.findUserInformation(clocknumber, '', asset[0].asset_id, 0);
             const role = user[0].role;
-            if (role === 'Supervisor') {
+            if (role === 'Supervisor' || role === 'Administrator') {
                 if (dxh_data_id == undefined) {
 
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);

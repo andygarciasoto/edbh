@@ -88,7 +88,7 @@ class DashboardTable extends React.Component {
             (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf)) {
             let temporalState = Object.assign(this.getTextTranslations(nextProps));
             temporalState.currentLanguage = nextProps.search.ln || this.state.currentLanguage;
-            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps)));
+            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps), { expanded: {} }));
         }
         this.setState(Object.assign(this.getTableColumns(this.state, nextProps)));
 
@@ -168,7 +168,14 @@ class DashboardTable extends React.Component {
 
                 let uom_asset = responses[1] || [];
 
-                this.setState({ data, uom_asset, currentRow, selectedMachine: filter[0], selectedDate: filter[1], selectedShift: filter[2] });
+                this.setState({
+                    data,
+                    uom_asset,
+                    currentRow,
+                    selectedMachine: filter[0],
+                    selectedDate: filter[1],
+                    selectedShift: filter[2]
+                });
             }, error => {
                 console.log(error);
             });
@@ -225,7 +232,16 @@ class DashboardTable extends React.Component {
                         currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
                     }
 
-                    this.setState({ data, uom_asset, alertModalOverProd, alertMessageOverProd, currentRow, selectedMachine: filter[0], selectedDate: filter[1], selectedShift: filter[2] });
+                    this.setState({
+                        data,
+                        uom_asset,
+                        alertModalOverProd,
+                        alertMessageOverProd,
+                        currentRow,
+                        selectedMachine: filter[0],
+                        selectedDate: filter[1],
+                        selectedShift: filter[2]
+                    });
                 })
                 , (error) => {
                     console.log(error);
