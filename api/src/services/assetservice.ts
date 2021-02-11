@@ -11,6 +11,9 @@ export class AssetService {
     }
 
     public async getAssetByAssetDisplaySystem(req: Request, res: Response) {
+        if (!req.query.st || req.query.st === undefined || req.query.st === null) {
+            res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
         let display_system_name = req.query.st;
         let assets: any;
         try {
@@ -44,7 +47,7 @@ export class AssetService {
         if (!params.st == null) {
             params.st = 'Null';
         }
-        if (!params.site || params.site == null || params.site == undefined) {
+        if (!params.site || params.site === null || params.site === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let assets: any;
@@ -56,5 +59,18 @@ export class AssetService {
         }
         return res.status(200).json(assets);
     }
-
+    public async getAssetsForDigitalCup(req: Request, res: Response) {
+        let params = req.query;
+        if (!params.site_id || params.site_id === null || params.site_id === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let assets: any;
+        try {
+            assets = await this.assetrepository.getAssetsForDigitalCup(params.site_id);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(assets);
+    }
 }

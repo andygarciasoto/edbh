@@ -12,6 +12,7 @@
     [last_modified_by]      VARCHAR (100) NOT NULL,
     [last_modified_on]      DATETIME      NOT NULL,
     [name]                  VARCHAR (100) NULL,
+    [responsible] NVARCHAR(MAX) NULL, 
     CONSTRAINT [PK_DTData_DTData_Id] PRIMARY KEY NONCLUSTERED ([dtdata_id] ASC),
     CONSTRAINT [FK_DTData_DTReason_ID] FOREIGN KEY ([dtreason_id]) REFERENCES [dbo].[DTReason] ([dtreason_id]),
     CONSTRAINT [FK_DTData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id])

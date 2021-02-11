@@ -2856,6 +2856,22 @@ FROM            dbo.CommentData INNER JOIN
 						</Relationship>
 					</Element>
 				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[dbo].[DTData].[responsible]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="IsMax" Value="True" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
 			</Relationship>
 			<Relationship Name="Schema">
 				<Entry>
@@ -19656,9 +19672,10 @@ END]]></Value>
                         --DHD.dxhdata_id, 
                         SUM(PD.actual - PD.setup_scrap - PD.other_scrap) OVER(PARTITION BY OD.product_code) AS production,
                         CASE
-                            WHEN OD.end_time IS NOT NULL
+                            WHEN (OD.end_time IS NOT NULL
                                  AND OD.end_time >= BD.started_on_chunck
-                                 AND OD.end_time < BD.ended_on_chunck
+                                 AND OD.end_time < BD.ended_on_chunck)
+                                 OR OD.end_time IS NULL
                             THEN 1
                             ELSE 0
                         END AS finish_order_hour
@@ -19955,10 +19972,10 @@ END]]></Value>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
 				<Property Name="CreateOffset" Value="866" />
-				<Property Name="Length" Value="4791" />
+				<Property Name="Length" Value="4853" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given an asset and a Production_Day, get the data for a full production day and pass it to the dashboard display&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;--- None&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200403&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec dbo.spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval 6, '2020-03-28 14:00:00','2020-03-28 21:00:00'&#xD;&#xA;--&#xD;&#xA;CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, &#xD;&#xA;                                                                                 @start_time DATETIME, &#xD;&#xA;                                                                                 @end_time   DATETIME&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given an asset and a Production_Day, get the data for a full production day and pass it to the dashboard display&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;--- None&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20200403&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec dbo.spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval 6, '2020-03-28 14:00:00','2020-03-28 21:00:00'&#xD;&#xA;--&#xD;&#xA;CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, &#xD;&#xA;                                                                                 @start_time DATETIME, &#xD;&#xA;                                                                                 @end_time   DATETIME&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Fill_Row_Get_Active_Assets]">
@@ -22236,18 +22253,20 @@ BEGIN
 -- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	SELECT 
-		dt.dtreason_id as 'dtreason_id',
-		dt.dtreason_code as 'dtreason_code',
-		dt.dtreason_name as 'dtreason_name',
-		dt.dtreason_category as 'dtreason_category',
-		a.site_code as 'site_code'
+		dt.dtreason_id,
+		dt.dtreason_code,
+		dt.dtreason_name,
+		dt.dtreason_category,
+		dt.type,
+		dt.level,
+		a.site_code
 	FROM dbo.DTReason dt with (nolock)
 	INNER JOIN dbo.Asset a ON a.asset_id = @Asset_id
 		WHERE dt.asset_id = @Asset_Id
 			AND dt.status = 'Active' 
+			AND dt.type = @type
 	Order By 
-		dt.dtreason_category,
-		CASE WHEN a.site_code in ('Eaton', 'Veniano_HA', 'Veniano_Hose') THEN len(dt.dtreason_code) END,	--trying to sort alpha numeric values as numbers
+		CASE WHEN a.site_code in ('Eaton', 'Veniano_HA', 'Veniano_Hose', 'Nussdorf') THEN len(dt.dtreason_code) END,	--trying to sort alpha numeric values as numbers
 		dt.dtreason_code;
 
 END]]></Value>
@@ -22280,6 +22299,12 @@ END]]></Value>
 					<References Name="[dbo].[DTReason].[dtreason_category]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[DTReason].[type]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[DTReason].[level]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[Asset].[site_code]" />
 				</Entry>
 				<Entry>
@@ -22289,13 +22314,7 @@ END]]></Value>
 					<References Name="[dbo].[DTReason].[status]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[DTReason].[dtreason_category]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[Asset].[site_code]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DTReason].[dtreason_code]" />
+					<References Name="[dbo].[spLocal_EY_DxH_Get_DTReason].[@type]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="Parameters">
@@ -22314,6 +22333,22 @@ END]]></Value>
 						</Relationship>
 					</Element>
 				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Get_DTReason].[@type]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="100" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
 			</Relationship>
 			<Relationship Name="Schema">
 				<Entry>
@@ -22321,11 +22356,11 @@ END]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="830" />
-				<Property Name="Length" Value="1637" />
+				<Property Name="CreateOffset" Value="998" />
+				<Property Name="Length" Value="1775" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_DTReason&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;&#xD;&#xA;--&#x9;Given an asset_code, provide the info for displaying DTReason&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190814&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--  20191203&#x9;&#x9;C00V01 - Change Asset_Code for Asset_Id&#xD;&#xA;--  20200203&#x9;&#x9;C00V03 - Change result result to normal table result&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_DTReason 453&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]&#xD;&#xA;--Declare&#xD;&#xA;&#x9;@Asset_Id&#x9;&#x9;&#x9;INT&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/&#xD;&#xA;&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_DTReason&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;&#xD;&#xA;--&#x9;Given an asset_code, provide the info for displaying DTReason&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190814&#x9;&#x9;C00V00 - Intial code created&#xD;&#xA;--  20191203&#x9;&#x9;C00V01 - Change Asset_Code for Asset_Id&#xD;&#xA;--  20200203&#x9;&#x9;C00V03 - Change result result to normal table result&#xD;&#xA;--  20201218&#x9;&#x9;C00V04 - Add new level column&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'&#xD;&#xA;--&#xD;&#xA;CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]&#xD;&#xA;--Declare&#xD;&#xA;&#x9;@Asset_Id&#x9;&#x9;&#x9;INT,&#xD;&#xA;&#x9;@type&#x9;&#x9;&#x9;&#x9;VARCHAR(100)&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Get_DxHDataId]">

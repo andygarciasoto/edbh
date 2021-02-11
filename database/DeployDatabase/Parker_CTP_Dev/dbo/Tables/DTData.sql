@@ -10,6 +10,7 @@
     [name]              VARCHAR (100) NULL,
     [quantity]          FLOAT (53)    DEFAULT ((0)) NULL,
     [productiondata_id] INT           NULL,
+    [responsible] NVARCHAR(50) NULL, 
     CONSTRAINT [PK_DTData_DTData_Id] PRIMARY KEY CLUSTERED ([dtdata_id] ASC),
     CONSTRAINT [FK_DTData_DTReason_ID] FOREIGN KEY ([dtreason_id]) REFERENCES [dbo].[DTReason] ([dtreason_id]),
     CONSTRAINT [FK_DTData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id])
