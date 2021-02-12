@@ -51,7 +51,7 @@ class LogOffModal extends React.Component {
                     this.setState({
                         modal_loading_IsOpen: false,
                         messageModalType: 'Error',
-                        messageModalMessage: 'Error when try to find the user. Please Try again',
+                        messageModalMessage: 'Error finding the user. Please Try again',
                         modal_message_Is_Open: true
                     });
                 } else {
@@ -78,7 +78,7 @@ class LogOffModal extends React.Component {
                     this.setState({
                         modal_loading_IsOpen: false,
                         messageModalType: 'Error',
-                        messageModalMessage: 'Error when try to find the user. Please Try again',
+                        messageModalMessage: 'Error finding the user. Please Try again',
                         modal_message_Is_Open: true
                     });
                 } else {
@@ -118,7 +118,7 @@ class LogOffModal extends React.Component {
 
             let res = await getResponseFromGeneric('put', API, '/new_scan', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, messageModalType: 'Error', messageModalMessage: 'Error when try to SignOut from the EDxH. Please Try again', modal_message_Is_Open: true })
+                this.setState({ modal_loading_IsOpen: false, messageModalType: 'Error', messageModalMessage: 'Error signing out from the EDxH. Please Try again', modal_message_Is_Open: true })
             } else {
                 this.setState({ modal_loading_IsOpen: false });
                 this.props.onRequestClose();

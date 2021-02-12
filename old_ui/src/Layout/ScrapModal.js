@@ -67,10 +67,10 @@ class ScrapModal extends React.Component {
         this.setState({ modal_loading_IsOpen: true }, async () => {
             let res = await getResponseFromGeneric('put', API, '/scrap_values', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' });
+                this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Could not complete the request. Please try again' });
             } else {
                 this.props.Refresh(this.props.parentData);
-                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Value was inserted' });
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Scrapped part(s) were inserted successfully' });
             }
         });
     }
