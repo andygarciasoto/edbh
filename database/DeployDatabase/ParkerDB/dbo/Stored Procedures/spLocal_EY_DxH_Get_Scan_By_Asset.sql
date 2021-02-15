@@ -1,4 +1,6 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 27/1/2021 11:20:43 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 15/2/2021 08:17:09 ******/
+
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 27/1/2021 11:20:43 ******/
 
 /****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 26/01/2021 11:31:05 ******/
 --
@@ -58,7 +60,8 @@ AS
 			   DATEDIFF(minute, possible_end_time, end_time) as minutes,
                is_current_scan, 
                reason, 
-               status
+               status,
+			   CASE WHEN end_time IS NULL THEN NULL ELSE last_modified_by END as closed_by
         FROM dbo.Scan WITH(NOLOCK)
         WHERE start_time < @end_time 
 		AND

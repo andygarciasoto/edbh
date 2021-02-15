@@ -31,12 +31,4 @@ export class AssetRepository {
         A.[target_percent_of_ideal], A.[entered_by], A.[entered_on], A.[last_modified_by], A.[last_modified_on], A.[is_multiple] FROM [dbo].[Asset] AS A LEFT JOIN [dbo].[Workcell] 
         AS W ON A.grouping1 = W.workcell_id WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id}) ORDER BY A.asset_id`);
     }
-    public async getAssetsForDigitalCup(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT A.asset_id, A.asset_code, A.asset_name, A.asset_level, A.site_code, A.parent_asset_code, A.value_stream, A.grouping1 as 'workcell_id', W.workcell_name
-        FROM dbo.Asset A 
-        INNER JOIN dbo.Asset A2 ON ${site_id} = A2.asset_id 
-        LEFT JOIN dbo.Workcell W ON A.grouping1 = W.workcell_id
-        WHERE A.site_code = A2.asset_name AND (A.asset_level = 'Cell' OR A.asset_level = 'Area') AND A.status = 'Active' 
-        ORDER BY A.asset_level, A.parent_asset_code`);
-    }
 }

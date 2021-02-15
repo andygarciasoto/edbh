@@ -28375,7 +28375,8 @@ SET ANSI_NULLS ON]]></Value>
 			   DATEDIFF(minute, possible_end_time, end_time) as minutes,
                is_current_scan, 
                reason, 
-               status
+               status,
+			   CASE WHEN end_time IS NULL THEN NULL ELSE last_modified_by END as closed_by
         FROM dbo.Scan WITH(NOLOCK)
         WHERE start_time < @end_time 
 		AND
@@ -28427,6 +28428,9 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[Scan].[status]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[Scan].[last_modified_by]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[spLocal_EY_DxH_Get_Scan_By_Asset].[@end_time]" />
@@ -28491,11 +28495,11 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="911" />
-				<Property Name="Length" Value="1812" />
+				<Property Name="CreateOffset" Value="1031" />
+				<Property Name="Length" Value="2016" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 27/1/2021 11:20:43 ******/&#xD;&#xA;&#xD;&#xA;/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 26/01/2021 11:31:05 ******/&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_Asset&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Provide Asset info for displays&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_Scan_By_Asset '2021-01-27 10:00:00','2021-01-27 11:00:00', 230&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]&#xD;&#xA;@start_time       DATETIME, &#xD;&#xA;@end_time&#x9;&#x9;  DATETIME, &#xD;&#xA;@asset_id         INT&#x9;&#x9;&#x9;&#x9;&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 15/2/2021 08:17:09 ******/&#xD;&#xA;&#xD;&#xA;/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 27/1/2021 11:20:43 ******/&#xD;&#xA;&#xD;&#xA;/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]    Script Date: 26/01/2021 11:31:05 ******/&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Get_Asset&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Provide Asset info for displays&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- exec spLocal_EY_DxH_Get_Scan_By_Asset '2021-01-27 10:00:00','2021-01-27 11:00:00', 230&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Scan_By_Asset]&#xD;&#xA;@start_time       DATETIME, &#xD;&#xA;@end_time&#x9;&#x9;  DATETIME, &#xD;&#xA;@asset_id         INT&#x9;&#x9;&#x9;&#x9;&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Get_Shift_Data]">
@@ -35208,7 +35212,8 @@ SET ANSI_NULLS ON]]></Value>
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE 
+        DECLARE
+		@Site_Id INT,
 		@First VARCHAR(50),
 		@Last VARCHAR(50),
 		@Initials VARCHAR(50),
@@ -35217,50 +35222,17 @@ SET ANSI_NULLS ON]]></Value>
 		@ReturnStatus INT,
 		@ReturnMessage VARCHAR(1000),
 		@Site_Timezone VARCHAR(100),
-		@Timestamp_UTC DATETIME,
-		@asset_id INT,
 		@Production_Day DATETIME,
-		@Shift_Code VARCHAR(100),
-		@Site_Id INT;
+		@Shift_Code VARCHAR(100);
 
-        SELECT @asset_id = asset_id, 
-               @Production_Day = production_day, 
-               @Shift_Code = shift_code
-        FROM dbo.DxHData
-        WHERE dxhdata_id = @DxHData_Id;
-        SELECT @Site_Id = asset_id
-        FROM [dbo].[Asset]
-        WHERE asset_level = 'Site'
-              AND site_code =
-        (
-            SELECT site_code
-            FROM [dbo].[Asset]
-            WHERE asset_id = @asset_id
-        );
-        SELECT @Site_Timezone = site_timezone
-        FROM dbo.CommonParameters cpt WITH(NOLOCK)
-        WHERE site_id = @Site_Id
-              AND STATUS = 'Active';
+		SELECT @Site_Id = asset_id
+		FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id = @Asset_Id);
 
-        SELECT @Timestamp_UTC = @Timestamp AT TIME ZONE @Site_Timezone AT TIME ZONE 'UTC'
+		SELECT
+			@Production_Day = ProductionDay,
+			@Shift_Code = ShiftCode
+		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@Site_Id,NULL);
 
-        IF NOT EXISTS
-        (
-            SELECT dxhdata_id
-            FROM dbo.DxHData WITH(NOLOCK)
-            WHERE dxhdata_id = ISNULL(@DxHData_Id, -1)
-        )
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
-                GOTO ErrExit;
-        END;
-        IF ISNULL(@Comment, '') = ''
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Comment ' + CONVERT(VARCHAR, ISNULL(@Comment, ''));
-                GOTO ErrExit;
-        END;
         IF EXISTS
         (
             SELECT Badge
@@ -35294,12 +35266,6 @@ SET ANSI_NULLS ON]]></Value>
                 GOTO ErrExit;
         END;
         SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
-        IF ISDATE(@Timestamp) <> 1
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
-                GOTO ErrExit;
-        END;
         IF(ISNULL(@Update, 0) <> 0)
           AND (NOT EXISTS
         (
@@ -35322,10 +35288,10 @@ SET ANSI_NULLS ON]]></Value>
                  @First_Name,
                  @Last_Name,
                  @Initials,
-                 @Timestamp_UTC,
+                 GETDATE(),
                  @Initials,
                  GETDATE(),
-                 @asset_id
+                 @Asset_Id
                 );
                 SET @InterShift_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
@@ -35382,6 +35348,9 @@ SET ANSI_NULLS ON]]></Value>
 			<Property Name="IsQuotedIdentifierOn" Value="False" />
 			<Relationship Name="BodyDependencies">
 				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
 				</Entry>
 				<Entry>
@@ -35409,34 +35378,7 @@ SET ANSI_NULLS ON]]></Value>
 					<References ExternalSource="BuiltIns" Name="[datetime]" />
 				</Entry>
 				<Entry>
-					<References ExternalSource="BuiltIns" Name="[int]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[datetime]" />
-				</Entry>
-				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[int]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData].[asset_id]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData].[production_day]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData].[shift_code]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData].[dxhdata_id]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@DxHData_Id]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[Asset]" />
@@ -35457,31 +35399,16 @@ SET ANSI_NULLS ON]]></Value>
 					<References Name="[dbo].[Asset].[asset_id]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[CommonParameters]" />
+					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Asset_Id]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[CommonParameters].[site_timezone]" />
+					<References Name="[dbo].[GetShiftProductionDayFromSiteAndDate]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[CommonParameters].[site_id]" />
+					<References Name="[dbo].[GetShiftProductionDayFromSiteAndDate].[ProductionDay]" />
 				</Entry>
 				<Entry>
-					<References Name="[dbo].[CommonParameters].[status]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Timestamp]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[DxHData].[dxhdata_id]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Comment]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
+					<References Name="[dbo].[GetShiftProductionDayFromSiteAndDate].[ShiftCode]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[TFDUsers]" />
@@ -35520,9 +35447,6 @@ SET ANSI_NULLS ON]]></Value>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
 				</Entry>
 				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
 					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Update]" />
 				</Entry>
 				<Entry>
@@ -35533,6 +35457,9 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Comment]" />
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
@@ -35564,7 +35491,7 @@ SET ANSI_NULLS ON]]></Value>
 			</Relationship>
 			<Relationship Name="Parameters">
 				<Entry>
-					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@DxHData_Id]">
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Asset_Id]">
 						<Relationship Name="Type">
 							<Entry>
 								<Element Type="SqlTypeSpecifier">
@@ -35643,21 +35570,6 @@ SET ANSI_NULLS ON]]></Value>
 					</Element>
 				</Entry>
 				<Entry>
-					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Timestamp]">
-						<Relationship Name="Type">
-							<Entry>
-								<Element Type="SqlTypeSpecifier">
-									<Relationship Name="Type">
-										<Entry>
-											<References ExternalSource="BuiltIns" Name="[datetime]" />
-										</Entry>
-									</Relationship>
-								</Element>
-							</Entry>
-						</Relationship>
-					</Element>
-				</Entry>
-				<Entry>
 					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_InterShiftData].[@Update]">
 						<Relationship Name="Type">
 							<Entry>
@@ -35679,11 +35591,11 @@ SET ANSI_NULLS ON]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="1393" />
-				<Property Name="Length" Value="8567" />
+				<Property Name="CreateOffset" Value="1385" />
+				<Property Name="Length" Value="7109" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Put_InterShiftData&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given a dxhdata_id and needed intershift info, store the intershift data&#xD;&#xA;--&#xD;&#xA;--&#x9;If the @Update field is Null or 0, then it is a new insert&#xD;&#xA;--&#x9;If the @Update field is Not Null and Not 0, it is an update &#xD;&#xA;--&#x9;&#x9;and the value is the intershiftdata_id to update&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#xD;&#xA;--&#x9;DxHData_Id is more related to an hour but it is easy to get the needed shift info from that&#x9;&#x9;&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;InterShiftData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190809&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;20190818&#x9;&#x9;C00V01 - Validated Timestamp and used it as entered_on for inserts&#x9;&#x9;&#xD;&#xA;--&#x9;20190822&#x9;&#x9;C00V02 - Timestamp adjusted to UTC to be used as entered_on&#xD;&#xA;--&#x9;20191204&#x9;&#x9;C00V03 - Change CommonParameters to CommonParameters&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]&#xD;&#xA;--Declare&#xD;&#xA;@DxHData_Id   INT, -- any hour Id of the shift associated with this data&#xD;&#xA;@Comment      VARCHAR(256), -- the main info for the display&#xD;&#xA;@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last&#xD;&#xA;@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Timestamp    DATETIME, -- generally current time in site timezone&#xD;&#xA;@Update       INT&#x9;&#x9;&#x9;&#x9;-- generally null or 0, send the intershift_id for update&#xD;&#xA;AS" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;--&#xD;&#xA;-- Copyright © 2019 Ernst &amp; Young LLP&#xD;&#xA;-- All Rights Reserved&#xD;&#xA;-- spLocal_EY_DxH_Put_InterShiftData&#xD;&#xA;--&#xD;&#xA;--  Purpose:&#xD;&#xA;--&#x9;Given a dxhdata_id and needed intershift info, store the intershift data&#xD;&#xA;--&#xD;&#xA;--&#x9;If the @Update field is Null or 0, then it is a new insert&#xD;&#xA;--&#x9;If the @Update field is Not Null and Not 0, it is an update &#xD;&#xA;--&#x9;&#x9;and the value is the intershiftdata_id to update&#xD;&#xA;--&#xD;&#xA;--&#x9;Returns a status and a message&#xD;&#xA;--&#x9;&#x9; 0 is pass&#xD;&#xA;--&#x9;&#x9;-1 is fail&#xD;&#xA;--&#xD;&#xA;--&#x9;DxHData_Id is more related to an hour but it is easy to get the needed shift info from that&#x9;&#x9;&#xD;&#xA;--&#xD;&#xA;--&#x9;To Do:&#xD;&#xA;--&#xD;&#xA;--  Output Parameters:&#xD;&#xA;---&#xD;&#xA;--  Input Parameters:&#xD;&#xA;---&#xD;&#xA;---&#x9;&#xD;&#xA;--  Trigger:&#xD;&#xA;---&#xD;&#xA;--  Data Read Other Inputs:  &#xD;&#xA;--- &#xD;&#xA;---&#x9;&#xD;&#xA;--  Data Written Results:&#xD;&#xA;---&#xD;&#xA;--  Assumptions:&#xD;&#xA;--- &#xD;&#xA;--  Dependencies: &#xD;&#xA;---&#x9;None&#xD;&#xA;---&#xD;&#xA;--  Variables:&#xD;&#xA;---&#xD;&#xA;---&#xD;&#xA;--  Tables Modified:&#xD;&#xA;--&#x9;InterShiftData&#xD;&#xA;---&#xD;&#xA;-- Modification Change History:&#xD;&#xA;--------------------------------------------------------------------------------&#xD;&#xA;--&#x9;20190809&#x9;&#x9;C00V00 - Intial code created&#x9;&#x9;&#xD;&#xA;--&#x9;20190818&#x9;&#x9;C00V01 - Validated Timestamp and used it as entered_on for inserts&#x9;&#x9;&#xD;&#xA;--&#x9;20190822&#x9;&#x9;C00V02 - Timestamp adjusted to UTC to be used as entered_on&#xD;&#xA;--&#x9;20191204&#x9;&#x9;C00V03 - Change CommonParameters to CommonParameters&#xD;&#xA;--&#x9;&#x9;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_InterShiftData_new_1 230, 'shifting gears', 'EYAdministrator', Null, Null, 0&#xD;&#xA;--&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]&#xD;&#xA;--Declare&#xD;&#xA;@Asset_Id   INT, -- id of the associate Asset&#xD;&#xA;@Comment      VARCHAR(256), -- the main info for the display&#xD;&#xA;@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last&#xD;&#xA;@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number&#xD;&#xA;@Update       INT&#x9;&#x9;&#x9;&#x9;-- generally null or 0, send the intershift_id for update&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Put_OperatorSignOff]">
@@ -39080,10 +38992,7 @@ SET ANSI_NULLS ON]]></Value>
 			<Property Name="BodyScript">
 				<Value><![CDATA[  BEGIN 
  DECLARE
- @initials as VARCHAR(100),
  @possible_end_time as DATETIME
-
-SELECT @initials = CONVERT(VARCHAR, LEFT(@first_name, 1)) + CONVERT(VARCHAR, LEFT(@last_name, 1));
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 WHERE
@@ -39110,7 +39019,7 @@ BEGIN
 			UPDATE [dbo].[Scan]
 			SET [end_time] = @timestamp
 			  ,[is_current_scan] = 0
-			  ,[last_modified_by] = @initials
+			  ,[last_modified_by] = @closed_by
 			  ,[last_modified_on] = GETDATE()
 			WHERE badge = @badge 
 			AND is_current_scan = 1
@@ -39138,9 +39047,9 @@ BEGIN
            ,1
 		   ,@reason
 		   ,@status
-           ,@initials
+           ,@closed_by
            ,GETDATE()
-           ,@initials
+           ,@closed_by
            ,GETDATE())
 
 	END
@@ -39150,22 +39059,7 @@ END]]></Value>
 			<Property Name="IsAnsiNullsOn" Value="True" />
 			<Relationship Name="BodyDependencies">
 				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
 					<References ExternalSource="BuiltIns" Name="[datetime]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@first_name]" />
-				</Entry>
-				<Entry>
-					<References ExternalSource="BuiltIns" Name="[varchar]" />
-				</Entry>
-				<Entry>
-					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@last_name]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[Asset]" />
@@ -39216,6 +39110,9 @@ END]]></Value>
 					<References Name="[dbo].[Scan].[last_modified_by]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@closed_by]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[Scan].[last_modified_on]" />
 				</Entry>
 				<Entry>
@@ -39246,12 +39143,34 @@ END]]></Value>
 					<References Name="[dbo].[Scan].[entered_on]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@first_name]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@last_name]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@status]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="Parameters">
 				<Entry>
 					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@badge]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="100" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[dbo].[spLocal_EY_DxH_Put_Scan].[@closed_by]">
 						<Relationship Name="Type">
 							<Entry>
 								<Element Type="SqlTypeSpecifier">
@@ -39414,11 +39333,11 @@ END]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="CreateOffset" Value="270" />
-				<Property Name="Length" Value="2165" />
+				<Property Name="CreateOffset" Value="397" />
+				<Property Name="Length" Value="2197" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
-				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 31/12/2020 09:35:04 ******/&#xD;&#xA;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_Scan 'EYAdministrator', 'Administrator', 'EY', 228, '2020-12-31 10:50:28.220', 'lunch', 'Active', 225, 15, 30&#xD;&#xA;&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scan] &#xD;&#xA;&#x9;@badge&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#x9;&#x9;&#xD;&#xA;&#x9;@first_name&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#xD;&#xA;&#x9;@last_name&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#xD;&#xA;&#x9;@asset_id&#x9;&#x9;&#x9;&#x9;as INT,&#x9;&#xD;&#xA;&#x9;@timestamp&#x9;&#x9;&#x9;&#x9;as DATETIME,&#xD;&#xA;&#x9;@reason&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#xD;&#xA;&#x9;@status&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#xD;&#xA;&#x9;@site_id&#x9;&#x9;&#x9;&#x9;as INT,&#xD;&#xA;&#x9;@break_minutes&#x9;&#x9;&#x9;as FLOAT,&#xD;&#xA;&#x9;@lunch_minutes&#x9;&#x9;&#x9;as FLOAT&#xD;&#xA; AS" />
+				<Property Name="HeaderContents" Value="/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 15/2/2021 08:20:11 ******/&#xD;&#xA;&#xD;&#xA;/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 31/12/2020 09:35:04 ******/&#xD;&#xA;&#xD;&#xA;-- Example Call:&#xD;&#xA;-- Exec spLocal_EY_DxH_Put_Scan 'EYAdministrator', 'EYSupervisor', 'Administrator', 'EY', 228, '2020-12-31 10:50:28.220', 'lunch', 'Active', 225, 15, 30&#xD;&#xA;&#xD;&#xA;CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scan] &#xD;&#xA;&#x9;@badge&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#xD;&#xA;&#x9;@closed_by&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#x9;&#x9;&#xD;&#xA;&#x9;@first_name&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#xD;&#xA;&#x9;@last_name&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#x9;&#xD;&#xA;&#x9;@asset_id&#x9;&#x9;&#x9;&#x9;as INT,&#x9;&#xD;&#xA;&#x9;@timestamp&#x9;&#x9;&#x9;&#x9;as DATETIME,&#xD;&#xA;&#x9;@reason&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#xD;&#xA;&#x9;@status&#x9;&#x9;&#x9;&#x9;&#x9;as VARCHAR(100),&#xD;&#xA;&#x9;@site_id&#x9;&#x9;&#x9;&#x9;as INT,&#xD;&#xA;&#x9;@break_minutes&#x9;&#x9;&#x9;as FLOAT,&#xD;&#xA;&#x9;@lunch_minutes&#x9;&#x9;&#x9;as FLOAT&#xD;&#xA; AS" />
 			</Annotation>
 		</Element>
 		<Element Type="SqlProcedure" Name="[dbo].[spLocal_EY_DxH_Put_Scrap_ProductionData]">
