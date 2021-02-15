@@ -1,26 +1,38 @@
 @import "_colors";
 
-.App {
-  text-align: center;
+
+.btnYellow {
+  color           : $color-orange;
+  background-color: transparent;
+  border-color    : $color-orange;
 }
 
-.app-wrapper {background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949);}
-
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear; */
-  height: 20vmin;
-  pointer-events: none;
+.btnYellow:hover {
+  color           : $color-white;
+  background-color: $color-orange;
+  border-color    : $color-orange;
 }
 
-.App-link {
-  color: #61dafb;
+.btnGreen {
+  color           : $color-green;
+  background-color: transparent;
+  border-color    : $color-green;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btnGreen:hover {
+  color           : $color-white;
+  background-color: $color-green;
+  border-color    : $color-green;
+}
+
+.btnRed {
+  color           : $color-red;
+  background-color: transparent;
+  border-color    : $color-red;
+}
+
+.btnRed:hover {
+  color           : $color-white;
+  background-color: $color-red;
+  border-color    : $color-red;
 }

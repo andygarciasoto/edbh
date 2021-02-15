@@ -7,18 +7,7 @@ import '../../sass/IntershiftModal.scss';
 class IntershiftModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isOpen: false
-        }
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen !== prevState.isOpen) {
-            return {
-                isOpen: nextProps.isOpen
-            };
-        }
-        return null;
+        this.state = {}
     }
 
     render() {
@@ -31,7 +20,7 @@ class IntershiftModal extends React.Component {
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                     className='intershift-modal'
-                    show={this.state.isOpen} onHide={props.onRequestClose}
+                    show={props.isOpen} onHide={props.onRequestClose}
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">

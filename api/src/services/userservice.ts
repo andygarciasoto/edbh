@@ -39,7 +39,7 @@ export class UserService {
         let user: any;
         try {
             user = await this.userrepository.findUserInformation(badge, machine, asset_id, site_id);
-            user[0].permissions = await this.rolerepository.getComponentsByRole(user[0].role_id);
+            user[0].permissions = await this.rolerepository.getComponentsByRole(user[0].role_id, 'null');
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }

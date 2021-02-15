@@ -76,8 +76,8 @@ AS
 		@Remaining_BreakMinutes FLOAT,
 		@Remaining_Minutes FLOAT,
 		@TotalRemaining_Minutes FLOAT,
-		@Ideal FLOAT,
-		@Target FLOAT,
+		@Ideal INT,
+		@Target INT,
 		@Order_Start_Time DATETIME,
 		@Previous_Production_Id INT,
 		@Minutes_Less INT;

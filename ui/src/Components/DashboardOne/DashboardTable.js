@@ -37,13 +37,10 @@ class DashboardTable extends React.Component {
         return {
             data: [],
             columns: [],
-            summary: props.summary,
-            selectedMachine: props.selectedMachine,
+            selectedAssetOption: props.selectedAssetOption,
             selectedDate: props.selectedDate,
             selectedShift: props.selectedShift,
-            selectedMachineType: props.selectedMachineType,
-            currentLanguage: props.search.ln || props.user.language,
-            uom_asset: null,
+            currentLanguage: props.currentLanguage,
             expanded: {},
             currentRow: {},
             modal_manualentry_IsOpen: false,
@@ -60,7 +57,7 @@ class DashboardTable extends React.Component {
 
     getTextTranslations(props) {
         return {
-            shiftText: props.search.sf ? props.t(props.search.sf) : props.user.current_shift,
+            shiftText: props.t(props.selectedShift),
             partNumberText: props.t('Part Number'),
             idealText: props.t('Ideal'),
             targetText: props.t('Target'),
@@ -77,30 +74,45 @@ class DashboardTable extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
+        this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+        try {
+            this.props.socket.on('message', response => {
+                if (response.message) {
+                    this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+                }
+            });
+        } catch (e) { console.log(e) }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.modal_order_IsOpen !== this.state.modal_order_IsOpen) {
-            this.setState({ modal_order_IsOpen: nextProps.modal_order_IsOpen })
-        }
-        if ((nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) ||
-            (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf)) {
-            let temporalState = Object.assign(this.getTextTranslations(nextProps));
-            temporalState.currentLanguage = nextProps.search.ln || this.state.currentLanguage;
-            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps), { expanded: {} }));
-        }
-        this.setState(Object.assign(this.getTableColumns(this.state, nextProps)));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(nextProps.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(nextProps.selectedShift, prevState.selectedShift) || !_.isEqual(nextProps.currentLanguage, prevState.currentLanguage)) {
+            const expanded = !_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(nextProps.selectedDate, prevState.selectedDate) ||
+                !_.isEqual(nextProps.selectedShift, prevState.selectedShift) ? {} : prevState.expanded
+            return {
+                selectedAssetOption: nextProps.selectedAssetOption,
+                selectedDate: nextProps.selectedDate,
+                selectedShift: nextProps.selectedShift,
+                currentLanguage: nextProps.currentLanguage,
+                expanded
+            }
+        } else return null;
+    }
 
-        const selectedMachine = nextProps.selectedMachine || this.state.selectedMachine;
-        const selectedDate = nextProps.selectedDate || this.state.selectedDate;
-        const selectedShift = nextProps.selectedShift || this.state.selectedShift;
-        this.fetchData([selectedMachine, selectedDate, selectedShift], nextProps);
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage) || !_.isEqual(this.state.selectedShift, prevState.selectedShift)) {
+            let temporalState = Object.assign(this.getTextTranslations(this.props));
+            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, this.props)));
+        }
+        if (!_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(this.state.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(this.state.selectedShift, prevState.selectedShift)) {
+            this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+        }
     }
 
     fetchData = (data, props) => {
         props = props ? props : this.props;
-        if (this.state.summary) {
+        if (props.summary) {
             this.loadDataAllShift(data, props);
         } else {
             this.loadDataCurrentShift(data, props);
@@ -120,7 +132,7 @@ class DashboardTable extends React.Component {
             verticalToken = axios.CancelToken.source();
 
             const parameters2 = {
-                mc: filter[0],
+                mc: filter[0].asset_code,
                 dt: formatDate(filter[1]).split("-").join(""),
                 sf: props.user.vertical_shift_id,
                 hr: 23,
@@ -129,7 +141,7 @@ class DashboardTable extends React.Component {
             responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token));
 
             const parameters = {
-                mc: filter[0],
+                mc: filter[0].asset_code,
                 dt: formatDate(filter[1]).split("-").join(""),
                 sf: mapShift(filter[2]),
                 hr: hr
@@ -171,10 +183,7 @@ class DashboardTable extends React.Component {
                 this.setState({
                     data,
                     uom_asset,
-                    currentRow,
-                    selectedMachine: filter[0],
-                    selectedDate: filter[1],
-                    selectedShift: filter[2]
+                    currentRow
                 });
             }, error => {
                 console.log(error);
@@ -197,7 +206,7 @@ class DashboardTable extends React.Component {
             });
 
             const parameters = {
-                mc: filter[0],
+                mc: filter[0].asset_code,
                 dt: formatDate(filter[1]).split("-").join(""),
                 sf: sf.shift_id || props.user.shift_id,
                 hr: moment().tz(props.user.timezone).hours(),
@@ -237,10 +246,7 @@ class DashboardTable extends React.Component {
                         uom_asset,
                         alertModalOverProd,
                         alertMessageOverProd,
-                        currentRow,
-                        selectedMachine: filter[0],
-                        selectedDate: filter[1],
-                        selectedShift: filter[2]
+                        currentRow
                     });
                 })
                 , (error) => {
@@ -270,7 +276,7 @@ class DashboardTable extends React.Component {
     render() {
 
         const { data, columns } = this.state;
-        const num_rows = getRowsFromShifts(this.props, this.state.summary);
+        const num_rows = getRowsFromShifts(this.props, this.props.summary);
         const t = this.props.t;
         const back = t('Back');
         const next = t('Next');
@@ -283,7 +289,7 @@ class DashboardTable extends React.Component {
                 {!_.isEmpty(data) ?
                     <ReactTable
                         getTheadThProps={(state, rowInfo, column) => {
-                            return this.state.summary ?
+                            return this.props.summary ?
                                 {
                                     style: { display: 'none' } // override style for 'myHeaderTitle'.
                                 }
@@ -321,7 +327,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_manualentry_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -333,7 +339,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_actual_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -345,7 +351,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_scrap_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -357,7 +363,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_timelost_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -369,7 +375,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_comments_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -382,7 +388,7 @@ class DashboardTable extends React.Component {
                     signOffModalType={this.state.signOffModalType}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -393,7 +399,8 @@ class DashboardTable extends React.Component {
                 <OrderModal
                     isOpen={this.state.modal_order_IsOpen}
                     onRequestClose={() => this.props.closeOrderModal(false)}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    selectedAssetOption={this.props.selectedAssetOption}
                     modalTitle={'New Order'}
                     inputText={'Please scan the new order code...'}
                     user={this.props.user}
@@ -403,7 +410,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_active_operators_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    selectedAssetOption={this.props.selectedAssetOption}
+                    selectedAssetOption={this.state.selectedAssetOption}
                     t={t}
                 />
             </React.Fragment>

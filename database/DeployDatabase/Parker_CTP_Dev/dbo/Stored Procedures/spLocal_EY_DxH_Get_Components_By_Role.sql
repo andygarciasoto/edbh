@@ -35,17 +35,27 @@
 --	
 ---
 -- Modification Change History:
+-- CV01			Initial Code
+-- CV02			Add role_name parameter in case to send role_id AS 0 or NULL
 --------------------------------------------------------------------------------	
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Components_By_Role 1
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Components_By_Role]
-@role_id	INT			
+@role_id	INT,
+@role_name	NVARCHAR(100)
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
+
+		IF(ISNULL(@role_id,0) = 0)
+		BEGIN
+			SELECT @role_id = role_id
+			FROM dbo.Role WHERE name = @role_name
+		END
+
         SELECT R.name as role,
 		R.default_view,
 		C.name as component_name,

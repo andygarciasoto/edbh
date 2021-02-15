@@ -13,13 +13,14 @@ export class RoleService {
 
     public async getComponentsByRole(req: Request, res: Response) {
         const params = req.query;
-        if (params.role_id == undefined) {
+        if (params.role_id == undefined && params.role_name == undefined) {
             return res.status(400).send("Missing parameters");
         }
-        let role_id = params.role_id;        
+        const role_id = params.role_id ? params.role_id : 0;
+        const role_name = params.role_name ? params.role_name : 'null';
         let role: any;
         try {
-            role = await this.rolerepository.getComponentsByRole(role_id);
+            role = await this.rolerepository.getComponentsByRole(role_id, role_name);
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }

@@ -26,7 +26,7 @@ class Intershift extends React.Component {
 
     getInitialState(props) {
         return {
-            selectedMachine: props.selectedMachine,
+            selectedAssetOption: props.selectedAssetOption,
             selectedDate: props.selectedDate,
             selectedShift: props.selectedShift,
             intershiftComments: [],
@@ -37,27 +37,48 @@ class Intershift extends React.Component {
             messageModalType: '',
             messageModalMessage: '',
             modal_Intershift_Is_Open: false,
-            modal_validate_IsOpen: false
+            modal_validate_IsOpen: false,
+            modal_loadingspinner: false
         };
     }
 
-    componentWillMount() {
-        this.fecthData();
+    componentDidMount() {
+        this.fetchData();
+        try {
+            this.props.socket.on('message', response => {
+                if (response.message) {
+                    this.fetchData();
+                }
+            });
+        } catch (e) { console.log(e) }
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            selectedMachine: nextProps.selectedMachine,
-            selectedDate: nextProps.selectedDate,
-            selectedShift: nextProps.selectedShift
-        }, () => {
-            this.fecthData();
-        });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) ||
+            !_.isEqual(nextProps.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(nextProps.selectedShift, prevState.selectedShift)) {
+            return {
+                selectedAssetOption: nextProps.selectedAssetOption,
+                selectedDate: nextProps.selectedDate,
+                selectedShift: nextProps.selectedShift
+            }
+        }
+        return null;
     }
 
-    fecthData() {
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption) ||
+            !_.isEqual(this.state.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(this.state.selectedShift, prevState.selectedShift)) {
+            this.setState({ modal_loadingspinner: true }, () => {
+                this.fetchData();
+            });
+        }
+    }
+
+    fetchData() {
         const parameters = {
-            mc: this.state.selectedMachine,
+            mc: this.state.selectedAssetOption.asset_code,
             dt: formatDate(this.state.selectedDate).split("-").join(""),
             sf: _.find(this.props.user.shifts, { shift_name: this.state.selectedShift }).shift_id
         };
@@ -73,6 +94,7 @@ class Intershift extends React.Component {
             this.setState({
                 intershiftComments,
                 lastComment: intershiftComments.length > 0 ? _.sortBy(intershiftComments, 'entered_on').reverse()[0] : null,
+                modal_loadingspinner: false
             });
         });
     }
@@ -128,7 +150,7 @@ class Intershift extends React.Component {
                 comment: this.state.value,
                 clocknumber: badge,
                 inter_shift_id: 0,
-                asset_code: this.state.selectedMachine
+                asset_code: this.state.selectedAssetOption.asset_code
             }
 
             let res = await getResponseFromGeneric('put', API, '/intershift_communication', {}, {}, data);
@@ -136,7 +158,7 @@ class Intershift extends React.Component {
                 this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Error', messageModalMessage: 'Intershift communication was not inserted. Please try again' });
             } else {
                 this.setState({ modal_loading_IsOpen: false, modal_message_Is_Open: true, messageModalType: 'Success', messageModalMessage: 'Intershift communication inserted successfully', value: '' });
-                this.fecthData();
+                this.fetchData();
             }
         })
     }
@@ -162,38 +184,40 @@ class Intershift extends React.Component {
             <React.Fragment>
                 <div className={'intershift-communication-comments'}>
                     <h5>{t('Intershift Communication')}</h5>
-                    <div id="intershift-table">
-                        <Table striped bordered hover className="intershift-communication-table">
-                            <thead>
-                                <tr>
-                                    <th>{t('User')}</th>
-                                    <th>{t('Comment')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.intershiftComments ? (this.state.lastComment ? <React.Fragment>
+                    {!this.state.modal_loadingspinner ?
+                        < div id="intershift-table">
+                            <Table striped bordered hover className="intershift-communication-table">
+                                <thead>
                                     <tr>
-                                        <td style={{ width: '20%' }}>
-                                            <span>{`${this.state.lastComment.first_name} ${this.state.lastComment.last_name}`}</span>
-                                            <div className={'intershift-comment-date'}>{formatDateWithTime(this.state.lastComment.entered_on)}</div>
-                                        </td>
-                                        <td style={{ width: '80%' }} className={"intershift-comment"}>
-                                            <div>{this.state.lastComment.comment}</div>
-                                            {this.state.intershiftComments.length > 1 ?
-                                                <span className="intershift-read-more"
-                                                    onClick={this.openIntershiftModal}>{`${t('Read More')}
-                                        (${this.state.intershiftComments.length})`}
-                                                    <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
-                                                </span> : null
-                                            }
-                                        </td>
+                                        <th>{t('User')}</th>
+                                        <th>{t('Comment')}</th>
                                     </tr>
-                                </React.Fragment> :
-                                    <tr><td colSpan={2}>{t('No intershift communications for this shift')}.</td></tr>) :
-                                    <tr><td colSpan={3}><Spinner /></td></tr>}
-                            </tbody>
-                        </Table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {!_.isEmpty(this.state.intershiftComments) ? <React.Fragment>
+                                        <tr>
+                                            <td style={{ width: '20%' }}>
+                                                <span>{`${this.state.lastComment.first_name} ${this.state.lastComment.last_name}`}</span>
+                                                <div className={'intershift-comment-date'}>{formatDateWithTime(this.state.lastComment.entered_on)}</div>
+                                            </td>
+                                            <td style={{ width: '80%' }} className={"intershift-comment"}>
+                                                <div>{this.state.lastComment.comment}</div>
+                                                {this.state.intershiftComments.length > 1 ?
+                                                    <span className="intershift-read-more"
+                                                        onClick={this.openIntershiftModal}>{`${t('Read More')}
+                                        (${this.state.intershiftComments.length})`}
+                                                        <FontAwesome name="angle-right" style={{ paddingLeft: 5 }} />
+                                                    </span> : null
+                                                }
+                                            </td>
+                                        </tr>
+                                    </React.Fragment> :
+                                        <tr><td colSpan={2}>{t('No intershift communications for this shift')}.</td></tr>}
+                                </tbody>
+                            </Table>
+                        </div>
+                        : <Spinner />
+                    }
                     <span className="dashboard-modal-field-group">
                         <p>{t('Enter new communication')}:</p>
                         <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={!this.props.isEditable} onChange={(e) => this.setState({ value: e.target.value })}></Form.Control>
@@ -226,7 +250,7 @@ class Intershift extends React.Component {
                         responseScan={this.handleScan}
                     />
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         )
     }
 };

@@ -85,6 +85,7 @@ export class ProductionDataService {
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
         let asset_code = req.body.asset_code ? req.body.asset_code : undefined;
+        const responsible = req.body.responsible ? req.body.responsible : null;
 
         if (dxh_data_id === undefined || productiondata_id === undefined || (quantity >= 0 && dt_reason_id === undefined) || asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
@@ -97,10 +98,10 @@ export class ProductionDataService {
         try {
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
-                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, clocknumber, timestamp, update);
             } else {
                 await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
-                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, first_name, last_name, timestamp, update);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {

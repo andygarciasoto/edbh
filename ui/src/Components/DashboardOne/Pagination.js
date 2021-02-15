@@ -5,7 +5,7 @@ import Tooltip from 'react-tooltip'
 import moment from 'moment';
 import $ from 'jquery';
 import * as qs from 'query-string';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import '../../sass/Pagination.scss';
 
 
@@ -16,14 +16,9 @@ class Pagination extends React.Component {
     }
 
     getInitialState(props) {
-        const search = qs.parse(props.history.location.search);
         return {
-            mc: search.mc || props.machineData.asset_code,
-            tp: search.tp || props.machineData.automation_level,
-            ln: search.ln || props.user.language,
-            cs: search.cs || props.user.site,
-            dt: search.dt || moment().tz(props.user.timezone),
-            sf: search.sf || props.user.current_shift,
+            dt: props.selectedDate,
+            sf: props.selectedShift,
             max_regresion: props.user.max_regression,
             display_next: false,
             display_go_current_shift: false,
@@ -33,15 +28,31 @@ class Pagination extends React.Component {
     }
 
     componentDidMount() {
-        this.newPaginationLogic(this.props);
+        this.fetchData(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.newPaginationLogic(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.selectedDate, prevState.dt) || !_.isEqual(nextProps.selectedShift, prevState.sf)) {
+            return {
+                dt: nextProps.selectedDate,
+                sf: nextProps.selectedShift,
+                max_regresion: nextProps.user.max_regression,
+                display_next: false,
+                display_go_current_shift: false,
+                display_back: false,
+                display_back_current_shift: false
+            }
+        } else return null;
     }
 
-    newPaginationLogic(props) {
-        let newState = this.getInitialState(props);
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.dt, prevState.dt) || !_.isEqual(this.state.sf, prevState.sf)) {
+            this.fetchData(this.props);
+        }
+    }
+
+    fetchData(props) {
+        let newState = this.state;
 
         const search = qs.parse(props.history.location.search);
         newState.diffDays = 0;
@@ -140,14 +151,10 @@ class Pagination extends React.Component {
     }
 
     async applyToQueryOptions(object) {
-        let { search } = qs.parse(this.props.history.location.search);
-        let queryItem = Object.assign({}, search);
-        queryItem["dt"] = moment(object.dt).format('YYYY/MM/DD HH:mm');
-        queryItem["sf"] = object.sf;
-        queryItem["mc"] = this.state.mc;
-        queryItem["ln"] = this.state.ln;
-        queryItem["tp"] = this.state.tp;
-        let parameters = $.param(queryItem);
+        let search = qs.parse(this.props.history.location.search);
+        search.dt = moment(object.dt).format('YYYY/MM/DD HH:mm');
+        search.sf = object.sf;
+        let parameters = $.param(search);
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);
     }
 

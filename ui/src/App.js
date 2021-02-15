@@ -12,6 +12,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { validPermission } from './Utils/Requests';
 import * as qs from 'query-string';
+import './sass/App.scss';
 
 function App(propsApp) {
   // set default machine and type
@@ -61,6 +62,7 @@ function App(propsApp) {
                   machineData={propsApp.machineData}
                   changeActiveOperators={changeActiveOperators}
                   activeOperators={activeOperators}
+                  socket={propsApp.socket}
                 />
               )
             }
@@ -101,6 +103,7 @@ function App(propsApp) {
               changeActiveOperators={changeActiveOperators}
               activeOperators={activeOperators}
               summary={true}
+              socket={propsApp.socket}
             />}
           />
           : null
@@ -114,6 +117,7 @@ function App(propsApp) {
               search={qs.parse(props.history.location.search)}
               defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
+              socket={propsApp.socket}
             />}
           />
           : null

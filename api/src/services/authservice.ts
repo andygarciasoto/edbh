@@ -180,8 +180,10 @@ export class AuthService {
                 if (machine) {
                     let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                     assetInformation = assetInformation[0];
-                    this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
-                        'login', 'Active', responseUser.site, 0, 0);
+                    if (assetInformation.is_multiple && role === 'Operator') {
+                        this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                            'login', 'Active', responseUser.site, 0, 0);
+                    }
                 } else {
                     claimsList.user.assign_role = role;
                 }
@@ -222,9 +224,10 @@ export class AuthService {
                 let responseUser: any;
                 try {
                     responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
+                    const differentRole = payload.body.assign_role && responseUser[0].role !== payload.body.assign_role;
                     responseUser[0].role = payload.body.assign_role || responseUser[0].role;
                     responseUser[0].assing_role = payload.body.assign_role;
-                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole(responseUser[0].role_id);
+                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole((differentRole ? 0 : responseUser[0].role_id), payload.body.assign_role);
                     return res.status(200).json(responseUser);
                 } catch (err) {
                     console.log(err);

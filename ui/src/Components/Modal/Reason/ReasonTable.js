@@ -8,7 +8,6 @@ import reasonHelper from './ReasonHelper';
 class ReasonTable extends React.Component {
     constructor(props) {
         super(props);
-        console.log('recrear componente');
         this.state = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
     }
 
@@ -31,7 +30,6 @@ class ReasonTable extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (!_.isEqual(nextProps.dxhdataList, prevState.dxhdataList)) {
-            console.log('list changes send state again');
             return {
                 dxhdataList: nextProps.dxhdataList,
                 productionRow: nextProps.productionRow,

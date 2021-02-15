@@ -4,7 +4,8 @@ import { Row, Col, Button } from 'react-bootstrap';
 import BadgeScannerModal from '../Common/BarcodeScannerModal';
 import {
     getResponseFromGeneric,
-    getCurrentTime
+    getCurrentTime,
+    formatDate
 } from '../../Utils/Requests';
 import { API } from '../../Utils/Constants';
 import LoadingModal from '../Common/LoadingModal';
@@ -15,6 +16,7 @@ import _ from 'lodash';
 
 
 class OperatorComponent extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = Object.assign(this.getInitialState(props));
@@ -23,7 +25,7 @@ class OperatorComponent extends React.Component {
     getInitialState(props) {
         return {
             activeOperators: [],
-            asset_code: null,
+            selectedAssetOption: props.selectedAssetOption,
             modal_validate_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_message_Is_Open: false,
@@ -31,13 +33,49 @@ class OperatorComponent extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.fetchData();
+        try {
+            this.props.socket.on('message', response => {
+                if (response.message) {
+                    this.fetchData(this.props);
+                }
+            });
+        } catch (e) { console.log(e) }
+    }
+
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (!_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
+        if (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption)) {
             return {
-                activeOperators: nextProps.activeOperators
+                activeOperators: [],
+                selectedAssetOption: nextProps.selectedAssetOption
             }
         }
         else return null
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption)) {
+            this.fetchData();
+        }
+    }
+
+    fetchData() {
+        const currentShift = _.find(this.props.user.shifts, { shift_id: this.props.user.shift_id });
+        const parameters = {
+            asset_id: this.state.selectedAssetOption.asset_id,
+            start_time: formatDate(currentShift.start_date_time_today),
+            end_time: formatDate(currentShift.end_date_time_today)
+        };
+
+        getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
+            let user_list = response || [];
+            const activeOperators = _.filter(user_list, { status: 'Active', is_current_scan: true });
+            this.props.updateActiveOperators(activeOperators);
+            this.setState({
+                activeOperators
+            });
+        });
     }
 
     openModal = (modal) => {

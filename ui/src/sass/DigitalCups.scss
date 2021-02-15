@@ -20,6 +20,8 @@
     margin-left  : 1%;
     margin-bottom: 1%;
     padding      : 1%;
+    font-weight  : bold;
+    font-size    : large;
 }
 
 .escalateBlink {
@@ -56,6 +58,7 @@
     align-items    : center;
     justify-content: center;
     overflow       : hidden;
+    color          : $color-white;
 }
 
 .currentInformation {
