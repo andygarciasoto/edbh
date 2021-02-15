@@ -21,7 +21,8 @@ class FilterComponent extends React.Component {
             levelOptions: [
                 { label: 'Site', value: 'Site' },
                 { label: 'Area', value: 'Area' },
-                { label: 'Cell', value: 'Cell' }
+                { label: 'Value Stream', value: 'value_stream' },
+                { label: 'Workcell', value: 'workcell_name' }
             ],
             assets_list: [],
             asset_list_option: [],
@@ -42,12 +43,33 @@ class FilterComponent extends React.Component {
         _.forEach(assets_list, asset => {
             asset.label = asset.asset_code + ' - ' + asset.asset_code;
             asset.value = asset.asset_id;
+            if (asset.asset_level !== 'Site' && asset.asset_level !== 'Area') {
+                asset.target = Math.floor(Math.random() * 55) + 1;
+                asset.actual = Math.floor(Math.random() * 55) + 1;
+                asset.backgroundColor = asset.actual >= asset.target ? 'green' : 'red';
+                asset.previousHours = new Array(5);
+                asset.redCount = 0;
+                _.forEach(asset.previousHours, (value, index) => {
+                    asset.previousHours[index] = (Math.floor(Math.random() * 2) + 1) === 1 ? 'green' : 'red';
+                    asset.redCount += (asset.previousHours[index] === 'red') ? 1 : 0;
+                });
+                asset.escalation = asset.backgroundColor === 'red' && asset.previousHours[4] === 'red' && asset.previousHours[3] === 'red';
+            }
         });
         this.setState({ assets_list });
     }
 
     onChangeSelectLevel = (e, field) => {
-        const asset_list_option = e.value === 'Site' ? [] : _.filter(this.state.assets_list, { asset_level: e.value });
+        let asset_list_option = e.value === 'Site' ? [] :
+            (e.value === 'Area' ? _.filter(this.state.assets_list, { asset_level: e.value }) :
+                _.filter(this.state.assets_list, asset => { return asset.asset_level === 'Cell' && !_.isEmpty(asset[e.value]); }));
+        if (e.value !== 'Site' && e.value !== 'Area' && !_.isEmpty(asset_list_option)) {
+            asset_list_option = _.orderBy(_.map(_.uniqBy(asset_list_option, e.value), asset => {
+                asset.value = asset[e.value];
+                asset.label = asset[e.value];
+                return asset;
+            }), 'value');
+        }
         this.setState({
             [field]: e,
             asset_list_option,
@@ -67,7 +89,7 @@ class FilterComponent extends React.Component {
                 this.setState({
                     modal_message_IsOpen: true,
                     modal_type: 'Error',
-                    modal_message: 'Please select' + (this.state.selectedLevel.value === 'Cell' ? ' a ' : ' an ') + this.state.selectedLevel.value + ' to filter'
+                    modal_message: 'Please select ' + this.state.selectedLevel.value + ' to filter'
                 });
             } else {
                 this.props.loadCups(this.state.selectedLevel, this.state.asset_selected_option, this.state.assets_list);
@@ -92,8 +114,8 @@ class FilterComponent extends React.Component {
         };
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={2} lg={2}>{t('Level Filter') + ':'}
+                <Row className='filterDiv'>
+                    <Col md={2} lg={2}>{t('Visualization Level') + ':'}
                         <ReactSelect
                             value={this.state.selectedLevel}
                             onChange={(e) => this.onChangeSelectLevel(e, 'selectedLevel')}
@@ -102,8 +124,8 @@ class FilterComponent extends React.Component {
                             styles={selectStyles}
                         />
                     </Col>
-                    {this.state.selectedLevel.value === 'Area' ?
-                        <Col md={2} lg={2}>{t('Area Filter') + ':'}
+                    {this.state.selectedLevel.value !== 'Site' && !_.isEmpty(this.state.selectedLevel) ?
+                        <Col md={2} lg={2}>{t('Select ' + this.state.selectedLevel.label) + ':'}
                             <ReactSelect
                                 value={this.state.asset_selected_option}
                                 onChange={(e) => this.onChangeSelect(e, 'asset_selected_option')}
@@ -113,20 +135,8 @@ class FilterComponent extends React.Component {
                             />
                         </Col>
                         : null}
-                    {this.state.selectedLevel.value === 'Cell' ?
-                        <Col md={2} lg={2}>{t('Cell Filter') + ':'}
-                            <ReactSelect
-                                value={this.state.asset_selected_option}
-                                onChange={(e) => this.onChangeSelect(e, 'asset_selected_option')}
-                                options={this.state.asset_list_option}
-                                className={"react-select-container"}
-                                styles={selectStyles}
-                            />
-                        </Col>
-                        : null}
-                    <Col md={2} lg={2}>
-                        <Button variant="outline-primary" style={{ marginBottom: '0%' }}
-                            onClick={this.searchData}>{t('Search')}</Button>
+                    <Col md={2} lg={2} className='buttonFilter'>
+                        <Button variant='outline-primary' onClick={this.searchData}>{t('Submit')}</Button>
                     </Col>
                 </Row>
                 <MessageModal

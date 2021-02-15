@@ -1,6 +1,7 @@
 import React from 'react';
 import CupsContainer from '../Components/DigitalCups/CupsContainer';
 import FilterComponent from '../Components/DigitalCups/FilterComponent';
+import '../sass/DigitalCups.scss';
 
 class DigitalCups extends React.Component {
     constructor(props) {
