@@ -122,7 +122,7 @@ class ManualEntryModal extends React.Component {
                 let uom = actualUoms.length === 1 ? actualUoms[0] : '';
                 this.setState({
                     isOpen: nextProps.isOpen,
-                    currentRow: nextProps.props.currentRow,
+                    currentRow: nextProps.currentRow,
                     uoms: actualUoms,
                     site: nextProps.user.site,
                     uom

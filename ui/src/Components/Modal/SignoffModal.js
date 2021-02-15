@@ -52,7 +52,7 @@ class SignoffModal extends React.Component {
     submitSignOff = () => {
         const props = this.props;
         if (this.state.signOffRole === 'Operator') {
-            if (props.selectedAssetOption.is_multiple) {
+            if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
                 if (props.activeOperators.length > 1) {
                     this.setState({ modal_validate_IsOpen: true });
                 } else {

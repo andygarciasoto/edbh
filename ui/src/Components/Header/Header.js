@@ -50,16 +50,25 @@ class Header extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    static getDerivedStateFromProps(nextProps, prevState) {
         let search = qs.parse(nextProps.history.location.search);
-        this.setState({
-            mc: search.mc || nextProps.machineData.asset_code,
-            tp: search.tp || nextProps.machineData.automation_level,
-            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone))),
-            sf: search.sf || nextProps.user.current_shift,
-            ln: search.ln || nextProps.user.language,
-            cs: search.cs || nextProps.user.site
-        });
+        const mc = search.mc || nextProps.machineData.asset_code;
+        const tp = search.tp || nextProps.machineData.automation_level;
+        const dt = search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone)));
+        const sf = search.sf || nextProps.user.current_shift;
+        const ln = search.ln || nextProps.user.language;
+        const cs = search.cs || nextProps.user.site;
+        if (nextProps.isOpen !== prevState.isOpen) {
+            return {
+                mc,
+                tp,
+                dt,
+                sf,
+                ln,
+                cs
+            };
+        }
+        return null;
     }
 
     redirectTo = (page) => {
@@ -211,8 +220,7 @@ class Header extends React.Component {
                                 : null}
                         </Dropdown>
                         : null}
-                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups'
-                        && this.props.history.location.pathname !== '/import' ?
+                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups' ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>

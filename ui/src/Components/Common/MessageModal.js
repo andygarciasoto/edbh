@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
+import _ from 'lodash';
 import '../../sass/MessageModal.scss';
 
 class MessageModal extends React.Component {
@@ -21,10 +22,18 @@ class MessageModal extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen) {
-            this.setState(this.getInitialState(nextProps));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.isOpen && (!_.isEqual(nextProps.type, prevState.type) || !_.isEqual(nextProps.message, prevState.message))) {
+            return {
+                type: nextProps.type,
+                message: nextProps.message,
+                title: nextProps.type,
+                classMessage: nextProps.type === 'Error' ? 'warning-message' : 'success-message',
+                classButton: nextProps.type === 'Error' ? 'outline-danger' : 'outline-success',
+                closeText: nextProps.t('Close')
+            };
         }
+        return null;
     }
 
     render() {

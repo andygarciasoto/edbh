@@ -3,6 +3,7 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getCurrentTimeOnly } from '../../Utils/Requests';
+import _ from 'lodash';
 import moment from 'moment';
 
 class DatePickerCustom extends React.Component {
@@ -14,8 +15,12 @@ class DatePickerCustom extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({ startDate: nextProps.value })
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.value, prevState.startDate)) {
+            return {
+                startDate: nextProps.value
+            };
+        } else return null;
     }
 
     handleChange(date) {

@@ -5,6 +5,7 @@ import { saveAs } from 'file-saver';
 import ConfigurationTab from '../Components/Import/ConfigurationTab';
 import * as axios from 'axios';
 import '../sass/Import.scss';
+import _ from 'lodash';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 class Import extends React.Component {
@@ -17,6 +18,7 @@ class Import extends React.Component {
         return {
             file: {},
             selectedAction: 'Import',
+            currentLanguage: props.search.ln || props.user.language,
             completeListTabs: [],
             availableListTabs: [],
             selectedListTabs: [],
@@ -54,6 +56,22 @@ class Import extends React.Component {
         this.fetchData();
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const currentLanguage = nextProps.search.ln || nextProps.user.language;
+        if (!_.isEqual(currentLanguage, prevState.currentLanguage)) {
+            return {
+                currentLanguage
+            };
+        }
+        return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage)) {
+            this.setState(this.getTranslations(this.props));
+        }
+    }
+
     fetchData() {
         let actualTabs = [];
 
@@ -72,10 +90,6 @@ class Import extends React.Component {
             completeListTabs: actualTabs,
             availableListTabs: actualTabs
         })
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(this.getTranslations(nextProps));
     }
 
     handleInputChange = (changeEvent) => {

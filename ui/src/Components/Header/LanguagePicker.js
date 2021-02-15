@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import _ from 'lodash';
 
 class LanguagePickerCustom extends React.Component {
   constructor(props) {
@@ -9,18 +10,18 @@ class LanguagePickerCustom extends React.Component {
       startDate: new Date(),
       value: this.props.value
     }
-    this.onSelect = this.onSelect.bind(this);
   }
 
-  componentDidMount() {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!_.isEqual(nextProps.value, prevState.value)) {
+      return {
+        value: nextProps.value
+      };
+    } else return null;
   }
 
-  onSelect(e) {
+  onSelect = (e) => {
     this.props.collectInput(e, 'ln');
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({ value: nextProps.value })
   }
 
   render() {

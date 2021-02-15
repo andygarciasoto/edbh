@@ -164,8 +164,8 @@ class LogOffModal extends React.Component {
                         <Row>
                             <Col md={12} lg={12}><span className='LogOffMessage'>{t('Please select what is the reason to sign out')}</span></Col>
                             <Col md={12} lg={12} className="d-flex justify-content-center logoffbuttons">
-                                <Button onClick={() => this.logOffReason('Lunch')} variant='outline-warning'>{t('Begin Lunch')}</Button>
-                                <Button onClick={() => this.logOffReason('Break')} variant='outline-success'>{t('Begin Break')}</Button>
+                                <Button onClick={() => this.logOffReason('Lunch')} className='btnYellow'>{t('Begin Lunch')}</Button>
+                                <Button onClick={() => this.logOffReason('Break')} className='btnGreen'>{t('Begin Break')}</Button>
                                 <Button onClick={() => this.logOffReason('Check-Out')} variant='outline-primary'>{t('Exit Station')}</Button>
                             </Col>
                         </Row>
