@@ -78,16 +78,6 @@ export class DTReasonService {
         let asset: any;
         let dxhData: any;
         try {
-            if (dt_reason_id === 0){
-                let dtdata: any;
-                try {
-                    dtdata = await this.dtreasonrepository.getSetupReason(asset_code);
-                    dt_reason_id = dtdata[0].dtreason_id;
-                } catch (err) {
-                    res.status(500).json({ message: err.message });
-                    return;
-                }
-            }
             if (dxh_data_id === undefined) {
                 if (asset_code === undefined) {
                     return res.status(400).json({ message: "Bad Request - Missing asset_code parameter" });

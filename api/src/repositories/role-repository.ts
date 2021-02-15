@@ -10,6 +10,6 @@ export class RoleRepository {
     }
 
     public async getComponentsByRole(role_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Components_By_Role ${role_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Components_By_Role ${role_id}, ''`);
     }
 }
