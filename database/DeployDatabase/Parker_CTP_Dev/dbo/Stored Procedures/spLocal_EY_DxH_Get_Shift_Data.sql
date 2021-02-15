@@ -97,9 +97,8 @@ AS
                         PD.target, 
                         PD.actual, 
                         (PD.setup_scrap + PD.other_scrap) AS scrap, 
-                        PD.setup_scrap, 
-                        PD.other_scrap, 
-                        --PD.adjusted_actual, 
+                        PD.setup_scrap,
+                        PD.other_scrap,
                         SUM(PD.ideal) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
                         SUM(PD.ideal) OVER(
                         ORDER BY PD.dxhdata_id) AS cumulative_ideal, 
@@ -116,8 +115,6 @@ AS
                         SUM(PD.other_scrap) OVER(PARTITION BY PD.dxhdata_id) AS summary_other_scrap, 
                         SUM(PD.other_scrap) OVER(
                         ORDER BY PD.dxhdata_id) AS cumulative_other_scrap, 
-                        --SUM(PD.adjusted_actual) OVER(PARTITION BY PD.dxhdata_id) AS summary_adjusted_actual, 
-                        --SUM(PD.adjusted_actual) OVER(ORDER BY PD.dxhdata_id) AS cumulative_adjusted_actual,
                         CASE
                             WHEN COUNT(*) OVER(PARTITION BY BD.started_on_chunck) > 1
                             THEN 'multiple'
@@ -281,7 +278,6 @@ AS
                             ELSE 0
                         END AS result_final
                  FROM CTE2)
-             --SELECT * FROM CTE3;
              SELECT started_on_chunck, 
                     ended_on_chunck, 
                     hour_interval, 
@@ -351,8 +347,6 @@ AS
                     cumulative_setup_scrap, 
                     summary_other_scrap, 
                     cumulative_other_scrap, 
-                    --summary_adjusted_actual, 
-                    --cumulative_adjusted_actual, 
                     summary_product_code, 
                     order_id, 
                     order_number, 
@@ -378,13 +372,8 @@ AS
                     last_name, 
                     total_comments, 
                     timelost_summary,
-                    --new_ideal,
-                    --new_target,
                     summary_actual_quantity,
 					active_operators
-             --Row#,
-             --summary_actual_target,
-             --result_final
              FROM CTE3
              ORDER BY started_on_chunck ASC, 
                       start_time DESC;

@@ -61,7 +61,7 @@ class CommentsModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     modal_type: 'Error',
-                    modal_message: 'Error when try to find the user. Please Try again',
+                    modal_message: 'Error finding the user. Please try again',
                     modal_message_IsOpen: true
                 });
             } else {
@@ -86,9 +86,9 @@ class CommentsModal extends React.Component {
 
             let res = await getResponseFromGeneric('post', API, '/dxh_new_comment', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Comment not created' });
+                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Comment not created. Please try again' });
             } else {
-                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Comment was inserted' });
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Comment was inserted successfully' });
             }
             this.props.Refresh(this.props.parentData);
             this.closeCommentModal();

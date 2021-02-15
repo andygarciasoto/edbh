@@ -1,0 +1,88 @@
+.close-modal-icon {
+    position: absolute;
+    top:0;
+    right:5px;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+}
+
+.dashboard-modal-field-dropdown {
+    display: inline !important;
+    padding: 10px;
+}
+
+.number-field {
+    padding: 5px 0px 5px 0px;
+    p, input {
+        display: inline;
+    }
+    p {
+        padding: 0px 10px 0px 10px;
+    }
+    input {
+        border-radius: 3px;
+        border: 1px solid rgb(185, 185, 185);
+        width: 15%;
+        text-align: center;
+    }
+}
+
+.new-manualentry {
+    border: 1px solid rgb(185, 185, 185);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.new-manualentry-unallocated input {
+    margin-left: 8%;
+}
+
+.new-manualentry-allocate input {
+    margin-left: 4%;
+}
+
+
+.new-manualentry-data {
+    margin: 20px 0px 40px 0px;
+}
+
+.new-manualentry-button {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.new-manualentry-data {
+    padding-bottom: 30px;
+}
+
+.manualentry-table {
+    max-height: 25vh;
+    overflow-y: scroll;
+}
+
+.manualentry-top {display: inline;}
+.new-manualentry-reasoncode { margin-bottom: 5px;}
+
+.new-manualentry-close {text-align: right;}
+.new-timelost-label {font-size: 0.9em;}
+
+.timelost-field {border: 1px solid rgb(185, 185, 185);
+    border-radius: 3px;
+    padding: 5px;
+    text-align: center;
+    width: 50%;
+    }
+
+.react-select-container {width: 95%}
+.react_control__menu {height: 150px; overflow: hidden;}
+
+.manualentry-field {
+    border: 1px solid lightgrey;
+    padding-top: 5px;
+    border-radius: 3px;
+}
+
+.manualentry-select {
+    padding-left: 0px;
+}

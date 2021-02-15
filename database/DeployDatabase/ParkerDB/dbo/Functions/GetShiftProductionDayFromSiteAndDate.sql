@@ -1,4 +1,5 @@
-﻿CREATE   FUNCTION [dbo].[GetShiftProductionDayFromSiteAndDate]
+﻿/****** Object:  UserDefinedFunction [dbo].[GetShiftProductionDayFromSiteAndDate]    Script Date: 9/2/2021 12:43:11 ******/
+CREATE FUNCTION [dbo].[GetShiftProductionDayFromSiteAndDate]
 (                   @site_id           INT,
                     @date   DATETIME
 )
@@ -66,7 +67,7 @@ BEGIN
 	BEGIN
 		SET @ProductionDay = DATEADD(DAY, -1, @ProductionDay);
 	END
-	ELSE IF (@CurrentDateTime > @last_shift_end_time)
+	ELSE IF (@CurrentDateTime >= @last_shift_end_time)
 	BEGIN
 		SET @ProductionDay = DATEADD(DAY, 1, @ProductionDay);
 	END
@@ -92,9 +93,9 @@ BEGIN
 		@Shift_Name = [shift_name],
 		@Shift_Code = [shift_code]
 		FROM CTE WHERE 
-			@CurrentDateTime BETWEEN start_date_time_today AND end_date_time_today OR 
-			@CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday OR
-			@CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
+			(@CurrentDateTime >= start_date_time_today AND @CurrentDateTime < end_date_time_today) OR 
+			(@CurrentDateTime > start_date_time_yesterday AND @CurrentDateTime < end_date_time_yesterday) OR
+			(@CurrentDateTime > start_date_time_tomorrow AND @CurrentDateTime <= end_date_time_tomorrow);
 
 	INSERT @tablename SELECT @ProductionDay, @CurrentDateTime, @Shift_Id, @Shift_Name, @Shift_Code;
 

@@ -50,23 +50,23 @@
 --	20191204		C00V03 - Change CommonParameters to CommonParameters
 --		
 -- Example Call:
--- Exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0
+-- Exec spLocal_EY_DxH_Put_InterShiftData_new_1 230, 'shifting gears', 'EYAdministrator', Null, Null, 0
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
 --Declare
-@DxHData_Id   INT, -- any hour Id of the shift associated with this data
+@Asset_Id   INT, -- id of the associate Asset
 @Comment      VARCHAR(256), -- the main info for the display
 @Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
 @First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
 @Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
-@Timestamp    DATETIME, -- generally current time in site timezone
 @Update       INT				-- generally null or 0, send the intershift_id for update
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE 
+        DECLARE
+		@Site_Id INT,
 		@First VARCHAR(50),
 		@Last VARCHAR(50),
 		@Initials VARCHAR(50),
@@ -75,50 +75,17 @@ AS
 		@ReturnStatus INT,
 		@ReturnMessage VARCHAR(1000),
 		@Site_Timezone VARCHAR(100),
-		@Timestamp_UTC DATETIME,
-		@asset_id INT,
 		@Production_Day DATETIME,
-		@Shift_Code VARCHAR(100),
-		@Site_Id INT;
+		@Shift_Code VARCHAR(100);
 
-        SELECT @asset_id = asset_id, 
-               @Production_Day = production_day, 
-               @Shift_Code = shift_code
-        FROM dbo.DxHData
-        WHERE dxhdata_id = @DxHData_Id;
-        SELECT @Site_Id = asset_id
-        FROM [dbo].[Asset]
-        WHERE asset_level = 'Site'
-              AND site_code =
-        (
-            SELECT site_code
-            FROM [dbo].[Asset]
-            WHERE asset_id = @asset_id
-        );
-        SELECT @Site_Timezone = site_timezone
-        FROM dbo.CommonParameters cpt WITH(NOLOCK)
-        WHERE site_id = @Site_Id
-              AND STATUS = 'Active';
+		SELECT @Site_Id = asset_id
+		FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id = @Asset_Id);
 
-        SELECT @Timestamp_UTC = @Timestamp AT TIME ZONE @Site_Timezone AT TIME ZONE 'UTC'
+		SELECT
+			@Production_Day = ProductionDay,
+			@Shift_Code = ShiftCode
+		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@Site_Id,NULL);
 
-        IF NOT EXISTS
-        (
-            SELECT dxhdata_id
-            FROM dbo.DxHData WITH(NOLOCK)
-            WHERE dxhdata_id = ISNULL(@DxHData_Id, -1)
-        )
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
-                GOTO ErrExit;
-        END;
-        IF ISNULL(@Comment, '') = ''
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Comment ' + CONVERT(VARCHAR, ISNULL(@Comment, ''));
-                GOTO ErrExit;
-        END;
         IF EXISTS
         (
             SELECT Badge
@@ -152,12 +119,6 @@ AS
                 GOTO ErrExit;
         END;
         SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
-        IF ISDATE(@Timestamp) <> 1
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
-                GOTO ErrExit;
-        END;
         IF(ISNULL(@Update, 0) <> 0)
           AND (NOT EXISTS
         (
@@ -180,10 +141,10 @@ AS
                  @First_Name,
                  @Last_Name,
                  @Initials,
-                 @Timestamp_UTC,
+                 GETDATE(),
                  @Initials,
                  GETDATE(),
-                 @asset_id
+                 @Asset_Id
                 );
                 SET @InterShift_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 

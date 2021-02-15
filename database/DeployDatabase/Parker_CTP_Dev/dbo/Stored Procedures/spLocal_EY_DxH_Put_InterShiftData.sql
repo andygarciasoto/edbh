@@ -75,7 +75,6 @@ AS
 		@ReturnStatus INT,
 		@ReturnMessage VARCHAR(1000),
 		@Site_Timezone VARCHAR(100),
-		@Timestamp_UTC DATETIME,
 		@Production_Day DATETIME,
 		@Shift_Code VARCHAR(100);
 
@@ -84,8 +83,7 @@ AS
 
 		SELECT
 			@Production_Day = ProductionDay,
-			@Shift_Code = ShiftCode,
-			@Timestamp_UTC = CurrentDateTime
+			@Shift_Code = ShiftCode
 		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@Site_Id,NULL);
 
         IF EXISTS
@@ -143,7 +141,7 @@ AS
                  @First_Name,
                  @Last_Name,
                  @Initials,
-                 @Timestamp_UTC,
+                 GETDATE(),
                  @Initials,
                  GETDATE(),
                  @Asset_Id

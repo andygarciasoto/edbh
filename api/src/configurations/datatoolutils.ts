@@ -135,7 +135,7 @@ export let headers = {
         { header: 'summary_timeout', type: 'INT', key: 'summary_timeout', width: 19 },
         { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
         { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 }
-        
+
     ],
     Unavailable: [
         { header: 'unavailable_code', type: 'VARCHAR', key: 'unavailable_code', width: 24 },
@@ -183,7 +183,7 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.joinSentence = `LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name`;
             parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
             parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], t.[asset_level] = s.[asset_level], t.[parent_asset_code] = s.[parent_asset_code], t.[value_stream] = s.[value_stream], t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[workcell_id], t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple]`;
-            parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [target_percent_of_ideal]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[target_percent_of_ideal], s.[is_multiple])`;
+            parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [target_percent_of_ideal],[is_multiple) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[target_percent_of_ideal], s.[is_multiple])`;
             break;
         case 'AssetDisplaySystem':
             parametersObject.extraColumns = ', a.asset_id';
@@ -197,7 +197,7 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code OUTER APPLY [dbo].[AssetsResolverFromId] (a.asset_id, CASE WHEN (a.asset_level='Area' or a.asset_level='Site') then 3 else 0 end ) as H`;
             parametersObject.matchParameters = 's.dtreason_code = t.dtreason_code AND s.asset_id = t.asset_id';
             parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], t.[entered_by] = s.[entered_by], t.[last_modified_by] = s.[last_modified_by], t.[last_modified_on] = s.[last_modified_on], t.[type] = s.[type], t.[level] = s.[level]`;
-            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[type], s.[level])`;
+            parametersObject.insertSentence = `([dtreason_code], [dtreason_name], [dtreason_description], [dtreason_category], [level], [reason1], [reason2], [status], [entered_by], [entered_on], [last_modified_by], [last_modified_on], [asset_id], [type]) VALUES (s.[dtreason_code], s.[dtreason_name], s.[dtreason_description], s.[dtreason_category], s.[level], s.[reason1], s.[reason2], s.[status], s.[entered_by], s.[entered_on], s.[last_modified_by], s.[last_modified_on], s.[asset_id], s.[type])`;
             break;
         case 'Shift':
             parametersObject.extraColumns = ', a.asset_id';

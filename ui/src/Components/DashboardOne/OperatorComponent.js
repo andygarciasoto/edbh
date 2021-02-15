@@ -65,7 +65,7 @@ class OperatorComponent extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     messageModalType: 'Error',
-                    messageModalMessage: 'Error when try to find the user. Please Try again',
+                    messageModalMessage: 'Error finding the user. Please try again',
                     modal_message_Is_Open: true
                 });
             } else {
@@ -90,14 +90,14 @@ class OperatorComponent extends React.Component {
                         this.setState({
                             modal_loading_IsOpen: false,
                             messageModalType: 'Error',
-                            messageModalMessage: 'Error when try to SignOut from the EDxH. Please Try again',
+                            messageModalMessage: 'Error signing out from the EDxH. Please try again',
                             modal_message_Is_Open: true
                         });
                     } else {
                         this.setState({
                             modal_loading_IsOpen: false,
                             messageModalType: 'Success',
-                            messageModalMessage: 'Success operator check in',
+                            messageModalMessage: 'Operator checked in successfully',
                             modal_message_Is_Open: true,
                             modal_validate_IsOpen: false
                         });
@@ -107,7 +107,7 @@ class OperatorComponent extends React.Component {
                     this.setState({
                         modal_loading_IsOpen: false,
                         messageModalType: 'Error',
-                        messageModalMessage: 'Error this user its already checkin in this machine. Please Try again with a different user',
+                        messageModalMessage: 'This user is already checked in. Please try again with a different user',
                         modal_message_Is_Open: true
                     });
                 }

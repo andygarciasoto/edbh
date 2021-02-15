@@ -68,7 +68,7 @@ const roleRepository = new RoleRepository(sqlServerStore);
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
-const userService = new UserService(userRepository);
+const userService = new UserService(userRepository, roleRepository);
 const uomService = new UomService(uomRepository, assetRepository);
 const dxhdataService = new DxHDataService(dxhdataRepository, assetRepository, userRepository);
 const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository, dxhdataRepository);
@@ -116,11 +116,8 @@ const appConfig = {
         new http.RestEndpoint('/api/shifts', 'get', async (req: Request, res: Response) => {
             await shiftService.getShiftBySite(req, res);
         }, true),
-        new http.RestEndpoint('/api/user_sites', 'get', async (req: Request, res: Response) => {
-            await userService.findUserByBadge(req, res);
-        }, true),
-        new http.RestEndpoint('/api/user_info_login_by_site', 'get', async (req: Request, res: Response) => {
-            await userService.findUserById(req, res);
+        new http.RestEndpoint('/api/find_sites', 'get', async (req: Request, res: Response) => {
+            await userService.findSitesByUser(req, res);
         }, true),
         new http.RestEndpoint('/api/uom_by_site', 'get', async (req: Request, res: Response) => {
             await uomService.getUomBySite(req, res);
@@ -199,6 +196,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/get_components_by_role', 'get', async (req: Request, res: Response) => {
             await roleService.getComponentsByRole(req, res);
+        }, true),
+        new http.RestEndpoint('/api/production_any_order', 'put', async (req: Request, res: Response) => {
+            await productiondataService.putProductionForAnyOrder(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

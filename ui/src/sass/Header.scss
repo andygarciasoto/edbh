@@ -82,3 +82,26 @@ a:hover {
     color : $color-grey;
     border: solid 1px $color-grey;
 }
+
+.machine-picker-button {
+    .dropdown-toggle::after {
+        margin-left: 6%;
+        float      : right;
+        margin-top : 4%;
+    }
+}
+
+.dropdown-toggle,
+.btn-primary {
+    border          : solid 1px $color-grey-border;
+    width           : 60%;
+    background-color: $color-white-back;
+    color           : $color-black;
+    text-align      : left;
+}
+
+.machine-picker div {
+    max-height: 50vh !important;
+    overflow-y: scroll;
+    width     : 60%;
+}

@@ -65,14 +65,14 @@ class ManualEntryModal extends React.Component {
             this.setState({ modal_loading_IsOpen: true }, async () => {
                 let res = await getResponseFromGeneric('put', API, '/create_order_data', {}, {}, data);
                 if (res.status !== 200) {
-                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Order not created' });
+                    this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Order was not created. Please try again' });
                 } else {
                     this.setState({ modal_loading_IsOpen: true }, async () => {
                         let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
                         if (res.status !== 200 || !res) {
-                            this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Production row not created' });
+                            this.setState({ modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Error', modal_message: 'Production row was not created. Please try again' });
                         }
-                        this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Manual Entry Succesfully Inserted' });
+                        this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_isOpen: true, modal_type: 'Success', modal_message: 'Manual Entry Inserted Successfully' });
                         this.props.Refresh(this.props.parentData);
                         this.props.onRequestClose();
                     });

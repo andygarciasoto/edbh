@@ -57,22 +57,20 @@ BEGIN
 -- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	SELECT 
-		dt.dtreason_id as 'dtreason_id',
-		dt.dtreason_code as 'dtreason_code',
-		dt.dtreason_name as 'dtreason_name',
-		dt.dtreason_category as 'dtreason_category',
-		dt.type as 'type',
+		dt.dtreason_id,
+		dt.dtreason_code,
+		dt.dtreason_name,
+		dt.dtreason_category,
+		dt.type,
 		dt.level,
-		a.site_code as 'site_code'
-
+		a.site_code
 	FROM dbo.DTReason dt with (nolock)
 	INNER JOIN dbo.Asset a ON a.asset_id = @Asset_id
 		WHERE dt.asset_id = @Asset_Id
 			AND dt.status = 'Active' 
 			AND dt.type = @type
 	Order By 
-		dt.dtreason_category,
-		CASE WHEN a.site_code in ('Eaton', 'Veniano_HA', 'Veniano_Hose') THEN len(dt.dtreason_code) END,	--trying to sort alpha numeric values as numbers
+		CASE WHEN a.site_code in ('Eaton', 'Veniano_HA', 'Veniano_Hose', 'Nussdorf') THEN len(dt.dtreason_code) END,	--trying to sort alpha numeric values as numbers
 		dt.dtreason_code;
 
 END

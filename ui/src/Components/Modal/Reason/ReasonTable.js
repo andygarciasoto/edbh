@@ -8,6 +8,7 @@ import reasonHelper from './ReasonHelper';
 class ReasonTable extends React.Component {
     constructor(props) {
         super(props);
+        console.log('recrear componente');
         this.state = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
     }
 
@@ -19,17 +20,18 @@ class ReasonTable extends React.Component {
             editReason: false,
             currentReason: {},
             newReason: {},
-            base: 0,
-            setupReasonsOptions: [],
-            productionReasonsOptions: [],
-            allReasonOptions: [],
-            levelOptions: [],
+            base: props.base,
+            setupReasonsOptions: props.setupReasonsOptions,
+            productionReasonsOptions: props.productionReasonsOptions,
+            allReasonOptions: props.allReasonOptions,
+            levelOptions: props.levelOptions,
             levelOption: null
         }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (!_.isEqual(nextProps.dxhdataList, prevState.dxhdataList)) {
+            console.log('list changes send state again');
             return {
                 dxhdataList: nextProps.dxhdataList,
                 productionRow: nextProps.productionRow,

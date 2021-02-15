@@ -3,9 +3,10 @@ import Spinner from './Components/Common/Spinner';
 import SignIn from './Views/SignIn';
 import Login from './Views/Login';
 import Header from './Components/Header/Header';
-import DashboardOne from './Views/DashboardOneExample';
+import DashboardOne from './Views/DashboardOne';
 import Import from './Views/Import';
 import SesionManage from './Views/SesionManage';
+import DigitalCups from './Views/DigitalCups';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -31,9 +32,9 @@ function App(propsApp) {
         <meta name="theme-color" content="#ccc" />
       </Helmet>
       <Suspense fallback={<Spinner />}>
-        <Route path="/"
+        <Route path='/'
           render={(props) =>
-            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary") &&
+            (props.location.pathname === '/dashboard' || props.location.pathname === '/import' || props.location.pathname === '/summary' || props.location.pathname === '/digitalcups') &&
             <Header
               history={props.history}
               t={t}
@@ -46,7 +47,7 @@ function App(propsApp) {
         />
         {currentUser && validPermission(currentUser, 'dashboardView', 'read') ?
           <Route
-            path="/dashboard"
+            path='/dashboard'
             render={(props) => {
               return (
                 <DashboardOne
@@ -104,9 +105,22 @@ function App(propsApp) {
           />
           : null
         }
+        {currentUser && validPermission(currentUser, 'digitalcups', 'read') ?
+          <Route exact path='/digitalcups' render={(props) =>
+            <DigitalCups
+              user={currentUser}
+              t={t}
+              history={props.history}
+              search={qs.parse(props.history.location.search)}
+              defaultAsset={propsApp.defaultAsset}
+              machineData={propsApp.machineData}
+            />}
+          />
+          : null
+        }
         <Route path="/"
           render={(props) =>
-            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary") &&
+            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary" || props.location.pathname === "/digitalcups") &&
             <SesionManage
               history={props.history}
               search={qs.parse(props.history.location.search)}

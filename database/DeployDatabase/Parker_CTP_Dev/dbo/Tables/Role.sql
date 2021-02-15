@@ -9,5 +9,5 @@
     [entered_on]            DATETIME NOT NULL,
     [last_modified_by]      NVARCHAR (100) NOT NULL,
     [last_modified_on]      DATETIME NOT NULL,
-    CONSTRAINT [PK_Role_Id] PRIMARY KEY CLUSTERED ([role_id] ASC)
+    CONSTRAINT [PK_Role_Role_Id] PRIMARY KEY CLUSTERED ([role_id] ASC)
 )

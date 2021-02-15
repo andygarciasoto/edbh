@@ -1,0 +1,35 @@
+.close-modal-icon {
+    position: absolute;
+    top:0;
+    right:5px;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+}
+
+.dashboard-modal-error-field-head {font-size: 0.7em;}
+.warning-message{display: inline; color: red;}
+.success-message{display: inline; color: green;}
+.icon {font-size: 2em;}
+.error-button {display: block; margin: 0 auto;}
+.dashboard-modal-signoff-header {text-transform: capitalize}
+.signoff-buttons {
+    display: table;
+    margin: auto;
+    width: 20%;
+}
+
+.signoff-list-parent li {
+    list-style-type: none;
+    margin-right: 4%;
+}
+
+.signoff-list-parent li p {
+    display: inline;
+}
+
+.signoff-list-parent {
+    // width: 20%;
+    // margin: 0 auto;
+    text-align: center;
+}

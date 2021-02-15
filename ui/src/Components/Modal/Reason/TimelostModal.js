@@ -3,7 +3,7 @@ import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 import MessageModal from '../../Common/MessageModal';
 import LoadingModal from '../../Common/LoadingModal';
 import BarcodeScannerModal from '../../Common/BarcodeScannerModal';
-import { getResponseFromGeneric, getCurrentTime } from '../../../Utils/Requests';
+import { getResponseFromGeneric, getCurrentTime, formatDateWithTime } from '../../../Utils/Requests';
 import ReactSelect from 'react-select';
 import { validateTimeLostSubmit } from '../../../Utils/FormValidations';
 import { API } from '../../../Utils/Constants';
@@ -50,7 +50,7 @@ class TimelostModal extends React.Component {
                 isOpen: nextProps.isOpen
             };
         }
-        if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow && nextProps.currentRow.dxhdata_id && nextProps.currentRow.productiondata_id) ||
+        if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow) ||
             (nextProps.isOpen && nextProps.isOpen === prevState.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow))) {
             return {
                 isOpen: nextProps.isOpen,
@@ -75,10 +75,12 @@ class TimelostModal extends React.Component {
     }
 
     onChangeInput = (e, field) => {
-        this.setState({
-            [field]: parseInt(e.target.value),
-            adjustedValue: parseInt(this.state.allocated_time) - parseInt(e.target.value)
-        });
+        if (parseInt(this.state.allocated_time) - parseInt(e.target.value) >= 0) {
+            this.setState({
+                [field]: parseInt(e.target.value),
+                adjustedValue: parseInt(this.state.allocated_time) - parseInt(e.target.value)
+            });
+        }
     }
 
     onChangeSelect = (e, field) => {
@@ -109,7 +111,7 @@ class TimelostModal extends React.Component {
             axios.spread((...responses) => {
 
                 _.forEach(responses[0], reason => {
-                    reason.label = reason.dtreason_name;
+                    reason.label = reason.dtreason_code + ' - ' + reason.dtreason_name;
                     reason.value = reason.dtreason_id;
                 });
 
@@ -160,8 +162,8 @@ class TimelostModal extends React.Component {
         } else {
             this.setState({
                 modal_message_IsOpen: true,
-                modal_type: 'Error',
-                modal_message: `Any change detected`
+                modal_type: 'Warning',
+                modal_message: `No changes detected. Please close the window or edit your values`
             });
         }
     }
@@ -177,7 +179,7 @@ class TimelostModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false,
                     modal_type: 'Error',
-                    modal_message: 'Error when try to find the user. Please Try again',
+                    modal_message: 'Error finding the user. Please Try again',
                     modal_message_IsOpen: true
                 });
             } else {
@@ -194,8 +196,6 @@ class TimelostModal extends React.Component {
     }
 
     submitTimelost(badge) {
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
-
         let data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
             productiondata_id: this.state.currentRow.productiondata_id,
@@ -203,7 +203,8 @@ class TimelostModal extends React.Component {
             dt_minutes: parseInt(this.state.quantityValue),
             clocknumber: badge,
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            row_timestamp: formatDateWithTime(this.state.currentRow.started_on_chunck),
+            asset_code: this.props.parentData[0]
         };
 
         const reasonCode = _.find(this.state.timelossTableList, { dtreason_id: data.dt_reason_id }) || {};
@@ -215,15 +216,14 @@ class TimelostModal extends React.Component {
         this.setState({ modal_loading_IsOpen: true }, async () => {
             let res = await getResponseFromGeneric('put', API, '/dt_data', {}, {}, data);
             if (res.status !== 200) {
-                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Time Lost Entries unsaved', insert: false });
+                this.setState({ modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Time Lost was not updated. Please try again', insert: false });
             } else {
-                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Time Lost Entries Saved', insert: false });
+                this.setState({ request_status: res, modal_loading_IsOpen: false, modal_message_IsOpen: true, modal_type: 'Success', modal_message: 'Time Lost was updated successfully', insert: false });
             }
         });
     }
 
     submitNewTimelostUpdate(badge, currentReason, newReason) {
-        const asset = _.find(this.props.user.sites, { asset_id: this.props.user.site });
         const data = {
             dxh_data_id: this.state.currentRow.dxhdata_id,
             productiondata_id: this.state.currentRow.productiondata_id,
@@ -232,7 +232,7 @@ class TimelostModal extends React.Component {
             dtdata_id: parseInt(currentReason.dtdata_id),
             clocknumber: badge,
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: asset.asset_code
+            asset_code: this.props.parentData[0]
         }
 
         this.setState({ modal_loading_IsOpen: true }, async () => {
