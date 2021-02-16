@@ -78,6 +78,9 @@ class DashboardOne extends React.Component {
               updateActiveOperators={this.updateActiveOperators}
               socket={props.socket}
               isEditable={validPermission(props.user, 'operatorInformation', 'write')}
+              updateCurrentUser={props.updateCurrentUser}
+              showModalLogOff={props.showModalLogOff}
+              displayModalLogOff={props.displayModalLogOff}
             /> : null}
           <Row>
             <Col md={12} lg={12} id="dashboardOne-table">
@@ -97,7 +100,7 @@ class DashboardOne extends React.Component {
                 t={t}
                 summary={this.props.summary}
                 modal_order_IsOpen={this.props.modal_order_IsOpen}
-                closeOrderModal={this.props.closeOrderModal}
+                displayOrderModal={this.props.displayOrderModal}
                 selectedAssetOption={this.state.selectedAssetOption}
                 selectedDate={this.state.selectedDate}
                 selectedShift={this.state.selectedShift}

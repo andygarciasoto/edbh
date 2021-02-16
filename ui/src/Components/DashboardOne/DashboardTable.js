@@ -19,7 +19,7 @@ import TimelostModal from '../Modal/Reason/TimelostModal';
 import CommentModal from '../Modal/CommentModal';
 import SignoffModal from '../Modal/SignoffModal';
 import OrderModal from '../Modal/OrderModal';
-import ActiveOperatorsModal from '../Modal/ActiveOperatorsModal';
+import ActiveOperatorsModal from '../Modal/OperatorComponent/ActiveOperatorsModal';
 import 'react-table/react-table.css';
 import '../../sass/DashboardTable.scss';
 const axios = require('axios');
@@ -100,7 +100,8 @@ class DashboardTable extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage) || !_.isEqual(this.state.selectedShift, prevState.selectedShift)) {
+        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage) || !_.isEqual(this.state.selectedShift, prevState.selectedShift) ||
+            !_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption)) {
             let temporalState = Object.assign(this.getTextTranslations(this.props));
             this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, this.props)));
         }
@@ -397,8 +398,8 @@ class DashboardTable extends React.Component {
                     isEditable={this.state.isEditable}
                 />
                 <OrderModal
-                    isOpen={this.state.modal_order_IsOpen}
-                    onRequestClose={() => this.props.closeOrderModal(false)}
+                    isOpen={this.props.modal_order_IsOpen}
+                    onRequestClose={() => this.props.displayOrderModal(false)}
                     parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     selectedAssetOption={this.props.selectedAssetOption}
                     modalTitle={'New Order'}

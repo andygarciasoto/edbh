@@ -1,10 +1,10 @@
 import React from 'react';
 import { Modal, Row, Col, Button } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
-import { AUTH, API } from '../../Utils/Constants';
-import { genericRequest, getCurrentTime, getResponseFromGeneric } from '../../Utils/Requests';
-import * as _ from 'lodash';
-import '../../sass/SupervisorLogInModal.scss';
+import { AUTH, API } from '../../../Utils/Constants';
+import { genericRequest, getCurrentTime, getResponseFromGeneric } from '../../../Utils/Requests';
+import _ from 'lodash';
+import '../../../sass/SupervisorLogInModal.scss';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 
@@ -12,18 +12,7 @@ class SupervisorLogInModal extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isOpen: false,
-        }
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen !== prevState.isOpen) {
-            return {
-                isOpen: nextProps.isOpen
-            };
-        }
-        return null;
+        this.state = {}
     }
 
     continueAs = async (role) => {
@@ -42,6 +31,7 @@ class SupervisorLogInModal extends React.Component {
                 lunch_minutes: 0
             };
             await getResponseFromGeneric('put', API, '/new_scan', {}, {}, data);
+            this.props.Refresh();
         }
 
 
@@ -64,8 +54,7 @@ class SupervisorLogInModal extends React.Component {
                 newUser.assing_role = role;
                 newUser.permissions = permissions;
                 localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, res.data);
-                
-                this.props.onRequestClose(newUser);
+                this.props.updateCurrentUser(newUser);
             }
         }
     }
@@ -78,7 +67,7 @@ class SupervisorLogInModal extends React.Component {
                     size="lg"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
-                    show={this.state.isOpen} onHide={() => this.continueAs('Supervisor')}
+                    show={this.props.isOpen} onHide={() => this.continueAs('Supervisor')}
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter" className='SupervisorTitle'>

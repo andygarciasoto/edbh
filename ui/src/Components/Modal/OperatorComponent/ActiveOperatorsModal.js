@@ -5,8 +5,8 @@ import {
     getResponseFromGeneric,
     formatDate,
     formatTime
-} from '../../Utils/Requests';
-import { API } from '../../Utils/Constants';
+} from '../../../Utils/Requests';
+import { API } from '../../../Utils/Constants';
 import _ from 'lodash';
 
 class ActiveOperatorsModal extends React.Component {

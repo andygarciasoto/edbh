@@ -10,7 +10,9 @@ import {
 import { API } from '../../Utils/Constants';
 import LoadingModal from '../Common/LoadingModal';
 import MessageModal from '../Common/MessageModal';
-import ActiveOperatorsModal from '../Modal/ActiveOperatorsModal';
+import ActiveOperatorsModal from '../Modal/OperatorComponent/ActiveOperatorsModal';
+import SupervisorLogInModal from '../Modal/OperatorComponent/SupervisorLogInModal';
+import LogOffModal from '../Modal/OperatorComponent/LogOffModal';
 import '../../sass/Operator.scss';
 import _ from 'lodash';
 
@@ -60,7 +62,7 @@ class OperatorComponent extends React.Component {
         }
     }
 
-    fetchData() {
+    fetchData = () => {
         const currentShift = _.find(this.props.user.shifts, { shift_id: this.props.user.shift_id });
         const parameters = {
             asset_id: this.state.selectedAssetOption.asset_id,
@@ -139,7 +141,7 @@ class OperatorComponent extends React.Component {
                             modal_message_Is_Open: true,
                             modal_validate_IsOpen: false
                         });
-                        this.props.Refresh();
+                        this.fetchData();
                     }
                 } else {
                     this.setState({
@@ -154,7 +156,9 @@ class OperatorComponent extends React.Component {
     }
 
     render() {
-        const t = this.props.t;
+        const props = this.props;
+        const { t } = props;
+        const openSupervisorSignInModal = !props.user.assing_role && props.user.role === 'Supervisor';
         return (
             <React.Fragment>
                 <Row className='d-flex justify-content-end operatorComponent'>
@@ -191,6 +195,25 @@ class OperatorComponent extends React.Component {
                     isOpen={this.state.modal_active_op_Is_Open}
                     onRequestClose={this.closeModal}
                     activeOperators={this.state.activeOperators}
+                    t={t}
+                />
+                <SupervisorLogInModal
+                    isOpen={openSupervisorSignInModal}
+                    updateCurrentUser={props.updateCurrentUser}
+                    selectedAssetOption={this.state.selectedAssetOption}
+                    user={props.user}
+                    search={props.search}
+                    t={t}
+                    Refresh={this.fetchData}
+                />
+                <LogOffModal
+                    isOpen={props.showModalLogOff}
+                    selectedAssetOption={this.state.selectedAssetOption}
+                    activeOperators={this.state.activeOperators}
+                    Refresh={this.fetchData}
+                    onRequestClose={() => props.displayModalLogOff(false)}
+                    user={props.user}
+                    search={props.search}
                     t={t}
                 />
             </React.Fragment >
