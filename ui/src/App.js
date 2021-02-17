@@ -4,7 +4,7 @@ import SignIn from './Views/SignIn';
 import Login from './Views/Login';
 import Header from './Components/Header/Header';
 import DashboardOne from './Views/DashboardOne';
-import Import from './Views/Import';
+import SystemAdmin from './Components/SystemAdmin/';
 import DigitalCups from './Views/DigitalCups';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
@@ -83,7 +83,7 @@ function App(propsApp) {
           />} />
         {currentUser && validPermission(currentUser, 'importView', 'read') ?
           <Route exact path="/import" render={(props) =>
-            <Import t={t}
+            <SystemAdmin t={t}
               history={props.history}
               user={currentUser}
               search={qs.parse(props.history.location.search)}

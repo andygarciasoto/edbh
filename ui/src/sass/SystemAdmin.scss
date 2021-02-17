@@ -1,0 +1,81 @@
+#administrator {
+  margin: 30px 30px;
+}
+
+//STYLES FOR CARD
+
+.card-component {
+  border-style: groove;
+  border-radius: 5px;
+  width: 15%;
+  cursor: pointer;
+
+  &.common{
+    margin-left: 250px;
+    margin-top: -175px;
+    padding-bottom: 10px;
+  }
+
+  &.assets{
+    margin-left: 500px;
+    margin-top: -175px;
+  }
+
+  &.reason{
+    margin-left: 750px;
+    margin-top: -175px;
+  }
+
+  &.device{
+    margin-left: 1000px;
+    margin-top: -175px;
+  }
+
+  &.shifts{
+    margin-top: 50px;
+  }
+
+  &.uom{
+    margin-left: 250px;
+    margin-top: -175px;
+  }
+
+  &.break{
+    margin-left: 500px;
+    margin-top: -175px;
+  }
+
+  &.display{
+    margin-left: 750px;
+    margin-top: -175px;
+  }
+
+  &.work{
+    margin-left: 1000px;
+    margin-top: -175px;
+  }
+
+  //   :hover {
+  //     background-color: #aaaaaa;
+  //   }
+
+  .icon {
+    width: 25%;
+    margin-left: 65px;
+    margin-top: 15px;
+  }
+
+  .p-number {
+    color: #aaaaaa;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 25px;
+  }
+
+  .p-name {
+    color: #aaaaaa;
+    text-align: center;
+    margin-top: -10px;
+    font-size: 25px;
+  }
+}
