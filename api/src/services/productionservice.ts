@@ -142,7 +142,7 @@ export class ProductionDataService {
         }
         let start_time = moment(new Date(params.start_time)).format(this.format);
         let end_time = moment(new Date(params.end_time)).format(this.format);
-        let production_day = moment(params.production_day, 'YYYYMMDD').format('YYYYMMDD');
+        let production_day = moment(params.production_day, 'YYYY-MM-DD').format('YYYY-MM-DD');
         let asset_id = params.asset_id;
         let aggregation = params.aggregation;
 
