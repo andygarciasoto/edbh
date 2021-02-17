@@ -5,8 +5,8 @@ import {
     getResponseFromGeneric,
     formatDate,
     formatTime
-} from '../../Utils/Requests';
-import { API } from '../../Utils/Constants';
+} from '../../../Utils/Requests';
+import { API } from '../../../Utils/Constants';
 import _ from 'lodash';
 
 class ActiveOperatorsModal extends React.Component {
@@ -14,7 +14,6 @@ class ActiveOperatorsModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             activeOperators: [],
             currentRow: null
         }
@@ -54,18 +53,20 @@ class ActiveOperatorsModal extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen !== prevState.isOpen) {
+        if (nextProps.isOpen && !_.isEmpty(nextProps.activeOperators) && !_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
             return {
-                isOpen: nextProps.isOpen,
-                activeOperators: nextProps.activeOperators,
-                currentRow: nextProps.isOpen ? (nextProps.currentRow || null) : null
+                activeOperators: nextProps.activeOperators
+            };
+        } else if (nextProps.isOpen && !_.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.currentRow, prevState.currentRow)) {
+            return {
+                currentRow: nextProps.currentRow
             };
         }
         return null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.currentRow && !_.isEqual(this.state.currentRow, prevState.currentRow) && this.state.isOpen) {
+        if (this.props.isOpen && !_.isEmpty(this.state.currentRow) && !_.isEqual(this.state.currentRow, prevState.currentRow)) {
             this.fetchData(this.props);
         }
     }
@@ -78,7 +79,7 @@ class ActiveOperatorsModal extends React.Component {
             end_time: formatDate(this.state.currentRow.ended_on_chunck)
         };
 
-        getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
+        getResponseFromGeneric('get', API, '/get_scan', {}, parameters, {}).then(response => {
             let activeOperators = response || [];
             activeOperators = _.filter(activeOperators, (item) => { return item.reason !== 'Check-Out' });
             this.setState({
@@ -97,7 +98,7 @@ class ActiveOperatorsModal extends React.Component {
                     size="lg"
                     aria-labelledby="example-modal-sizes-title-lg"
                     centered
-                    show={this.state.isOpen}
+                    show={props.isOpen}
                     onHide={props.onRequestClose}
                 >
                     <Modal.Header closeButton>

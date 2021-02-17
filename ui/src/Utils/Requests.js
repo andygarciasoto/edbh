@@ -58,6 +58,7 @@ function assignValuesToUser(user, newAttributes) {
   user.role = newAttributes.role;
   user.assing_role = newAttributes.assing_role;
   user.clock_number = newAttributes.badge;
+  user.badge = newAttributes.badge;
   user.site = newAttributes.site;
   user.max_regression = newAttributes.max_regression;
   user.site_name = newAttributes.site_name;
@@ -261,7 +262,7 @@ function getRowsFromShifts(props, summary) {
     let totalMinutes = _.sumBy(props.user.shifts, 'duration_in_minutes');
     rows = (totalMinutes / 60) + props.user.shifts.length;
   } else {
-    let currentShift = props.search.sf ? props.search.sf : props.user.current_shift;
+    let currentShift = props.selectedShift;
     let shift = _.find(props.user.shifts, { shift_name: currentShift });
     rows = (shift.duration_in_minutes / 60);
   }

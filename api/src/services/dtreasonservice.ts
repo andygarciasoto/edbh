@@ -66,6 +66,7 @@ export class DTReasonService {
         const asset_code = req.body.asset_code ? req.body.asset_code : undefined;
         const row_timestamp = req.body.row_timestamp;
         const quantity = req.body.quantity ? req.body.quantity : null;
+        const responsible = req.body.responsible ? req.body.responsible : null;
 
         if (dt_reason_id === undefined) {
             return res.status(400).send("Bad Request - Missing Parameters");
@@ -86,16 +87,16 @@ export class DTReasonService {
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     dxh_data_id = dxhData[0].dxhdata_id;
                     if (clocknumber) {
-                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, clocknumber, timestamp, update);
                     } else {
-                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                        await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, first_name, last_name, timestamp, update);
                     }
                 }
             } else {
                 if (clocknumber) {
-                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, clocknumber, timestamp, update);
                 } else {
-                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                    await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, first_name, last_name, timestamp, update);
                 }
             }
             return res.status(200).send('Message Entered Succesfully');
@@ -115,6 +116,7 @@ export class DTReasonService {
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
         const dtdata_id = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : undefined;
         const quantity = req.body.quantity ? req.body.quantity : null;
+        const responsible = req.body.responsible ? req.body.responsible : null;
 
         if (dxh_data_id === undefined || dt_reason_id === undefined || dtdata_id === undefined) {
             return res.status(400).send("Missing parameters");
@@ -126,9 +128,9 @@ export class DTReasonService {
         }
         try {
             if (clocknumber) {
-                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, clocknumber, timestamp, dtdata_id);
             } else {
-                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, dtdata_id);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, first_name, last_name, timestamp, dtdata_id);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {

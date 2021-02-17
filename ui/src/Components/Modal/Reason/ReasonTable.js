@@ -1,14 +1,12 @@
 import React from 'react';
-
 import ReactTable from 'react-table';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import reasonHelper from './ReasonHelper';
 
 
 class ReasonTable extends React.Component {
     constructor(props) {
         super(props);
-        console.log('recrear componente');
         this.state = Object.assign(this.getInitialState(props), this.getTextTranslations(props));
     }
 
@@ -25,13 +23,13 @@ class ReasonTable extends React.Component {
             productionReasonsOptions: props.productionReasonsOptions,
             allReasonOptions: props.allReasonOptions,
             levelOptions: props.levelOptions,
+            responsibleOptions: props.responsibleOptions,
             levelOption: null
         }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (!_.isEqual(nextProps.dxhdataList, prevState.dxhdataList)) {
-            console.log('list changes send state again');
             return {
                 dxhdataList: nextProps.dxhdataList,
                 productionRow: nextProps.productionRow,
@@ -40,6 +38,7 @@ class ReasonTable extends React.Component {
                 productionReasonsOptions: nextProps.productionReasonsOptions,
                 allReasonOptions: nextProps.allReasonOptions,
                 levelOptions: nextProps.levelOptions,
+                responsibleOptions: nextProps.responsibleOptions,
                 editReason: false,
                 currentReason: {},
                 newReason: {}

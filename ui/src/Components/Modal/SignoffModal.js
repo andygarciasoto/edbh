@@ -6,23 +6,38 @@ import MessageModal from '../Common/MessageModal';
 import LoadingModal from '../Common/LoadingModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
 import { getResponseFromGeneric, getCurrentTime, formatDateWithTime, convertNumber } from '../../Utils/Requests';
+import * as _ from 'lodash';
 import '../../sass/SignoffModal.scss';
 
 
 class SignoffModal extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             value: '',
-            signoffMessage: props.t(props.message) ||
-                props.t("By clicking 'Accept' you confirm that all the values for this hour are correct"),
+            signOffRole: props.signOffModalType,
+            headerMessage: props.t(props.user.role + ' Sign Off') +
+                ' (' + props.t('Logged in as') + ' ' + props.t(props.user.role) + ')',
+            signoffMessage: props.t("By clicking 'Accept' you confirm that all the values for this hour are correct"),
             modal_message_IsOpen: false,
             modal_type: '',
             modal_message: '',
             row: this.props.dxh_parent || {},
-            modal_validate_IsOpen: false,
-            isOpen: false
+            modal_validate_IsOpen: false
         }
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.isOpen && (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(nextProps.signOffModalType, prevState.signOffRole))) {
+            return {
+                signOffRole: nextProps.signOffModalType,
+                headerMessage: nextProps.t(nextProps.user.role + ' Sign Off') +
+                    ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
+                signoffMessage: nextProps.t("By clicking 'Accept' you confirm that all the values for this hour are correct")
+            }
+        }
+        return null;
     }
 
     closeModal = () => {
@@ -37,7 +52,7 @@ class SignoffModal extends React.Component {
     submitSignOff = () => {
         const props = this.props;
         if (this.state.signOffRole === 'Operator') {
-            if (props.selectedAssetOption.is_multiple) {
+            if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
                 if (props.activeOperators.length > 1) {
                     this.setState({ modal_validate_IsOpen: true });
                 } else {
@@ -94,15 +109,15 @@ class SignoffModal extends React.Component {
             other_scrap: rowData.summary_other_scrap || 'signoff',
             clocknumber: badge,
             override: 0,
-            asset_code: this.props.parentData[0],
+            asset_code: this.props.selectedAssetOption.asset_code,
             row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
             timestamp: getCurrentTime(this.props.user.timezone),
         }
-        this.setState({ modal_loading_IsOpen: true, isOpen: false }, async () => {
+        this.setState({ modal_loading_IsOpen: true }, async () => {
             await getResponseFromGeneric('put', API, `/${this.state.signOffRole}_sign_off`, {}, {}, data);
             if (data.dxh_data_id === null) {
                 data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
-                this.setState({ modal_loading_IsOpen: true, isOpen: false }, async () => {
+                this.setState({ modal_loading_IsOpen: true }, async () => {
                     let res = await getResponseFromGeneric('put', API, '/production_data', {}, {}, data);
                     if (res.status !== 200) {
                         this.setState({ modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'Could not complete request' })
@@ -129,16 +144,6 @@ class SignoffModal extends React.Component {
         });
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            signOffRole: nextProps.signOffModalType,
-            headerMessage: nextProps.t(nextProps.user.role + ' Sign Off') +
-                ' (' + nextProps.t('Logged in as') + ' ' + nextProps.t(nextProps.user.role) + ')',
-            isOpen: nextProps.isOpen,
-            signoffMessage: nextProps.t("By clicking 'Accept' you confirm that all the values for this hour are correct")
-        })
-    }
-
     render() {
         let row;
         let isred;
@@ -153,7 +158,7 @@ class SignoffModal extends React.Component {
             <React.Fragment>
                 {row ? <Modal
                     centered
-                    show={this.state.isOpen}
+                    show={this.props.isOpen}
                     onHide={this.props.onRequestClose}
                     className='signOffModal'>
                     <Modal.Header closeButton>

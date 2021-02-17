@@ -86,6 +86,8 @@ AS
 		@DTData_Id INT,
 		@Existing_DTReason_Id INT,
 		@Existing_DTMinutes FLOAT,
+		@Existing_Quantity FLOAT,
+        @Existing_Responsible NVARCHAR(100),
 		@Site_Timezone VARCHAR(100),
 		@Timestamp_UTC DATETIME,
 		@asset_id INT,
@@ -229,12 +231,16 @@ AS
                     WHERE dtdata_id = ISNULL(@Update, -1)
                 )
                     BEGIN
-                        SELECT @Existing_DTReason_Id = dtreason_id, 
-                               @Existing_DTMinutes = dtminutes
+                        SELECT @Existing_DTReason_Id = dtreason_id,
+                               @Existing_DTMinutes = dtminutes,
+							   @Existing_Quantity = quantity,
+                               @Existing_Responsible = responsible
                         FROM dbo.DTData WITH(NOLOCK)
                         WHERE dtdata_id = ISNULL(@Update, -1);
                         IF(ISNULL(@Existing_DTReason_Id, -1) <> ISNULL(@DTReason_Id, -1)
-                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1))
+                           OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1)
+						   OR ISNULL(@Existing_Quantity, -1) <> ISNULL(@Quantity, -1)
+                           OR ISNULL(@Existing_Responsible, -1) <> ISNULL(@Responsible, -1))
                             BEGIN
                                 UPDATE dbo.DTData
                                   SET 
@@ -265,6 +271,3 @@ AS
         RETURN;
     END;
 
-        /****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_InterShiftData]    Script Date: 4/12/2019 15:25:17 ******/
-
-        SET ANSI_NULLS ON;

@@ -31,5 +31,4 @@ export class AssetRepository {
         A.[target_percent_of_ideal], A.[entered_by], A.[entered_on], A.[last_modified_by], A.[last_modified_on], A.[is_multiple] FROM [dbo].[Asset] AS A LEFT JOIN [dbo].[Workcell] 
         AS W ON A.grouping1 = W.workcell_id WHERE [site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id}) ORDER BY A.asset_id`);
     }
-
 }

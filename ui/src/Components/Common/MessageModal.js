@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
+import _ from 'lodash';
 import '../../sass/MessageModal.scss';
 
 class MessageModal extends React.Component {
@@ -21,25 +22,33 @@ class MessageModal extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen) {
-            this.setState(this.getInitialState(nextProps));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.isOpen && (!_.isEqual(nextProps.type, prevState.type) || !_.isEqual(nextProps.message, prevState.message))) {
+            return {
+                type: nextProps.type,
+                message: nextProps.message,
+                title: nextProps.type,
+                classMessage: nextProps.type === 'Error' ? 'warning-message' : 'success-message',
+                classButton: nextProps.type === 'Error' ? 'outline-danger' : 'outline-success',
+                closeText: nextProps.t('Close')
+            };
         }
+        return null;
     }
 
     render() {
         const t = this.props.t;
         return (
             <Modal
-                size="sm"
+                size="md"
                 show={this.props.isOpen}
                 onHide={this.props.onRequestClose}
                 className='messageModal'
-                aria-labelledby="example-modal-sizes-title-sm"
+                aria-labelledby="example-modal-sizes-title-md"
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="example-modal-sizes-title-sm">
+                    <Modal.Title id="example-modal-sizes-title-md">
                         {t(this.state.title)}
                     </Modal.Title>
                 </Modal.Header>
@@ -50,7 +59,7 @@ class MessageModal extends React.Component {
                             :
                             <FontAwesome className="success-message icon" name="check" />
                         }&nbsp;&nbsp;
-                        <p className={this.state.classMessage}>{t(this.state.message)}</p>
+                        <p className={this.state.classMessage}>{this.state.message}</p>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>

@@ -50,16 +50,25 @@ class Header extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    static getDerivedStateFromProps(nextProps, prevState) {
         let search = qs.parse(nextProps.history.location.search);
-        this.setState({
-            mc: search.mc || nextProps.machineData.asset_code,
-            tp: search.tp || nextProps.machineData.automation_level,
-            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone))),
-            sf: search.sf || nextProps.user.current_shift,
-            ln: search.ln || nextProps.user.language,
-            cs: search.cs || nextProps.user.site
-        });
+        const mc = search.mc || nextProps.machineData.asset_code;
+        const tp = search.tp || nextProps.machineData.automation_level;
+        const dt = search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone)));
+        const sf = search.sf || nextProps.user.current_shift;
+        const ln = search.ln || nextProps.user.language;
+        const cs = search.cs || nextProps.user.site;
+        if (nextProps.isOpen !== prevState.isOpen) {
+            return {
+                mc,
+                tp,
+                dt,
+                sf,
+                ln,
+                cs
+            };
+        }
+        return null;
     }
 
     redirectTo = (page) => {
@@ -149,38 +158,20 @@ class Header extends React.Component {
         await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
     }
 
-    logOff = async () => {
+    logOff = () => {
 
         const user = this.props.user;
+        const asset = _.find(user.machines, { asset_code: this.state.mc });
 
-        if (user.role === 'Operator') {
+        if (user.role === 'Operator' && asset.is_multiple) {
             this.props.displayModalLogOff(true);
         } else {
-
-            const data = {
-                badge: user.clock_number,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                asset_id: 230,
-                timestamp: getCurrentTime(user.timezone),
-                reason: 'Check-Out',
-                status: 'Inactive',
-                site_id: user.site,
-                break_minutes: 0,
-                lunch_minutes: 0
-            };
-
-            let res = await getResponseFromGeneric('put', API, '/new_scan', {}, {}, data);
-            if (res.status !== 200) {
-                console.log('Error when try to logOff');
-            } else {
-                console.log('Success LogOff');
-                // remove stored data
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('st');
-                // Redirect to login
-                window.location.replace(configuration['root']);
-            }
+            console.log('Success LogOff');
+            // remove stored data
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('st');
+            // Redirect to login
+            window.location.replace(configuration['root']);
         }
     }
 
@@ -211,8 +202,7 @@ class Header extends React.Component {
                                 : null}
                         </Dropdown>
                         : null}
-                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups'
-                        && this.props.history.location.pathname !== '/import' ?
+                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups' ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>
@@ -267,7 +257,7 @@ class Header extends React.Component {
                         : null}
                     {validPermission(this.props.user, 'neworder', 'read') ?
                         ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual' || this.state.tp === 'Partially_Manual_Scan_Order')) ?
-                            <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
+                            <Nav.Link onClick={() => this.props.displayOrderModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
                             </Nav.Link>
                             : null : null
                     }
@@ -284,7 +274,7 @@ class Header extends React.Component {
                             </Dropdown.Menu>
                         </Dropdown>
                         : null}
-                    <Nav.Link onClick={() => this.props.displayModalLogOff(true)}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
+                    <Nav.Link onClick={() => this.logOff()}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
                 </Navbar.Collapse>
             </Navbar>
         )

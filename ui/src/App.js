@@ -5,23 +5,22 @@ import Login from './Views/Login';
 import Header from './Components/Header/Header';
 import DashboardOne from './Views/DashboardOne';
 import Import from './Views/Import';
-import SesionManage from './Views/SesionManage';
 import DigitalCups from './Views/DigitalCups';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { validPermission } from './Utils/Requests';
 import * as qs from 'query-string';
+import './sass/App.scss';
 
 function App(propsApp) {
   // set default machine and type
-  let [showModal, displayModal] = useState(false);
+  let [modal_order_IsOpen, displayOrderModal] = useState(false);
   let [showModalLogOff, displayModalLogOff] = useState(false);
   let [currentUser, changeCurrentUser] = useState(propsApp.user);
   const updateCurrentUser = (newUser) => {
     changeCurrentUser({ ...currentUser, currentUser: newUser });
   }
-  let [activeOperators, changeActiveOperators] = useState([]);
 
   const { t } = useTranslation();
   return (
@@ -40,7 +39,7 @@ function App(propsApp) {
               t={t}
               user={currentUser}
               machineData={propsApp.machineData}
-              openModal={displayModal}
+              displayOrderModal={displayOrderModal}
               displayModalLogOff={displayModalLogOff}
               changeCurrentUser={updateCurrentUser}
             />}
@@ -55,12 +54,14 @@ function App(propsApp) {
                   t={t}
                   history={props.history}
                   search={qs.parse(props.history.location.search)}
-                  modal_order_IsOpen={showModal}
-                  closeOrderModal={displayModal}
+                  modal_order_IsOpen={modal_order_IsOpen}
+                  displayOrderModal={displayOrderModal}
                   defaultAsset={propsApp.defaultAsset}
                   machineData={propsApp.machineData}
-                  changeActiveOperators={changeActiveOperators}
-                  activeOperators={activeOperators}
+                  socket={propsApp.socket}
+                  updateCurrentUser={updateCurrentUser}
+                  showModalLogOff={showModalLogOff}
+                  displayModalLogOff={displayModalLogOff}
                 />
               )
             }
@@ -98,9 +99,11 @@ function App(propsApp) {
               search={qs.parse(props.history.location.search)}
               defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
-              changeActiveOperators={changeActiveOperators}
-              activeOperators={activeOperators}
               summary={true}
+              socket={propsApp.socket}
+              updateCurrentUser={updateCurrentUser}
+              showModalLogOff={showModalLogOff}
+              displayModalLogOff={displayModalLogOff}
             />}
           />
           : null
@@ -114,26 +117,11 @@ function App(propsApp) {
               search={qs.parse(props.history.location.search)}
               defaultAsset={propsApp.defaultAsset}
               machineData={propsApp.machineData}
+              socket={propsApp.socket}
             />}
           />
           : null
         }
-        <Route path="/"
-          render={(props) =>
-            (props.location.pathname === "/dashboard" || props.location.pathname === "/import" || props.location.pathname === "/summary" || props.location.pathname === "/digitalcups") &&
-            <SesionManage
-              history={props.history}
-              search={qs.parse(props.history.location.search)}
-              t={t}
-              user={currentUser}
-              machineData={propsApp.machineData}
-              tryToOpenModalLogOff={showModalLogOff}
-              displayModalLogOff={displayModalLogOff}
-              changeCurrentUser={updateCurrentUser}
-              changeActiveOperators={changeActiveOperators}
-              activeOperators={activeOperators}
-            />}
-        />
       </Suspense>
     </Router>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { socket } from './context/socket';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './i18n';
@@ -16,6 +17,9 @@ import {
 import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
+
+socket.on('connect', () => console.log('Connected to the Websocket Service'));
+socket.on('disconnect', () => console.log('Disconnected from the Websocket Service'));
 
 let search = window.location.search;
 let params = queryString.parse(search);
@@ -122,6 +126,7 @@ function init() {
             const machineValues = res[0] || {};
             machine = {
                 asset_code: machineValues.asset_code || 'No Data',
+                asset_name: machineValues.asset_name || 'No Data',
                 asset_level: machineValues.asset_level,
                 automation_level: machineValues.automation_level,
                 display_name: machineValues.displaysystem_name,
@@ -154,7 +159,7 @@ function init() {
             }
 
             ReactDOM.render(
-                <App user={user} defaultAsset={station} machineData={machine} />, document.getElementById('root'));
+                <App user={user} defaultAsset={station} machineData={machine} socket={socket} />, document.getElementById('root'));
 
         });
 };

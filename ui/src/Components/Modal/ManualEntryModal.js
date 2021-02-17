@@ -43,7 +43,7 @@ class ManualEntryModal extends React.Component {
                 actual: 'signoff',
                 setup_scrap: 'signoff',
                 other_scrap: 'signoff',
-                asset_code: this.props.parentData[0],
+                asset_code: this.props.selectedAssetOption.asset_code,
                 override: 0,
                 part_number: this.state.part_number,
                 order_quantity: this.state.quantity,
@@ -122,7 +122,7 @@ class ManualEntryModal extends React.Component {
                 let uom = actualUoms.length === 1 ? actualUoms[0] : '';
                 this.setState({
                     isOpen: nextProps.isOpen,
-                    currentRow: nextProps.props.currentRow,
+                    currentRow: nextProps.currentRow,
                     uoms: actualUoms,
                     site: nextProps.user.site,
                     uom

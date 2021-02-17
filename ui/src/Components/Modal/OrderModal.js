@@ -41,7 +41,7 @@ class OrderModal extends React.Component {
         const data = {
             params: {
                 order_number: orderNumber,
-                asset_code: this.props.parentData[0],
+                asset_code: this.props.selectedAssetOption.asset_code,
                 clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
                 first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
                 last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,

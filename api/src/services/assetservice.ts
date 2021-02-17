@@ -56,5 +56,4 @@ export class AssetService {
         }
         return res.status(200).json(assets);
     }
-
 }

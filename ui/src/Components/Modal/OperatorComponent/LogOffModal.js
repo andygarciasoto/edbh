@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, Row, Col, Button } from 'react-bootstrap';
-import { getResponseFromGeneric, getCurrentTime } from '../../Utils/Requests';
-import { API } from '../../Utils/Constants';
-import MessageModal from '../Common/MessageModal';
-import LoadingModal from '../Common/LoadingModal';
-import BarcodeScannerModal from '../Common/BarcodeScannerModal';
-import '../../sass/LogOffModal.scss';
-import configuration from '../../config.json';
+import { getResponseFromGeneric, getCurrentTime } from '../../../Utils/Requests';
+import { API } from '../../../Utils/Constants';
+import MessageModal from '../../Common/MessageModal';
+import LoadingModal from '../../Common/LoadingModal';
+import BarcodeScannerModal from '../../Common/BarcodeScannerModal';
+import '../../../sass/LogOffModal.scss';
+import configuration from '../../../config.json';
 import _ from 'lodash';
 
 
@@ -23,15 +23,6 @@ class LogOffModal extends React.Component {
             modal_validate_IsOpen: false,
             reason: ''
         }
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen !== prevState.isOpen) {
-            return {
-                isOpen: nextProps.isOpen
-            };
-        }
-        return null;
     }
 
     logOffReason = (reason) => {
@@ -105,13 +96,14 @@ class LogOffModal extends React.Component {
         this.setState({ modal_loading_IsOpen: true }, async () => {
             const data = {
                 badge: user.badge,
+                closed_by: user.badge,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 asset_id: this.props.selectedAssetOption.asset_id,
                 timestamp: getCurrentTime(user.timezone),
                 reason: reason,
                 status: 'Inactive',
-                site_id: this.props.user.site,
+                site_id: user.site,
                 break_minutes: reason === 'Break' ? user.break_minutes : 0,
                 lunch_minutes: reason === 'Lunch' ? user.lunch_minutes : 0
             };
@@ -129,8 +121,7 @@ class LogOffModal extends React.Component {
                     // Redirect to login
                     window.location.replace(configuration['root']);
                 } else {
-                    const newActiveUsers = _.filter(this.props.activeOperators, (activeUser) => { return activeUser.badge !== user.badge; });
-                    this.props.changeActiveOperators(newActiveUsers);
+                    this.props.Refresh();
                 }
             }
         });
@@ -153,7 +144,7 @@ class LogOffModal extends React.Component {
                     size="lg"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
-                    show={this.state.isOpen} onHide={props.onRequestClose}
+                    show={this.props.isOpen} onHide={props.onRequestClose}
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
@@ -164,8 +155,8 @@ class LogOffModal extends React.Component {
                         <Row>
                             <Col md={12} lg={12}><span className='LogOffMessage'>{t('Please select what is the reason to sign out')}</span></Col>
                             <Col md={12} lg={12} className="d-flex justify-content-center logoffbuttons">
-                                <Button onClick={() => this.logOffReason('Lunch')} variant='outline-warning'>{t('Begin Lunch')}</Button>
-                                <Button onClick={() => this.logOffReason('Break')} variant='outline-success'>{t('Begin Break')}</Button>
+                                <Button onClick={() => this.logOffReason('Lunch')} className='btnYellow'>{t('Begin Lunch')}</Button>
+                                <Button onClick={() => this.logOffReason('Break')} className='btnGreen'>{t('Begin Break')}</Button>
                                 <Button onClick={() => this.logOffReason('Check-Out')} variant='outline-primary'>{t('Exit Station')}</Button>
                             </Col>
                         </Row>
