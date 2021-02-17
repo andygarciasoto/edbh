@@ -1,4 +1,5 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_DTData]    Script Date: 11/2/2021 11:46:22 ******/
+
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights 
@@ -52,14 +53,15 @@
 --	20200225		C00V04 - Change out result for noraml variables, remove JSON response
 --		
 -- Example Call:
--- Exec spLocal_EY_DxH_Put_DTData 437106, 44188, 8109, null, 3, 'EYAdministrator', Null, Null, '2020-08-28 14:44:50.930', 0
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
+-- Exec spLocal_EY_DxH_Put_DTData 437106, 44188, 8109, null, 3, 'Crimper 1', 'EYAdministrator', Null, Null, '2020-08-28 14:44:50.930', 0
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
 --Declare
 @DxHData_Id   INT, -- the hour Id
 @productiondata_id INT,
 @DTReason_Id  INT, 
 @DTMinutes    FLOAT, 
 @Quantity	  FLOAT,
+@Responsible  NVARCHAR(100),
 @Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
 @First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
 @Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
@@ -217,7 +219,8 @@ AS
                  entered_on, 
                  last_modified_by, 
                  last_modified_on, 
-                 name
+                 name,
+				 responsible
                 )
                        SELECT @DxHData_Id, 
                               @DTReason_Id, 
@@ -228,7 +231,8 @@ AS
                               @Timestamp_UTC, 
                               @Initials, 
                               GETDATE(), 
-                              @First_Name + ' ' + @Last_Name;
+                              @First_Name + ' ' + @Last_Name,
+							  @Responsible;
                 SET @DTData_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
                        @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @DTData_Id);
@@ -260,7 +264,8 @@ AS
 									  quantity = @Quantity,
                                       last_modified_by = @Initials, 
                                       last_modified_on = GETDATE(), 
-                                      name = @First_Name + ' ' + @Last_Name
+                                      name = @First_Name + ' ' + @Last_Name,
+									  responsible = @Responsible
                                 WHERE dtdata_id = @Update;
                                 SELECT @ReturnStatus = 0, 
                                        @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
