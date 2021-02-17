@@ -5,7 +5,8 @@ import BadgeScannerModal from '../Common/BarcodeScannerModal';
 import {
     getResponseFromGeneric,
     getCurrentTime,
-    formatDate
+    formatDate,
+    validPermission
 } from '../../Utils/Requests';
 import { API } from '../../Utils/Constants';
 import LoadingModal from '../Common/LoadingModal';
@@ -13,8 +14,10 @@ import MessageModal from '../Common/MessageModal';
 import ActiveOperatorsModal from '../Modal/OperatorComponent/ActiveOperatorsModal';
 import SupervisorLogInModal from '../Modal/OperatorComponent/SupervisorLogInModal';
 import LogOffModal from '../Modal/OperatorComponent/LogOffModal';
-import '../../sass/Operator.scss';
+import CheckOutModal from '../Modal/OperatorComponent/CheckOutModal';
+import configuration from '../../config.json';
 import _ from 'lodash';
+import '../../sass/Operator.scss';
 
 
 class OperatorComponent extends React.Component {
@@ -31,7 +34,8 @@ class OperatorComponent extends React.Component {
             modal_validate_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_message_Is_Open: false,
-            modal_active_op_Is_Open: false
+            modal_active_op_Is_Open: false,
+            showCheckOutModal: false
         };
     }
 
@@ -73,10 +77,18 @@ class OperatorComponent extends React.Component {
         getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
             let user_list = response || [];
             const activeOperators = _.filter(user_list, { status: 'Active', is_current_scan: true });
-            this.props.updateActiveOperators(activeOperators);
-            this.setState({
-                activeOperators
-            });
+            if (this.props.user.role === 'Operator' && _.isEmpty(activeOperators)) {
+                // remove stored data
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('st');
+                // Redirect to login
+                window.location.replace(configuration['root']);
+            } else {
+                this.props.updateActiveOperators(activeOperators);
+                this.setState({
+                    activeOperators
+                });
+            }
         });
     }
 
@@ -89,7 +101,8 @@ class OperatorComponent extends React.Component {
             modal_validate_IsOpen: false,
             modal_loading_IsOpen: false,
             modal_message_Is_Open: false,
-            modal_active_op_Is_Open: false
+            modal_active_op_Is_Open: false,
+            showCheckOutModal: false
         })
     }
 
@@ -114,6 +127,7 @@ class OperatorComponent extends React.Component {
                 if (!userFound) {
                     const data = {
                         badge: user.badge,
+                        closed_by: user.badge,
                         first_name: user.first_name,
                         last_name: user.last_name,
                         asset_id: this.props.selectedAssetOption.asset_id,
@@ -163,6 +177,11 @@ class OperatorComponent extends React.Component {
             <React.Fragment>
                 <Row className='d-flex justify-content-end operatorComponent'>
                     <Col md={3} lg={3}>
+                        {validPermission(props.user, 'operatorCheckOut', 'read') ?
+                            <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('showCheckOutModal')}>
+                                {t('Checkout Operators')}
+                            </Button>
+                            : null}
                         {this.props.isEditable ?
                             <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check-In')}</Button>
                             : null}
@@ -212,6 +231,16 @@ class OperatorComponent extends React.Component {
                     activeOperators={this.state.activeOperators}
                     Refresh={this.fetchData}
                     onRequestClose={() => props.displayModalLogOff(false)}
+                    user={props.user}
+                    search={props.search}
+                    t={t}
+                />
+                <CheckOutModal
+                    isOpen={this.state.showCheckOutModal}
+                    selectedAssetOption={this.state.selectedAssetOption}
+                    activeOperators={this.state.activeOperators}
+                    Refresh={this.fetchData}
+                    onRequestClose={this.closeModal}
                     user={props.user}
                     search={props.search}
                     t={t}
