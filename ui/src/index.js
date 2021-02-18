@@ -14,7 +14,6 @@ import {
     getResponseFromGeneric,
     assignValuesToUser
 } from './Utils/Requests';
-import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
@@ -140,10 +139,9 @@ function init() {
             user.workcell = await getResponseFromGeneric('get', API, '/workcell', {}, shift, {}) || [];
 
             if (site && Number(user.site) !== Number(site)) {
-                const userSiteInfo = _.find(user.sites, ['Site', parseInt(site)]);
                 const parameters = {
-                    badge: userSiteInfo.Badge,
-                    site_id: userSiteInfo.Site
+                    badge: user.badge,
+                    site_id: site
                 };
 
                 res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
