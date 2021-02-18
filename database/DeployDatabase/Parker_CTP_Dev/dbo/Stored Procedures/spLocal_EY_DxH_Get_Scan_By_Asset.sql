@@ -45,6 +45,11 @@ AS
     BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
+	DECLARE @site_id INT;
+
+	SELECT @site_id = asset_id
+	FROM dbo.Asset WHERE asset_code = (SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id);
+
 	SET NOCOUNT ON;
         SELECT S.scan_id,
 			   S.badge,
@@ -59,12 +64,15 @@ AS
                S.is_current_scan, 
                S.reason, 
                S.status,
-			   CASE WHEN S.end_time IS NULL THEN NULL ELSE S.last_modified_by END as closed_by
+			   CASE WHEN S.end_time IS NULL THEN NULL ELSE S.last_modified_by END as closed_by,
+			   CASE WHEN S.end_time IS NULL THEN NULL ELSE CONCAT(TFD1.First_Name,' ',TFD1.Last_Name) END as closed_by_name
         FROM dbo.Scan S WITH(NOLOCK)
-		INNER JOIN dbo.TFDUsers TFD ON S.badge = TFD.Badge
-        WHERE S.start_time < @end_time 
-		AND
-		(S.end_time is NULL OR S.end_time > @start_time)
-		ORDER BY S.badge, S.entered_on;
+		INNER JOIN dbo.TFDUsers TFD ON S.badge = TFD.Badge AND TFD.Site = @site_id
+		LEFT JOIN dbo.TFDUsers TFD1 ON S.last_modified_by = TFD1.Badge AND TFD1.Site = @site_id
+        WHERE
+			S.start_time < @end_time AND
+			(S.end_time is NULL OR S.end_time > @start_time) AND
+			S.asset_id = @asset_id
+		ORDER BY S.entered_on, S.badge;
         RETURN;
     END;

@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]    Script Date: 17/2/2021 14:41:55 ******/
 --
 -- Copyright © 2020 Ernst & Young LLP
 -- All Rights Reserved
@@ -41,7 +41,7 @@
 -- exec spLocal_EY_DxH_Get_DTData_By_DxHData_Id 437106, 44188
 --
 
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
+CREATE	PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
 --Declare
 	@DxHData_id			INT,
 	@productiondata_id	INT,
