@@ -182,7 +182,7 @@ export class AuthService {
                     assetInformation = assetInformation[0];
                     if (assetInformation.is_multiple && role === 'Operator') {
                         this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
-                            'login', 'Active', responseUser.site, 0, 0);
+                            'Check-In', 'Active', responseUser.site, 0, 0);
                     }
                 } else {
                     claimsList.user.assign_role = role;
