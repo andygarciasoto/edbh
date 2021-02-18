@@ -1,16 +1,16 @@
 ﻿CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Put_Orders_From_IoT]
-(@order_number AS              VARCHAR(100), 
- @asset_code AS                VARCHAR(100), 
- @product_code AS              VARCHAR(100), 
+(@order_number AS              NVARCHAR(100), 
+ @asset_code AS                NVARCHAR(100), 
+ @product_code AS              NVARCHAR(100), 
  @order_quantity AS            FLOAT, 
- @UOM_code AS                  VARCHAR(100), 
+ @UOM_code AS                  NVARCHAR(100), 
  @routed_cycle_time AS         FLOAT, 
  @minutes_allowed_per_setup AS FLOAT, 
  @ideal AS                     FLOAT, 
  @target_percent_of_ideal AS   FLOAT, 
- @production_status AS         VARCHAR(100), 
+ @production_status AS         NVARCHAR(100), 
  @start_time AS                DATETIME, 
- @entered_by AS                VARCHAR(100), 
+ @entered_by AS                NVARCHAR(100), 
  @entered_on AS                DATETIME
 )
 AS
@@ -20,10 +20,10 @@ AS
          timestamp      DATETIME, 
          dxhdata_id     INT, 
          production_day DATETIME, 
-         shift_code     VARCHAR(100), 
-         hour_interval  VARCHAR(100)
+         shift_code     NVARCHAR(100), 
+         hour_interval  NVARCHAR(100)
         );
-        DECLARE @setup_start_time AS DATETIME, @setup_end_time AS DATETIME, @production_start_time AS DATETIME, @production_end_time AS DATETIME, @bandera AS BIT, @json AS NVARCHAR(MAX), @dxhdata_id INT, @site_code AS VARCHAR(100), @site_id AS INT, @timezone AS VARCHAR(100), @asset_id AS INT;
+        DECLARE @setup_start_time AS DATETIME, @setup_end_time AS DATETIME, @production_start_time AS DATETIME, @production_end_time AS DATETIME, @bandera AS BIT, @json AS NVARCHAR(MAX), @dxhdata_id INT, @site_code AS NVARCHAR(100), @site_id AS INT, @timezone AS NVARCHAR(100), @asset_id AS INT;
         SET @site_code =
         (
             SELECT site_code

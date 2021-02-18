@@ -36,6 +36,7 @@
 --------------------------------------------------------------------------------
 --	20190827		C00V00 - Intial code created
 --  20191203		C00V01 - Change Asset_Code for Asset_Id
+--	20210218		C00V02 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_OrderData 65, '14I084', Null
@@ -43,7 +44,7 @@
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_OrderData]
 --Declare
 @Asset_Id         INT, 
-@Order_Number     VARCHAR(100), --leave Null if you send Is Current Order = 1
+@Order_Number     NVARCHAR(100), --leave Null if you send Is Current Order = 1
 @Is_Current_Order BIT				--leave Null or 0 if you send the order number
 AS
 

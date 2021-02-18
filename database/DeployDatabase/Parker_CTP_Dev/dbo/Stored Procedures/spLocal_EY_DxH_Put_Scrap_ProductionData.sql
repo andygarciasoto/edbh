@@ -51,19 +51,19 @@ CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scrap_ProductionData]
 @ProductionData_Id      INT, -- the productionData Id
 @Setup_Scrap			FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
 @Other_Scrap			FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
-@Clock_Number			VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
-@First_Name				VARCHAR(100), -- 
-@Last_Name				VARCHAR(100) -- 
+@Clock_Number			NVARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
+@First_Name				NVARCHAR(100), -- 
+@Last_Name				NVARCHAR(100) -- 
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE @First VARCHAR(50),
-		@Last VARCHAR(50),
-		@Initials VARCHAR(50),
+        DECLARE @First NVARCHAR(50),
+		@Last NVARCHAR(50),
+		@Initials NVARCHAR(50),
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000);
+		@ReturnMessage NVARCHAR(1000);
 
         IF NOT EXISTS
         (
@@ -73,19 +73,19 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id or ProductionData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, '')) + ' or ' +  CONVERT(VARCHAR, ISNULL(@ProductionData_Id, ''));
+                       @ReturnMessage = 'Invalid DxHData_Id or ProductionData_Id ' + CONVERT(NVARCHAR, ISNULL(@DxHData_Id, '')) + ' or ' +  CONVERT(NVARCHAR, ISNULL(@ProductionData_Id, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Setup_Scrap, -1) < 0
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Setup Scrap ' + CONVERT(VARCHAR, ISNULL(@Setup_Scrap, -1));
+                       @ReturnMessage = 'Invalid Setup Scrap ' + CONVERT(NVARCHAR, ISNULL(@Setup_Scrap, -1));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Other_Scrap, -1) < 0
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Other Scrap' + CONVERT(VARCHAR, ISNULL(@Other_Scrap, -1));
+                       @ReturnMessage = 'Invalid Other Scrap' + CONVERT(NVARCHAR, ISNULL(@Other_Scrap, -1));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -111,16 +111,16 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
 		
 		UPDATE dbo.ProductionData
                           SET 
@@ -131,7 +131,7 @@ AS
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id AND pd.dxhdata_id = @DxHData_Id;
                         SELECT @ReturnStatus = 0, 
-                               @ReturnMessage = 'Override ' + CONVERT(VARCHAR, @ProductionData_Id) + ' ' + CONVERT(VARCHAR, @DxHData_Id);
+                               @ReturnMessage = 'Override ' + CONVERT(NVARCHAR, @ProductionData_Id) + ' ' + CONVERT(NVARCHAR, @DxHData_Id);
 
         ErrExit:
         IF @ReturnStatus IS NULL

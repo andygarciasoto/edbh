@@ -1,17 +1,17 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'Ryan', '0'
 
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as VARCHAR(100), @machine as VARCHAR(100))
+CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as NVARCHAR(100), @machine as NVARCHAR(100))
 
   AS  BEGIN 
  DECLARE
  @site				INT,
- @name				VARCHAR(100),
- @timezone			VARCHAR(100),
- @timezone2			VARCHAR(100),
- @Shift_Name		VARCHAR(100),
+ @name				NVARCHAR(100),
+ @timezone			NVARCHAR(100),
+ @timezone2			NVARCHAR(100),
+ @Shift_Name		NVARCHAR(100),
  @Shift_Id			INT,
- @language			VARCHAR(100),
+ @language			NVARCHAR(100),
  @summary_timeout	FLOAT,
  @inactive_timeout_minutes FLOAT,
  @socket_timeout		FLOAT,

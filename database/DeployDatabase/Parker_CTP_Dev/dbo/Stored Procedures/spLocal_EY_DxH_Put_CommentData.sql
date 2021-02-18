@@ -56,10 +56,10 @@
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommentData]
 --Declare
 	@DxHData_Id				Int,			-- the hour Id
-	@Comment				Varchar(256),	-- the main info for the display
-	@Clock_Number			Varchar(100),	-- used to look up First and Last, leave Null if you have first and last
-	@First_Name				Varchar(100),	-- Leave Null if you send Clock Number
-	@Last_Name				Varchar(100),	-- Leave Null if you send Clock Number
+	@Comment				NVARCHAR(256),	-- the main info for the display
+	@Clock_Number			NVARCHAR(100),	-- used to look up First and Last, leave Null if you have first and last
+	@First_Name				NVARCHAR(100),	-- Leave Null if you send Clock Number
+	@Last_Name				NVARCHAR(100),	-- Leave Null if you send Clock Number
 	@Timestamp				Datetime,		-- most likely use current time in site timezone
 	@Update					Int				-- Null or 0 for insert, send the specific commentdata_id for update
 AS
@@ -74,25 +74,25 @@ Declare @Output table
 	Id							Int Identity,
 	commentdata_id				Int, 
 	dxhdata_id					Int, 
-	comment						Varchar(256), 
-	first_name					Varchar(100), 
-	last_name					Varchar(100), 
-	entered_by					Varchar(100), 
+	comment						NVARCHAR(256), 
+	first_name					NVARCHAR(100), 
+	last_name					NVARCHAR(100), 
+	entered_by					NVARCHAR(100), 
 	entered_on					Datetime, 
-	last_modified_by			Varchar(100), 
+	last_modified_by			NVARCHAR(100), 
 	last_modified_on			Datetime,
-	message						Varchar(100)
+	message						NVARCHAR(100)
 	)
 
 Declare
-	@First				Varchar(50),
-	@Last				Varchar(50),
-	@Initials			Varchar(50),	
+	@First				NVARCHAR(50),
+	@Last				NVARCHAR(50),
+	@Initials			NVARCHAR(50),	
 	@CommentData_Id		Int,
-	@Existing_Comment	Varchar(256),
+	@Existing_Comment	NVARCHAR(256),
 	@ReturnStatus		Int,
-	@ReturnMessage		Varchar(1000),
-	@Site_Timezone		Varchar(100),
+	@ReturnMessage		NVARCHAR(1000),
+	@Site_Timezone		NVARCHAR(100),
 	@Timestamp_UTC		Datetime,
 	@asset_id			INT,
 	@Site_Id			INT
@@ -114,7 +114,7 @@ If not exists (Select dxhdata_id From dbo.DxHData with (nolock) Where dxhdata_id
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid DxHData_Id ' + convert(varchar,IsNull(@DxHData_Id,''))
+		@ReturnMessage = 'Invalid DxHData_Id ' + convert(NVARCHAR,IsNull(@DxHData_Id,''))
 	Goto ErrExit
 End
 
@@ -122,7 +122,7 @@ If IsNull(@Comment,'') = ''
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Comment ' + convert(varchar,IsNull(@Comment,''))
+		@ReturnMessage = 'Invalid Comment ' + convert(NVARCHAR,IsNull(@Comment,''))
 		Goto ErrExit
 End
 
@@ -148,7 +148,7 @@ If IsNull(@First_Name,'') = ''
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid First Name ' + convert(varchar,IsNull(@First_Name,''))
+		@ReturnMessage = 'Invalid First Name ' + convert(NVARCHAR,IsNull(@First_Name,''))
 		Goto ErrExit
 End
 
@@ -156,18 +156,18 @@ If IsNull(@Last_Name,'') = ''
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Last Name ' + convert(varchar,IsNull(@Last_Name,''))
+		@ReturnMessage = 'Invalid Last Name ' + convert(NVARCHAR,IsNull(@Last_Name,''))
 		Goto ErrExit
 
 End
 
-Select @Initials = convert(varchar,left(@First_Name,1)) +  convert(varchar,left(@last_Name,1))
+Select @Initials = convert(NVARCHAR,left(@First_Name,1)) +  convert(NVARCHAR,left(@last_Name,1))
 
 If IsDate(@Timestamp)  <> 1 
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Timestamp ' + convert(varchar,IsNull(@Timestamp,''))
+		@ReturnMessage = 'Invalid Timestamp ' + convert(NVARCHAR,IsNull(@Timestamp,''))
 		Goto ErrExit
 End
 
@@ -178,7 +178,7 @@ If
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Update ' + convert(varchar,IsNull(@Update,''))
+		@ReturnMessage = 'Invalid Update ' + convert(NVARCHAR,IsNull(@Update,''))
 		Goto ErrExit
 End
 
@@ -214,7 +214,7 @@ Begin
 
 		Select 
 			@ReturnStatus = 0,
-			@ReturnMessage = 'Inserted ' + convert(varchar,@CommentData_Id)
+			@ReturnMessage = 'Inserted ' + convert(NVARCHAR,@CommentData_Id)
 
 End
 Else
@@ -235,13 +235,13 @@ Begin
 
 			Select 
 				@ReturnStatus = 0,
-				@ReturnMessage = 'Updated ' + convert(varchar,IsNull(@Update,''))
+				@ReturnMessage = 'Updated ' + convert(NVARCHAR,IsNull(@Update,''))
 		End	
 		Else
 		Begin
 			Select 
 				@ReturnStatus = -1,
-				@ReturnMessage = 'Nothing to update ' + convert(varchar,IsNull(@Update,''))
+				@ReturnMessage = 'Nothing to update ' + convert(NVARCHAR,IsNull(@Update,''))
 
 		End
 

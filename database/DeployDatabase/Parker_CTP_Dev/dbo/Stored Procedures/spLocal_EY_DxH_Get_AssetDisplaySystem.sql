@@ -37,14 +37,15 @@
 ---
 -- Modification Change History:
 --------------------------------------------------------------------------------
---	20190910		C00V00 - Intial code created		
+--	20190910		C00V00 - Intial code created
+--	20210218		C00V01 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_AssetDisplaySystem 'CR2080435W1'
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]
 --Declare
-	@DisplaySystem_Name	Varchar(100)	-- the name of the computer system or other identifier
+	@DisplaySystem_Name	NVARCHAR(200)	-- the name of the computer system or other identifier
 AS
 
 BEGIN
