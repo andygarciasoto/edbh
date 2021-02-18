@@ -428,9 +428,6 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Product.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrderData.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
@@ -471,9 +468,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Edit_ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Create_OrderData.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -482,18 +476,9 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data_new_2.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrdersToCreateProduction.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_ProductionData_By_Interval_And_OrderId.sql">
-      <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shifts.sql">
       <AnsiNulls>On</AnsiNulls>
