@@ -22,7 +22,7 @@ export class AssetRepository {
     }
 
     public async getAssetByWorkcell(station: string, site: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Workcell '${station}', ${site}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Workcell N'${station}', ${site}`);
     }
 
     public async getAssetBySiteExport(site_id: number): Promise<any> {
