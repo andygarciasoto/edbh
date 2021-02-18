@@ -134,6 +134,26 @@ export class ProductionDataService {
             return res.status(500).json({ message: err.message });
         }
     }
+
+    public async getDigitalCups(req: Request, res: Response) {
+        const params = req.query;
+        if (params.start_time === undefined || params.end_time === undefined || params.asset_id === undefined || params.aggregation === undefined || params.production_day === undefined) {
+            return res.status(400).send("Missing parameters");
+        }
+        let start_time = moment(new Date(params.start_time)).format(this.format);
+        let end_time = moment(new Date(params.end_time)).format(this.format);
+        let production_day = moment(params.production_day, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        let asset_id = params.asset_id;
+        let aggregation = params.aggregation;
+
+        let digitalcups: any;
+        try {
+            digitalcups = await this.productiondatarepository.getDigitalCups(start_time, end_time, asset_id, aggregation, production_day);
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+        return res.status(200).json(digitalcups);
+    }
 }
 
 

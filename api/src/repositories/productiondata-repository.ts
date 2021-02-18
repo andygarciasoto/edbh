@@ -12,7 +12,6 @@ export class ProductionDataRepository {
     public async putProductionDataByClocknumber(dxh_data_id: number, actual: number, setup_scrap: number, other_scrap: number, clocknumber: string, timestamp: string, override: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, '${clocknumber}', Null, Null, '${timestamp}', ${override}`);
     }
-
     public async putProductionDataByUsername(dxh_data_id: number, actual: number, setup_scrap: number, other_scrap: number, first_name: string, last_name: string, timestamp: string, override: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData ${dxh_data_id}, ${actual}, ${setup_scrap}, ${other_scrap}, Null, '${first_name}', '${last_name}', '${timestamp}', ${override}`);
     }
@@ -24,6 +23,9 @@ export class ProductionDataRepository {
     }
     public async putProductionDataForAnyOrder(dxh_data_id: number, productiondata_id: number, actual: number, clocknumber: string, timestamp: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData_For_Any_Order ${dxh_data_id}, ${productiondata_id}, ${actual}, '${clocknumber}', '${timestamp}'`);
+    }
+    public async getDigitalCups(start_time: string, end_time: string, asset_id: number, aggregation: number, production_day: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Digital_Cuups '${start_time}', '${end_time}', ${asset_id}, ${aggregation}, '${production_day}'`);
     }
 
 }

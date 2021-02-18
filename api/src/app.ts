@@ -199,6 +199,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/production_any_order', 'put', async (req: Request, res: Response) => {
             await productiondataService.putProductionForAnyOrder(req, res);
+        }, true),
+        new http.RestEndpoint('/api/digital_cups', 'get', async (req: Request, res: Response) => {
+            await productiondataService.getDigitalCups(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
