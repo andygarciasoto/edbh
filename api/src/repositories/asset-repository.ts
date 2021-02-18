@@ -10,11 +10,11 @@ export class AssetRepository {
     }
 
     public async getAssetByCode(asset_code: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Asset_By_Code '${asset_code}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Asset_By_Code N'${asset_code}'`);
     }
 
     public async getAssetByAssetDisplaySystem(display_system_name: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem '${display_system_name}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_AssetDisplaySystem N'${display_system_name}'`);
     }
 
     public async getAssetBySite(site: number, level: string, automation_level: string): Promise<any> {

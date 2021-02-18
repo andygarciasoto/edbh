@@ -25,7 +25,7 @@ export class ProductionDataRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_ProductionData_For_Any_Order ${dxh_data_id}, ${productiondata_id}, ${actual}, '${clocknumber}', '${timestamp}'`);
     }
     public async getDigitalCups(start_time: string, end_time: string, asset_id: number, aggregation: number, production_day: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Digital_Cuups '${start_time}', '${end_time}', ${asset_id}, ${aggregation}, '${production_day}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Digital_Cups '${start_time}', '${end_time}', ${asset_id}, ${aggregation}, '${production_day}'`);
     }
 
 }

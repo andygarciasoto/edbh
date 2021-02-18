@@ -23,7 +23,7 @@ export class UserRepository {
     }
 
     public async findUserInformation(badge: string, machine: string, asset_id: number, site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_Information '${badge}', '${machine}', ${asset_id}, ${site_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_Information N'${badge}', '${machine}', ${asset_id}, ${site_id}`);
     }
 
 }
