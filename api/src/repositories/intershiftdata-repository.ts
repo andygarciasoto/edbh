@@ -15,10 +15,10 @@ export class InterShiftDataRepository {
     }
 
     public async putInterShiftDataByClocknumber(asset_id: number, comment: string, clocknumber: string, update: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_InterShiftData ${asset_id}, '${comment}', '${clocknumber}', Null, Null, ${update}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_InterShiftData ${asset_id}, N'${comment}', N'${clocknumber}', Null, Null, ${update}`);
     }
 
     public async putInterShiftDataByUsername(asset_id: number, comment: string, first_name: string, last_name: string, update: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_InterShiftData ${asset_id}, '${comment}', Null, '${first_name}', '${last_name}', ${update}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_InterShiftData ${asset_id}, N'${comment}', Null, N'${first_name}', N'${last_name}', ${update}`);
     }
 }
