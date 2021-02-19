@@ -14,6 +14,7 @@
     [last_modified_on]     DATETIME      NOT NULL,
     [asset_id]             INT           NULL,
     [type]                 VARCHAR (255) DEFAULT ('downtime') NOT NULL,
+    [site_id] INT NOT NULL DEFAULT 1, 
     CONSTRAINT [PK_DTReason_DTReason_Id] PRIMARY KEY CLUSTERED ([dtreason_id] ASC),
     CONSTRAINT [FK_DTReason_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
