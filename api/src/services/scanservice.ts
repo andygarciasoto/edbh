@@ -13,7 +13,7 @@ export class ScanService {
 
     public async putScan(req: Request, res: Response) {
         const badge = req.body.badge ? req.body.badge : undefined;
-        const closed_by = req.body.closed_by ? req.body.closed_by : undefined; 
+        const closed_by = req.body.closed_by ? req.body.closed_by : undefined;
         const first_name = req.body.first_name ? req.body.first_name : undefined;
         const last_name = req.body.last_name ? req.body.last_name : undefined;
         const asset_id = req.body.asset_id ? req.body.asset_id : undefined;
@@ -45,7 +45,7 @@ export class ScanService {
         let start_time = moment(new Date(params.start_time)).format(this.format);
         let end_time = moment(new Date(params.end_time)).format(this.format);
         let asset_id = params.asset_id;
-        
+
         let scan: any;
         try {
             scan = await this.scanrepository.getScan(start_time, end_time, asset_id);

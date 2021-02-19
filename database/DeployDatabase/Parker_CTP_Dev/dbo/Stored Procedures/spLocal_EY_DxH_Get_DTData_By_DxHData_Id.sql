@@ -1,5 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]    Script Date: 11/2/2021 11:45:39 ******/
-
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]    Script Date: 17/2/2021 14:41:55 ******/
 --
 -- Copyright © 2020 Ernst & Young LLP
 -- All Rights Reserved
@@ -37,16 +36,17 @@
 -- Modification Change History:
 --------------------------------------------------------------------------------
 --	20200114		C00V00 - Intial code created
+--	20210218		C00V01 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTData_By_DxHData_Id 437106, 44188
 --
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
+CREATE	PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTData_By_DxHData_Id]
 --Declare
 	@DxHData_id			INT,
 	@productiondata_id	INT,
-	@type				VARCHAR(100)
+	@type				NVARCHAR(100)
 AS
 
 BEGIN

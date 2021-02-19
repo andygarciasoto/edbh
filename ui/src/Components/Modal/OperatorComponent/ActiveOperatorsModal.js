@@ -8,6 +8,7 @@ import {
 } from '../../../Utils/Requests';
 import { API } from '../../../Utils/Constants';
 import _ from 'lodash';
+import '../../../sass/ActiveOperatorModal.scss';
 
 class ActiveOperatorsModal extends React.Component {
 
@@ -20,7 +21,7 @@ class ActiveOperatorsModal extends React.Component {
     }
 
     getColumns() {
-        return [{
+        let columns = [{
             Header: 'Name',
             accessor: 'name'
         }, {
@@ -38,7 +39,15 @@ class ActiveOperatorsModal extends React.Component {
             Header: 'Expected Return',
             accessor: 'possible_end_time',
             Cell: c => this.getCellTime(c.original, 'possible_end_time', ''),
-        }]
+        }];
+
+        if (!_.isEmpty(this.state.currentRow)) {
+            columns.push({
+                Header: 'Closed By',
+                accessor: 'closed_by_name'
+            });
+        }
+        return columns;
     }
 
     getCellTime(row, prop, defaultValue) {
@@ -53,13 +62,15 @@ class ActiveOperatorsModal extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen && !_.isEmpty(nextProps.activeOperators) && !_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
-            return {
-                activeOperators: nextProps.activeOperators
-            };
-        } else if (nextProps.isOpen && !_.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.currentRow, prevState.currentRow)) {
+        if (nextProps.isOpen && !_.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.currentRow, prevState.currentRow)) {
+            console.log('update for row');
             return {
                 currentRow: nextProps.currentRow
+            };
+        } else if (nextProps.isOpen && _.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
+            console.log('update for list');
+            return {
+                activeOperators: nextProps.activeOperators
             };
         }
         return null;
@@ -95,8 +106,9 @@ class ActiveOperatorsModal extends React.Component {
         return (
             <React.Fragment>
                 <Modal
-                    size="lg"
-                    aria-labelledby="example-modal-sizes-title-lg"
+                    size='xl'
+                    aria-labelledby='example-modal-sizes-title-xl'
+                    className='activeModal'
                     centered
                     show={props.isOpen}
                     onHide={props.onRequestClose}
@@ -110,9 +122,8 @@ class ActiveOperatorsModal extends React.Component {
                         <ReactTable
                             data={this.state.activeOperators}
                             columns={columns}
-                            sortable={false}
                             pageSize={5}
-                            showPaginationBottom={false}
+                            showPaginationBottom={this.state.activeOperators.length > 5}
                             headerStyle={{ fontSize: '0.5em' }}
                             headerClassName={"wordwrap"}
                         />

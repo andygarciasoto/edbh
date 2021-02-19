@@ -13,10 +13,10 @@ export class CommentDataRepository {
     }
 
     public async putCommentDataByClocknumber(dxhdata_id: number, comment: string, clocknumber: string, timestamp: string, update: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommentData ${dxhdata_id}, '${comment}', '${clocknumber}', Null, Null, '${timestamp}', ${update}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommentData ${dxhdata_id}, N'${comment}', N'${clocknumber}', Null, Null, '${timestamp}', ${update}`);
     }
 
     public async putCommentDataByUsername(dxhdata_id: number, comment: string, first_name: string, last_name: string, timestamp: string, update: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommentData ${dxhdata_id}, '${comment}', Null, '${first_name}', '${last_name}', '${timestamp}', ${update}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommentData ${dxhdata_id}, N'${comment}', Null, N'${first_name}', N'${last_name}', '${timestamp}', ${update}`);
     }
 }

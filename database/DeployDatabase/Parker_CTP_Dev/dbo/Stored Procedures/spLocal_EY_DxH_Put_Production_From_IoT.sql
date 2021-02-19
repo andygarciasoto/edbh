@@ -1,8 +1,8 @@
 ﻿--exec spLocal_EY_DxH_Put_Production_From_IoT '168-0065.Blowout.Length', '413591', 'SQL manual entry', '2020-07-29 11:50:59.813'
 CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
-(@tag_name AS      VARCHAR(200), 
- @tagdata_value AS VARCHAR(256), 
- @entered_by AS    VARCHAR(100), 
+(@tag_name AS      NVARCHAR(200), 
+ @tagdata_value AS NVARCHAR(256), 
+ @entered_by AS    NVARCHAR(100), 
  @entered_on AS    DATETIME
 )
 AS
@@ -18,8 +18,8 @@ AS
          timestamp      DATETIME, 
          dxhdata_id     INT, 
          production_day DATETIME, 
-         shift_code     VARCHAR(100), 
-         hour_interval  VARCHAR(100)
+         shift_code     NVARCHAR(100), 
+         hour_interval  NVARCHAR(100)
         );
 
         DECLARE
@@ -27,17 +27,17 @@ AS
         @dxhdata_id INT,
         @current_value FLOAT,
         @previous_value FLOAT,
-        @productiondata_id AS VARCHAR(100),
+        @productiondata_id AS NVARCHAR(100),
         @value FLOAT,
         @actual FLOAT,
-        @site_code VARCHAR(100),
+        @site_code NVARCHAR(100),
         @site_id INT,
         @timezone DATETIME,
         @setup_scrap FLOAT,
         @other_scrap FLOAT,
         @rollover_point FLOAT,
         @max_change FLOAT,
-        @order_number VARCHAR(100);
+        @order_number NVARCHAR(100);
         
         IF @tagdata_value = ''
         BEGIN

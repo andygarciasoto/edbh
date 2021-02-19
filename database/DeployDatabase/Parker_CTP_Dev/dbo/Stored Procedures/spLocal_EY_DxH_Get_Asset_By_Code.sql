@@ -37,13 +37,14 @@
 -- Modification Change History:
 --------------------------------------------------------------------------------
 --	20191202		C00V00 - Intial code created
+--	20210218		C00V01 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset_By_Code '34002'
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
 --Declare
-	@Asset_Code				VARCHAR(100)				--Asset_Code of the Site
+	@Asset_Code				NVARCHAR(100)				--Asset_Code of the Site
 AS
 
 BEGIN

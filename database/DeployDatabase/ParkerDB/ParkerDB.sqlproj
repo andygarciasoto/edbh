@@ -245,6 +245,8 @@
     <Build Include="dbo\Tables\RoleComponent.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Users.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parker-PROD.publish.xml" />

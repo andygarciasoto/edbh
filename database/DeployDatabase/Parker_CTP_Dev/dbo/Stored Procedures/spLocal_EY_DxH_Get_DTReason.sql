@@ -1,6 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 11/2/2021 11:55:36 ******/
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_DTReason]    Script Date: 28/12/2020 11:45:50 ******/
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -42,14 +40,15 @@
 --  20191203		C00V01 - Change Asset_Code for Asset_Id
 --  20200203		C00V03 - Change result result to normal table result
 --  20201218		C00V04 - Add new level column
+--	20210218		C00V05 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_DTReason 225, 'Scrap'
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_DTReason]
 --Declare
 	@Asset_Id			INT,
-	@type				VARCHAR(100)
+	@type				NVARCHAR(100)
 AS
 
 --Select @Asset_Id = 25
