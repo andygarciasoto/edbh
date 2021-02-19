@@ -48,16 +48,16 @@
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_OperatorSignOff]
 --Declare
 @DxHData_Id   INT, -- the hour Id
-@Clock_Number VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
-@First_Name   VARCHAR(100), -- 
-@Last_Name    VARCHAR(100), --
+@Clock_Number NVARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
+@First_Name   NVARCHAR(100), -- 
+@Last_Name    NVARCHAR(100), --
 @Timestamp    DATETIME		-- generally the current time
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE @First VARCHAR(50), @Last VARCHAR(50), @Initials VARCHAR(50), @ReturnStatus INT, @ReturnMessage VARCHAR(1000);
+        DECLARE @First NVARCHAR(50), @Last NVARCHAR(50), @Initials NVARCHAR(50), @ReturnStatus INT, @ReturnMessage NVARCHAR(1000);
         IF NOT EXISTS
         (
             SELECT dxhdata_id
@@ -66,7 +66,7 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
+                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(NVARCHAR, ISNULL(@DxHData_Id, ''));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -92,20 +92,20 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
         IF ISDATE(@Timestamp) <> 1
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
+                       @ReturnMessage = 'Invalid timestamp ' + CONVERT(NVARCHAR, ISNULL(@Timestamp, ''));
                 GOTO ErrExit;
         END;
 
@@ -118,7 +118,7 @@ AS
         FROM dbo.DxHData dxh
         WHERE dxh.dxhdata_id = @DxHData_Id;
         SELECT @ReturnStatus = 0, 
-               @ReturnMessage = 'Operator signed off ' + CONVERT(VARCHAR, @DxHData_Id);
+               @ReturnMessage = 'Operator signed off ' + CONVERT(NVARCHAR, @DxHData_Id);
         ErrExit:
         IF @ReturnStatus IS NULL
             BEGIN

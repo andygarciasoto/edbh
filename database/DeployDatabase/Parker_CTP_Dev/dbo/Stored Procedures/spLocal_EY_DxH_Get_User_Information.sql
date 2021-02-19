@@ -49,7 +49,7 @@
 --
 
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_Information] (
-	@badge AS VARCHAR(100),
+	@badge AS NVARCHAR(100),
 	@machine AS VARCHAR(100),
 	@asset_id AS INT,
 	@site_id AS INT

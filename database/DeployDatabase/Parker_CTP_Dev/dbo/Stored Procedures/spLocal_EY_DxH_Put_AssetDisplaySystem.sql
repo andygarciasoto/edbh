@@ -48,8 +48,8 @@
 --
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_AssetDisplaySystem]
 --Declare
-	@Asset_Id			Varchar(100),	-- must exist in Asset table and be active
-	@DisplaySystem_Name	Varchar(100)	-- the name of the computer system or other identifier
+	@Asset_Id			NVARCHAR(100),	-- must exist in Asset table and be active
+	@DisplaySystem_Name	NVARCHAR(100)	-- the name of the computer system or other identifier
 AS
 
 BEGIN
@@ -60,14 +60,14 @@ BEGIN
 Declare @Output table
 	(
 	Id						Int Identity,
-	displaysystem_name		Varchar(200),
-	status					Varchar(50),
-	entered_by				Varchar(100),
+	displaysystem_name		NVARCHAR(200),
+	status					NVARCHAR(50),
+	entered_by				NVARCHAR(100),
 	entered_on				Datetime,
-	last_modified_by		Varchar(100),
+	last_modified_by		NVARCHAR(100),
 	last_modified_on		Datetime,
 	asset_id				INT,
-	message					Varchar(100)
+	message					NVARCHAR(100)
 	)
 
 Declare
@@ -75,7 +75,7 @@ Declare
 	@ExistingAssetId				INT,
 	@ExistingAssetDisplaySystemId	Int,
 	@ReturnStatus					Int,
-	@ReturnMessage					Varchar(100),
+	@ReturnMessage					NVARCHAR(100),
 	@json_out						nVarchar(max)
 
 If not exists 
@@ -88,7 +88,7 @@ If not exists
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Asset Code ' + convert(varchar,IsNull(@Asset_Id,''))
+		@ReturnMessage = 'Invalid Asset Code ' + convert(NVARCHAR,IsNull(@Asset_Id,''))
 	Goto ErrExit
 
 End
@@ -98,7 +98,7 @@ If IsNull(@DisplaySystem_Name,'') = ''
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid DisplaySystem_Name ' + convert(varchar,IsNull(@DisplaySystem_Name,''))
+		@ReturnMessage = 'Invalid DisplaySystem_Name ' + convert(NVARCHAR,IsNull(@DisplaySystem_Name,''))
 	Goto ErrExit
 
 End
@@ -137,7 +137,7 @@ Begin
 
 		Select 
 			@ReturnStatus = 0,
-			@ReturnMessage = 'Inserted ' + convert(varchar,@AssetDisplaySystem_Id)
+			@ReturnMessage = 'Inserted ' + convert(NVARCHAR,@AssetDisplaySystem_Id)
 
 End
 Else -- means displaysystem_name exists
@@ -162,7 +162,7 @@ Begin
 
 		Select 
 			@ReturnStatus = 0,
-			@ReturnMessage = 'Updated ' + convert(varchar,@ExistingAssetDisplaySystemId)
+			@ReturnMessage = 'Updated ' + convert(NVARCHAR,@ExistingAssetDisplaySystemId)
 	End
 	Else
 	Begin

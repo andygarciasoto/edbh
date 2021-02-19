@@ -55,10 +55,10 @@
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
 --Declare
 @Asset_Id   INT, -- id of the associate Asset
-@Comment      VARCHAR(256), -- the main info for the display
-@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
-@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
-@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
+@Comment      NVARCHAR(256), -- the main info for the display
+@Clock_Number NVARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
+@First_Name   NVARCHAR(100), -- Leave Null if you send Clock Number
+@Last_Name    NVARCHAR(100), -- Leave Null if you send Clock Number
 @Update       INT				-- generally null or 0, send the intershift_id for update
 AS
     BEGIN
@@ -67,16 +67,16 @@ AS
         SET NOCOUNT ON;
         DECLARE
 		@Site_Id INT,
-		@First VARCHAR(50),
-		@Last VARCHAR(50),
-		@Initials VARCHAR(50),
+		@First NVARCHAR(50),
+		@Last NVARCHAR(50),
+		@Initials NVARCHAR(50),
 		@InterShift_Id INT,
-		@Existing_Comment VARCHAR(256),
+		@Existing_Comment NVARCHAR(256),
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000),
-		@Site_Timezone VARCHAR(100),
+		@ReturnMessage NVARCHAR(1000),
+		@Site_Timezone NVARCHAR(100),
 		@Production_Day DATETIME,
-		@Shift_Code VARCHAR(100);
+		@Shift_Code NVARCHAR(100);
 
 		SELECT @Site_Id = asset_id
 		FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id = @Asset_Id);
@@ -109,16 +109,16 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
         IF(ISNULL(@Update, 0) <> 0)
           AND (NOT EXISTS
         (
@@ -128,7 +128,7 @@ AS
         ))
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                       @ReturnMessage = 'Invalid Update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Update, 0) = 0
@@ -148,7 +148,7 @@ AS
                 );
                 SET @InterShift_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
-                       @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @InterShift_Id);
+                       @ReturnMessage = 'Inserted ' + CONVERT(NVARCHAR, @InterShift_Id);
         END;
             ELSE
             BEGIN
@@ -173,12 +173,12 @@ AS
                                       last_modified_on = GETDATE()
                                 WHERE intershift_id = @Update;
                                 SELECT @ReturnStatus = 0, 
-                                       @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Updated ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                             ELSE
                             BEGIN
                                 SELECT @ReturnStatus = -1, 
-                                       @ReturnMessage = 'Nothing to update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Nothing to update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                 END;
         END;
