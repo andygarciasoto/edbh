@@ -508,5 +508,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Users.sql" />
   </ItemGroup>
 </Project>
