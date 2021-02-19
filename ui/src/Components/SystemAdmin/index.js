@@ -9,12 +9,15 @@ import Administrator from "./systemAdmin";
 const { t } = useTranslation();
 
 class SystemAdmin extends Component {
+
+  
   render() {
+    console.log(this.props);
     return (
       <div>
         <Tabs defaultActiveKey="siteAdmin" transition={false} id="system-tab">
           <Tab eventKey="siteAdmin" title="Site Administration">
-            <Administrator />
+            <Administrator user={this.props.user}/>
           </Tab>
           <Tab eventKey="import" title="Excel Import/Export">
             <Import

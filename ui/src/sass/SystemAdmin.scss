@@ -2,57 +2,115 @@
   margin: 30px 30px;
 }
 
+.filter-user {
+  margin-top: 30px;
+  border-style: groove;
+  border-radius: 5px;
+  height: 60px;
+  margin-bottom: 30px;
+
+  .filter-button {
+    width: auto;
+    height: auto;
+    display: flex;
+    float: right;
+    margin-right: 30px;
+    margin-top: -40px;
+    background-color: rgb(73, 181, 243);
+    border-style: groove;
+    border-radius: 5px;
+    border: none;
+    padding-left: 20px;
+    padding-right: 25px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .p-filter{
+    width: auto;
+    height: auto;
+    display: flex;
+    margin-top: 15px;
+    font-weight: bold;
+    margin-left: 20px;
+  }
+
+  .p-status{
+    float: left;
+    width: auto;
+    height: auto;
+    display: flex;
+    margin-left: 100px;
+    margin-top: -39px;
+
+    &.role{
+      margin-left: 30px;
+    }
+  }
+
+  .drop-status{
+    max-width: 100px;
+    float: left;
+    /* width: auto; */
+    height: auto;
+    display: flex;
+    margin-top: -40px;
+    margin-left: 10px;
+  }
+}
+
 //STYLES FOR CARD
 
 .card-component {
   border-style: groove;
   border-radius: 5px;
-  width: 15%;
+  max-width: 11%;
+  height: auto;
   cursor: pointer;
 
-  &.common{
+  &.common {
     margin-left: 250px;
-    margin-top: -175px;
+    margin-top: -126px;
     padding-bottom: 10px;
   }
 
-  &.assets{
+  &.assets {
     margin-left: 500px;
-    margin-top: -175px;
+    margin-top: -127px;
   }
 
-  &.reason{
+  &.reason {
     margin-left: 750px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
-  &.device{
+  &.device {
     margin-left: 1000px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
-  &.shifts{
+  &.shifts {
     margin-top: 50px;
   }
 
-  &.uom{
+  &.uom {
     margin-left: 250px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
-  &.break{
+  &.break {
     margin-left: 500px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
-  &.display{
+  &.display {
     margin-left: 750px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
-  &.work{
+  &.work {
     margin-left: 1000px;
-    margin-top: -175px;
+    margin-top: -126px;
   }
 
   //   :hover {
@@ -60,22 +118,23 @@
   //   }
 
   .icon {
-    width: 25%;
-    margin-left: 65px;
+    max-width: 15%;
+    margin-left: 56px;
     margin-top: 15px;
+    height: auto;
   }
 
   .p-number {
     color: #aaaaaa;
     text-align: center;
     margin-top: 10px;
-    font-size: 25px;
+    font-size: 18px;
   }
 
   .p-name {
     color: #aaaaaa;
     text-align: center;
     margin-top: -10px;
-    font-size: 25px;
+    font-size: 18px;
   }
 }
