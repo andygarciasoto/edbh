@@ -51,6 +51,7 @@
 --	20190828		C00V00 - Intial code created		
 --	20190907		C00V01 - Set quoted_identifier on because filtered indexed added		
 --	20191203		C00V02 - Change Asset_Code for Asset_Id
+--	20210218		C00V03 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Create_OrderData 40, '1 1/4 FF-SS PS',25,'PCS', 325, 18, 0.75,'setup','821795000101', Null, Null
@@ -58,16 +59,16 @@
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Create_OrderData]
 --Declare
 	@Asset_Id					INT,			-- required and must be in Asset table
-	@Product_Code				Varchar(100),	-- required and must be in Product table
+	@Product_Code				NVARCHAR(100),	-- required and must be in Product table
 	@Order_Quantity				Float,			-- should be greater than 0
-	@UOM_Code					Varchar(100),	-- required and must be in UOM table
+	@UOM_Code					NVARCHAR(100),	-- required and must be in UOM table
 	@Routed_Cycle_Time			Float,			-- seconds to create one part, can use default common parameter
 	@Minutes_Allowed_Per_Setup	Float,			-- Not required 
 	@Target_Percent_Of_Ideal	Float,			-- can use default common parameter
-	@Production_Status			Varchar(100),	-- setup or production
-	@Clock_Number				Varchar(100),	-- used to look up First and Last, leave Null if you have first and last
-	@First_Name					Varchar(100),	-- Leave Null if you send Clock Number
-	@Last_Name					Varchar(100)	-- Leave Null if you send Clock Number
+	@Production_Status			VARCHAR(100),	-- setup or production
+	@Clock_Number				NVARCHAR(100),	-- used to look up First and Last, leave Null if you have first and last
+	@First_Name					NVARCHAR(100),	-- Leave Null if you send Clock Number
+	@Last_Name					NVARCHAR(100)	-- Leave Null if you send Clock Number
 AS
 
 BEGIN
@@ -78,42 +79,42 @@ BEGIN
 Declare @Output table
 	(
 	Id							Int Identity,  
-	order_number				Varchar(100), 
+	order_number				NVARCHAR(100), 
 	asset_id					INT, 
-	product_code				Varchar(100), 
+	product_code				NVARCHAR(100), 
 	order_quantity				Float, 
-	UOM_code					Varchar(100), 
+	UOM_code					NVARCHAR(100), 
 	routed_cycle_time			Float, 
 	minutes_allowed_per_setup	Float, 
 	target_percent_of_ideal		Float, 
-	production_status			Varchar(100), 
+	production_status			NVARCHAR(100), 
 	setup_start_time			Datetime,
 	production_start_time		Datetime,
 	start_time					Datetime, 
 	is_current_order			Bit, 
-	entered_by					Varchar(100), 
+	entered_by					NVARCHAR(100), 
 	entered_on					Datetime, 
-	last_modified_by			Varchar(100), 
+	last_modified_by			NVARCHAR(100), 
 	last_modified_on			Datetime,
-	message						Varchar(100)
+	message						NVARCHAR(100)
 	)
 
 Declare
-	@First						Varchar(50),
-	@Last						Varchar(50),
-	@Initials					Varchar(50),	
+	@First						NVARCHAR(50),
+	@Last						NVARCHAR(50),
+	@Initials					NVARCHAR(50),	
 	@Order_Id					Int,
 	@Existing_Order_Id			Int,
-	@Existing_Production_Status	Varchar(100),
+	@Existing_Production_Status	NVARCHAR(100),
 	@ReturnStatus				Int,
-	@ReturnMessage				Varchar(1000),
-	@Site_Timezone				Varchar(100),
+	@ReturnMessage				NVARCHAR(1000),
+	@Site_Timezone				NVARCHAR(100),
 	@Timestamp					Datetime,
 	@Timestamp_UTC				Datetime,
 	@Setup_Start_Time			Datetime,		
 	@Production_Start_Time		Datetime,
-	@Order_Number				Varchar(100),
-	@site_code					Varchar(100),
+	@Order_Number				NVARCHAR(100),
+	@site_code					NVARCHAR(100),
 	@Site_Id					Int
 
 SET @site_code = (SELECT site_code

@@ -1,4 +1,4 @@
-﻿
+﻿-- exec [dbo].[spLocal_EY_DxH_Get_Sites_By_User] N'텍스트'
 
  CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Sites_By_User] (@badge as NVARCHAR(100))
 

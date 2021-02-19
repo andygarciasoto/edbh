@@ -16,7 +16,7 @@ function genericRequest(method, baseURL, route, headers, parameters, body, cance
 }
 
 async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body, cancelTok) {
-  //return new Promise((resolve, reject) => {
+  
   return axios({
     method: method,
     url: `${baseURL}${route}`,
@@ -47,7 +47,6 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
         return {};
       }
     });
-  //});
 }
 
 function assignValuesToUser(user, newAttributes) {

@@ -1,16 +1,16 @@
 ﻿CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Put_Products_From_IoT]
-(@product_code AS        VARCHAR(100), 
- @product_name AS        VARCHAR(200), 
- @product_description AS VARCHAR(256), 
- @product_family AS      VARCHAR(100), 
- @value_stream AS        VARCHAR(256), 
- @grouping1 AS           VARCHAR(256), 
- @grouping2 AS           VARCHAR(256), 
- @grouping3 AS           VARCHAR(256), 
- @grouping4 AS           VARCHAR(256), 
- @grouping5 AS           VARCHAR(256), 
- @status AS              VARCHAR(50), 
- @entered_by AS          VARCHAR(100), 
+(@product_code AS        NVARCHAR(100), 
+ @product_name AS        NVARCHAR(200), 
+ @product_description AS NVARCHAR(256), 
+ @product_family AS      NVARCHAR(100), 
+ @value_stream AS        NVARCHAR(256), 
+ @grouping1 AS           NVARCHAR(256), 
+ @grouping2 AS           NVARCHAR(256), 
+ @grouping3 AS           NVARCHAR(256), 
+ @grouping4 AS           NVARCHAR(256), 
+ @grouping5 AS           NVARCHAR(256), 
+ @status AS              NVARCHAR(50), 
+ @entered_by AS          NVARCHAR(100), 
  @timestamp AS           DATETIME
 )
 AS

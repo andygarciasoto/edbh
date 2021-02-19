@@ -72,7 +72,7 @@ AS
         SET NOCOUNT ON;
 
         
-        DECLARE @timezone VARCHAR(50);
+        DECLARE @timezone NVARCHAR(100);
 		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
 
         DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,

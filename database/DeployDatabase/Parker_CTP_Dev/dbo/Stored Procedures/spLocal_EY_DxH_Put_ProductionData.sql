@@ -58,9 +58,9 @@ CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData]
 @Actual          FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
 @Setup_Scrap     FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
 @Other_Scrap     FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
-@Clock_Number    VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
-@First_Name      VARCHAR(100), -- 
-@Last_Name       VARCHAR(100), -- 
+@Clock_Number    NVARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
+@First_Name      NVARCHAR(100), -- 
+@Last_Name       NVARCHAR(100), -- 
 @Timestamp       DATETIME, -- generally current time but note it is used to find break and lunch time
 @Override        INT				-- generally Null or 0, send the productiondata_id for update/replacing Actual
 AS
@@ -68,21 +68,21 @@ AS
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE @First VARCHAR(50),
-		@Last VARCHAR(50),
-		@Initials VARCHAR(50),
+        DECLARE @First NVARCHAR(50),
+		@Last NVARCHAR(50),
+		@Initials NVARCHAR(50),
 		@ProductionData_Id INT,
 		@Existing_Actual FLOAT,
 		@Existing_Setup_Scrap FLOAT,
 		@Existing_Other_Scrap FLOAT,
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000),
+		@ReturnMessage NVARCHAR(1000),
 		@Asset_Id INT,
 		@Site_Id INT,
-		@OrderNumber VARCHAR(100),
+		@OrderNumber NVARCHAR(100),
 		@Order_Id INT,
-		@Product_Code VARCHAR(100),
-		@UOM_Code VARCHAR(100),
+		@Product_Code NVARCHAR(100),
+		@UOM_Code NVARCHAR(100),
 		@Routed_Cycle_Time FLOAT,
 		@Target_Percent_Of_Ideal FLOAT,
 		@Order_Quantity FLOAT,
@@ -105,25 +105,25 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
+                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(NVARCHAR, ISNULL(@DxHData_Id, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Actual, -1) < 0
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Actual ' + CONVERT(VARCHAR, ISNULL(@Actual, -1));
+                       @ReturnMessage = 'Invalid Actual ' + CONVERT(NVARCHAR, ISNULL(@Actual, -1));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Setup_Scrap, -1) < 0
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Setup Scrap ' + CONVERT(VARCHAR, ISNULL(@Setup_Scrap, -1));
+                       @ReturnMessage = 'Invalid Setup Scrap ' + CONVERT(NVARCHAR, ISNULL(@Setup_Scrap, -1));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Other_Scrap, -1) < 0
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Other Scrap' + CONVERT(VARCHAR, ISNULL(@Other_Scrap, -1));
+                       @ReturnMessage = 'Invalid Other Scrap' + CONVERT(NVARCHAR, ISNULL(@Other_Scrap, -1));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -149,20 +149,20 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
         IF ISDATE(@Timestamp) <> 1
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
+                       @ReturnMessage = 'Invalid Timestamp ' + CONVERT(NVARCHAR, ISNULL(@Timestamp, ''));
                 GOTO ErrExit;
         END;
         IF(ISNULL(@Override, 0) <> 0)
@@ -174,7 +174,7 @@ AS
         ))
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Override ' + CONVERT(VARCHAR, ISNULL(@Override, ''));
+                       @ReturnMessage = 'Invalid Override ' + CONVERT(NVARCHAR, ISNULL(@Override, ''));
                 GOTO ErrExit;
         END;
 
@@ -217,7 +217,7 @@ AS
         IF ISNULL(@OrderNumber, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Current Order not found for asset ' + CONVERT(VARCHAR, ISNULL(@Asset_Id, ''));
+                       @ReturnMessage = 'Current Order not found for asset ' + CONVERT(NVARCHAR, ISNULL(@Asset_Id, ''));
                 GOTO ErrExit;
         END;
 
@@ -264,7 +264,7 @@ AS
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id;
                         SELECT @ReturnStatus = 0, 
-                               @ReturnMessage = 'Incremented ' + CONVERT(VARCHAR, @ProductionData_Id);
+                               @ReturnMessage = 'Incremented ' + CONVERT(NVARCHAR, @ProductionData_Id);
                 END;
                     ELSE
                     BEGIN		
@@ -272,7 +272,7 @@ AS
                         IF ISNULL(@Override, 0) <> ISNULL(@ProductionData_Id, 0)
                             BEGIN
                                 SELECT @ReturnStatus = -1, 
-                                       @ReturnMessage = 'Invalid Override ' + CONVERT(VARCHAR, ISNULL(@Override, ''));
+                                       @ReturnMessage = 'Invalid Override ' + CONVERT(NVARCHAR, ISNULL(@Override, ''));
                                 GOTO ErrExit;
                         END;
                         -- If it makes it to here, then override/replace existing with @Actual 
@@ -287,7 +287,7 @@ AS
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id;
                         SELECT @ReturnStatus = 0, 
-                               @ReturnMessage = 'Override ' + CONVERT(VARCHAR, @ProductionData_Id);
+                               @ReturnMessage = 'Override ' + CONVERT(NVARCHAR, @ProductionData_Id);
                 END;
         END --if ProductionData_Id exists;
             ELSE
@@ -481,7 +481,7 @@ AS
                 SET @ProductionData_Id = SCOPE_IDENTITY();
                 
 				SELECT @ReturnStatus = 0, 
-                       @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @ProductionData_Id);
+                       @ReturnMessage = 'Inserted ' + CONVERT(NVARCHAR, @ProductionData_Id);
         END;
         ErrExit:
         IF @ReturnStatus IS NULL

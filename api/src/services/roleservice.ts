@@ -26,4 +26,14 @@ export class RoleService {
         }
         return res.status(200).json(role);
     }
+
+    public async getRoles(req: Request, res: Response) {
+        let roles: any;
+        try {
+            roles = await this.rolerepository.getRoles();
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+        return res.status(200).json(roles);
+    }
 }

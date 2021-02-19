@@ -17,19 +17,19 @@ export class DxHDataRepository {
     }
 
     public async putOperatorSignOffByClocknumber(dxh_data_id: number, clocknumber: string, timestamp: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, N'${clocknumber}', Null, Null, '${timestamp}'`);
     }
 
     public async putOperatorSignOffByUsername(dxh_data_id: number, first_name: string, last_name: string, timestamp: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_OperatorSignOff ${dxh_data_id}, Null, N'${first_name}', N'${last_name}', '${timestamp}'`);
     }
 
     public async putSupervisorSignOffByClocknumber(dxh_data_id: number, clocknumber: string, timestamp: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, '${clocknumber}', Null, Null, '${timestamp}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, N'${clocknumber}', Null, Null, '${timestamp}'`);
     }
 
     public async putSupervisorSignOffByUsername(dxh_data_id: number, first_name: string, last_name: string, timestamp: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, '${first_name}', '${last_name}', '${timestamp}'`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_SupervisorSignOff ${dxh_data_id}, Null, N'${first_name}', N'${last_name}', '${timestamp}'`);
     }
 
     public async executeGeneralImportQuery(query: string): Promise<any> {

@@ -20,6 +20,7 @@ class SupervisorLogInModal extends React.Component {
         if (role === 'Operator') {
             const data = {
                 badge: this.props.user.badge,
+                closed_by: this.props.user.badge,
                 first_name: this.props.user.first_name,
                 last_name: this.props.user.last_name,
                 asset_id: this.props.selectedAssetOption.asset_id,
