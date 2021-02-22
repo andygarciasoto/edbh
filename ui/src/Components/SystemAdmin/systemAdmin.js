@@ -205,7 +205,6 @@ export class Administrator extends Component {
 
   render() {
     const { panelData } = this.state;
-    console.log(panelData);
     return (
       <div id="administrator">
         <CardComponent
@@ -279,7 +278,7 @@ export class Administrator extends Component {
           onClick={() => this.toggleData("workcells")}
         />
 
-        {this.state.userTable === true && <UserTable />}
+        {this.state.userTable === true && <UserTable user={this.props.user}/>}
         {this.state.commonParams === true && <CommonParams />}
         {this.state.assets === true && <Assets />}
         {this.state.reason === true && <Reason />}

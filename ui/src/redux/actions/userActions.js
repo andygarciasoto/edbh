@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { GET_DASHBOARD_INFO } from "../constants/constants";
+import { GET_DASHBOARD_INFO, GET_ALL_USERS  } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getDashboardInfo = (siteId) => {
@@ -11,6 +11,20 @@ export const getDashboardInfo = (siteId) => {
         dashboardData: response.data[0],
       });
       return response.data[0]
+    });
+  };
+};
+
+export const getAllUsers = (siteId, roleId, status) => {
+  var url = `${API}/users?site_id=${siteId}&role_id=${roleId}&status=${status}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      console.log(response);
+      dispatch({
+        type: GET_ALL_USERS ,
+        users: response.data,
+      });
+      return response.data
     });
   };
 };
