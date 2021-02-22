@@ -62,9 +62,9 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
 @DTMinutes    FLOAT, 
 @Quantity	  FLOAT,
 @Responsible  NVARCHAR(100),
-@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
-@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
-@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
+@Clock_Number NVARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
+@First_Name   NVARCHAR(100), -- Leave Null if you send Clock Number
+@Last_Name    NVARCHAR(100), -- Leave Null if you send Clock Number
 @Timestamp    DATETIME, -- generally the current time in site timezone
 @Update       INT				-- generally Null or 0, send dtdata_id to update
 
@@ -81,16 +81,17 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
         DECLARE
-		@First VARCHAR(50),
-		@Last VARCHAR(50),
-		@Initials VARCHAR(50),
+		@First NVARCHAR(50),
+		@Last NVARCHAR(50),
+		@Initials NVARCHAR(50),
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000),
+		@ReturnMessage NVARCHAR(1000),
 		@DTData_Id INT,
 		@Existing_DTReason_Id INT,
 		@Existing_DTMinutes FLOAT,
 		@Existing_Quantity FLOAT,
-		@Site_Timezone VARCHAR(100),
+        @Existing_Responsible NVARCHAR(100),
+		@Site_Timezone NVARCHAR(100),
 		@Timestamp_UTC DATETIME,
 		@asset_id INT,
 		@Site_Id INT;
@@ -125,7 +126,7 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
+                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(NVARCHAR, ISNULL(@DxHData_Id, ''));
                 GOTO ErrExit;
         END;
         IF NOT EXISTS
@@ -139,20 +140,20 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DTReason_Id ' + CONVERT(VARCHAR, ISNULL(@DTReason_Id, ''));
+                       @ReturnMessage = 'Invalid DTReason_Id ' + CONVERT(NVARCHAR, ISNULL(@DTReason_Id, ''));
                 GOTO ErrExit;
         END;
         IF(@DTMinutes < 0
            OR @DTMinutes > 60.0)
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DTMinutes ' + CONVERT(VARCHAR, ISNULL(@DTMinutes, ''));
+                       @ReturnMessage = 'Invalid DTMinutes ' + CONVERT(NVARCHAR, ISNULL(@DTMinutes, ''));
                 GOTO ErrExit;
         END;
         IF(@Quantity < 0)
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Quantity ' + CONVERT(VARCHAR, ISNULL(@Quantity, ''));
+                       @ReturnMessage = 'Invalid Quantity ' + CONVERT(NVARCHAR, ISNULL(@Quantity, ''));
                 GOTO ErrExit;
         END;
         IF EXISTS
@@ -178,20 +179,20 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
         IF ISDATE(@Timestamp) <> 1
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
+                       @ReturnMessage = 'Invalid timestamp ' + CONVERT(NVARCHAR, ISNULL(@Timestamp, ''));
                 GOTO ErrExit;
         END;
         IF(ISNULL(@Update, 0) <> 0)
@@ -203,7 +204,7 @@ AS
         ))
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                       @ReturnMessage = 'Invalid Update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Update, 0) = 0
@@ -234,7 +235,7 @@ AS
 							  @Responsible;
                 SET @DTData_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
-                       @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @DTData_Id);
+                       @ReturnMessage = 'Inserted ' + CONVERT(NVARCHAR, @DTData_Id);
         END;
             ELSE
             BEGIN
@@ -247,12 +248,14 @@ AS
                     BEGIN
                         SELECT @Existing_DTReason_Id = dtreason_id, 
                                @Existing_DTMinutes = dtminutes,
-							   @Existing_Quantity = quantity
+							   @Existing_Quantity = quantity,
+                               @Existing_Responsible = responsible
                         FROM dbo.DTData WITH(NOLOCK)
                         WHERE dtdata_id = ISNULL(@Update, -1);
                         IF(ISNULL(@Existing_DTReason_Id, -1) <> ISNULL(@DTReason_Id, -1)
                            OR ISNULL(@Existing_DTMinutes, -1) <> ISNULL(@DTMinutes, -1)
-						   OR ISNULL(@Existing_Quantity, -1) <> ISNULL(@Quantity, -1))
+						   OR ISNULL(@Existing_Quantity, -1) <> ISNULL(@Quantity, -1)
+                           OR ISNULL(@Existing_Responsible, -1) <> ISNULL(@Responsible, -1))
                             BEGIN
                                 UPDATE dbo.DTData
                                   SET 
@@ -265,12 +268,12 @@ AS
 									  responsible = @Responsible
                                 WHERE dtdata_id = @Update;
                                 SELECT @ReturnStatus = 0, 
-                                       @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Updated ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                             ELSE
                             BEGIN
                                 SELECT @ReturnStatus = 0, 
-                                       @ReturnMessage = 'Nothing to update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Nothing to update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                 END;
         END;
@@ -284,7 +287,3 @@ AS
                @ReturnMessage AS ReturnMessage;
         RETURN;
     END;
-
-        /****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_InterShiftData]    Script Date: 4/12/2019 15:25:17 ******/
-
-        SET ANSI_NULLS ON;

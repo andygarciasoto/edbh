@@ -14,6 +14,7 @@ import UOM from "./AdminTables/uom";
 import Break from "./AdminTables/break";
 import Display from "./AdminTables/display";
 import Workcells from "./AdminTables/workcells";
+
 import UserIcon from "../../resources/u469.svg";
 import CommonIcon from "../../resources/u470.svg";
 import AssetsIcon from "../../resources/u471.svg";
@@ -277,6 +278,7 @@ export class Administrator extends Component {
           name={"Workcells"}
           onClick={() => this.toggleData("workcells")}
         />
+
         {this.state.userTable === true && <UserTable />}
         {this.state.commonParams === true && <CommonParams />}
         {this.state.assets === true && <Assets />}

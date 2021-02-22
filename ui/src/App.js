@@ -101,6 +101,9 @@ function App(propsApp) {
               machineData={propsApp.machineData}
               summary={true}
               socket={propsApp.socket}
+              updateCurrentUser={updateCurrentUser}
+              showModalLogOff={showModalLogOff}
+              displayModalLogOff={displayModalLogOff}
             />}
           />
           : null

@@ -8,7 +8,7 @@ import ReactSelect from 'react-select';
 import { validateScrapSubmit } from '../../../Utils/FormValidations';
 import { API } from '../../../Utils/Constants';
 import '../../../sass/ReasonModal.scss';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import ReasonTable from './ReasonTable'
 const axios = require('axios');
 
@@ -46,8 +46,26 @@ class ScrapModal extends React.Component {
             insert: false,
             modal_validate_IsOpen: false,
             currentReason: {},
-            newReason: {}
+            newReason: {},
+            selectedResponsible: null,
+            responsibleOptions: []
         }
+    }
+
+    async componentDidMount() {
+        const asset = {
+            site: this.props.user.site,
+            level: 'Area',
+            automation_level: 'All'
+        };
+        let responsibleOptions = await getResponseFromGeneric('get', API, '/machine', {}, asset, {}) || [];
+        responsibleOptions = _.map(responsibleOptions, asset => {
+            asset.label = asset.asset_code + ' - ' + asset.asset_name;
+            asset.value = asset.asset_id;
+            return asset;
+        });
+        const selectedResponsible = _.find(responsibleOptions, { asset_code: this.props.selectedAssetOption.parent_asset_code });
+        this.setState({ responsibleOptions, selectedResponsible });
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -64,7 +82,8 @@ class ScrapModal extends React.Component {
                 setupReasonsOptions: prevState.setupReasonsOptions,
                 productionReasonsOptions: prevState.productionReasonsOptions,
                 allReasonOptions: prevState.allReasonOptions,
-                scrapTableList: prevState.scrapTableList
+                scrapTableList: prevState.scrapTableList,
+                selectedResponsible: null
             };
         }
         return null;
@@ -73,9 +92,15 @@ class ScrapModal extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         if (!_.isEqual(this.state.currentRow, prevState.currentRow)) {
             this.setState({ modal_loading_IsOpen: true }, () => {
+                this.loadResponsables(this.props);
                 this.loadData(this.props);
             });
         }
+    }
+
+    loadResponsables(props) {
+        const selectedResponsible = _.find(this.state.responsibleOptions, { asset_code: this.props.selectedAssetOption.parent_asset_code });
+        this.setState({ selectedResponsible });
     }
 
     onChangeInput = (e, field) => {
@@ -101,6 +126,12 @@ class ScrapModal extends React.Component {
             [field]: e,
             actualReasonValue: reason ? reason.quantity : 0,
             reasonVisible: reason ? true : false
+        });
+    }
+
+    onChangeSelectGeneric = (e, field) => {
+        this.setState({
+            [field]: e
         });
     }
 
@@ -168,7 +199,8 @@ class ScrapModal extends React.Component {
 
     acceptNewScrap = (currentReason, newReason) => {
         if ((currentReason.quantity !== newReason.quantity) ||
-            (currentReason.dtreason_id !== newReason.dtreason_id)) {
+            (currentReason.dtreason_id !== newReason.dtreason_id) ||
+            (currentReason.responsible !== newReason.responsible)) {
             const props = this.props;
             if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
                 if (props.activeOperators.length > 1) {
@@ -229,6 +261,7 @@ class ScrapModal extends React.Component {
                 (parseInt(this.state.currentRow.other_scrap) + parseInt(this.state.quantityValue)) :
                 parseInt(this.state.currentRow.other_scrap),
             clocknumber: badge,
+            responsible: this.state.selectedResponsible.asset_code,
             quantity: parseInt(this.state.quantityValue),
             timestamp: getCurrentTime(this.props.user.timezone),
             asset_code: this.props.selectedAssetOption.asset_code
@@ -263,6 +296,7 @@ class ScrapModal extends React.Component {
                 parseInt(this.state.currentRow.other_scrap),
             clocknumber: badge,
             quantity: parseInt(newReason.quantity),
+            responsible: newReason.responsible,
             dtdata_id: parseInt(currentReason.dtdata_id),
             timestamp: getCurrentTime(this.props.user.timezone),
             asset_code: this.props.selectedAssetOption.asset_code
@@ -369,6 +403,7 @@ class ScrapModal extends React.Component {
                             productionReasonsOptions={this.state.productionReasonsOptions}
                             allReasonOptions={this.state.allReasonOptions}
                             levelOptions={this.state.scrapTypeOptions}
+                            responsibleOptions={this.state.responsibleOptions}
                             acceptNewReason={this.acceptNewScrap}
                             parentData={this.props.parentData}
                             isEditable={this.props.isEditable}
@@ -442,6 +477,19 @@ class ScrapModal extends React.Component {
                                         </span> :
                                         null
                                     }
+                                </Col>
+                                <Col sm={6} md={6}>
+                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select Responsable Area')}:</p>
+                                    <Form.Group controlId="formGridState">
+                                        <ReactSelect
+                                            value={this.state.selectedResponsible}
+                                            onChange={(e) => this.onChangeSelectGeneric(e, 'selectedResponsible')}
+                                            options={this.state.responsibleOptions}
+                                            className={"react-select-container"}
+                                            styles={selectStyles}
+                                            isDisabled={!this.props.isEditable}
+                                        />
+                                    </Form.Group>
                                 </Col>
                             </Row>
                             <div className={'new-timeloss-button'}>

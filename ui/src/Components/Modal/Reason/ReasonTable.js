@@ -1,7 +1,6 @@
 import React from 'react';
-
 import ReactTable from 'react-table';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import reasonHelper from './ReasonHelper';
 
 
@@ -24,6 +23,7 @@ class ReasonTable extends React.Component {
             productionReasonsOptions: props.productionReasonsOptions,
             allReasonOptions: props.allReasonOptions,
             levelOptions: props.levelOptions,
+            responsibleOptions: props.responsibleOptions,
             levelOption: null
         }
     }
@@ -38,6 +38,7 @@ class ReasonTable extends React.Component {
                 productionReasonsOptions: nextProps.productionReasonsOptions,
                 allReasonOptions: nextProps.allReasonOptions,
                 levelOptions: nextProps.levelOptions,
+                responsibleOptions: nextProps.responsibleOptions,
                 editReason: false,
                 currentReason: {},
                 newReason: {}

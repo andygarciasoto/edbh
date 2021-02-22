@@ -199,6 +199,21 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/production_any_order', 'put', async (req: Request, res: Response) => {
             await productiondataService.putProductionForAnyOrder(req, res);
+        }, true),
+        new http.RestEndpoint('/api/digital_cups', 'get', async (req: Request, res: Response) => {
+            await productiondataService.getDigitalCups(req, res);
+        }, true),
+        new http.RestEndpoint('/api/total_rows', 'get', async (req: Request, res: Response) => {
+            await assetService.getRowsBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/users', 'get', async (req: Request, res: Response) => {
+            await userService.getUsersBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/roles', 'get', async (req: Request, res: Response) => {
+            await roleService.getRoles(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_user', 'put', async (req: Request, res: Response) => {
+            await userService.putUser(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

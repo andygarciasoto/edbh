@@ -1,17 +1,17 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_Workcell] 'CR2080435W1', 1
 
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as VARCHAR(100),
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as NVARCHAR(100),
 @site_id as INT)
 
 AS  BEGIN 
 DECLARE
     @workcell_id int,
-    @workcell_name VARCHAR(100),
-    @workcell_description VARCHAR(100),
-	@site VARCHAR(100),
-	@status VARCHAR(100) = 'Active',
-	@asset_level VARCHAR(100) = 'Cell';
+    @workcell_name NVARCHAR(100),
+    @workcell_description NVARCHAR(100),
+	@site NVARCHAR(100),
+	@status NVARCHAR(100) = 'Active',
+	@asset_level NVARCHAR(100) = 'Cell';
 
 SELECT @site = site_code
 FROM dbo.Asset

@@ -16,7 +16,6 @@ import {
   getResponseFromGeneric,
   assignValuesToUser,
 } from "./Utils/Requests";
-import _ from "lodash";
 
 const ACCESS_TOKEN_STORAGE_KEY = "accessToken";
 
@@ -42,7 +41,6 @@ if (window.location.pathname === "/" || window.location.pathname === "/login") {
     <Provider store={store}>
       <App defaultAsset={machineName} />
     </Provider>,
-
     document.getElementById("root")
   );
 } else {
@@ -191,10 +189,9 @@ function init() {
       [];
 
     if (site && Number(user.site) !== Number(site)) {
-      const userSiteInfo = _.find(user.sites, ["Site", parseInt(site)]);
       const parameters = {
-        badge: userSiteInfo.Badge,
-        site_id: userSiteInfo.Site,
+        badge: user.badge,
+        site_id: site,
       };
 
       res =
@@ -222,6 +219,7 @@ function init() {
 
     ReactDOM.render(
       <Provider store={store}>
+        {" "}
         <App
           user={user}
           defaultAsset={station}

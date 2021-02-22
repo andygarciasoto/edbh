@@ -12,9 +12,7 @@ import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { getCurrentShift, getResponseFromGeneric, assignValuesToUser, getCurrentTime, validPermission } from '../../Utils/Requests';
-import { API } from '../../Utils/Constants';
-import $ from 'jquery';
+import { getCurrentTime, validPermission } from '../../Utils/Requests';
 import configuration from '../../config.json';
 import '../../sass/Header.scss';
 
@@ -30,8 +28,9 @@ class Header extends React.Component {
     }
 
     getInitialState(props) {
-        let search = qs.parse(props.history.location.search);
+        const search = qs.parse(props.history.location.search);
         return {
+            search,
             megaMenuToggle: 'dropdown-content',
             mc: search.mc || props.machineData.asset_code,
             tp: search.tp || props.machineData.automation_level,
@@ -51,15 +50,18 @@ class Header extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        let search = qs.parse(nextProps.history.location.search);
+        const search = qs.parse(nextProps.history.location.search);
         const mc = search.mc || nextProps.machineData.asset_code;
         const tp = search.tp || nextProps.machineData.automation_level;
-        const dt = search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone)));
+        const dt = search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) :
+            (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) :
+                new Date(getCurrentTime(nextProps.user.timezone)));
         const sf = search.sf || nextProps.user.current_shift;
         const ln = search.ln || nextProps.user.language;
         const cs = search.cs || nextProps.user.site;
-        if (nextProps.isOpen !== prevState.isOpen) {
+        if (!_.isEqual(search, prevState.search)) {
             return {
+                search,
                 mc,
                 tp,
                 dt,
@@ -72,20 +74,12 @@ class Header extends React.Component {
     }
 
     redirectTo = (page) => {
-        let { search } = qs.parse(this.props.history.location.search);
-        let queryItem = Object.assign({}, search);
+        let search = this.props.history.location.search;
         if (page !== 'dashboard' || page !== 'summary') {
-            const newUrl = configuration['root'] + `/${page}${this.props.history.location.search}`;
+            const newUrl = configuration['root'] + `/${page}${search}`;
             window.location.href = newUrl;
         } else {
-            queryItem["mc"] = this.state.mc;
-            queryItem["dt"] = moment(this.state.dt).format('YYYY/MM/DD HH:mm');
-            queryItem["sf"] = this.state.sf;
-            queryItem["ln"] = this.state.ln;
-            queryItem["tp"] = this.state.tp;
-            queryItem["cs"] = this.state.cs;
-            let parameters = $.param(queryItem);
-            this.props.history.push(`${page}?${parameters}`);
+            this.props.history.push(`${page}?${search}`);
         }
     }
 
@@ -115,47 +109,17 @@ class Header extends React.Component {
         _.forEach(this.props.user.sites, site => {
             options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.Site}>{site.asset_name}</Dropdown.Item>);
         });
-
         return options;
     }
 
     changeSite(site) {
         if (Number(this.state.cs) !== Number(site.asset_id)) {
-            this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
+            const search = qs.parse(this.props.history.location.search);
+            const ln = search.ln || this.props.user.language;
+            const newUrl = configuration['root'] + `${this.props.history.location.pathname}?cs=${site.asset_id}${ln ? ('&ln=' + ln) : ''}`;
+            window.location.href = newUrl;
 
         }
-    }
-
-    async changeUserInformation(newSite) {
-        let user = this.props.user;
-
-        const parameters = {
-            site_id: newSite.Site,
-            badge: newSite.Badge,
-            site: newSite.Site,
-            clock_number: newSite.Badge
-        };
-
-        let res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
-        let newUserValues = res[0] || {};
-        user = assignValuesToUser(user, newUserValues);
-
-        user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, parameters, {}) || [];
-        user.machines = await getResponseFromGeneric('get', API, '/machine', {}, parameters, {}) || [];
-        user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, parameters, {}) || [];
-
-        if (!user.shift_id) {
-            let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
-            user.date_of_shift = currentShiftInfo.date_of_shift;
-            user.current_shift = currentShiftInfo.current_shift;
-            user.shift_id = currentShiftInfo.shift_id;
-        }
-
-        let search = qs.parse(this.props.history.location.search);
-        let ln = search.ln;
-
-        this.props.changeCurrentUser(user);
-        await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
     }
 
     logOff = () => {

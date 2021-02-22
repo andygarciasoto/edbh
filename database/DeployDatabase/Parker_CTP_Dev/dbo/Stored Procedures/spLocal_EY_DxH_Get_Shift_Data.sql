@@ -51,6 +51,7 @@
 --	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
 --	20201212		C00V15 - Add new shift logic in the main join sentence
 --	20201221		C00V16 - Add join with Product table to return product name instead of product code
+--	20210218		C00V17 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
@@ -74,7 +75,7 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        DECLARE @timezone VARCHAR(50);
+        DECLARE @timezone NVARCHAR(100);
 		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
 
         DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,

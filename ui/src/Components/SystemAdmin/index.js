@@ -9,7 +9,10 @@ import Administrator from "./systemAdmin";
 const { t } = useTranslation();
 
 class SystemAdmin extends Component {
+
+  
   render() {
+    console.log(this.props);
     return (
       <div>
         <Tabs defaultActiveKey="siteAdmin" transition={false} id="system-tab">
