@@ -4,23 +4,45 @@ import { bindActionCreators } from "redux";
 import * as UserActions from "../../redux/actions/userActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../CustomComponents/filter";
+import AddUser from "./User/addUser";
 
 class UserTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      usersData: {},
+      usersData: [],
+      show: false,
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions.getAllUsers(this.props.user.site, null,null).then((response) => {
+    return actions.getAllUsers(this.props.user.site).then((response) => {
       this.setState({
         usersData: response,
       });
     });
+  }
+
+  showAddUser = () => {
+    this.setState({
+      show: true,
+    });
+  };
+
+  renderUsersTable(user,index) {
+    return (
+      <tr key={index}>
+        <td>{user.role_id}</td>
+        <td>{user.Badge}</td>
+        <td>{user.Username}</td>
+        <td>{user.First_Name}</td>
+        <td>{user.Last_Name}</td>
+        <td>{user.Role}</td>
+        <td>{user.status}</td>
+      </tr>
+    )
   }
 
   render() {
@@ -30,7 +52,9 @@ class UserTable extends Component {
           className="filter-user"
           buttonName={"+ User"}
           role={true}
+          onClick={() => this.showAddUser()}
         ></Filter>
+        <AddUser show={this.state.show} />
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
@@ -44,33 +68,7 @@ class UserTable extends Component {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-              <td>Table cell</td>
-            </tr>
+           {this.state.usersData.map(this.renderUsersTable)}
           </tbody>
         </Table>
       </div>

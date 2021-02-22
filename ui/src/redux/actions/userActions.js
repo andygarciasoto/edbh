@@ -15,11 +15,10 @@ export const getDashboardInfo = (siteId) => {
   };
 };
 
-export const getAllUsers = (siteId, roleId, status) => {
-  var url = `${API}/users?site_id=${siteId}&role_id=${roleId}&status=${status}`;
+export const getAllUsers = (siteId) => {
+  var url = `${API}/users?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
-      console.log(response);
       dispatch({
         type: GET_ALL_USERS ,
         users: response.data,
