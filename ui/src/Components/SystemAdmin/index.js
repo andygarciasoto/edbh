@@ -14,7 +14,7 @@ class SystemAdmin extends Component {
       <div>
         <Tabs defaultActiveKey="siteAdmin" transition={false} id="system-tab">
           <Tab eventKey="siteAdmin" title="Site Administration">
-            <Administrator />
+            <Administrator user={this.props.user} />
           </Tab>
           <Tab eventKey="import" title="Excel Import/Export">
             <Import

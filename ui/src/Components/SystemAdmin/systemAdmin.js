@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getDashboardInfo } from "../../redux/actions/userActions";
+import { bindActionCreators } from "redux";
+import * as UserActions from "../../redux/actions/userActions";
 import CardComponent from "../CustomComponents/card";
 import "../../sass/SystemAdmin.scss";
 import UserTable from "./userTable";
@@ -38,12 +39,20 @@ export class Administrator extends Component {
       break: false,
       display: false,
       workcells: false,
+      panelData: {},
     };
   }
 
-  // componentDidMount = () => {
-  //   return this.getDashboardInfo()
-  // };
+  componentDidMount() {
+    console.log('did',this.props);
+    return this.props.actions
+      .getDashboardInfo(this.props.user.site)
+      .then((response) => {
+        this.setState({
+          panelData: response,
+        });
+      });
+  }
 
   toggleData = (param) => {
     switch (param) {
@@ -283,6 +292,10 @@ export class Administrator extends Component {
   }
 }
 
-const mapDispatchToProps = { getDashboardInfo };
+export const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(UserActions, dispatch),
+  };
+};
 
-export default connect(null, mapDispatchToProps)(Administrator);
+export default connect(null, mapDispatch)(Administrator);
