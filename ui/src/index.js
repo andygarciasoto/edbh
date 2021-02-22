@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { socket } from "./context/socket";
 import App from "./App";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 import * as serviceWorker from "./serviceWorker";
 import "./i18n";
 import axios from "axios";
@@ -15,8 +17,6 @@ import {
   assignValuesToUser,
 } from "./Utils/Requests";
 import _ from "lodash";
-import { Provider } from "react-redux";
-import store from "./redux/store";
 
 const ACCESS_TOKEN_STORAGE_KEY = "accessToken";
 
@@ -221,12 +221,14 @@ function init() {
     }
 
     ReactDOM.render(
-      <App
-        user={user}
-        defaultAsset={station}
-        machineData={machine}
-        socket={socket}
-      />,
+      <Provider store={store}>
+        <App
+          user={user}
+          defaultAsset={station}
+          machineData={machine}
+          socket={socket}
+        />
+      </Provider>,
       document.getElementById("root")
     );
   });

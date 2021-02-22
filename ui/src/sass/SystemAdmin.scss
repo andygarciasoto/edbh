@@ -7,28 +7,28 @@
 .card-component {
   border-style: groove;
   border-radius: 5px;
-  width: 15%;
+  width: 12%;
   cursor: pointer;
 
   &.common{
     margin-left: 250px;
-    margin-top: -175px;
+    margin-top: -143px;
     padding-bottom: 10px;
   }
 
   &.assets{
     margin-left: 500px;
-    margin-top: -175px;
+    margin-top: -142px;
   }
 
   &.reason{
     margin-left: 750px;
-    margin-top: -175px;
+    margin-top: -143px;
   }
 
   &.device{
     margin-left: 1000px;
-    margin-top: -175px;
+    margin-top: -142px;
   }
 
   &.shifts{
@@ -37,22 +37,22 @@
 
   &.uom{
     margin-left: 250px;
-    margin-top: -175px;
+    margin-top: -143px;
   }
 
   &.break{
     margin-left: 500px;
-    margin-top: -175px;
+    margin-top: -142px;
   }
 
   &.display{
     margin-left: 750px;
-    margin-top: -175px;
+    margin-top: -143px;
   }
 
   &.work{
     margin-left: 1000px;
-    margin-top: -175px;
+    margin-top: -142px;
   }
 
   //   :hover {
@@ -60,8 +60,8 @@
   //   }
 
   .icon {
-    width: 25%;
-    margin-left: 65px;
+    width: 20%;
+    margin-left: 56px;
     margin-top: 15px;
   }
 
@@ -69,13 +69,13 @@
     color: #aaaaaa;
     text-align: center;
     margin-top: 10px;
-    font-size: 25px;
+    font-size: 20px;
   }
 
   .p-name {
     color: #aaaaaa;
     text-align: center;
     margin-top: -10px;
-    font-size: 25px;
+    font-size: 20px;
   }
 }

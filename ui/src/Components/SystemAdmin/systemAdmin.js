@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { getDashboardInfo } from "../../redux/actions/userActions";
 import CardComponent from "../CustomComponents/card";
 import "../../sass/SystemAdmin.scss";
 import UserTable from "./userTable";
@@ -22,7 +24,7 @@ import UOMIcon from "../../resources/u476.svg";
 import DisplayIcon from "../../resources/u477.svg";
 import WorkIcon from "../../resources/u478.svg";
 
-class Administrator extends Component {
+export class Administrator extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,6 +40,10 @@ class Administrator extends Component {
       workcells: false,
     };
   }
+
+  // componentDidMount = () => {
+  //   return this.getDashboardInfo()
+  // };
 
   toggleData = (param) => {
     switch (param) {
@@ -189,6 +195,7 @@ class Administrator extends Component {
   };
 
   render() {
+    console.log(this.props);
     return (
       <div id="administrator">
         <CardComponent
@@ -276,4 +283,6 @@ class Administrator extends Component {
   }
 }
 
-export default Administrator;
+const mapDispatchToProps = { getDashboardInfo };
+
+export default connect(null, mapDispatchToProps)(Administrator);
