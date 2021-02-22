@@ -45,14 +45,13 @@ export class Administrator extends Component {
   }
 
   componentDidMount() {
-    console.log('did',this.props);
-    return this.props.actions
-      .getDashboardInfo(this.props.user.site)
-      .then((response) => {
-        this.setState({
-          panelData: response,
-        });
+    const { actions } = this.props;
+
+    return actions.getDashboardInfo(this.props.user.site).then((response) => {
+      this.setState({
+        panelData: response,
       });
+    });
   }
 
   toggleData = (param) => {
@@ -205,13 +204,14 @@ export class Administrator extends Component {
   };
 
   render() {
-    console.log(this.props);
+    const { panelData } = this.state;
+    console.log(panelData);
     return (
       <div id="administrator">
         <CardComponent
           className={"card-component"}
           icon={UserIcon}
-          number={25}
+          number={panelData.Users}
           name={"Users"}
           onClick={() => this.toggleData("userTable")}
         />
@@ -225,56 +225,56 @@ export class Administrator extends Component {
         <CardComponent
           className={"card-component assets"}
           icon={AssetsIcon}
-          number={150}
+          number={panelData.Assets}
           name={"Assets"}
           onClick={() => this.toggleData("assets")}
         />
         <CardComponent
           className={"card-component reason"}
           icon={ReasonIcon}
-          number={1500}
+          number={panelData.DTReasons}
           name={"Reason Codes"}
           onClick={() => this.toggleData("reason")}
         />
         <CardComponent
           className={"card-component device"}
           icon={DeviceIcon}
-          number={40}
+          number={panelData.Tags}
           name={"Device Tags"}
           onClick={() => this.toggleData("device")}
         />
         <CardComponent
           className={"card-component shifts"}
           icon={ShiftsIcon}
-          number={3}
+          number={panelData.Shifts}
           name={"Shifts"}
           onClick={() => this.toggleData("shifts")}
         />
         <CardComponent
           className={"card-component uom"}
           icon={UOMIcon}
-          number={2}
+          number={panelData.UOM}
           name={"UOM"}
           onClick={() => this.toggleData("uom")}
         />
         <CardComponent
           className={"card-component break"}
           icon={BreakIcon}
-          number={725}
+          number={panelData.Unavailable}
           name={"Break Schedule"}
           onClick={() => this.toggleData("break")}
         />
         <CardComponent
           className={"card-component display"}
           icon={DisplayIcon}
-          number={33}
+          number={panelData.AssetDisplaySystems}
           name={"Asset Displays"}
           onClick={() => this.toggleData("display")}
         />
         <CardComponent
           className={"card-component work"}
           icon={WorkIcon}
-          number={9}
+          number={panelData.Workcells}
           name={"Workcells"}
           onClick={() => this.toggleData("workcells")}
         />
