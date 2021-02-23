@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_InterShiftData]    Script Date: 22/2/2021 20:44:36 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -43,46 +43,48 @@
 --	20191204		C00V03 - Change CommonParameters to CommonParameters
 --	20191210		C00V04 - Change Shift_Code to Shift_Id because this information is from the database
 --	20200415		C00V05 - Change logic to create new way to get the information
+--	20210222		C00V06 - Change production day and shift id for start time and end time to search intershift data
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_InterShiftData 35,'2020-04-15',3
+-- exec spLocal_EY_DxH_Get_InterShiftData 35, 1,'2021-02-21 23:00', '2021-02-22 23:00'
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_InterShiftData]
 --Declare
-@Asset_Id       INT, 
-@Production_Day DATETIME, 
-@Shift_Id       INT
+@Site_Id		INT,
+@Asset_Id		INT,
+@Start_Datetime	DATETIME,
+@End_Datetime	DATETIME
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE 
-		@Previous_Shifts_To_Include INT= 2;
+		DECLARE
+		@start_utc	DATETIME,
+		@end_utc	DATETIME,
+		@timezone	NVARCHAR(100);
 
-        WITH CTE1
-             AS (SELECT CASE
-                            WHEN S.end_time < S.start_time
-                                 AND S.is_first_shift_of_day = 0
-                            THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, S.end_time), DATEADD(DAY, 1, @Production_Day)), 'yyyy-MM-dd HH'), ':00')
-                            ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, S.end_time), @Production_Day), 'yyyy-MM-dd HH'), ':00')
-                        END AS end_date_time, 
-                        S.duration_in_minutes * (@Previous_Shifts_To_Include + 1) AS minutes_to_go_back,
-						CP.site_timezone
-                 FROM dbo.Shift S JOIN CommonParameters CP ON S.asset_id = CP.site_id 
-                 WHERE S.shift_id = @Shift_Id)
-             SELECT ISH.intershift_id, 
-                    ISH.asset_id, 
-                    ISH.production_day, 
-                    ISH.shift_code, 
-                    ISH.comment, 
-                    ISH.entered_by, 
-                    CONVERT(DATETIME, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE CTE1.site_timezone) AS entered_on, 
-                    ISH.first_name, 
-                    ISH.last_name
-             FROM dbo.InterShiftData ISH
-                  JOIN CTE1 ON ISH.asset_id = @Asset_Id
-                               AND (CONVERT(DATETIME, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE CTE1.site_timezone) >= DATEADD(MINUTE, -CTE1.minutes_to_go_back,CTE1.end_date_time))
-                               AND (CONVERT(DATETIME, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE CTE1.site_timezone) <= CTE1.end_date_time)
-							   ORDER BY ISH.entered_on;
+		SELECT
+			@start_utc = @Start_Datetime AT TIME ZONE CP.site_timezone  AT TIME ZONE 'UTC',
+			@end_utc = @End_Datetime AT TIME ZONE CP.site_timezone  AT TIME ZONE 'UTC',
+			@timezone = CP.site_timezone
+		FROM dbo.CommonParameters CP
+		WHERE CP.site_id = @Site_Id;
+
+		SELECT
+			ISH.intershift_id,
+			ISH.asset_id,
+			ISH.production_day,
+			ISH.shift_code,
+			ISH.comment,
+			ISH.entered_by,
+			CONVERT(VARCHAR, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone) AS entered_on,
+			ISH.first_name,
+			ISH.last_name
+		FROM dbo.InterShiftData ISH
+		WHERE
+			ISH.asset_id = @Asset_Id AND
+			ISH.entered_on >= @start_utc AND
+			ISH.entered_on < @end_utc
+		ORDER BY ISH.entered_on;
     END;

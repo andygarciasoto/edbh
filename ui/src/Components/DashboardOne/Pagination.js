@@ -5,7 +5,7 @@ import Tooltip from 'react-tooltip'
 import moment from 'moment';
 import $ from 'jquery';
 import * as qs from 'query-string';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import '../../sass/Pagination.scss';
 
 
@@ -62,7 +62,6 @@ class Pagination extends React.Component {
             let site_shifts = props.user.shifts;
 
             //GET SHIFT AND TME OF THE CURRENT SHIFT
-
             let currentSiteTime = moment(moment().tz(props.user.timezone).format('YYYY-MM-DD HH:mm:ss'));
             let indexActualShift = _.findIndex(site_shifts, shift => {
                 return (currentSiteTime.isBetween(moment(shift.start_date_time_today), moment(shift.end_date_time_today)))

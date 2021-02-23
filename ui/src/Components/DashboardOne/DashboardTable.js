@@ -6,9 +6,9 @@ import {
     getRowsFromShifts,
     formatDate,
     getResponseFromGeneric,
-    mapShift,
     genericRequest
 } from '../../Utils/Requests';
+import { getStartEndDateTime } from '../../Utils/Utils';
 import { API } from '../../Utils/Constants';
 import Spinner from '../Common/Spinner';
 import dashboardHelper from '../../Utils/DashboardHelper';
@@ -124,8 +124,10 @@ class DashboardTable extends React.Component {
 
         if (filter && filter[0]) {
 
-            let hr = moment().tz(props.user.timezone).hours();
-            let responseArray = [];
+            const { start_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[0].shift_name, this.props.user);
+            const { end_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[this.props.user.shifts.length - 1].shift_name, this.props.user);
+
+
 
             if (verticalToken !== null) {
                 verticalToken.cancel('Previous request canceled, new request is send');
@@ -135,26 +137,16 @@ class DashboardTable extends React.Component {
             const parameters2 = {
                 mc: filter[0].asset_code,
                 dt: formatDate(filter[1]).split("-").join(""),
-                sf: props.user.vertical_shift_id,
-                hr: 23,
+                start_date_time: start_date_time,
+                end_date_time: end_date_time,
                 st: props.user.site
             };
-            responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token));
 
-            const parameters = {
-                mc: filter[0].asset_code,
-                dt: formatDate(filter[1]).split("-").join(""),
-                sf: mapShift(filter[2]),
-                hr: hr
-            };
-
-            responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', null, parameters, {}, verticalToken.token));
-
-            Promise.all(responseArray).then(responses => {
+            getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token).then(response => {
                 let data = [];
                 let current_shift = null;
                 let startShift = 0;
-                _.forEach(responses[0], (value) => {
+                _.forEach(response, (value) => {
                     if (current_shift && (current_shift.shift_code === value.shift_code || value.shift_code === null)) {
                         data = _.concat(data, [value]);
                     } else {
@@ -178,12 +170,8 @@ class DashboardTable extends React.Component {
                 if (currentRow) {
                     currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
                 }
-
-                let uom_asset = responses[1] || [];
-
                 this.setState({
                     data,
-                    uom_asset,
                     currentRow
                 });
             }, error => {
@@ -198,20 +186,14 @@ class DashboardTable extends React.Component {
 
             let tz = this.state.commonParams ? this.state.commonParams.value : props.user.timezone;
 
-            let sf = {};
-
-            _.forEach(props.user.shifts, shift => {
-                if (shift.shift_name === filter[2]) {
-                    sf = shift;
-                }
-            });
+            const { start_date_time, end_date_time } = getStartEndDateTime(formatDate(filter[1]), filter[2], this.props.user);
 
             const parameters = {
                 mc: filter[0].asset_code,
-                dt: formatDate(filter[1]).split("-").join(""),
-                sf: sf.shift_id || props.user.shift_id,
-                hr: moment().tz(props.user.timezone).hours(),
-                st: props.user.site
+                start_date_time: start_date_time,
+                end_date_time: end_date_time,
+                st: props.user.site,
+                dt: formatDate(filter[1]).split("-").join("")
             }
 
             if (dashOneToken !== null) {
@@ -219,40 +201,29 @@ class DashboardTable extends React.Component {
             }
             dashOneToken = axios.CancelToken.source();
 
-            let requestArray = [
-                genericRequest('get', API, '/data', null, parameters, {}, dashOneToken.token),
-                genericRequest('get', API, '/uom_asset', null, parameters, {}, dashOneToken.token),
-            ];
+            genericRequest('get', API, '/data', null, parameters, {}, dashOneToken.token).then(response => {
+                dashOneToken = null;
+                let data = response.data;
+                let alertModalOverProd = false;
+                let alertMessageOverProd = '';
+                if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+                    (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
+                    alertModalOverProd = true;
+                    alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+                }
 
-            axios.all(requestArray).then(
-                axios.spread((...responses) => {
-                    dashOneToken = null;
-                    let data = responses[0].data;
-                    let uom_asset = responses[1].data;
-                    let alertModalOverProd = false;
-                    let alertMessageOverProd = '';
-                    if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
-                        (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
-                        alertModalOverProd = true;
-                        alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
-                    }
+                let currentRow = this.state.currentRow;
+                if (currentRow) {
+                    currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                }
 
-                    let currentRow = this.state.currentRow;
-                    if (currentRow) {
-                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
-                    }
-
-                    this.setState({
-                        data,
-                        uom_asset,
-                        alertModalOverProd,
-                        alertMessageOverProd,
-                        currentRow
-                    });
-                })
-                , (error) => {
-                    console.log(error);
+                this.setState({
+                    data,
+                    alertModalOverProd,
+                    alertMessageOverProd,
+                    currentRow
                 });
+            });
         }
     }
 

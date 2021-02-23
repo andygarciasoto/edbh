@@ -14,6 +14,7 @@ import {
     getResponseFromGeneric,
     assignValuesToUser
 } from './Utils/Requests';
+import _ from 'lodash';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
@@ -118,7 +119,12 @@ function init() {
             const shift = {
                 st: station,
                 site: site || user.site,
-                clock_number: user.clock_number
+                clock_number: user.badge
+            };
+            const asset = {
+                site: site || user.site,
+                level: 'All',
+                automation_level: 'All'
             };
 
             let res = await getResponseFromGeneric('get', API, '/asset_display_system', {}, shift, {}) || {};
@@ -133,7 +139,8 @@ function init() {
             }
 
             user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, shift, {}) || [];
-            user.machines = await getResponseFromGeneric('get', API, '/machine', {}, shift, {}) || [];
+            user.site_assets = await getResponseFromGeneric('get', API, '/machine', {}, asset, {}) || [];
+            user.machines = _.filter(user.site_assets, { asset_level: 'Cell' });
             user.sites = await getResponseFromGeneric('get', API, '/find_sites', {}, shift, {}) || [];
             user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, shift, {}) || [];
             user.workcell = await getResponseFromGeneric('get', API, '/workcell', {}, shift, {}) || [];

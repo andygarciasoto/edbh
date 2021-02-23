@@ -5,7 +5,7 @@ import { API } from '../../Utils/Constants';
 import MessageModal from '../Common/MessageModal';
 import LoadingModal from '../Common/LoadingModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
-import { getResponseFromGeneric, getCurrentTime, formatDateWithTime, convertNumber } from '../../Utils/Requests';
+import { getResponseFromGeneric, getCurrentTime, formatDateWithTime } from '../../Utils/Requests';
 import * as _ from 'lodash';
 import '../../sass/SignoffModal.scss';
 
@@ -59,7 +59,7 @@ class SignoffModal extends React.Component {
                     this.signOff(props.activeOperators[0].badge);
                 }
             } else {
-                this.signOff(props.user.clock_number);
+                this.signOff(props.user.badge);
             }
         } else if (this.state.signOffRole === 'Supervisor') {
             this.setState({ modal_validate_IsOpen: true });
@@ -170,18 +170,18 @@ class SignoffModal extends React.Component {
                         <div className={"wrap-signoff"}>
                             <ul className={'signoff-list-parent'}>
                                 <li><p className={'signoff-list'}>{this.props.t('Ideal') + ': '}</p><p className={'signoff-list'}>
-                                    {row.summary_ideal === '' ? 0 : convertNumber(row.summary_ideal, this.props.uom_asset)}
+                                    {row.summary_ideal === '' ? 0 : row.summary_ideal}
                                 </p></li>
                                 <li><p className={'signoff-list'}>{this.props.t('Target') + ': '}</p><p className={'signoff-list'}>
-                                    {row.summary_target === '' ? 0 : convertNumber(row.summary_target, this.props.uom_asset)}
+                                    {row.summary_target === '' ? 0 : row.summary_target}
                                 </p></li>
                                 <li><p className={'signoff-list'}>{this.props.t('Recorded Actual') + ': '}</p><p style={{ color: isred === 'red' ? isred : isgreen }} className={'signoff-list'}>
-                                    {row.summary_actual === '' ? 0 : convertNumber(row.summary_actual, this.props.uom_asset)}
+                                    {row.summary_actual === '' ? 0 : row.summary_actual}
                                 </p></li>
                                 <li><p className={'signoff-list'}>{this.props.t('Scrap') + ': '}</p><p className={'signoff-list'}>
-                                    {parseInt(row.summary_scrap || 0, 10)}</p></li>
+                                    {row.summary_scrap || 0}</p></li>
                                 <li><p className={'signoff-list'}>{this.props.t('Adjusted Actual') + ': '}</p><p className={'signoff-list'}>
-                                    {parseInt(row.summary_adjusted_actual || row.summary_actual || 0, 10)}</p></li>
+                                    {row.summary_adjusted_actual || row.summary_actual}</p></li>
                             </ul>
                             <p style={{ textAlign: 'center', marginTop: '20px' }}>{this.state.signoffMessage}</p>
                         </div>

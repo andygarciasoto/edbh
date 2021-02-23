@@ -2,30 +2,16 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getCurrentTimeOnly } from '../../Utils/Requests';
-import _ from 'lodash';
 import moment from 'moment';
 
 class DatePickerCustom extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            startDate: this.props.value,
-        }
-        this.handleChange = this.handleChange.bind(this);
+        this.state = {}
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (!_.isEqual(nextProps.value, prevState.startDate)) {
-            return {
-                startDate: nextProps.value
-            };
-        } else return null;
-    }
-
-    handleChange(date) {
-        const time = this.state.startDate ? moment(this.state.startDate).format('HH:mm') : undefined;
-        const newDate = moment(moment(date).format('YYYY/MM/DD') + ' ' + (time ? time : getCurrentTimeOnly()));
+    handleChange = (date) => {
+        const newDate = moment(date).format('YYYY/MM/DD HH:mm');
         this.props.collectInput(new Date(newDate), 'dt');
     }
 
@@ -34,7 +20,7 @@ class DatePickerCustom extends React.Component {
             <DatePicker
                 fixedHeight
                 className={'date-picker-field'}
-                selected={this.state.startDate}
+                selected={this.props.value}
                 onChange={this.handleChange}
             />
         );

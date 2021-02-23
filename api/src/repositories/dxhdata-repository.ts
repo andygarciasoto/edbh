@@ -8,8 +8,8 @@ export class DxHDataRepository {
         this.sqlServerStore = sqlServerStore;
     }
 
-    public async getShiftData(asset_id: number, date: string, shift: string, site: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Shift_Data ${asset_id},'${date}',${shift}, ${site}`);
+    public async getShiftData(asset_id: number, date: string, start_date_time: string, end_date_time: string, site: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Shift_Data ${asset_id},'${date}','${start_date_time}','${end_date_time}', ${site}`);
     }
 
     public async getDxHDataId(asset_id: number, row_timestamp: string): Promise<any> {

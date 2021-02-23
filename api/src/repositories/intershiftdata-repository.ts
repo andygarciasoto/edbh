@@ -10,8 +10,8 @@ export class InterShiftDataRepository {
         this.sqlServerStore = sqlServerStore;
     }
 
-    public async getInterShiftDataByAssetProdDayShift(asset_id: number, production_day: string, shift_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_InterShiftData ${asset_id}, '${production_day}', ${shift_id}`);
+    public async getInterShiftDataByAssetProdDayShift(site_id: number, asset_id: number, start_date_time: string, end_date_time: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_InterShiftData ${site_id}, ${asset_id}, '${start_date_time}', '${end_date_time}'`);
     }
 
     public async putInterShiftDataByClocknumber(asset_id: number, comment: string, clocknumber: string, update: number): Promise<any> {

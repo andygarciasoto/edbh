@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval]    Script Date: 23/2/2021 12:18:16 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -39,7 +39,7 @@
 -- Example Call:
 -- exec dbo.spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval 6, '2020-03-28 14:00:00','2020-03-28 21:00:00'
 --
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
+CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
                                                                                  @start_time DATETIME, 
                                                                                  @end_time   DATETIME
 AS
@@ -48,22 +48,20 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
         WITH CTE1
-             AS (SELECT BD.id_chun, 
-                        BD.started_on_chunck, 
-                        BD.ended_on_chunck, 
-                        OD.order_id, 
-                        OD.order_number, 
-                        OD.product_code, 
-                        OD.start_time, 
-                        OD.end_time, 
-                        PD.productiondata_id, 
-                        --DHD.dxhdata_id, 
+             AS (SELECT BD.id_chun,
+                        BD.started_on_chunck,
+                        BD.ended_on_chunck,
+                        OD.order_id,
+                        OD.order_number,
+                        OD.product_code,
+                        OD.start_time,
+                        OD.end_time,
+                        PD.productiondata_id,
                         SUM(PD.actual - PD.setup_scrap - PD.other_scrap) OVER(PARTITION BY OD.product_code) AS production,
                         CASE
-                            WHEN (OD.end_time IS NOT NULL
+                            WHEN OD.end_time IS NOT NULL
                                  AND OD.end_time >= BD.started_on_chunck
-                                 AND OD.end_time < BD.ended_on_chunck)
-                                 OR OD.end_time IS NULL
+                                 AND OD.end_time < BD.ended_on_chunck
                             THEN 1
                             ELSE 0
                         END AS finish_order_hour
@@ -80,10 +78,6 @@ AS
                       LEFT JOIN dbo.ProductionData PD ON PD.order_id = OD.order_id
                                                          AND PD.start_time >= BD.started_on_chunck
                                                          AND PD.start_time < BD.ended_on_chunck
-                      --LEFT JOIN dbo.DxHData DHD ON DHD.asset_id = @Asset_Id
-                      --                             AND CONCAT(FORMAT(BD.started_on_chunck, 'htt'), ' - ', FORMAT(BD.ended_on_chunck, 'htt')) = UPPER(DHD.hour_interval)
-                      --                             AND (DATEADD(HOUR, DATEPART(HOUR, BD.started_on_chunck), production_day) >= BD.started_on_chunck
-                      --                                  AND DATEADD(HOUR, DATEPART(HOUR, BD.started_on_chunck), production_day) < BD.ended_on_chunck)
 														)
              SELECT CTE1.started_on_chunck, 
                     CTE1.ended_on_chunck, 

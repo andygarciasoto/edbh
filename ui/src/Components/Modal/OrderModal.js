@@ -42,9 +42,9 @@ class OrderModal extends React.Component {
             params: {
                 order_number: orderNumber,
                 asset_code: this.props.selectedAssetOption.asset_code,
-                clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
-                first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
-                last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+                clocknumber: this.props.user.badge ? this.props.user.basge : undefined,
+                first_name: this.props.user.badge ? undefined : this.props.user.first_name,
+                last_name: this.props.user.badge ? undefined : this.props.user.last_name,
                 timestamp: getCurrentTime(this.props.user.timezone)
             }
         };

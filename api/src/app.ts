@@ -214,6 +214,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_user', 'put', async (req: Request, res: Response) => {
             await userService.putUser(req, res);
+        }, true),
+        new http.RestEndpoint('/api/escalation', 'get', async (req: Request, res: Response) => {
+            await userService.getEscalation(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

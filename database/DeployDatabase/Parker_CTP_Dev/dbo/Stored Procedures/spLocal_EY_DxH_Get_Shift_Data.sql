@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data_new_2]    Script Date: 22/2/2021 20:22:31 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -52,19 +52,20 @@
 --	20201212		C00V15 - Add new shift logic in the main join sentence
 --	20201221		C00V16 - Add join with Product table to return product name instead of product code
 --	20210218		C00V17 - Change variables type from varchar to nvarchar
+--	20210222		C00V18 - Change Shift id for starttime and endtime parameters (add fexibiltiy in the logic to search the data)
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
--- exec spLocal_EY_DxH_Get_Shift_Data 230,'2021-01-26',47,225
+-- exec spLocal_EY_DxH_Get_Shift_Data 35,'2021-02-22','2021-02-22 15:00', '2021-02-22 23:00', 1
 --
 --52,7586221694946
 --23,9655113220215
 
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data]
 --Declare
-@Asset_Id        INT, 
-@Production_date DATETIME, 
-@Shift_id        INT, 
+@Asset_Id        INT,
+@Production_date DATETIME,
+@Start_DateTime		DATETIME,
+@End_DateTime		DATETIME,
 @Site            INT
 AS
     --exec spLocal_EY_DXH_GET_SHIFT_dATA 0, '20191111', 8
@@ -75,11 +76,13 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        DECLARE @timezone NVARCHAR(100);
-		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
+        DECLARE
+        @current_time DATETIME,
+        @Active_Status NVARCHAR(100) = 'Active';
 
-        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,
-		@Active_Status VARCHAR(50) = 'Active';
+        SELECT
+            @current_time = GSP.CurrentDateTime
+        FROM dbo.GetShiftProductionDayFromSiteAndDate(@Site,NULL) GSP;
 
         WITH CTE
              AS (SELECT CONVERT(VARCHAR, BD.started_on_chunck, 20) AS started_on_chunck, 
@@ -94,17 +97,17 @@ AS
                         PD.start_time, 
                         PD.productiondata_id, 
                         P.product_name, 
-                        PD.ideal, 
-                        PD.target, 
-                        PD.actual, 
+                        CONVERT(INT, PD.ideal) AS ideal,
+                        CONVERT(INT, PD.target) AS target,
+                        PD.actual,
                         (PD.setup_scrap + PD.other_scrap) AS scrap, 
                         PD.setup_scrap,
                         PD.other_scrap,
-                        SUM(PD.ideal) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
-                        SUM(PD.ideal) OVER(
+                        SUM(CONVERT(INT, PD.ideal)) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
+                        SUM(CONVERT(INT, PD.ideal)) OVER(
                         ORDER BY PD.dxhdata_id) AS cumulative_ideal, 
-                        SUM(PD.target) OVER(PARTITION BY PD.dxhdata_id) AS summary_target, 
-                        SUM(PD.target) OVER(
+                        SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id) AS summary_target, 
+                        SUM(CONVERT(INT, PD.target)) OVER(
                         ORDER BY BD.started_on_chunck) AS cumulative_target, 
                         SUM(PD.actual) OVER(PARTITION BY PD.dxhdata_id) AS summary_actual, 
                         SUM(PD.actual) OVER(
@@ -176,11 +179,7 @@ AS
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
                         ORDER BY BD.started_on_chunck) AS Row#
-                 FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
-						--VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id AND
-													BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, SF1.start_time_offset_days, @Production_date))
-													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, SF1.end_time_offset_days, @Production_date))
+                 FROM [dbo].[GetRangesBetweenDates](@Start_DateTime, @End_DateTime, 60, 1) AS BD
 					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
 					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
 													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
@@ -231,9 +230,9 @@ AS
                  (
                      SELECT SUM(CASE
                                     WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH')
-                                         AND PD1.target > (PD1.actual - PD1.setup_scrap - PD1.other_scrap)
-                                    THEN PD1.target
-                                    ELSE PD1.actual - PD1.setup_scrap - PD1.other_scrap
+                                         AND CONVERT(INT, PD1.target) > (CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap)
+                                    THEN CONVERT(INT, PD1.target)
+                                    ELSE CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap
                                 END) AS summary_actual_quantity
                      FROM dbo.ProductionData PD1
                      WHERE PD1.order_id = OD.order_id
