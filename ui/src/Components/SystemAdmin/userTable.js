@@ -11,7 +11,8 @@ class UserTable extends Component {
     super(props);
     this.state = {
       usersData: [],
-      show: false,
+      user: false,
+      table: true,
     };
   }
 
@@ -27,11 +28,12 @@ class UserTable extends Component {
 
   showAddUser = () => {
     this.setState({
-      show: true,
+      user: true,
+      table: false,
     });
   };
 
-  renderUsersTable(user,index) {
+  renderUsersTable(user, index) {
     return (
       <tr key={index}>
         <td>{user.role_id}</td>
@@ -42,7 +44,7 @@ class UserTable extends Component {
         <td>{user.Role}</td>
         <td>{user.status}</td>
       </tr>
-    )
+    );
   }
 
   render() {
@@ -54,23 +56,23 @@ class UserTable extends Component {
           role={true}
           onClick={() => this.showAddUser()}
         ></Filter>
-        <AddUser show={this.state.show} />
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Badge</th>
-              <th>Username</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Role</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-           {this.state.usersData.map(this.renderUsersTable)}
-          </tbody>
-        </Table>
+        {this.state.user === true && <AddUser user={this.props.user}/>}
+        {this.state.table === true && (
+          <Table responsive="sm" bordered={true}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Badge</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>{this.state.usersData.map(this.renderUsersTable)}</tbody>
+          </Table>
+        )}
       </div>
     );
   }

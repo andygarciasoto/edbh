@@ -1,8 +1,9 @@
-import { GET_DASHBOARD_INFO, GET_ALL_USERS } from "../constants/constants";
+import { GET_DASHBOARD_INFO, GET_ALL_USERS, GET_ROLES } from "../constants/constants";
 
 const initialState = {
   dashboardData: {},
   users: {},
+  roles:{},
 };
 
 export default (state = initialState, action) => {
@@ -17,6 +18,11 @@ export default (state = initialState, action) => {
         ...state,
         users: { ...action.users },
       };
+      case GET_ROLES:
+        return {
+          ...state,
+          roles: { ...action.roles },
+        };
 
     default:
       return state;
@@ -25,3 +31,4 @@ export default (state = initialState, action) => {
 
 export const GetDashboardInfo = (state) => state.userReducer.dashboardData;
 export const getAllUsers = (state) => state.userReducer.users;
+export const getRoles = (state) => state.userReducer.roles;

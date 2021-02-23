@@ -1,6 +1,14 @@
 #administrator {
   margin: 30px 30px;
 }
+.user-box {
+  margin-top: 30px;
+  border-style: groove;
+  border-radius: 5px;
+  height: auto;
+  width: auto;
+  margin-bottom: 30px;
+}
 
 .filter-user {
   margin-top: 30px;
@@ -26,7 +34,7 @@
     cursor: pointer;
   }
 
-  .p-filter{
+  .p-filter {
     width: auto;
     height: auto;
     display: flex;
@@ -35,7 +43,7 @@
     margin-left: 20px;
   }
 
-  .p-status{
+  .p-status {
     float: left;
     width: auto;
     height: auto;
@@ -43,12 +51,12 @@
     margin-left: 100px;
     margin-top: -39px;
 
-    &.role{
+    &.role {
       margin-left: 30px;
     }
   }
 
-  .drop-status{
+  .drop-status {
     max-width: 100px;
     float: left;
     /* width: auto; */
