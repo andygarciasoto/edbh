@@ -50,8 +50,8 @@
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_InterShiftData]
 --Declare
-@Asset_Id		INT,
 @Site_Id		INT,
+@Asset_Id		INT,
 @Start_Datetime	DATETIME,
 @End_Datetime	DATETIME
 AS
