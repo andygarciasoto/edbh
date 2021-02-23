@@ -50,9 +50,9 @@ class ManualEntryModal extends React.Component {
                 uom_code: this.state.uom.value,
                 row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
                 production_status: this.state.production_status,
-                clocknumber: this.props.user.clock_number ? this.props.user.clock_number : undefined,
-                first_name: this.props.user.clock_number ? undefined : this.props.user.first_name,
-                last_name: this.props.user.clock_number ? undefined : this.props.user.last_name,
+                clocknumber: this.props.user.badge ? this.props.user.badge : undefined,
+                first_name: this.props.user.badge ? undefined : this.props.user.first_name,
+                last_name: this.props.user.badge ? undefined : this.props.user.last_name,
                 timestamp: getCurrentTime(this.props.user.timezone)
             };
             if (this.state.routed_cycle_time !== '') {

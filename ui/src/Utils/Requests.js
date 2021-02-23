@@ -16,7 +16,7 @@ function genericRequest(method, baseURL, route, headers, parameters, body, cance
 }
 
 async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body, cancelTok) {
-  
+
   return axios({
     method: method,
     url: `${baseURL}${route}`,
@@ -56,7 +56,6 @@ function assignValuesToUser(user, newAttributes) {
   user.username = newAttributes.username;
   user.role = newAttributes.role;
   user.assing_role = newAttributes.assing_role;
-  user.clock_number = newAttributes.badge;
   user.badge = newAttributes.badge;
   user.site = newAttributes.site;
   user.max_regression = newAttributes.max_regression;
@@ -76,23 +75,6 @@ function assignValuesToUser(user, newAttributes) {
 
 function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);
-}
-
-function mapShift(rawshift) {//REVISAR METODO NO DEBERÍA DE USARSE
-  let shift = 1;
-  if (rawshift === 'Select Shift') {
-    shift = 1;
-  }
-  if (rawshift === '1st Shift') {
-    shift = 1;
-  }
-  if (rawshift === '2nd Shift') {
-    shift = 2;
-  }
-  if (rawshift === '3rd Shift') {
-    shift = 3;
-  }
-  return shift;
 }
 
 async function sendPost(data, route) {//CAMBIAR FORMA DE USO SOLO LLAMAR EL POST MANEJAR EN
@@ -190,20 +172,6 @@ function formatNumber(number, decimals) {
   }
 }
 
-function convertNumber(num, uom_asset, target) {
-  let result = 0;
-  if (uom_asset && uom_asset.decimals) {
-    result = (Math.round(Math.round(num) * 10 + Number.EPSILON) / 10);
-  } else {
-    if (target && (target === 'target' || target === 'summary_target')) {
-      result = Math.floor(num);
-    } else {
-      result = Math.floor(Math.round(num));
-    }
-  }
-  return result;
-}
-
 function getDateAccordingToShifts(filterDate, user) {
   let newDate = moment(filterDate);
   let currentDate = moment(getCurrentTime(user.timezone));
@@ -272,9 +240,36 @@ function validPermission(user, componentName, action) {
   return _.find(user.permissions, { component_name: componentName, ['can_' + action]: true }) ? true : false;
 }
 
+function validMenuOption(optionName, viewName) {
+  let views =
+  {
+    '/dashboard': [
+      'megamenu-machine-option',
+      'megamenu-date-option',
+      'megamenu-shift-option',
+      'megamenu-language-option'
+    ],
+    '/summary': [
+      'megamenu-machine-option',
+      'megamenu-date-option',
+      'megamenu-language-option'
+    ],
+    '/import': [
+      'megamenu-language-option'
+    ],
+    '/digitalcups': [
+      'megamenu-level-option',
+      'megamenu-area-option',
+      'megamenu-date-option',
+      'megamenu-shift-option',
+      'megamenu-language-option'
+    ],
+  };
+  return _.indexOf(views[viewName], optionName) !== -1;
+}
+
 export {
   getRequest,
-  mapShift,
   formatDate,
   formatDateWithTime,
   getCurrentTime,
@@ -284,7 +279,6 @@ export {
   formatNumber,
   getCurrentTimeOnly,
   BuildGet,
-  convertNumber,
   getDateAccordingToShifts,
   getCurrentShift,
   genericRequest,
@@ -292,5 +286,6 @@ export {
   assignValuesToUser,
   getRowsFromShifts,
   formatTime,
-  validPermission
+  validPermission,
+  validMenuOption
 }

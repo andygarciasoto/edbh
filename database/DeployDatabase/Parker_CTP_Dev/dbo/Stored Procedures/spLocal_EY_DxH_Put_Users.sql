@@ -12,7 +12,8 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Users]
 	@last_name				AS NVARCHAR(100),		
 	@role_id				AS INT,	
 	@status					AS NVARCHAR(100),
-	@site_id				AS INT
+	@site_id				AS INT,
+	@escalation_id			AS INT
 
 AS  BEGIN 
 
@@ -30,11 +31,11 @@ AS  BEGIN
 			Username = @username,
 			First_Name = @first_name,
 			Last_Name = @last_name,
-			Role = @role,
 			role_id = @role_id,
 			status = @status,
 			last_modified_by = 'Administration Tool',
-			last_modified_on = GETDATE()
+			last_modified_on = GETDATE(),
+			escalation_id = @escalation_id
 			WHERE
 			Site = @site_id AND Badge = @badge
 		END
@@ -45,14 +46,14 @@ AS  BEGIN
            ,Username
            ,First_Name
            ,Last_Name
-           ,Role
            ,Site
 		   ,role_id
 		   ,status
            ,entered_by
            ,entered_on
            ,last_modified_by
-           ,last_modified_on)
+           ,last_modified_on
+		   ,escalation_id)
 		VALUES
            (@badge
            ,@username
@@ -65,7 +66,8 @@ AS  BEGIN
            ,'Administration Tool'
            ,GETDATE()
            ,'Administration Tool'
-           ,GETDATE())
+           ,GETDATE()
+		   ,@escalation_id)
 		END
 	END
 	

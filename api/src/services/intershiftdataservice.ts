@@ -18,18 +18,16 @@ export class InterShiftDataService {
     }
 
     public async getInterShiftDataByAssetProdDayShift(req: Request, res: Response) {
-        const asset_code = req.query.mc;
-        const production_day = moment(new Date(req.query.dt)).format('YYYY-MM-DD');
-        const shift_id = req.query.sf;
-        if (asset_code === undefined || production_day === undefined || shift_id === undefined) {
+        const params = req.query;
+        if (params.mc === undefined || params.start_date_time === undefined || params.end_date_time === undefined || params.site_id === undefined) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
         let shifts: any[] = [];
         let asset: any;
         try {
-            asset = await this.assetrepository.getAssetByCode(asset_code);
+            asset = await this.assetrepository.getAssetByCode(params.mc);
             if (asset[0]) {
-                shifts = await this.intershiftdatarepository.getInterShiftDataByAssetProdDayShift(asset[0].asset_id, production_day, shift_id);
+                shifts = await this.intershiftdatarepository.getInterShiftDataByAssetProdDayShift(params.site_id, asset[0].asset_id, params.start_date_time, params.end_date_time);
             }
         } catch (err) {
             return res.status(500).json({ message: err.message });

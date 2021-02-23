@@ -62,7 +62,7 @@ class CommentsModal extends React.Component {
                 this.submitNewComment(props.activeOperators[0].badge);
             }
         } else {
-            this.submitNewComment(props.user.clock_number);
+            this.submitNewComment(props.user.badge);
         }
     }
 

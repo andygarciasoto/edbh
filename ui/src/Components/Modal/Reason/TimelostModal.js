@@ -162,7 +162,7 @@ class TimelostModal extends React.Component {
                 this.submitTimelost(props.activeOperators[0].badge);
             }
         } else {
-            this.submitTimelost(props.user.clock_number);
+            this.submitTimelost(props.user.badge);
         }
 
     }
@@ -180,7 +180,7 @@ class TimelostModal extends React.Component {
                     this.submitNewTimelostUpdate(props.activeOperators[0].badge, currentReason, newReason);
                 }
             } else {
-                this.submitNewTimelostUpdate(props.user.clock_number, currentReason, newReason);
+                this.submitNewTimelostUpdate(props.user.badge, currentReason, newReason);
             }
         } else {
             this.setState({
