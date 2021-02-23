@@ -49,8 +49,13 @@ A.[asset_id], A.[asset_code], A.[asset_name], A.[asset_description], A.[asset_le
 A.[include_in_escalation], A.[grouping1], A.[grouping2], A.[grouping3], A.[grouping4], A.[grouping5], A.[status], A.[entered_by], A.[entered_on], A.[last_modified_by], 
 A.[last_modified_on],
 --User columns
-TFD.[Badge], TFD.[Username], TFD.[First_Name], TFD.[Last_Name], TFD.[Role], TFD.[role_id], TFD.[Site], TFD.[ID] as id
-FROM [dbo].[Asset] AS A JOIN [dbo].[TFDUsers] AS TFD ON A.[asset_id] = TFD.[Site] WHERE TFD.[Badge] = @badge
+TFD.[Badge], TFD.[Username], TFD.[First_Name], TFD.[Last_Name], R.name as Role, TFD.[role_id], TFD.[Site], TFD.[ID] as id,
+--Escalation columns
+E.[escalation_name], E.[escalation_level]
+FROM [dbo].[Asset] AS A JOIN [dbo].[TFDUsers] AS TFD ON A.[asset_id] = TFD.[Site]
+JOIN [dbo].Role AS R ON TFD.role_id = R.role_id 
+LEFT JOIN [dbo].Escalation AS E ON TFD.escalation_id = E.escalation_id
+WHERE TFD.[Badge] = @badge
 
 
 END
