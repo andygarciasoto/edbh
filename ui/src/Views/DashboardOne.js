@@ -98,9 +98,9 @@ class DashboardOne extends React.Component {
               <DashboardTable
                 user={props.user}
                 t={t}
-                summary={this.props.summary}
-                modal_order_IsOpen={this.props.modal_order_IsOpen}
-                displayOrderModal={this.props.displayOrderModal}
+                summary={props.summary}
+                modal_order_IsOpen={props.modal_order_IsOpen}
+                displayOrderModal={props.displayOrderModal}
                 selectedAssetOption={this.state.selectedAssetOption}
                 selectedDate={this.state.selectedDate}
                 selectedShift={this.state.selectedShift}

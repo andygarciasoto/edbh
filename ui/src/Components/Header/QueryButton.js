@@ -11,14 +11,19 @@ class QueryButton extends React.Component {
     }
 
     onSubmit = async () => {
-        let { search } = qs.parse(this.props.history.location.search);
-        let queryItem = Object.assign({}, search);
-        queryItem["mc"] = this.props.machine;
-        queryItem["dt"] = moment(this.props.date).format('YYYY/MM/DD HH:mm');
-        queryItem["sf"] = this.props.shift;
-        queryItem["ln"] = this.props.language;
-        queryItem["tp"] = this.props.machine_type;
-        queryItem["cs"] = this.props.site;
+        let queryItem = qs.parse(this.props.history.location.search);
+        queryItem.mc = this.props.machine;
+        queryItem.dt = moment(this.props.date).format('YYYY/MM/DD') + ' 00:00';
+        queryItem.sf = this.props.shift;
+        queryItem.ln = this.props.language;
+        queryItem.tp = this.props.machine_type;
+        queryItem.cs = this.props.site;
+        if (this.props.selectedLevelDC) {
+            queryItem.sldc = this.props.selectedLevelDC;
+            if (this.props.selectedLevelDC !== 'Site') {
+                queryItem.sadc = this.props.selectedAssetDC.value;
+            }
+        }
         let parameters = $.param(queryItem);
         this.props.changeLanguageBrowser();
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);

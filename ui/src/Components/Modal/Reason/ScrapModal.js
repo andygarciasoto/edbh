@@ -193,7 +193,7 @@ class ScrapModal extends React.Component {
                 this.submitScrap(props.activeOperators[0].badge);
             }
         } else {
-            this.submitScrap(props.user.clock_number);
+            this.submitScrap(props.user.badge);
         }
     }
 
@@ -209,7 +209,7 @@ class ScrapModal extends React.Component {
                     this.submitNewScrapUpdate(props.activeOperators[0].badge, currentReason, newReason);
                 }
             } else {
-                this.submitNewScrapUpdate(props.user.clock_number, currentReason, newReason);
+                this.submitNewScrapUpdate(props.user.badge, currentReason, newReason);
             }
         } else {
             this.setState({

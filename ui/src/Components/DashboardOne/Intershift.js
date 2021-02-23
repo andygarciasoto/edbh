@@ -3,18 +3,19 @@ import React from 'react';
 import { Table, Form, Button } from 'react-bootstrap';
 import {
     formatDateWithTime,
-    formatDate,
     getResponseFromGeneric
 } from '../../Utils/Requests';
+import { getStartEndDateTime } from '../../Utils/Utils';
 import { API } from '../../Utils/Constants';
 import FontAwesome from 'react-fontawesome';
 import Spinner from '../Common/Spinner';
 import LoadingModal from '../Common/LoadingModal';
 import MessageModal from '../Common/MessageModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
+import IntershiftModal from '../Modal/IntershiftModal';
 import _ from 'lodash';
 import '../../sass/Intershift.scss';
-import IntershiftModal from '../Modal/IntershiftModal';
+import moment from 'moment';
 const axios = require('axios');
 let interToken = null;
 
@@ -77,10 +78,29 @@ class Intershift extends React.Component {
     }
 
     fetchData() {
+
+        let indexSelectedShift = _.findIndex(this.props.user.shifts, { shift_name: this.state.selectedShift });
+        const { end_date_time } = getStartEndDateTime(this.state.selectedDate, this.state.selectedShift, this.props.user);
+        let shiftToGoBack = 2;
+        let hoursToGoBack = this.props.user.shifts[indexSelectedShift].duration_in_hours;
+
+        while (shiftToGoBack > 0) {
+            shiftToGoBack--;
+            indexSelectedShift--;
+            if (indexSelectedShift >= 0) {
+                hoursToGoBack += this.props.user.shifts[indexSelectedShift].duration_in_hours;
+            } else {
+                hoursToGoBack += this.props.user.shifts[indexSelectedShift + (this.props.user.shifts.length - 1)].duration_in_hours;
+            }
+        }
+
+        const start_date_time = moment(end_date_time).add(hoursToGoBack * -1, 'hours').format('YYYY/MM/DD HH:mm');
+
         const parameters = {
             mc: this.state.selectedAssetOption.asset_code,
-            dt: formatDate(this.state.selectedDate).split("-").join(""),
-            sf: _.find(this.props.user.shifts, { shift_name: this.state.selectedShift }).shift_id
+            start_date_time: start_date_time,
+            end_date_time: end_date_time,
+            site_id: this.props.user.site
         };
 
         if (interToken !== null) {
@@ -109,7 +129,7 @@ class Intershift extends React.Component {
                     this.submitIntershiftCommunication(props.activeOperators[0].badge);
                 }
             } else {
-                this.submitIntershiftCommunication(props.user.clock_number);
+                this.submitIntershiftCommunication(props.user.badge);
             }
         } else {
             this.setState({
