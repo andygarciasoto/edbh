@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as UserActions from "../../../redux/actions/userActions";
 import { API } from "../../../Utils/Constants";
-//import { Col, Form, Row } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import "../../../sass/SystemAdmin.scss";
 
 class AddUser extends Component {
@@ -15,9 +15,11 @@ class AddUser extends Component {
       username: "",
       firstname: "",
       lastname: "",
-      role: "",
-      status: "",
+      role: 1,
+      status: "Active",
       roles: [],
+      show: false,
+      showForm: true,
     };
   }
 
@@ -64,8 +66,10 @@ class AddUser extends Component {
       site_id: this.props.user.site,
       status: status,
     }).then(
-      (response) => {
-        console.log(response);
+      () => {
+        this.setState({
+          show: true,
+        });
       },
       (error) => {
         console.log(error);
@@ -81,67 +85,101 @@ class AddUser extends Component {
     );
   }
 
+  handleClose = () => {
+    this.props.closeForm();
+  };
+
   render() {
     return (
-      <div className="user-box">
-        <form>
-          <label>
-            Badge:
-            <input
-              type="text"
-              name="badge"
-              value={this.state.badge}
-              autoComplete={"false"}
-              onChange={this.handleChange}
-            />
-          </label>
-          <label>
-            Username:
-            <input
-              type="text"
-              name="username"
-              value={this.state.username}
-              autoComplete={"false"}
-              onChange={this.handleChange}
-            />
-          </label>
-          <label>
-            First Name:
-            <input
-              type="text"
-              name="firstname"
-              value={this.state.firstname}
-              autoComplete={"false"}
-              onChange={this.handleChange}
-            />
-          </label>
-          <label>
-            Last Name:
-            <input
-              type="text"
-              name="lastname"
-              value={this.state.lastname}
-              autoComplete={"false"}
-              onChange={this.handleChange}
-            />
-          </label>
-          <label>
-            Role:
-            <select onChange={this.handleChangeRole}>
-              {this.state.roles.map(this.renderRoles)}
-            </select>
-          </label>
-          <label>
-            Status:
-            <select onChange={this.handleChangeStatus}>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </label>
-          <button type="submit" onClick={(e) => this.createUser(e)}>
-            Agregar
-          </button>
-        </form>
+      <div>
+        <Modal
+          show={this.props.showForm}
+          onHide={this.handleClose}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add User</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form>
+              <label>
+                Badge:
+                <input
+                className="input-badge"
+                  type="text"
+                  name="badge"
+                  value={this.state.badge}
+                  autoComplete={"false"}
+                  onChange={this.handleChange}
+                />
+              </label>
+              <label>
+                Username:
+                <input
+                  type="text"
+                  name="username"
+                  className="input-username"
+                  value={this.state.username}
+                  autoComplete={"false"}
+                  onChange={this.handleChange}
+                />
+              </label>
+              <label>
+                First Name:
+                <input
+                  type="text"
+                  name="firstname"
+                  className="input-firstname"
+                  value={this.state.firstname}
+                  autoComplete={"false"}
+                  onChange={this.handleChange}
+                />
+              </label>
+              <label>
+                Last Name:
+                <input
+                  type="text"
+                  name="lastname"
+                  className="input-lastname"
+                  value={this.state.lastname}
+                  autoComplete={"false"}
+                  onChange={this.handleChange}
+                />
+              </label>
+              <label>
+                Role:
+                <select className="input-role" onChange={this.handleChangeRole}>
+                  {this.state.roles.map(this.renderRoles)}
+                </select>
+              </label>
+              <label>
+                Status:
+                <select className="input-status" onChange={this.handleChangeStatus}>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </label>
+            </form>
+          </Modal.Body>
+          <Modal.Footer>
+          <Button variant="Primary" onClick={(e) => this.createUser(e)}>
+              Confirm
+            </Button>
+            <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={this.state.show} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Sucess</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>User has been added</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
