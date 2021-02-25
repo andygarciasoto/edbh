@@ -5,6 +5,9 @@ import * as UserActions from "../../redux/actions/userActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../CustomComponents/filter";
 import AddUser from "./User/addUser";
+import EditUser from "./User/editUser";
+
+import EditIcon from "../../resources/u668.svg";
 
 class UserTable extends Component {
   constructor(props) {
@@ -12,6 +15,7 @@ class UserTable extends Component {
     this.state = {
       usersData: [],
       user: false,
+      edit: false,
     };
   }
 
@@ -31,25 +35,17 @@ class UserTable extends Component {
     });
   };
 
+  showEditUser = () => {
+    this.setState({
+      edit: true,
+    });
+  };
+
   closeAddUser = () => {
     this.setState({
       user: false,
     });
   };
-
-  renderUsersTable(user, index) {
-    return (
-      <tr key={index}>
-        <td>{user.role_id}</td>
-        <td>{user.Badge}</td>
-        <td>{user.Username}</td>
-        <td>{user.First_Name}</td>
-        <td>{user.Last_Name}</td>
-        <td>{user.Role}</td>
-        <td>{user.status}</td>
-      </tr>
-    );
-  }
 
   render() {
     return (
@@ -61,7 +57,19 @@ class UserTable extends Component {
           onClick={() => this.showAddUser()}
         ></Filter>
         {this.state.user === true && (
-          <AddUser user={this.props.user} showForm={this.state.user} closeForm={this.closeAddUser}/>
+          <AddUser
+            user={this.props.user}
+            showForm={this.state.user}
+            closeForm={this.closeAddUser}
+          />
+        )}
+        {this.state.edit === true && (
+          <EditUser
+            user={this.props.user}
+            showForm={this.state.edit}
+            closeForm={this.closeAddUser}
+            badge={this.state.badge}
+          />
         )}
         <Table responsive="sm" bordered={true}>
           <thead>
@@ -73,9 +81,32 @@ class UserTable extends Component {
               <th>Last Name</th>
               <th>Role</th>
               <th>Status</th>
+              <th>Escalation</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody>{this.state.usersData.map(this.renderUsersTable)}</tbody>
+          <tbody>
+            {this.state.usersData.map((user, index) => (
+              <tr key={index}>
+                <td>{user.role_id}</td>
+                <td>{user.Badge}</td>
+                <td>{user.Username}</td>
+                <td>{user.First_Name}</td>
+                <td>{user.Last_Name}</td>
+                <td>{user.Role}</td>
+                <td>{user.status}</td>
+                <td>{user.escalation_name}</td>
+                <td>
+                  <img
+                    src={EditIcon}
+                    alt={`edit-icon`}
+                    className="icon"
+                    onClick={() => this.showEditUser()}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </Table>
       </div>
     );

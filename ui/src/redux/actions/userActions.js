@@ -1,5 +1,10 @@
 import Axios from "axios";
-import { GET_DASHBOARD_INFO, GET_ALL_USERS, GET_ROLES  } from "../constants/constants";
+import {
+  GET_DASHBOARD_INFO,
+  GET_ALL_USERS,
+  GET_ROLES,
+  GET_USER_INFO,
+} from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getDashboardInfo = (siteId) => {
@@ -10,7 +15,7 @@ export const getDashboardInfo = (siteId) => {
         type: GET_DASHBOARD_INFO,
         dashboardData: response.data[0],
       });
-      return response.data[0]
+      return response.data[0];
     });
   };
 };
@@ -20,10 +25,23 @@ export const getAllUsers = (siteId) => {
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
-        type: GET_ALL_USERS ,
+        type: GET_ALL_USERS,
         users: response.data,
       });
-      return response.data
+      return response.data;
+    });
+  };
+};
+
+export const getUserInfo = (siteId, badge) => {
+  var url = `${API}/users?site_id=${siteId}&badge=${badge}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_USER_INFO,
+        userInfo: response.data,
+      });
+      return response.data;
     });
   };
 };
@@ -33,10 +51,10 @@ export const getRoles = () => {
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
-        type: GET_ROLES ,
+        type: GET_ROLES,
         roles: response.data,
       });
-      return response.data
+      return response.data;
     });
   };
 };
