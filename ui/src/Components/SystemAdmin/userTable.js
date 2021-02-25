@@ -16,6 +16,7 @@ class UserTable extends Component {
       usersData: [],
       user: false,
       edit: false,
+      badge: ""
     };
   }
 
@@ -35,10 +36,12 @@ class UserTable extends Component {
     });
   };
 
-  showEditUser = () => {
+  showEditUser = (badge) => {
     this.setState({
       edit: true,
+      badge: badge
     });
+    console.log(badge);
   };
 
   closeAddUser = () => {
@@ -101,7 +104,7 @@ class UserTable extends Component {
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditUser()}
+                    onClick={() => this.showEditUser(user.Badge)}
                   />
                 </td>
               </tr>

@@ -15,9 +15,9 @@ class EditUser extends Component {
       username: "",
       firstname: "",
       lastname: "",
-      role: 1,
+      role: "",
+      role_id: 1,
       status: "Active",
-      userInfo: [],
       show: false,
       showForm: true,
     };
@@ -26,11 +26,19 @@ class EditUser extends Component {
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions.getUserInfo(this.props.user.site, "OperatorEY").then((response) => {
-      this.setState({
-        userInfo: response,
+    return actions
+      .getUserInfo(this.props.user.site, this.props.badge)
+      .then((response) => {
+        this.setState({
+          badge: response.Badge,
+          username: response.Username,
+          firstname: response.First_Name,
+          lastname: response.Last_Name,
+          role: response.name,
+          role_id: response.role_id,
+          status: response.status,
+        });
       });
-    });
   }
 
   handleChange = (event) => {
@@ -90,24 +98,32 @@ class EditUser extends Component {
   };
 
   render() {
+    const {
+      badge,
+      username,
+      firstname,
+      lastname,
+      role,
+      role_id,
+      status,
+    } = this.state;
+
+    console.log(this.state);
     return (
       <div>
-        <Modal
-          show={this.props.showForm}
-          onHide={this.handleClose}
-        >
+        <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Add User</Modal.Title>
+            <Modal.Title>Edit User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <form>
               <label>
                 Badge:
                 <input
-                className="input-badge"
+                  className="input-badge"
                   type="text"
                   name="badge"
-                  value={this.state.badge}
+                  value={badge}
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
@@ -118,7 +134,7 @@ class EditUser extends Component {
                   type="text"
                   name="username"
                   className="input-username"
-                  value={this.state.username}
+                  value={username}
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
@@ -129,7 +145,7 @@ class EditUser extends Component {
                   type="text"
                   name="firstname"
                   className="input-firstname"
-                  value={this.state.firstname}
+                  value={firstname}
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
@@ -140,20 +156,30 @@ class EditUser extends Component {
                   type="text"
                   name="lastname"
                   className="input-lastname"
-                  value={this.state.lastname}
+                  value={lastname}
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
               </label>
               <label>
                 Role:
-                <select className="input-role" onChange={this.handleChangeRole}>
-                  {/* {this.state.roles.map(this.renderRoles)} */}
+                <select
+                  value={role}
+                  className="input-role"
+                  onChange={this.handleChangeRole}
+                >
+                  <option value="grapefruit">Grapefruit</option>
+                  <option value="lime">Lime</option>
+                  <option value="coconut">Coconut</option>
+                  <option value="mango">Mango</option>
                 </select>
               </label>
               <label>
                 Status:
-                <select className="input-status" onChange={this.handleChangeStatus}>
+                <select
+                  className="input-status"
+                  onChange={this.handleChangeStatus}
+                >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -161,7 +187,7 @@ class EditUser extends Component {
             </form>
           </Modal.Body>
           <Modal.Footer>
-          <Button variant="Primary" onClick={(e) => this.createUser(e)}>
+            <Button variant="Primary" onClick={(e) => this.createUser(e)}>
               Confirm
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>

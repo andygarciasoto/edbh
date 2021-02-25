@@ -39,9 +39,9 @@ export const getUserInfo = (siteId, badge) => {
     return Axios.get(url).then((response) => {
       dispatch({
         type: GET_USER_INFO,
-        userInfo: response.data,
+        userInfo: response.data[0],
       });
-      return response.data;
+      return response.data[0];
     });
   };
 };
