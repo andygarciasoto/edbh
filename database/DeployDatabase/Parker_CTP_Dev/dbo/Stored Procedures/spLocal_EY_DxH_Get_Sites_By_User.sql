@@ -37,7 +37,7 @@
 --	20190724		C00V00 - Intial code created		
 --
 -- Example Call:
--- exec [dbo].[spLocal_EY_DxH_Get_Sites_By_User] N'텍스트'
+-- exec [dbo].[spLocal_EY_DxH_Get_Sites_By_User] N'AdministratorEaton'
 
  CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Sites_By_User] (@badge as NVARCHAR(100))
 

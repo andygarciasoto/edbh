@@ -1,5 +1,5 @@
 ﻿
---exec [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'Ryan', '0'
+--exec [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'Paul Davis', '0'
 
 CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as NVARCHAR(100), @machine as NVARCHAR(100))
 
