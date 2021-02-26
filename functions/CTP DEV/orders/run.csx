@@ -9,7 +9,7 @@ public static void Run(TimerInfo myTimer, ILogger log)
     log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
      // creates the connection to the database
-    var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_dbconnection"); 
+    var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection"); 
     var connection = new SqlConnection(ConnString);
     // declaration of variables needed
     Random random = new Random();
