@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Fill_Get_Active_Sites]    Script Date: 25/2/2021 19:48:44 ******/
 --
 -- Copyright © 2020 Ernst & Young LLP
 -- All Rights Reserved
@@ -53,7 +53,6 @@ AS
 
 		SELECT
 			A.asset_id AS site_id,
-			A.asset_code,
 			A.asset_name AS site_name,
 			FUN_GSP.CurrentDateTime AS current_site_time,
 			CONVERT(DATETIME, FORMAT(FUN_GSP.CurrentDateTime, 'yyyy-MM-dd HH')+':00') AS site_round_time,
