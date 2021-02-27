@@ -212,6 +212,15 @@ AS
                     BEGIN
                         SET @bandera = 1;
                         BEGIN
+						IF NOT EXISTS
+						(
+							SELECT *
+							FROM dbo.ProductionData
+							WHERE dxhdata_id = @dxhdata_id
+						)
+						BEGIN
+							EXEC spLocal_EY_DxH_Put_ProductionData @dxhdata_id, 0, 0, 0, NULL, 'T', 'D', @start_time, 0;
+						END
                             UPDATE dbo.OrderData
                               SET 
                                   order_quantity = @order_quantity, 

@@ -19,7 +19,7 @@ CREATE NONCLUSTERED INDEX [NCI_CommentData_DxHData_Id]
 
 
 GO
-CREATE TRIGGER TR_CommentData_After_Insert ON dbo.CommentData
+CREATE TRIGGER [dbo].[TR_CommentData_After_Insert] ON [dbo].[CommentData]
     AFTER INSERT
 AS
     DECLARE
@@ -40,15 +40,16 @@ AS
 		@dxhdata_id = I.dxhdata_id
     FROM Inserted I;
 
+	SELECT
+		@production_day = production_day,
+		@shift_code = shift_code,
+		@asset_id = asset_id,
+		@hour_interval = hour_interval
+	FROM dbo.DxHData WHERE dxhdata_id = @dxhdata_id;
+
 	--Check if not exists production row for the dxhdata
 	IF NOT EXISTS(SELECT * FROM dbo.ProductionData WHERE dxhdata_id = @dxhdata_id) AND EXISTS (SELECT * FROM dbo.OrderData WHERE asset_id = @asset_id)
 	BEGIN
-		SELECT
-			@production_day = production_day,
-			@shift_code = shift_code,
-			@asset_id = asset_id,
-			@hour_interval = hour_interval
-		FROM dbo.DxHData WHERE dxhdata_id = @dxhdata_id;
 
 		SELECT
 			@site_id = asset_id
