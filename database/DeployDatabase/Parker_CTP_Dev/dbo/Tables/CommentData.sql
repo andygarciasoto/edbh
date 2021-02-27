@@ -41,7 +41,7 @@ AS
     FROM Inserted I;
 
 	--Check if not exists production row for the dxhdata
-	IF NOT EXISTS(SELECT * FROM dbo.ProductionData WHERE dxhdata_id = @dxhdata_id)
+	IF NOT EXISTS(SELECT * FROM dbo.ProductionData WHERE dxhdata_id = @dxhdata_id) AND EXISTS (SELECT * FROM dbo.OrderData WHERE asset_id = @asset_id)
 	BEGIN
 		SELECT
 			@production_day = production_day,
