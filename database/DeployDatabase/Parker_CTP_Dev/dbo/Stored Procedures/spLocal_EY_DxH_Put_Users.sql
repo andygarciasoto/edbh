@@ -1,11 +1,9 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Users]    Script Date: 19/2/2021 01:54:32 ******/
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Users]    Script Date: 31/12/2020 09:35:04 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Users]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
--- exec spLocal_EY_DxH_Put_Users 'AdministratorHA', 'AdministratorHA', 'Administrator', 'HA', 1, 'Active', 127
+-- exec spLocal_EY_DxH_Put_Users 'AdministratorHA', 'AdminHA', 'Administrator', 'HA', 1, 'Active', 127
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Users] 
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_Users] 
 	@badge					AS NVARCHAR(100),
 	@username				AS NVARCHAR(100),			
 	@first_name				AS NVARCHAR(100),	
@@ -59,7 +57,6 @@ AS  BEGIN
            ,@username
            ,@first_name
            ,@last_name
-           ,@role
            ,@site_id
 		   ,@role_id
 		   ,@status

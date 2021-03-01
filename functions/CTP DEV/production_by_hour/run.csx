@@ -7,12 +7,12 @@ public static void Run(TimerInfo myTimer, ILogger log)
 {
     log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
     //Deploy
-    string ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+    string ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection");
     SqlConnection connection = new SqlConnection(ConnString);
-    List<AssetInfo> assets = new List<AssetInfo>();
+    List<AssetInfo> sites = new List<AssetInfo>();
     try
     {
-        assets = getAssetsToCheck(connection);
+        sites = getSitesToCheck(connection);
     }
     catch (Exception ex)
     {
@@ -20,25 +20,19 @@ public static void Run(TimerInfo myTimer, ILogger log)
         {
             connection.Close();
         }
-        log.LogError(ex.Message);
+        log.LogError("Getting Sites: " + ex.Message);
     }
-    String site = "";
-    foreach (AssetInfo asset in assets)
+    foreach (AssetInfo site in sites)
     {
+        log.LogInformation("Checking orders for " + site.site_name + " site.");
         try
         {
-            if (site == "")
+            List<AssetInfo> assets = getAssetsToCheckBySite(connection, site);
+            foreach (AssetInfo asset in assets)
             {
-                site = asset.site_name;
-                log.LogInformation("Checking orders for " + site + " site " + asset.current_site_time);
+                List<Order> orders = getShiftOrdersFromAsset(connection, asset);
+                checkProduction(orders, asset, connection, log);
             }
-            else if (asset.site_name != site)
-            {
-                site = asset.site_name;
-                log.LogInformation("Checking orders for " + site + " site " + asset.current_site_time);
-            }
-            List<Order> orders = getShiftOrdersFromAsset(connection, asset);
-            checkProduction(orders, asset, connection, log);
         }
         catch (Exception ex)
         {
@@ -52,11 +46,11 @@ public static void Run(TimerInfo myTimer, ILogger log)
     log.LogInformation($"C# Timer trigger function finished successfully at: {DateTime.Now}");
 }
 
-private static List<AssetInfo> getAssetsToCheck(SqlConnection connection)
+private static List<AssetInfo> getSitesToCheck(SqlConnection connection)
 {
     List<AssetInfo> results = new List<AssetInfo>();
 
-    SqlCommand sqlCmd = new SqlCommand("spLocal_EY_DxH_Fill_Row_Get_Active_Assets", connection);
+    SqlCommand sqlCmd = new SqlCommand("spLocal_EY_DxH_Fill_Get_Active_Sites", connection);
     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
     connection.Open();
     SqlDataReader reader = sqlCmd.ExecuteReader();
@@ -68,13 +62,44 @@ private static List<AssetInfo> getAssetsToCheck(SqlConnection connection)
             AssetInfo asset = new AssetInfo();
             asset.site_id = reader.GetInt32(0);
             asset.site_name = reader.GetString(1);
-            asset.current_site_time = reader.GetDateTimeOffset(2);
+            asset.current_site_time = reader.GetDateTime(2);
             asset.site_round_time = reader.GetDateTime(3);
             asset.start_shift = reader.GetDateTime(4);
             asset.end_shift = reader.GetDateTime(5);
-            asset.asset_id = reader.GetInt32(6);
-            asset.asset_code = reader.GetString(7);
-            asset.asset_name = reader.GetString(8);
+            results.Add(asset);
+        }
+    }
+    reader.Close();
+    connection.Close();
+
+    return results;
+}
+
+private static List<AssetInfo> getAssetsToCheckBySite(SqlConnection connection, AssetInfo site)
+{
+    List<AssetInfo> results = new List<AssetInfo>();
+
+    SqlCommand sqlCmd = new SqlCommand("spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site", connection);
+    sqlCmd.Parameters.Add(new SqlParameter("start_shift", site.start_shift));
+    sqlCmd.Parameters.Add(new SqlParameter("site_round_time", site.site_round_time));
+    sqlCmd.Parameters.Add(new SqlParameter("site_id", site.site_id));
+    sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+    connection.Open();
+    SqlDataReader reader = sqlCmd.ExecuteReader();
+    if (reader.HasRows)
+    {
+        while (reader.Read())
+        {
+            AssetInfo asset = new AssetInfo();
+            asset.site_id = site.site_id;
+            asset.site_name = site.site_name;
+            asset.current_site_time = site.current_site_time;
+            asset.site_round_time = site.site_round_time;
+            asset.start_shift = site.start_shift;
+            asset.end_shift = site.end_shift;
+            asset.asset_id = reader.GetInt32(0);
+            asset.asset_code = reader.GetString(1);
+            asset.asset_name = reader.GetString(2);
             results.Add(asset);
         }
     }
@@ -109,9 +134,8 @@ private static List<Order> getShiftOrdersFromAsset(SqlConnection connection, Ass
             order.start_time = reader.IsDBNull(5) ? "" : (reader.GetDateTime(5) + "");
             order.end_time = reader.IsDBNull(6) ? "" : (reader.GetDateTime(6) + "");
             order.productiondata_id = reader.IsDBNull(7) ? 0 : reader.GetInt32(7);
-            order.dxhdata_id = reader.IsDBNull(8) ? 0 : reader.GetInt32(8);
-            order.production = reader.IsDBNull(9) ? 0.0 : reader.GetDouble(9);
-            order.finish_order_hour = reader.GetInt32(10);
+            order.dxhdata_id = 0;
+            order.production = reader.IsDBNull(8) ? 0.0 : reader.GetDouble(8);
             results.Add(order);
         }
     }
@@ -127,16 +151,8 @@ private static void checkProduction(List<Order> orders, AssetInfo asset, SqlConn
     {
         try
         {
-            if (order.finish_order_hour == 1 && order.productiondata_id == 0)
-            {
-                log.LogInformation("Create production row for the finished order " + order.order_number + " on " + order.started_on_chunck + ", in the asset: " + asset.asset_name + ", for product: " + order.product_code);
-                createProductionRow(order, asset, connection, log);
-            }
-            else if (order.production > 0 && order.productiondata_id == 0)
-            {
-                log.LogInformation("Create production row for order: " + order.order_number + " from " + order.started_on_chunck + " to " + order.ended_on_chunck + ", in the asset: " + asset.asset_name + ", for product: " + order.product_code);
-                createProductionRow(order, asset, connection, log);
-            }
+            log.LogInformation("Create production row for the order " + order.order_number + " on " + order.started_on_chunck + ", in the asset: " + asset.asset_name + ", for product: " + order.product_code);
+            createProductionRow(order, asset, connection, log);
         }
         catch (Exception ex)
         {
@@ -151,10 +167,7 @@ private static void checkProduction(List<Order> orders, AssetInfo asset, SqlConn
 
 private static void createProductionRow(Order order, AssetInfo asset, SqlConnection connection, ILogger log)
 {
-    if (order.dxhdata_id == 0)
-    {
-        order.dxhdata_id = getDxHDataId(order, asset, connection);
-    }
+    order.dxhdata_id = getDxHDataId(order, asset, connection);
     insertProductionData(order, asset, connection, log);
 }
 
@@ -207,7 +220,7 @@ public class AssetInfo
 {
     public int site_id { get; set; }
     public String site_name { get; set; }
-    public DateTimeOffset current_site_time { get; set; }
+    public DateTime current_site_time { get; set; }
     public DateTime site_round_time { get; set; }
     public DateTime start_shift { get; set; }
     public DateTime end_shift { get; set; }
@@ -228,5 +241,4 @@ public class Order
     public int productiondata_id { get; set; }
     public int dxhdata_id { get; set; }
     public Double production { get; set; }
-    public int finish_order_hour { get; set; }
 }
