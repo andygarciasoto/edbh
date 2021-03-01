@@ -16,7 +16,7 @@ class UserTable extends Component {
       usersData: [],
       user: false,
       edit: false,
-      badge: ""
+      badge: "",
     };
   }
 
@@ -30,6 +30,16 @@ class UserTable extends Component {
     });
   }
 
+  // componentDidUpdate() {
+  //   const { actions } = this.props;
+
+  //   return actions.getAllUsers(this.props.user.site).then((response) => {
+  //     this.setState({
+  //       usersData: response,
+  //     });
+  //   });
+  // }
+
   showAddUser = () => {
     this.setState({
       user: true,
@@ -39,14 +49,19 @@ class UserTable extends Component {
   showEditUser = (badge) => {
     this.setState({
       edit: true,
-      badge: badge
+      badge: badge,
     });
-    console.log(badge);
   };
 
   closeAddUser = () => {
     this.setState({
       user: false,
+    });
+  };
+
+  closeEditUser = () => {
+    this.setState({
+      edit: false,
     });
   };
 
@@ -70,7 +85,7 @@ class UserTable extends Component {
           <EditUser
             user={this.props.user}
             showForm={this.state.edit}
-            closeForm={this.closeAddUser}
+            closeForm={this.closeEditUser}
             badge={this.state.badge}
           />
         )}

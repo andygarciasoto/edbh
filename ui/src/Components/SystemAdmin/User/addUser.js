@@ -90,6 +90,7 @@ class AddUser extends Component {
   };
 
   render() {
+    console.log(this.state.roles);
     return (
       <div>
         <Modal

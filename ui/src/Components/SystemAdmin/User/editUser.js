@@ -16,8 +16,8 @@ class EditUser extends Component {
       firstname: "",
       lastname: "",
       role: "",
-      role_id: 1,
-      status: "Active",
+      role_id: 0,
+      status: "",
       show: false,
       showForm: true,
     };
@@ -52,7 +52,7 @@ class EditUser extends Component {
   };
 
   handleChangeRole = (event) => {
-    this.setState({ role: event.target.value });
+    this.setState({ role_id: event.target.value });
   };
 
   handleChangeStatus = (event) => {
@@ -61,16 +61,16 @@ class EditUser extends Component {
 
   createUser = (e) => {
     e.preventDefault();
-    const { badge, username, firstname, lastname, role, status } = this.state;
+    const {username, firstname, lastname, role_id, status } = this.state;
 
     var url = `${API}/insert_user`;
 
     Axios.put(url, {
-      badge: badge,
+      badge: this.props.badge,
       username: username,
       first_name: firstname,
       last_name: lastname,
-      role_id: role,
+      role_id: role_id,
       site_id: this.props.user.site,
       status: status,
     }).then(
@@ -85,14 +85,6 @@ class EditUser extends Component {
     );
   };
 
-  renderRoles(roles, index) {
-    return (
-      <option value={roles.role_id} key={index}>
-        {roles.name}
-      </option>
-    );
-  }
-
   handleClose = () => {
     this.props.closeForm();
   };
@@ -104,11 +96,9 @@ class EditUser extends Component {
       firstname,
       lastname,
       role,
-      role_id,
       status,
     } = this.state;
 
-    console.log(this.state);
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
@@ -125,6 +115,7 @@ class EditUser extends Component {
                   name="badge"
                   value={badge}
                   autoComplete={"false"}
+                  readOnly={true}
                   onChange={this.handleChange}
                 />
               </label>
@@ -168,15 +159,17 @@ class EditUser extends Component {
                   className="input-role"
                   onChange={this.handleChangeRole}
                 >
-                  <option value="grapefruit">Grapefruit</option>
-                  <option value="lime">Lime</option>
-                  <option value="coconut">Coconut</option>
-                  <option value="mango">Mango</option>
+                  <option value="1">Administrator</option>
+                  <option value="2">Supervisor</option>
+                  <option value="3">Operator</option>
+                  <option value="4">Summary</option>
+                  <option value="5">Read-Only</option>
                 </select>
               </label>
               <label>
                 Status:
                 <select
+                  value={status}
                   className="input-status"
                   onChange={this.handleChangeStatus}
                 >
@@ -199,7 +192,7 @@ class EditUser extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has been added</Modal.Body>
+          <Modal.Body>User has been updated</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
