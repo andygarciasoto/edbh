@@ -11,10 +11,10 @@
     [grouping4]           NVARCHAR (256) NULL,
     [grouping5]           NVARCHAR (256) NULL,
     [status]              VARCHAR (50)   NOT NULL,
-    [entered_by]          NVARCHAR (100) NULL,
-    [entered_on]          DATETIME       NOT NULL,
-    [last_modified_by]    NVARCHAR (100) NULL,
-    [last_modified_on]    DATETIME       NOT NULL,
+    [entered_by]          NVARCHAR (100) CONSTRAINT [DF_Product_entered_by] DEFAULT (N'SQL Manual Entry') NULL,
+    [entered_on]          DATETIME       CONSTRAINT [DF_Product_entered_on] DEFAULT (getdate()) NOT NULL,
+    [last_modified_by]    NVARCHAR (100) CONSTRAINT [DF_Product_last_modified_by] DEFAULT (N'SQL Manual Entry') NULL,
+    [last_modified_on]    DATETIME       CONSTRAINT [DF_Product_last_modified_on] DEFAULT (getdate()) NOT NULL,
     [asset_id]            INT            NULL,
     CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY CLUSTERED ([product_id] ASC)
 );
