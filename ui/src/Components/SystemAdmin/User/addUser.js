@@ -17,20 +17,25 @@ class AddUser extends Component {
       lastname: "",
       role: 1,
       status: "Active",
+      escalation_id: 1,
       roles: [],
       show: false,
       showForm: true,
+      escalation: [],
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions.getRoles().then((response) => {
-      this.setState({
-        roles: response,
-      });
-    });
+    return Promise.all([actions.getRoles(), actions.getEscalation()]).then(
+      (response) => {
+        this.setState({
+          roles: response[0],
+          escalation: response[1],
+        });
+      }
+    );
   }
 
   handleChange = (event) => {
@@ -47,13 +52,17 @@ class AddUser extends Component {
     this.setState({ role: event.target.value });
   };
 
+  handleChangeEscalation = (event) => {
+    this.setState({ escalation_id: event.target.value });
+  };
+
   handleChangeStatus = (event) => {
     this.setState({ status: event.target.value });
   };
 
   createUser = (e) => {
     e.preventDefault();
-    const { badge, username, firstname, lastname, role, status } = this.state;
+    const { badge, username, firstname, lastname, role, status, escalation_id } = this.state;
 
     var url = `${API}/insert_user`;
 
@@ -64,6 +73,7 @@ class AddUser extends Component {
       last_name: lastname,
       role_id: role,
       site_id: this.props.user.site,
+      escalation_id: escalation_id,
       status: status,
     }).then(
       () => {
@@ -85,18 +95,23 @@ class AddUser extends Component {
     );
   }
 
+  renderEscalation(escalation, index) {
+    return (
+      <option value={escalation.escalation_id} key={index}>
+        {escalation.escalation_name}
+      </option>
+    );
+  }
+
   handleClose = () => {
     this.props.closeForm();
   };
 
   render() {
-    console.log(this.state.roles);
+    console.log(this.state);
     return (
       <div>
-        <Modal
-          show={this.props.showForm}
-          onHide={this.handleClose}
-        >
+        <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Add User</Modal.Title>
           </Modal.Header>
@@ -105,7 +120,7 @@ class AddUser extends Component {
               <label>
                 Badge:
                 <input
-                className="input-badge"
+                  className="input-badge"
                   type="text"
                   name="badge"
                   value={this.state.badge}
@@ -147,6 +162,12 @@ class AddUser extends Component {
                 />
               </label>
               <label>
+                Escalation:
+                <select className="input-escalation" onChange={this.handleChangeEscalation}>
+                  {this.state.escalation.map(this.renderEscalation)}
+                </select>
+              </label>
+              <label>
                 Role:
                 <select className="input-role" onChange={this.handleChangeRole}>
                   {this.state.roles.map(this.renderRoles)}
@@ -154,7 +175,10 @@ class AddUser extends Component {
               </label>
               <label>
                 Status:
-                <select className="input-status" onChange={this.handleChangeStatus}>
+                <select
+                  className="input-status"
+                  onChange={this.handleChangeStatus}
+                >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -162,7 +186,7 @@ class AddUser extends Component {
             </form>
           </Modal.Body>
           <Modal.Footer>
-          <Button variant="Primary" onClick={(e) => this.createUser(e)}>
+            <Button variant="Primary" onClick={(e) => this.createUser(e)}>
               Confirm
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>

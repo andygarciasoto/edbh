@@ -4,6 +4,7 @@ import {
   GET_ALL_USERS,
   GET_ROLES,
   GET_USER_INFO,
+  GET_ESCALATION
 } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
@@ -53,6 +54,19 @@ export const getRoles = () => {
       dispatch({
         type: GET_ROLES,
         roles: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getEscalation = () => {
+  var url = `${API}/escalation`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_ESCALATION,
+        escalation: response.data,
       });
       return response.data;
     });
