@@ -91,7 +91,7 @@ AS
 		UPDATE dbo.ProductionData
                         SET 
 							actual = @Actual,
-							last_modified_by = @Clock_Number,
+							last_modified_by = @Clock_Number, 
 							last_modified_on = GETDATE()
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id AND pd.dxhdata_id = @DxHData_Id;
