@@ -31,11 +31,6 @@
 
 
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_DxHData_Asset_Id_Prod_Day_Hour_Shift]
-    ON [dbo].[DxHData]([asset_id] ASC, [production_day] ASC, [hour_interval] ASC, [shift_code] ASC);
-
-
-GO
 CREATE NONCLUSTERED INDEX [DxHData_PROD_DAY_ASSET_NC_Index]
     ON [dbo].[DxHData]([production_day] ASC, [asset_id] ASC)
     INCLUDE([dxhdata_id], [hour_interval], [shift_code], [operator_signoff], [operator_signoff_timestamp], [supervisor_signoff], [supervisor_signoff_timestamp]);

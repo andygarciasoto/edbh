@@ -6,7 +6,6 @@
     [entered_on]           DATETIME      CONSTRAINT [DF_Workcell_entered_on] DEFAULT (getdate()) NULL,
     [last_modified_by]     VARCHAR (100) NULL,
     [last_modified_on]     DATETIME      CONSTRAINT [DF_Workcell_last_modified_on] DEFAULT (getdate()) NULL,
-    [site_id] INT NOT NULL DEFAULT 1, 
     CONSTRAINT [PK_Workcell] PRIMARY KEY CLUSTERED ([workcell_id] ASC)
 );
 
