@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site]    Script Date: 25/2/2021 16:56:25 ******/
 --
 -- Copyright © 2020 Ernst & Young LLP
 -- All Rights Reserved
@@ -34,10 +34,11 @@
 ---
 -- Modification Change History:
 --------------------------------------------------------------------------------
---	20200416		C00V00 - Intial code created		
+--	20200416		C00V00 - Intial code created.
+--	20210225		C00V01 - Update logic to define an active station Exists(Order,Asset,Production,Intershift).
 --		
 -- Example Call:
--- exec dbo.spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site '2020-04-17 07:00', '2020-04-17 11:00:00.000', 1
+-- exec dbo.spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site '2021-02-25 15:00:00', '2021-02-25 17:00:00', 1
 --
 
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site] @start_shift     DATETIME, 
@@ -49,23 +50,35 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        DECLARE @site_code NVARCHAR(100);
+        DECLARE
+			@asset_level NVARCHAR(100) = 'Cell',
+			@asset_status NVARCHAR(100) = 'Active',
+			@start_shift_utc DATETIME,
+			@end_shift_utc DATETIME;
 
-        SELECT @site_code = asset_code
-        FROM dbo.Asset
-        WHERE asset_id = @site_id;
+		SELECT
+			@start_shift_utc =  @start_shift AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
+			@end_shift_utc =  @site_round_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC'
+		FROM dbo.CommonParameters CP WHERE CP.site_id = @site_id;
 
-        WITH CTE1
-             AS (SELECT DISTINCT 
-                        asset_id
-                 FROM dbo.OrderData OD
-                 WHERE(OD.end_time >= @start_shift
-                       AND OD.end_time < @site_round_time)
-                      OR (OD.end_time IS NULL))
-             SELECT A.asset_id, 
-                    A.asset_code, 
-                    A.asset_name
-             FROM CTE1
-                  JOIN dbo.Asset A ON A.asset_id = CTE1.asset_id
-                                      AND site_code = @site_code;
+        SELECT
+			DISTINCT
+			A.asset_id,
+			A.asset_code,
+			A.asset_name
+		FROM OrderData OD
+			INNER JOIN dbo.Asset A ON
+				A.asset_id = OD.asset_id AND
+				A.asset_level = @asset_level AND
+				A.status = @asset_status
+			INNER JOIN dbo.Asset A2 ON
+				A2.asset_code = A.site_code AND
+				A2.asset_id = @site_id
+			LEFT JOIN dbo.ProductionData PD ON
+				PD.order_id = OD.order_id AND
+				PD.start_time >= @start_shift AND
+				PD.start_time < @site_round_time
+			LEFT JOIN dbo.InterShiftData ISD ON A.asset_id = ISD.asset_id AND ISD.entered_on >= @start_shift_utc AND  ISD.entered_on < @end_shift_utc
+		WHERE
+			PD.productiondata_id IS NOT NULL OR ISD.intershift_id IS NOT NULL;
     END;
