@@ -1,4 +1,43 @@
-﻿-- exec [dbo].[spLocal_EY_DxH_Get_Sites_By_User] N'텍스트'
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Sites_By_User]    Script Date: 26/01/2021 11:31:05 ******/
+--
+-- Copyright © 2019 Ernst & Young LLP
+-- All Rights Reserved
+-- spLocal_EY_DxH_Get_Sites_By_User
+--
+--  Purpose:
+--	Provide Asset info for displays
+--
+--	To Do:
+--
+--  Output Parameters:
+---
+--  Input Parameters:
+---
+---	
+--  Trigger:
+---
+--  Data Read Other Inputs:  
+--- 
+---	
+--  Data Written Results:
+---
+--  Assumptions:
+--- 
+--  Dependencies: 
+---	None
+---
+--  Variables:
+---
+---
+--  Tables Modified:
+--	
+---
+-- Modification Change History:
+--------------------------------------------------------------------------------
+--	20190724		C00V00 - Intial code created		
+--
+-- Example Call:
+-- exec [dbo].[spLocal_EY_DxH_Get_Sites_By_User] N'AdministratorEaton'
 
  CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Sites_By_User] (@badge as NVARCHAR(100))
 
@@ -6,12 +45,17 @@
 
 SELECT 
 --Asset columns
-[asset_id], [asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], [value_stream], [automation_level], 
-[include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], [entered_by], [entered_on], [last_modified_by], 
-[last_modified_on],
+A.[asset_id], A.[asset_code], A.[asset_name], A.[asset_description], A.[asset_level], A.[site_code], A.[parent_asset_code], A.[value_stream], A.[automation_level], 
+A.[include_in_escalation], A.[grouping1], A.[grouping2], A.[grouping3], A.[grouping4], A.[grouping5], A.[status], A.[entered_by], A.[entered_on], A.[last_modified_by], 
+A.[last_modified_on],
 --User columns
-[Badge], [Username], [First_Name], [Last_Name], [Role], [role_id], [Site], [ID] as id
-FROM [dbo].[Asset] JOIN [dbo].[TFDUsers] ON [Asset].[asset_id] = [TFDUsers].[Site] WHERE [TFDUsers].[Badge] = @badge
+TFD.[Badge], TFD.[Username], TFD.[First_Name], TFD.[Last_Name], R.name as Role, TFD.[role_id], TFD.[Site], TFD.[ID] as id,
+--Escalation columns
+E.[escalation_name], E.[escalation_level]
+FROM [dbo].[Asset] AS A JOIN [dbo].[TFDUsers] AS TFD ON A.[asset_id] = TFD.[Site]
+JOIN [dbo].Role AS R ON TFD.role_id = R.role_id 
+LEFT JOIN [dbo].Escalation AS E ON TFD.escalation_id = E.escalation_id
+WHERE TFD.[Badge] = @badge
 
 
 END

@@ -1,7 +1,46 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shifts]    Script Date: 10/2/2021 08:55:00 ******/
-
---exec dbo.spLocal_EY_DxH_Get_Shifts 1
-
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shifts]    Script Date: 22/2/2021 20:44:36 ******/
+--
+-- Copyright © 2019 Ernst & Young LLP
+-- All Rights Reserved
+-- spLocal_EY_DxH_Get_Shifts
+--
+--  Purpose:
+--	Given a site, get the shifts of the site
+--
+--	To Do:
+--
+--  Output Parameters:
+---
+--  Input Parameters:
+--- None
+---
+---	
+--  Trigger:
+---
+--  Data Read Other Inputs:  
+--- 
+---	
+--  Data Written Results:
+---
+--  Assumptions:
+--		Assumes that 3 days plus the current sift and the shifts in the current day 
+--		are enough to get all desired InterShiftData
+--- 
+--  Dependencies: 
+---	None
+---
+--  Variables:
+---
+---
+--  Tables Modified:
+---
+-- Modification Change History:
+--------------------------------------------------------------------------------
+--	20190731		C00V00 - Intial code created
+--		
+-- Example Call:
+-- exec spLocal_EY_DxH_Get_Shifts 1
+--
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
 
  AS  BEGIN 
@@ -12,11 +51,13 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
  @TomorrowProductionDay		DATETIME,
  @DateOfShift				DATETIME;
 
-SELECT @CurrentDateTime = SYSDATETIME() at time zone 'UTC' at time zone site_timezone
-FROM dbo.CommonParameters where site_id = @Site;
-SET @CurrentProductionDay = FORMAT(@CurrentDateTime, 'yyyy-MM-dd');
-SET @YesterdayProductionDay = FORMAT(DATEADD(DAY, -1, @CurrentDateTime), 'yyyy-MM-dd');
-SET @TomorrowProductionDay = FORMAT(DATEADD(DAY, 1, @CurrentDateTime), 'yyyy-MM-dd');
+
+SELECT
+@CurrentProductionDay = GSP.ProductionDay 
+FROM dbo.GetShiftProductionDayFromSiteAndDate(@Site,NULL) GSP;
+
+SET @YesterdayProductionDay = DATEADD(DAY, -1, @CurrentProductionDay);
+SET @TomorrowProductionDay = DATEADD(DAY, 1, @CurrentProductionDay);
 
 
             SELECT shift_id, 

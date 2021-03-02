@@ -118,23 +118,12 @@
     <Build Include="dbo\Functions\AssetsResolverFromId.sql" />
     <Build Include="dbo\Functions\GetRangesBetweenDates.sql" />
     <Build Include="dbo\Stored Procedures\sp_alterdiagram.sql" />
-    <Build Include="dbo\Stored Procedures\sp_clocknumber_asset_login.sql" />
-    <Build Include="dbo\Stored Procedures\sp_clocknumberlogin.sql" />
-    <Build Include="dbo\Stored Procedures\sp_get_workcell.sql" />
     <Build Include="dbo\Stored Procedures\sp_creatediagram.sql" />
     <Build Include="dbo\Stored Procedures\sp_dropdiagram.sql" />
-    <Build Include="dbo\Stored Procedures\sp_get_users_by_badge.sql" />
-    <Build Include="dbo\Stored Procedures\sp_getshifts.sql" />
     <Build Include="dbo\Stored Procedures\sp_helpdiagramdefinition.sql" />
     <Build Include="dbo\Stored Procedures\sp_helpdiagrams.sql" />
-    <Build Include="dbo\Stored Procedures\sp_importorders.sql" />
-    <Build Include="dbo\Stored Procedures\sp_importproducts.sql" />
-    <Build Include="dbo\Stored Procedures\sp_importtagdata.sql" />
-    <Build Include="dbo\Stored Procedures\sp_orderassembly.sql" />
     <Build Include="dbo\Stored Procedures\sp_renamediagram.sql" />
     <Build Include="dbo\Stored Procedures\sp_upgraddiagrams.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_id_login.sql" />
-    <Build Include="dbo\Stored Procedures\sp_usernamelogin.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Create_OrderData.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Edit_ProductionData.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -198,7 +187,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Clocknumber_Asset.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Clocknumber_Machine.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Asset.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Users_By_Badge.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_AssetDisplaySystem.sql">
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
@@ -245,6 +233,8 @@
     <Build Include="dbo\Tables\RoleComponent.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Users.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parker-PROD.publish.xml" />

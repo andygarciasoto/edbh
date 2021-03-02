@@ -6,7 +6,14 @@ class MegaMenu extends React.Component {
 
     getFilterOptions(children) {
         const t = this.props.t;
-        let titles = [t('Machine Selector'), t('Date Selector'), t('Shift Selector'), t('Language Selector')];
+        const titles = [
+            t('Visualization Level'),
+            t('Machine Selector'),
+            t('Date Selector'),
+            t('Shift Selector'),
+            t('Language Selector'),
+            t('Select ' + this.props.selectedLevelDC.label)
+        ];
 
         let filters = [];
         _.forEach(children, (item, key) => {

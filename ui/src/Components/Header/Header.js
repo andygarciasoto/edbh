@@ -7,12 +7,18 @@ import MachinePickerCustom from './MachinePicker';
 import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
 import LanguagePickerCustom from './LanguagePicker';
+import GenericSelect from './GenericSelect';
 import QueryButton from './QueryButton';
 import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { getCurrentTime, validPermission } from '../../Utils/Requests';
+import { getCurrentTime, validPermission, validMenuOption } from '../../Utils/Requests';
+import {
+    getLevelOptions,
+    getAreaAssetOptionsDC,
+    getWorkcellValueOptionsDC
+} from '../../Utils/Utils';
 import configuration from '../../config.json';
 import '../../sass/Header.scss';
 
@@ -21,7 +27,7 @@ class Header extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = Object.assign(this.getInitialState(props));
+        this.state = Object.assign(this.getInitialState(props), this.getDCFilters(props));
         if (this.state.ln) {
             this.changeLanguageBrowser();
         }
@@ -37,8 +43,32 @@ class Header extends React.Component {
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (props.user.date_of_shift ? new Date(props.user.date_of_shift) : new Date(getCurrentTime(props.user.timezone))),
             sf: search.sf || props.user.current_shift,
             ln: search.ln || props.user.language,
-            cs: search.cs || props.user.site
+            cs: search.cs || props.user.site,
+            sldc: search.sldc || 'Site',
+            sadc: search.sadc || ''
         };
+    }
+
+    getDCFilters(props) {
+        const search = qs.parse(props.history.location.search);
+        const sldc = search.sldc || 'Site';
+        const levelOptionsDC = getLevelOptions();
+        const assetOptionsDC = getAreaAssetOptionsDC(props.user);
+        const workcellOptionsDC = getWorkcellValueOptionsDC('workcell_name', props.user);
+        const valueStreamOptionsDC = getWorkcellValueOptionsDC('value_stream', props.user);
+        const sadc = search.sadc || '';
+        const selectedAssetDC = sadc !== '' ?
+            (_.find(sldc === 'Area' ? assetOptionsDC : (sldc === 'workcell_name' ? workcellOptionsDC : valueStreamOptionsDC),
+                item => { return String(item.value) === sadc; }))
+            : { label: 'No Data', value: 'No Data' };
+        return {
+            selectedLevelDC: _.find(levelOptionsDC, { value: sldc }),
+            levelOptionsDC,
+            selectedAssetDC,
+            assetOptionsDC,
+            workcellOptionsDC,
+            valueStreamOptionsDC
+        }
     }
 
     componentDidMount() {
@@ -98,6 +128,13 @@ class Header extends React.Component {
         this.setState({ [type]: value });
     }
 
+    collectLevelChange = (value, type) => {
+        this.setState({
+            [type]: value,
+            selectedAssetDC: { label: 'No Data', value: 'No Data' }
+        });
+    }
+
     changeLanguageBrowser = () => {
         let currentLanguage = this.state.ln.toLowerCase();
         currentLanguage = currentLanguage.replace('-', '_');
@@ -149,6 +186,11 @@ class Header extends React.Component {
             <a className='nav-link' href='/' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
         ));
 
+        const actualView = this.props.history.location.pathname;
+        const selectionValue = this.state.selectedLevelDC.value;
+        const selectedAssetOptions = selectionValue === 'Area' ? this.state.assetOptionsDC :
+            (selectionValue === 'workcell_name' ? this.state.workcellOptionsDC : this.state.valueStreamOptionsDC);
+
         return (
             <Navbar expand="lg">
                 <Navbar.Brand><img src={logo} className="App-logo-header header-side" alt="logo" /></Navbar.Brand>
@@ -166,43 +208,65 @@ class Header extends React.Component {
                                 : null}
                         </Dropdown>
                         : null}
-                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups' ?
+                    {validPermission(this.props.user, 'megamenu', 'read') ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>
-                            <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history}>
-                                {validPermission(this.props.user, 'megamenu-machine-option', 'read') ?
+                            <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history} selectedLevelDC={this.state.selectedLevelDC}>
+                                {validMenuOption('megamenu-level-option', actualView) ?
+                                    <GenericSelect
+                                        selectedOption={this.state.selectedLevelDC}
+                                        collectInput={this.collectLevelChange}
+                                        t={this.props.t}
+                                        value={'selectedLevelDC'}
+                                        prop={'value'}
+                                        prop_name={'label'}
+                                        options={this.state.levelOptionsDC}
+                                        key={0} />
+                                    : null}
+                                {validPermission(this.props.user, 'megamenu-machine-option', 'read') && validMenuOption('megamenu-machine-option', actualView) ?
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         user={this.props.user}
                                         value={this.state.mc}
                                         history={this.props.history}
-                                        key={0} />
+                                        key={1} />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-date-option', 'read') ?
+                                {validPermission(this.props.user, 'megamenu-date-option', 'read') && validMenuOption('megamenu-date-option', actualView) ?
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.dt}
-                                        key={1}
+                                        key={2}
                                     />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-shift-option', 'read') && this.props.history.location.pathname !== '/summary' ?
+                                {validPermission(this.props.user, 'megamenu-shift-option', 'read') && validMenuOption('megamenu-shift-option', actualView) ?
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         value={this.state.sf}
                                         date={this.state.dt}
                                         user={this.props.user}
-                                        key={2}
+                                        key={3}
                                     />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-language-option', 'read') ?
+                                {validPermission(this.props.user, 'megamenu-language-option', 'read') && validMenuOption('megamenu-language-option', actualView) ?
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.ln}
-                                        key={3}
+                                        key={4}
                                     />
+                                    : null}
+                                {validMenuOption('megamenu-area-option', actualView) && selectionValue !== 'Site' ?
+                                    <GenericSelect
+                                        selectedOption={this.state.selectedAssetDC}
+                                        collectInput={this.collectInputs}
+                                        t={this.props.t}
+                                        value={'selectedAssetDC'}
+                                        prop={'value'}
+                                        prop_name={'label'}
+                                        options={selectedAssetOptions}
+                                        key={5} />
                                     : null}
                                 <QueryButton
                                     machine={this.state.mc}
@@ -211,6 +275,8 @@ class Header extends React.Component {
                                     machine_type={this.state.tp}
                                     language={this.state.ln}
                                     site={this.state.cs}
+                                    selectedLevelDC={validMenuOption('megamenu-level-option', actualView) ? selectionValue : null}
+                                    selectedAssetDC={this.state.selectedAssetDC}
                                     openMenu={this.openMenu}
                                     history={this.props.history}
                                     t={this.props.t}
