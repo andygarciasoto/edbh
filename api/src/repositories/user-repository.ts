@@ -59,7 +59,7 @@ export class UserRepository {
         FROM dbo.TFDUsers TFD 
         INNER JOIN dbo.Role R ON TFD.role_id = R.role_id 
         AND TFD.Site = ${site_id}
-        AND TFD.Badge = '${badge}',
+        AND TFD.Badge = '${badge}'
         LEFT JOIN dbo.Escalation E
         ON TFD.escalation_id = E.escalation_id`);
     }
