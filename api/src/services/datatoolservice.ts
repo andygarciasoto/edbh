@@ -56,6 +56,7 @@ export class DataToolService {
     public async importData(req, res: Response) {
         try {
             const file = req.file;
+            console.log(file);
             const arrayItems = JSON.parse(req.body.configurationItems);
             const site_id = JSON.parse(req.body.site_id);
             let mergeQuery = '';
