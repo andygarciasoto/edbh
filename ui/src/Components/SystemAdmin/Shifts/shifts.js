@@ -1,19 +1,33 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddShift from "./addShift";
+
+import EditIcon from "../../../resources/u668.svg";
+
 
 class Shifts extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      usersData: [],
+      ShiftData: [],
       addShift: false,
       editShift: false,
       badge: "",
     };
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+
+    return actions.getShifts(this.props.user.site).then((response) => {
+      this.setState({
+        ShiftData: response,
+      });
+    });
   }
 
   showAddShift = () => {
@@ -29,6 +43,7 @@ class Shifts extends Component {
   };
 
   render() {
+    console.log(this.state);
     return (
       <div>
         <Filter
@@ -63,26 +78,29 @@ class Shifts extends Component {
             </tr>
           </thead>
           <tbody>
-            {/* {this.state.usersData.map((user, index) => (
+          {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
-                <td>{user.role_id}</td>
-                <td>{user.Badge}</td>
-                <td>{user.Username}</td>
-                <td>{user.First_Name}</td>
-                <td>{user.Last_Name}</td>
-                <td>{user.Role}</td>
-                <td>{user.status}</td>
-                <td>{user.escalation_name}</td>
+                <td>{shift.shift_code}</td>
+                <td>{shift.shift_name}</td>
+                <td>{"DESC"}</td>
+                <td>{shift.shift_sequence}</td>
+                <td>{shift.start_time}</td>
+                <td>{shift.end_time}</td>
+                <td>{shift.duration_in_minutes}</td>
+                <td>{shift.valid_from}</td>
+                <td>{shift.valid_to}</td>
+                <td>{shift.is_first_shift_of_day}</td>
+                <td>{shift.shift_id}</td>
                 <td>
                   <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditUser(user.Badge)}
+                    //onClick={() => this.showEditUser(shift.Badge)}
                   />
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </Table>
       </div>
@@ -90,4 +108,12 @@ class Shifts extends Component {
   }
 }
 
-export default Shifts;
+
+export const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(ShiftActions, dispatch),
+  };
+};
+
+export default connect(null, mapDispatch)(Shifts);
+

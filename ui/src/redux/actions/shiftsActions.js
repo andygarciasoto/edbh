@@ -3,7 +3,7 @@ import { GET_SHIFTS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getShifts = (siteId) => {
-  var url = `${API}/users?site_id=${siteId}`;
+  var url = `${API}/shifts?site=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
