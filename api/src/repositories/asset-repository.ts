@@ -35,6 +35,6 @@ export class AssetRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Rows_By_Site ${site_id}`);
     }
     public async getParkerSites(): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT asset_name, asset_level FROM Asset WHERE asset_level = 'SITE' AND status = 'Active'`);
+        return await this.sqlServerStore.ExecuteQuery(`SELECT asset_name, asset_level, asset_id FROM Asset WHERE asset_level = 'SITE' AND status = 'Active'`);
     }
 }

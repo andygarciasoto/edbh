@@ -220,6 +220,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/sites', 'get', async (req: Request, res: Response) => {
             await assetService.getParkerSites(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_shift', 'get', async (req: Request, res: Response) => {
+            await shiftService.putShifts(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

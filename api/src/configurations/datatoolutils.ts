@@ -97,7 +97,8 @@ export let headers = {
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'summary_timeout', type: 'INT', key: 'summary_timeout', width: 19 },
         { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
-        { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 }
+        { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 },
+        { header: 'site_prefix', type: 'VARCHAR', key: 'site_prefix', width: 17 }
 
     ],
     Unavailable: [
@@ -235,15 +236,16 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], 
                 t.[setup_lookback_minutes] = s.[setup_lookback_minutes], t.[language] = s.[language], t.[status] = s.[status], 
                 t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
-                t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes]`;
+                t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes],
+                t.[site_prefix] = s.[site_prefix]`;
             parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], 
                 [escalation_level1_minutes], [escalation_level2_minutes], [default_target_percent_of_ideal], [default_setup_minutes], 
                 [default_routed_cycle_time], [setup_lookback_minutes], [language], [status], [entered_by], [last_modified_by], [summary_timeout],
-                [break_minutes], [lunch_minutes]) 
+                [break_minutes], [lunch_minutes], [site_prefix]) 
                 VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], 
                 s.[escalation_level1_minutes], s.[escalation_level2_minutes], s.[default_target_percent_of_ideal], s.[default_setup_minutes], 
                 s.[default_routed_cycle_time], s.[setup_lookback_minutes], s.[language], s.[status], 'Administration Tool',
-                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes])`;
+                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix])`;
             break;
         case 'Unavailable':
             parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';
