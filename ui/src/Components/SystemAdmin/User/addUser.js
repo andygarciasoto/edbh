@@ -73,7 +73,7 @@ class AddUser extends Component {
       last_name: lastname,
       role_id: role,
       site_id: this.props.user.site,
-      escalation_id: escalation_id,
+      escalation_id: parseInt(escalation_id, 10),
       status: status,
     }).then(
       () => {
@@ -108,7 +108,6 @@ class AddUser extends Component {
   };
 
   render() {
-    console.log(this.state);
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>

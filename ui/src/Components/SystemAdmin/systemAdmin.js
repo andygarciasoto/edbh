@@ -9,7 +9,7 @@ import CommonParams from "./commonParams";
 import Assets from "./AdminTables/assets";
 import Reason from "./AdminTables/reason";
 import Device from "./AdminTables/device";
-import Shifts from "./AdminTables/shifts";
+import Shifts from "./Shifts/shifts";
 import UOM from "./AdminTables/uom";
 import Break from "./AdminTables/break";
 import Display from "./AdminTables/display";
@@ -283,7 +283,7 @@ export class Administrator extends Component {
         {this.state.assets === true && <Assets />}
         {this.state.reason === true && <Reason />}
         {this.state.device === true && <Device />}
-        {this.state.shifts === true && <Shifts />}
+        {this.state.shifts === true && <Shifts user={this.props.user}/>}
         {this.state.uom === true && <UOM />}
         {this.state.break === true && <Break />}
         {this.state.display === true && <Display />}

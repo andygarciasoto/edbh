@@ -72,6 +72,8 @@ class UserTable extends Component {
           className="filter-user"
           buttonName={"+ User"}
           role={true}
+          escalation={true}
+          buttonFilter={"Search"}
           onClick={() => this.showAddUser()}
         ></Filter>
         {this.state.user === true && (
@@ -92,7 +94,6 @@ class UserTable extends Component {
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
-              <th>ID</th>
               <th>Badge</th>
               <th>Username</th>
               <th>First Name</th>
@@ -106,7 +107,6 @@ class UserTable extends Component {
           <tbody>
             {this.state.usersData.map((user, index) => (
               <tr key={index}>
-                <td>{user.role_id}</td>
                 <td>{user.Badge}</td>
                 <td>{user.Username}</td>
                 <td>{user.First_Name}</td>

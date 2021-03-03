@@ -20,25 +20,49 @@ class EditUser extends Component {
       status: "",
       show: false,
       showForm: true,
+      rolesArray: [],
+      escalation_id: 0,
+      escalationArray: [],
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions
-      .getUserInfo(this.props.user.site, this.props.badge)
-      .then((response) => {
-        this.setState({
-          badge: response.Badge,
-          username: response.Username,
-          firstname: response.First_Name,
-          lastname: response.Last_Name,
-          role: response.name,
-          role_id: response.role_id,
-          status: response.status,
-        });
+    return Promise.all([
+      actions.getUserInfo(this.props.user.site, this.props.badge),
+      actions.getRoles(),
+      actions.getEscalation(),
+    ]).then((response) => {
+      this.setState({
+        badge: response[0].Badge,
+        username: response[0].Username,
+        firstname: response[0].First_Name,
+        lastname: response[0].Last_Name,
+        role: response[0].name,
+        role_id: response[0].role_id,
+        escalation_id: response[0].escalation_level,
+        status: response[0].status,
+        rolesArray: response[1],
+        escalationArray: response[2],
       });
+    });
+  }
+
+  renderRoles(roles, index) {
+    return (
+      <option value={roles.role_id} key={index}>
+        {roles.name}
+      </option>
+    );
+  }
+
+  renderEscalation(escalation, index) {
+    return (
+      <option value={escalation.escalation_id} key={index}>
+        {escalation.escalation_name}
+      </option>
+    );
   }
 
   handleChange = (event) => {
@@ -59,9 +83,20 @@ class EditUser extends Component {
     this.setState({ status: event.target.value });
   };
 
+  handleChangeEscalation = (event) => {
+    this.setState({ escalation_id: event.target.value });
+  };
+
   createUser = (e) => {
     e.preventDefault();
-    const {username, firstname, lastname, role_id, status } = this.state;
+    const {
+      username,
+      firstname,
+      lastname,
+      role_id,
+      status,
+      escalation_id,
+    } = this.state;
 
     var url = `${API}/insert_user`;
 
@@ -72,6 +107,7 @@ class EditUser extends Component {
       last_name: lastname,
       role_id: role_id,
       site_id: this.props.user.site,
+      escalation_id: parseInt(escalation_id, 10),
       status: status,
     }).then(
       () => {
@@ -90,6 +126,7 @@ class EditUser extends Component {
   };
 
   render() {
+    console.log(this.state);
     const {
       badge,
       username,
@@ -97,6 +134,7 @@ class EditUser extends Component {
       lastname,
       role,
       status,
+      escalation_id,
     } = this.state;
 
     return (
@@ -153,17 +191,24 @@ class EditUser extends Component {
                 />
               </label>
               <label>
+                Escalation:
+                <select
+                  value={escalation_id}
+                  className="input-escalation"
+                  onChange={this.handleChangeEscalation}
+                >
+                  {this.state.escalationArray.map(this.renderEscalation)}
+                  <option value="">None</option>
+                </select>
+              </label>
+              <label>
                 Role:
                 <select
                   value={role}
                   className="input-role"
                   onChange={this.handleChangeRole}
                 >
-                  <option value="1">Administrator</option>
-                  <option value="2">Supervisor</option>
-                  <option value="3">Operator</option>
-                  <option value="4">Summary</option>
-                  <option value="5">Read-Only</option>
+                  {this.state.rolesArray.map(this.renderRoles)}
                 </select>
               </label>
               <label>
