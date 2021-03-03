@@ -41,7 +41,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset 'Cell','Partially_Manual_Scan_Order', 1
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
 --Declare
 @Level            VARCHAR(100), --All, Site, Area, or Cell. Most of the time send Cell 
 @Automation_Level VARCHAR(100), --All, Automated, Partially_Manual_Scan_Order, Manual

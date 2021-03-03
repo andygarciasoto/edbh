@@ -1,7 +1,7 @@
 ﻿CREATE VIEW dbo.DTData_vw
 AS
-SELECT        dbo.DTData.dtdata_id, dbo.DTData.dxhdata_id, dbo.DTData.dtreason_id, dbo.DTData.dtminutes, dbo.DTData.entered_by, dbo.DTData.entered_on, dbo.DTData.last_modified_by, 
-							dbo.DTData.last_modified_on, dbo.DTData.name, dbo.Asset.asset_id, dbo.Asset.site_code
+SELECT        dbo.DTData.dtdata_id, dbo.DTData.dxhdata_id, dbo.DTData.dtreason_id, dbo.DTData.dtminutes, dbo.DTData.dtminutes_provisional, dbo.DTData.dtminutes_total, dbo.DTData.dtminutes_breaks, dbo.DTData.dtminutes_setup, 
+                         dbo.DTData.entered_by, dbo.DTData.entered_on, dbo.DTData.last_modified_by, dbo.DTData.last_modified_on, dbo.DTData.name, dbo.Asset.asset_id, dbo.Asset.site_code
 FROM            dbo.DTData INNER JOIN
                          dbo.DxHData ON dbo.DTData.dxhdata_id = dbo.DxHData.dxhdata_id INNER JOIN
                          dbo.Asset ON dbo.DxHData.asset_id = dbo.Asset.asset_id INNER JOIN

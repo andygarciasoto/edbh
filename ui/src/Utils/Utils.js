@@ -47,10 +47,45 @@ function getStartEndDateTime(production_day, shift_name, user, useCurrentHour) {
     return dates;
 }
 
+function GetShiftProductionDayFromSiteAndDate(user) {
+    let data = { production_day: null, current_datetime: null, shift_id: null, shift_name: null, shift_code: null, start_shift: null, end_shift: null };
+
+    data.current_datetime = moment.tz(user.timezone);
+    data.production_day = moment.tz(data.current_datetime.format('YYYY-MM-DD') + ' 00:00', user.timezone);
+
+    const first_shift = user.shifts[0];
+    const last_shift = user.shifts[user.shifts.length - 1];
+    let first_shift_start_time = moment.tz(data.production_day, user.timezone).add(first_shift.start_time_offset_days, 'days').add(first_shift.hour, 'hours');
+    let last_shift_end_time = moment.tz(data.production_day, user.timezone).add(last_shift.end_time_offset_days, 'days').add(last_shift.end_hour, 'hours');
+    
+    if (data.current_datetime.isBefore(first_shift_start_time)) {
+        data.production_day.add(-1, 'days');
+    } else if (data.current_datetime.isSameOrAfter(last_shift_end_time)) {
+        data.production_day.add(1, 'days');
+    }
+
+    _.forEach(user.shifts, (shift) => {
+        const start_shift = moment.tz(data.production_day, user.timezone).add(shift.start_time_offset_days, 'days').add(shift.hour, 'hours');
+        const end_shift = moment.tz(data.production_day, user.timezone).add(shift.end_time_offset_days, 'days').add(shift.end_hour, 'hours');
+        if (data.current_datetime.isSameOrAfter(start_shift) && data.current_datetime.isBefore(end_shift)) {
+            data.shift_id = shift.shift_id;
+            data.shift_name = shift.shift_name;
+            data.shift_code = shift.shift_code;
+            data.start_shift = start_shift;
+            data.end_shift = end_shift;
+            return;
+        }
+    });
+
+    return data;
+
+}
+
 export {
     getDtReason,
     getLevelOptions,
     getAreaAssetOptionsDC,
     getWorkcellValueOptionsDC,
-    getStartEndDateTime
+    getStartEndDateTime,
+    GetShiftProductionDayFromSiteAndDate
 }

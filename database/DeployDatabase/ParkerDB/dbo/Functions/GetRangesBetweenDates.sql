@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[GetRangesBetweenDates] 
+﻿CREATE   FUNCTION [dbo].[GetRangesBetweenDates] 
         (@started_on	Datetime,
 		@ended_on	Datetime,		
 		@interval INT,

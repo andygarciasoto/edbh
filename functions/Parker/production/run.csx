@@ -31,7 +31,7 @@ public static async void Run(EventData eventHubMessage, ILogger log)
         if (jObject["productFilter"].ToString() == "kepserver") {
             log.LogInformation(message);
             // creates the connection to the database
-            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection3");
+            var ConnString = Environment.GetEnvironmentVariable("CUSTOMCONNSTR_parkerdbconnection");
             var connection = new SqlConnection(ConnString);
             
             string data = "{'data':" + jObject["data"].ToString() + "}";

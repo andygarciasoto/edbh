@@ -103,7 +103,7 @@ class OperatorComponent extends React.Component {
             modal_message_Is_Open: false,
             modal_active_op_Is_Open: false,
             showCheckOutModal: false
-        })
+        });
     }
 
     responseScan = (badge) => {

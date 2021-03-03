@@ -68,6 +68,7 @@ class DashboardOne extends React.Component {
             selectedDate={this.state.selectedDate}
             selectedShift={this.state.selectedShift}
             t={props.t}
+            socket={props.socket}
           /> : null}
         <div className="wrapper-main">
           {validPermission(props.user, 'operatorInformation', 'read') && this.state.selectedAssetOption.is_multiple ?
