@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Asset] '2291', '168H-0006'
 
- CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Asset] (@badge as VARCHAR(100), @asset_code as VARCHAR(100))
+ CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Clocknumber_Asset] (@badge as VARCHAR(100), @asset_code as VARCHAR(100))
 
   AS  BEGIN 
  DECLARE

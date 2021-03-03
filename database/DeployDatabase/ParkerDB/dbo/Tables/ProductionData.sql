@@ -23,12 +23,6 @@
 
 
 GO
-CREATE NONCLUSTERED INDEX [ProductionData_DxHData_Id_NC_Index]
-    ON [dbo].[ProductionData]([dxhdata_id] ASC)
-    INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
-
-
-GO
 CREATE NONCLUSTERED INDEX [ProductionData_Order_Id_NC_Index]
     ON [dbo].[ProductionData]([order_id] ASC);
 
@@ -36,4 +30,10 @@ CREATE NONCLUSTERED INDEX [ProductionData_Order_Id_NC_Index]
 GO
 CREATE NONCLUSTERED INDEX [ProductionData_Order_Num_Start_T_NC_Index]
     ON [dbo].[ProductionData]([order_number] ASC, [start_time] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [ProductionData_DxHData_Id_NC_Index]
+    ON [dbo].[ProductionData]([dxhdata_id] ASC)
+    INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
 

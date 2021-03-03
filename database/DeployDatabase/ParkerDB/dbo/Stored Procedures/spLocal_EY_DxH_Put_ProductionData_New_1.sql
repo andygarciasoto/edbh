@@ -1,22 +1,22 @@
-﻿
---
+﻿--
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
--- spLocal_EY_DxH_Edit_ProductionData
+-- spLocal_EY_DxH_Put_ProductionData
 --
 --  Purpose:
 
 --	Given a dxhdata_id and needed production info, store the production data
 --
---		Note this is intended to be called by supervisor level people but the enforcement of
---		that is to be handled by the user interface
---
---	The passed in @Product_Code, @Order_Number, and the Asset_Code associated with the 
---	dxhdata_id must be aligned. If they are not, notthing will be edited.
+--	If the @Override field is Null or 0, then it is a new insert or an increment
+--	If the @Override field is Not Null and Not 0, it is an Override. The existing value of Actual 
+--		will be replaced. The value of @Override is the productiondata_id to be updated
 --
 --	Returns a status and a message
 --		 0 is pass
 --		-1 is fail
+--	
+--	The first production insert in an hour for each order is where the ideal and target 
+--	are calculated. Any data sent for the same order in that hour will just increment the actual.
 --	
 --	To Do:
 --
@@ -45,44 +45,25 @@
 ---
 -- Modification Change History:
 --------------------------------------------------------------------------------
---	20190828		C00V00 - Intial code created		
---	20191203		C00V01 - Change Asset_Code for Asset_Id
---	20191204		C00V02 - Change CommonParameters to CommonParametersTest
+--	20190809		C00V00 - Intial code created		
+--	20191204		C00V01 - Change CommonParameters to CommonParameters		
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Edit_ProductionData 3, 3, '1 1/2L4MNS PS', 18,14,11, '23456', Null,'2477', Null, Null, '2019-07-25 01:02:03'
+-- exec spLocal_EY_DxH_Put_ProductionData 261042, 30, 10, 2, 18, '123456789123', Null, Null, '2019/11/26 12:18', 1, 17015
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Edit_ProductionData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData_New_1]
 --Declare
 	@DxHData_Id				Int,			-- the hour Id
-	@ProductionData_Id		Int,
-	@Product_Code			Varchar(100),	-- This can only be different if the order number also changes
-	@Ideal					Float,			-- Calculated in SP if routed cycle time is provided 
-	@Target					Float,			-- Calculated in SP if routed cycle time is provided
-	@Actual					Float,			-- must be non-negative
-	@Order_Number			Varchar(100),	-- must align with product code	and asset
-	@Routed_Cycle_Time		Float,			-- Leave Null if you want to pass in Ideal and Target
-	@Clock_Number			Varchar(100),	-- used to look up First and Last, leave Null if you have first and last
-	@First_Name				Varchar(100),	-- leave Null if you send clock number
-	@Last_Name				Varchar(100),	-- leave Null if you send clock number
-	@Timestamp				Datetime		-- generally current time but note it is used to find break and lunch time
+	@Actual					Float,			-- to be inserted, increment exisiting Actual, or replace if Override
+	@Setup_Scrap			Float,			-- to be inserted, increment exisiting Actual, or replace if Override
+	@Other_Scrap			Float,			-- to be inserted, increment exisiting Actual, or replace if Override
+	@Adjusted_Actual		Float,			-- to be inserted, increment exisiting Actual, or replace if Override
+	@Clock_Number			Varchar(100),	-- used to look up First and Last, leave blank if you have first and last
+	@First_Name				Varchar(100),	-- 
+	@Last_Name				Varchar(100),	--
+	@Timestamp				Datetime,		-- generally current time but note it is used to find break and lunch time
+	@Override				Int				-- generally Null or 0, send the productiondata_id for update/replacing Actual
 AS
-
---Select 
---	@DxHData_Id	= 3,
---	@ProductionData_Id = 3,
---	@Product_Code = '1 1/2L4MNS PS',
---	@Ideal = 18,
---	@Target = 14,
---	@Actual = 11,
---	@Order_Number = '23456',
-----	@Routed_Cycle_Time = '240',
---	@Clock_Number = '2477',
-----	@First_Name = '',
-----	@Last_Name = '',
---	@Timestamp = '2019-08-28 16:10'
-
-
 BEGIN
 -- SET NOCOUNT ON added to prevent extra result sets from
 -- interfering with SELECT statements.
@@ -106,7 +87,11 @@ Declare @Output table
 	entered_on					Datetime, 
 	last_modified_by			Varchar(100), 
 	last_modified_on			Datetime,
-	message						Varchar(100)
+	setup_scrap					Float,
+	other_scrap					Float,
+	adjusted_actual				Float,
+	message						Varchar(100),
+	name						Varchar(100)
 	)
 
 Declare @Shift_Hours table
@@ -141,18 +126,20 @@ Declare
 	@First							Varchar(50),
 	@Last							Varchar(50),
 	@Initials						Varchar(50),	
---	@ProductionData_Id				Int,
+	@ProductionData_Id				Int,
 	@Existing_Actual				Float,
+	@Existing_Setup_Scrap			Float,
+	@Existing_Other_Scrap			Float,
+	@Existing_Adjusted_Actual		Float,
 	@ReturnStatus					Int,
 	@ReturnMessage					Varchar(1000),
-	@Asset_id						INT,
+	@Asset_Id						INT,
+	@Site_Id						INT,
 	@OrderNumber					Varchar(100),
-	@Existing_OrderNumber			Varchar(100),
 	@Order_Id						Int,
---	@Product_Code					Varchar(100),
-	@Existing_Product_Code			Varchar(100),
+	@Product_Code					Varchar(100),
 	@UOM_Code						Varchar(100),
---	@Routed_Cycle_Time				Float,
+	@Routed_Cycle_Time				Float,
 	@Target_Percent_Of_Ideal		Float,
 	@Order_Quantity					Float,
 	@Produced_Quantity				Float,
@@ -169,8 +156,7 @@ Declare
 	@Production_Day_Offset_Minutes	Int,	
 	@IsFirst						Bit,
 	@Calendar_Day_Start				Datetime,
-	@Shift_Sequence					Int,
-	@Site_Id						Int
+	@Shift_Sequence					Int
 
 If not exists (Select dxhdata_id From dbo.DxHData with (nolock) Where dxhdata_id = IsNull(@DxHData_Id,-1))
 Begin
@@ -186,88 +172,35 @@ Select @Shift_Code = shift_code,
 From dbo.DxHData dxh with (nolock)
 Where dxhdata_id = @DxHData_Id
 
-If not exists (Select productiondata_id From dbo.ProductionData with (nolock) Where productiondata_id = IsNull(@ProductionData_Id,-1))
+If IsNull(@Actual,-1) < 0
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid ProductionData_Id ' + convert(varchar,IsNull(@ProductionData_Id,''))
-	Goto ErrExit
-End
-
-If not exists (Select product_id From dbo.Product with (nolock) Where product_code = IsNull(@Product_Code,''))
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Product Code ' + convert(varchar,IsNull(@Product_Code,''))
-	Goto ErrExit
-End
-
-If IsNull(@Ideal,0) < 0
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Ideal ' + convert(varchar,IsNull(@Ideal,''))
-	Goto ErrExit
-End
-
-If IsNull(@Target,0) < 0
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Target ' + convert(varchar,IsNull(@Target,''))
-	Goto ErrExit
-End
-
-If IsNull(@Actual,0) < 0
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Actual ' + convert(varchar,IsNull(@Actual,''))
-	Goto ErrExit
-End
-
-If not exists 
-	(
-	Select order_id 
-	From dbo.OrderData with (nolock) 
-	Where order_number = IsNull(@Order_Number,'')
-		And product_code = IsNull(@Product_Code,'')
-		And asset_id = @Asset_Id
-	)
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Order Number ' + convert(varchar,IsNull(@Order_Number,''))
-	Goto ErrExit
-End
-
-Select @Existing_OrderNumber = pd.order_number,
-	@Existing_Product_Code = pd.product_code
-From dbo.ProductionData pd with (nolock)
-Where pd.productiondata_id = @ProductionData_Id
-
-If IsNull(@Routed_Cycle_Time,0) < 0
-Begin
-	Select 
-		@ReturnStatus = -1,
-		@ReturnMessage = 'Invalid Routed Cycle Time ' + convert(varchar,IsNull(@Routed_Cycle_Time,-1))
+		@ReturnMessage = 'Invalid Actual ' + convert(varchar,IsNull(@Actual,-1))
 		Goto ErrExit
 End
 
-If 
-	(
-	IsNull(@Routed_Cycle_Time,0) > 0
-	And 
-		(
-		IsNull(@Ideal,0) > 0
-		Or
-		IsNull(@Target,0) > 0
-		)
-	)
+If IsNull(@Setup_Scrap,-1) < 0
 Begin
 	Select 
 		@ReturnStatus = -1,
-		@ReturnMessage = 'Unexpected combination of values ' + convert(varchar,IsNull(@Routed_Cycle_Time,-1))
+		@ReturnMessage = 'Invalid Setup Scrap ' + convert(varchar,IsNull(@Setup_Scrap,-1))
+		Goto ErrExit
+End
+
+If IsNull(@Other_Scrap,-1) < 0
+Begin
+	Select 
+		@ReturnStatus = -1,
+		@ReturnMessage = 'Invalid Other Scrap' + convert(varchar,IsNull(@Other_Scrap,-1))
+		Goto ErrExit
+End
+
+If IsNull(@Adjusted_Actual,-1) < 0
+Begin
+	Select 
+		@ReturnStatus = -1,
+		@ReturnMessage = 'Invalid Adjusted Actual ' + convert(varchar,IsNull(@Adjusted_Actual,-1))
 		Goto ErrExit
 End
 
@@ -316,68 +249,163 @@ Begin
 		Goto ErrExit
 End
 
+If 
+	(IsNull(@Override,0) <> 0) 
+	And 
+	(not exists (Select productiondata_id From dbo.ProductionData with (nolock) Where productiondata_id = IsNull(@Override,-1)))
+Begin
+	Select 
+		@ReturnStatus = -1,
+		@ReturnMessage = 'Invalid Override ' + convert(varchar,IsNull(@Override,''))
+		Goto ErrExit
+End
+
 -- Find the Order for this asset at this time 
 Select top 1
 	@Order_Id = o.order_id,
---	@OrderNumber = o.order_number,	--Different variable name
---	@Product_Code = o.product_code,	--passed in
+	@OrderNumber = o.order_number,
+	@Product_Code = o.product_code,
 	@UOM_Code = o.UOM_code,
 	@Order_Quantity = o.order_quantity,
---	@Routed_Cycle_Time = o.routed_cycle_time,	--passed in
+	@Routed_Cycle_Time = o.routed_cycle_time,
 	@Target_Percent_Of_Ideal = o.target_percent_of_ideal
 From dbo.OrderData o with (nolock),
 	dbo.DxHData dxh with (nolock)
 Where dxh.dxhdata_id = @DxHData_Id
 	And o.asset_id = dxh.asset_id	
---	And o.is_current_order = 1	--maybe not active
-	And o.order_number = @Order_Number
+	And o.is_current_order = 1
 Order By
 	o.start_time desc
+
+-- If there is no is_current_order = 1, try using Timestamp
+If IsNull(@OrderNumber,'') = ''
+Begin
+	Select top 1
+		@Order_Id = o.order_id,
+		@OrderNumber = o.order_number,
+		@Product_Code = o.product_code,
+		@UOM_Code = o.UOM_code,
+		@Order_Quantity = o.order_quantity,
+		@Routed_Cycle_Time = o.routed_cycle_time,
+		@Target_Percent_Of_Ideal = o.target_percent_of_ideal
+	From dbo.OrderData o with (nolock),
+		dbo.DxHData dxh with (nolock)
+	Where dxh.dxhdata_id = @DxHData_Id
+		And o.asset_id = dxh.asset_id	
+		And o.start_time < @Timestamp
+		And 
+			(
+			o.end_time > @Timestamp
+			Or
+			o.end_time is Null
+			)
+	Order By
+		o.start_time desc
+End
+
+If IsNull(@OrderNumber,'') = ''
+Begin
+	Select 
+		@ReturnStatus = -1,
+		@ReturnMessage = 'Current Order not found for asset ' + convert(varchar,IsNull(@Asset_Id,''))
+		Goto ErrExit
+End
+
+
+SELECT @Site_Id = asset_id
+FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
+
 
 -- Now to decide if it is an insert or some kind of update
 -- If there is a productiondata row for this hour and order, then it is an update (increment or override)
 -- If not, it is an insert
 
---************* for the Edit this is always an update/override but sometimes the Ideal/Target get recalculated 
---************* based on a new routed cycle time which is in the "insert" section of the Put code
-
-Select --@ProductionData_Id = pd.productiondata_id,
-	@Existing_Actual = pd.actual
+Select @ProductionData_Id = pd.productiondata_id,
+	@Existing_Actual = pd.actual,
+	@Existing_Setup_Scrap = pd.setup_scrap,
+	@Existing_Other_Scrap = pd.other_scrap
 From dbo.ProductionData pd with (nolock)
 Where pd.dxhdata_id = @DxHData_Id
 	And pd.order_id = @Order_Id
 
-If IsNull(@Routed_Cycle_Time,0) <= 0 
---The values for Ideal and Target that are passed in should be Null if there is a value for Routed Cycle Time
---And if there is no Routed Cycle Time then there should be values for Ideal and Target 
+If IsNull(@ProductionData_Id,0) > 0 
+--Since it already exixts, this is an update, either an increment existing or replace if an override
 Begin
 
-	Update dbo.ProductionData
-	Set product_code = @Product_Code,
-		ideal = @Ideal,
-		target = @Target,
-		actual = @Actual,
-		order_id = @Order_Id,
-		order_number = @Order_Number,
-		last_modified_by = @Initials,
-		last_modified_on =  GETDATE()
-	From dbo.ProductionData pd
-	Where pd.productiondata_id = @ProductionData_Id
+	--Increment 
+	If IsNull(@Override,0) = 0
+	Begin
+		Update dbo.ProductionData
+		Set actual = @Existing_Actual + @Actual,
+			setup_scrap = @Existing_Setup_Scrap + @Setup_Scrap,
+			other_scrap = @Existing_Other_Scrap + @Other_Scrap,
+			last_modified_by = @Initials,
+			last_modified_on =  GETDATE()
+		From dbo.ProductionData pd
+		Where pd.productiondata_id = @ProductionData_Id
 
-	Select 
-		@ReturnStatus = 0,
-		@ReturnMessage = 'Edited ' + convert(varchar,@ProductionData_Id)
+		Select 
+			@ReturnStatus = 0,
+			@ReturnMessage = 'Incremented ' + convert(varchar,@ProductionData_Id)
 
-End --if Routed Cycle Time <= 0
+	End
+	Else
+	Begin		
+		-- If there already is a productiondata row and this is an override, then they should match  
+		If IsNull(@Override,0) <> IsNull(@ProductionData_Id,0) 
+		Begin
+			Select 
+				@ReturnStatus = -1,
+				@ReturnMessage = 'Invalid Override ' + convert(varchar,IsNull(@Override,''))
+				Goto ErrExit
+		End
+		-- If it makes it to here, then override/replace existing with @Actual 
+		--
+		Update dbo.ProductionData
+		Set actual = @Actual,
+			setup_scrap = @Setup_Scrap,
+			other_scrap = @Other_Scrap,
+			last_modified_by = @Initials,
+			last_modified_on =   GETDATE()
+		From dbo.ProductionData pd
+		Where pd.productiondata_id = @ProductionData_Id
+
+		Select 
+			@ReturnStatus = 0,
+			@ReturnMessage = 'Override ' + convert(varchar,@ProductionData_Id)
+	End
+
+
+End --if ProductionData_Id exists
 Else
---still do an update but recalc Ideal and Target
+--do an insert, including computing ideal and target
 Begin
+
+	Insert @Output
+		Select 
+			Null,
+			@DxHData_Id,
+			@Product_Code,
+			Null as 'Ideal',
+			Null as 'Target',
+			@Actual,
+			@UOM_Code,
+			@Order_Id,
+			@OrderNumber,
+			@Timestamp, 
+			Null,
+			@Initials,
+			getDate(),
+			@Initials,
+			getDate(),
+			@Setup_Scrap,
+			@Other_Scrap,
+			@Adjusted_Actual,
+			Null,
+			@First_Name + ' ' + @Last_Name
 
 	--Compute Ideal and target	
 	-- 
-
-	SELECT @Site_Id = asset_id FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@Asset_Id);
-
 	If IsNull(@Routed_Cycle_Time,-1) < 0
 	Begin
 		Select @Routed_Cycle_Time = convert(float,default_routed_cycle_time)
@@ -396,7 +424,7 @@ Begin
 	-- Don't look back to the beginning of time, but this needs to cover the longest time an order can run
 	Select @Setup_Lookback_Minutes = convert(float,setup_lookback_minutes)
 	From dbo.CommonParameters cpt with (nolock)
-		Where site_id = @Site_Id AND status = 'Active';
+	Where site_id = @Site_Id AND status = 'Active';
 
 	Select @Produced_Quantity = sum(Actual)
 	From dbo.ProductionData pd with (nolock)
@@ -406,6 +434,9 @@ Begin
 		pd.order_id
 
 	Select @Remaining_Quantity = IsNull(@Order_Quantity,0) - IsNull(@Produced_Quantity,0)
+	
+	--Remaining Quantity adjusted to not run out until a new Order is scanned
+	--Select @Remaining_Quantity = 9999
 
 	If IsNull(@Remaining_Quantity,0) < 0
 	Begin
@@ -424,7 +455,7 @@ Begin
 
 	Select @Production_Day_Offset_Minutes = convert(Int, production_day_offset_minutes)
 	From dbo.CommonParameters cpt with (nolock)
-		Where site_id = @Site_Id AND status = 'Active';
+	Where site_id = @Site_Id AND status = 'Active';
 
 	--Select @Production_Day_Offset_Minutes = 420, @IsFirst = 1
 
@@ -433,7 +464,7 @@ Begin
 	Select 
 		@FirstInt = convert(Int,datepart(hour,start_time)),
 		@Shift_Sequence = shift_sequence
-	From dbo.Shift with (nolock)
+	From dbo.Shift
 	Where shift_code = @Shift_Code
 		And status = 'Active'
 
@@ -452,7 +483,7 @@ Begin
 				end as 'hour_interval_start',
 				Null as 'hour_interval_end',
 				Null as 'message'
-			From dbo.Shift with (nolock)
+			From dbo.Shift
 			Where shift_code = @Shift_Code
 				And status = 'Active'
 				
@@ -555,7 +586,6 @@ Begin
 		Set @Remaining_BreakMinutes = 0
 	End
 
-
 	Select @Remaining_Minutes = (60 - @Remaining_BreakMinutes) - datepart(minute,@Timestamp)
 
 	If IsNull(@Remaining_Minutes,-1) > 60
@@ -581,59 +611,65 @@ Begin
 		Select @TotalRemaining_Minutes = 0
 	End
 
+
 	--Ideal
 	--If (Remaining Seconds in an hour / Routed Cycle Time) > Remaining Quantity
 	--then Ideal = Remaining Quantity 
 	--Else Remaining Seconds in an hour / Routed Cycle Time
 
+	Update @Output
+	Set name = @First_Name + ' ' + @Last_Name  
+
 	If (convert(Int,(@TotalRemaining_Minutes * 60.0) / @Routed_Cycle_Time)) > @Remaining_Quantity
 	Begin
 		Update @Output
-		Set Ideal = convert(Int,@Remaining_Quantity)
+		Set Ideal = @Remaining_Quantity
 	End
 	Else
 	Begin
 		Update @Output
-		Set Ideal = convert(Int,(@TotalRemaining_Minutes * 60.0) / @Routed_Cycle_Time)
+		Set Ideal = (@TotalRemaining_Minutes * 60.0) / @Routed_Cycle_Time
 	End
 
 	--Target
 	If (convert(Int,((@Remaining_Minutes * 60.0) / @Routed_Cycle_Time) * @Target_Percent_Of_Ideal)) > @Remaining_Quantity
 	Begin
 		Update @Output
-		Set Target = convert(Int,@Remaining_Quantity)
+		Set Target = @Remaining_Quantity
 	End
 	Else
 	Begin
 		Update @Output
-		Set Target = convert(Int,((@Remaining_Minutes * 60.0) / @Routed_Cycle_Time) * @Target_Percent_Of_Ideal)
+		Set Target = ((@Remaining_Minutes * 60.0) / @Routed_Cycle_Time) * @Target_Percent_Of_Ideal
 	End
 
-	If (IsNull(@Ideal,-1) >= 0 And IsNull(@Target,-1) >= 0)
-	Begin
-		Update dbo.ProductionData
-		Set product_code = @Product_Code,
-			ideal = @Ideal,
-			target = @Target,
-			actual = @Actual,
-			order_id = @Order_Id,
-			order_number = @Order_Number,
-			last_modified_by = @Initials,
-			last_modified_on =  GETDATE()
-		From dbo.ProductionData pd
-		Where pd.productiondata_id = @ProductionData_Id
+	Insert dbo.ProductionData
+		Select 
+			dxhdata_id, 
+			product_code, 
+			ideal,
+			target,
+			actual,
+			UOM_code,
+			order_id,
+			order_number,
+			start_time,
+			end_time,
+			entered_by, 
+			entered_on, 
+			last_modified_by, 
+			last_modified_on,
+			setup_scrap,
+			other_scrap,
+			name
+		From @Output			
+
+		Set @ProductionData_Id =  SCOPE_IDENTITY()
 
 		Select 
 			@ReturnStatus = 0,
-			@ReturnMessage = 'Updated after calc ' + convert(varchar,@ProductionData_Id)
-	End
-	Else
-	Begin
-		Select 
-			@ReturnStatus = -1,
-			@ReturnMessage = 'Problem with calc of Ideal or Target ' + convert(varchar,@ProductionData_Id)
+			@ReturnMessage = 'Inserted ' + convert(varchar,@ProductionData_Id)
 
-	End
 End
 
 ErrExit:
@@ -649,6 +685,7 @@ ErrExit:
 		@ReturnStatus as 'Return.Status',
 		@ReturnMessage as 'Return.Message'
 	For Json path, INCLUDE_NULL_VALUES 
+
 
 --Select * From @BreakLunch_Details
 --Select * From @Output

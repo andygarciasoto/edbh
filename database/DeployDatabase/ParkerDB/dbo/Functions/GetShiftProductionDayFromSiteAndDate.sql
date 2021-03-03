@@ -1,5 +1,5 @@
 ﻿/****** Object:  UserDefinedFunction [dbo].[GetShiftProductionDayFromSiteAndDate]    Script Date: 9/2/2021 12:43:11 ******/
-CREATE FUNCTION [dbo].[GetShiftProductionDayFromSiteAndDate]
+CREATE   FUNCTION [dbo].[GetShiftProductionDayFromSiteAndDate]
 (                   @site_id           INT,
                     @date   DATETIME
 )

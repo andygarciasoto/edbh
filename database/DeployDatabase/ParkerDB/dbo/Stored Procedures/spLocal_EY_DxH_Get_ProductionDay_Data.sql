@@ -42,7 +42,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_ProductionDay_Data 40,'2019-07-25'
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_ProductionDay_Data]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_ProductionDay_Data]
 --Declare
 	@Asset_Id		INT,
 	@Production_Day Datetime

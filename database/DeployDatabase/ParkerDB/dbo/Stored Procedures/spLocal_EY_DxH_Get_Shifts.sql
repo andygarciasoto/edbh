@@ -1,8 +1,7 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shifts]    Script Date: 10/2/2021 08:55:00 ******/
-
+﻿
 --exec dbo.spLocal_EY_DxH_Get_Shifts 1
 
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
+ CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shifts] (@Site as int)
 
  AS  BEGIN 
  DECLARE
@@ -28,7 +27,6 @@ SET @TomorrowProductionDay = FORMAT(DATEADD(DAY, 1, @CurrentDateTime), 'yyyy-MM-
 				   DATEPART(hour, end_time) AS end_hour,
 				   [end_time_offset_days],
                    [duration_in_minutes],
-				   [duration_in_minutes]/60 as duration_in_hours,
                    --GET INTERVAL SHIFT FOR TODAY
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_today,
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_today,

@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_User_By_Id] 1
 
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Id] (@id as INT)
+CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Id] (@id as INT)
 
   AS  BEGIN 
  DECLARE
