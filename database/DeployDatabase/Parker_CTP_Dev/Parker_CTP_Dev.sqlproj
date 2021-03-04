@@ -512,7 +512,4 @@
       <AnsiNulls>On</AnsiNulls>
     </Build>
   </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="Parker_CTP_Dev.refactorlog" />
-  </ItemGroup>
 </Project>
