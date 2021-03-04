@@ -4,7 +4,6 @@ import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import moment from 'moment';
 import { DTReasonRepository } from '../repositories/dtreason-repository';
-import { time, timeStamp } from 'console';
 
 export class ProductionDataService {
 

@@ -45,7 +45,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Put_Scrap_ProductionData 29239, 387380, 10, 8, 34, '47132', Null, Null
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scrap_ProductionData]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scrap_ProductionData]
 --Declare
 @DxHData_Id				INT, -- the hour Id
 @ProductionData_Id      INT, -- the productionData Id

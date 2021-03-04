@@ -135,4 +135,3 @@ Select @Hour_Interval =
 				AND dxh.hour_interval = @Hour_Interval
 
 END
-

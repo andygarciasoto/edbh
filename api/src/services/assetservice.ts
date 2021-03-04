@@ -70,4 +70,14 @@ export class AssetService {
         }
         return res.status(200).json(rows);
     }
+    public async getParkerSites(req: Request, res: Response) {
+        let sites: any;
+        try {
+            sites = await this.assetrepository.getParkerSites();
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(sites);
+    }
 }
