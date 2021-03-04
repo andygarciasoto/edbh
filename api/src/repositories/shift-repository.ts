@@ -18,5 +18,7 @@ export class ShiftRepository {
         as site_code,[Shift].[is_first_shift_of_day],[Shift].[status]
         FROM [dbo].[Shift] JOIN [dbo].[Asset] ON [Asset].[asset_id] = [Shift].[asset_id] WHERE [Asset].[asset_id] = ${site_id};`);
     }
-
+    public async putShifts(shift_id: number, shift_code: string, shift_name: string, shift_description: string, shift_sequence: number, start_time: string, start_time_offset_days: number, end_time: string, end_time_offset_days: number, duration_in_minutes: number, valid_from: string, valid_to: string, is_first_shift_of_day: boolean, status: string, asset_id: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Shifts ${shift_id}, '${shift_code}', '${shift_name}', '${shift_description}', ${shift_sequence}, '${start_time}', ${start_time_offset_days}, '${end_time}', ${end_time_offset_days}, ${duration_in_minutes}, '${valid_from}', '${valid_to}', ${is_first_shift_of_day}, '${status}', ${asset_id}`);
+    }
 }
