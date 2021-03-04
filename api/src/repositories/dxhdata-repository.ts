@@ -35,4 +35,8 @@ export class DxHDataRepository {
     public async executeGeneralImportQuery(query: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(query);
     }
+
+    public async executeGeneralImportProcedure(procedureName: string, parameters: any[]): Promise<any> {
+        return await this.sqlServerStore.ExecuteProcedure(procedureName, parameters);
+    }
 }

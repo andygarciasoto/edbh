@@ -120,7 +120,8 @@ export let headers = {
         { header: 'Last_Name', type: 'VARCHAR', key: 'Last_Name', width: 14 },
         { header: 'Role', type: 'VARCHAR', key: 'Role', width: 14 },
         { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 },
-        { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 18 }
+        { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 18 },
+        { header: 'status', type: 'VARCHAR', key: 'status', width: 14 },
     ]
 };
 
@@ -154,7 +155,7 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple]`;
             parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], 
                 [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], 
-                [entered_by], [last_modified_by], [ta   rget_percent_of_ideal],[is_multiple]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
+                [entered_by], [last_modified_by], [target_percent_of_ideal],[is_multiple]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
                 s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], 
                 s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], 'Administration Tool', 'Administration Tool', 
                 s.[target_percent_of_ideal], s.[is_multiple])`;
@@ -263,13 +264,13 @@ export function getParametersOfTable(tableName, siteId) {
         case 'TFDUsers':
             parametersObject.extraColumns = ', a.asset_id as Site, E.escalation_id as escalation_id, R.role_id as role_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'
-                JOIN dbo.Escalation E ON s.escalation_name = E.escalation_name
+                LEFT JOIN dbo.Escalation E ON s.escalation_name = E.escalation_name
                 JOIN dbo.Role R ON s.Role = R.name`;
             parametersObject.matchParameters = 's.Badge = t.Badge AND s.Site = t.Site';
             parametersObject.updateSentence = `t.[Badge] = s.[Badge], t.[Username] = s.[Username], t.[First_Name] = s.[First_Name], 
-                t.[Last_Name] = s.[Last_Name], t.[role_id] = s.[role_id], t.[escalation_id] = s.[escalation_id]`;
-            parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [role_id], [Site], [escalation_id]) VALUES (s.[Badge], s.[Username], 
-                s.[First_Name], s.[Last_Name], s.[role_id], s.[Site], s.[escalation_id])`;
+                t.[Last_Name] = s.[Last_Name], t.[role_id] = s.[role_id], t.[escalation_id] = s.[escalation_id], t.[status] = s.[status]`;
+            parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [role_id], [Site], [escalation_id], [status]) VALUES (s.[Badge], s.[Username], 
+                s.[First_Name], s.[Last_Name], s.[role_id], s.[Site], s.[escalation_id], s.[status])`;
             break;
     }
     return parametersObject;
@@ -302,4 +303,31 @@ export function getValuesFromHeaderTable(headers, header, value) {
     }
     newValue += (headers[headers.length - 1].header === header.header) ? '' : ',';
     return newValue;
+}
+
+export function getBatchCount(table) {
+    let batch = 0
+
+    switch (table) {
+        case 'DTReason':
+            batch = 21;
+            break;
+        case 'Asset':
+            batch = 11;
+            break;
+        case 'Tag':
+        case 'Unavailable':
+            batch = 16;
+            break;
+        case 'TFDUsers':
+            batch = 31;
+            break;
+        case 'AssetDisplaySystem':
+            batch = 51;
+            break;
+        default:
+            batch = 21;
+    }
+
+    return batch;
 }
