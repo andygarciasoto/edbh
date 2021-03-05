@@ -5,6 +5,7 @@ import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddShift from "./addShift";
+import moment from 'moment';
 
 import EditIcon from "../../../resources/u668.svg";
 
@@ -65,15 +66,15 @@ class Shifts extends Component {
             <tr>
               <th>Code</th>
               <th>Name</th>
-              <th>Description</th>
               <th>Sequence</th>
               <th>Start Time</th>
+              <th>Start Time Offset</th>
               <th>End Time</th>
+              <th>End Time Offset</th>
               <th>Duration (minutes)</th>
               <th>Valid From</th>
               <th>Valid To</th>
               <th>First Shift</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -82,15 +83,15 @@ class Shifts extends Component {
               <tr key={index}>
                 <td>{shift.shift_code}</td>
                 <td>{shift.shift_name}</td>
-                <td>{"DESC"}</td>
                 <td>{shift.shift_sequence}</td>
-                <td>{shift.start_time}</td>
-                <td>{shift.end_time}</td>
+                <td>{moment(shift.start_time).format("HH:mm A")}</td>
+                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
+                <td>{moment(shift.end_time).format("HH:mm A")}</td>
+                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
                 <td>{shift.duration_in_minutes}</td>
                 <td>{shift.valid_from}</td>
                 <td>{shift.valid_to}</td>
-                <td>{shift.is_first_shift_of_day}</td>
-                <td>{shift.shift_id}</td>
+                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
                 <td>
                   <img
                     src={EditIcon}

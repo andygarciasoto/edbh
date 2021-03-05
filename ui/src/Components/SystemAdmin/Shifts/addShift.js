@@ -6,6 +6,11 @@ export class AddShift extends Component {
     super(props);
     this.state = {};
   }
+
+  handleClose = () => {
+    this.props.closeForm();
+  };
+
   render() {
     return (
       <div>
@@ -66,20 +71,85 @@ export class AddShift extends Component {
                   className="input-status"
                   onChange={this.handleChangeStatus}
                 >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="Active">1:00</option>
+                  <option value="Active">2:00</option>
+                  <option value="Active">3:00</option>
+                  <option value="Active">4:00</option>
+                  <option value="Active">5:00</option>
+                  <option value="Active">6:00</option>
+                  <option value="Active">7:00</option>
+                  <option value="Active">8:00</option>
+                  <option value="Active">9:00</option>
+                  <option value="Active">10:00</option>
+                  <option value="Active">11:00</option>
+                  <option value="Active">12:00</option>
+                  <option value="Active">13:00</option>
+                  <option value="Active">14:00</option>
+                  <option value="Active">15:00</option>
+                  <option value="Active">16:00</option>
+                  <option value="Active">17:00</option>
+                  <option value="Active">18:00</option>
+                  <option value="Active">19:00</option>
+                  <option value="Active">20:00</option>
+                  <option value="Active">21:00</option>
+                  <option value="Active">22:00</option>
+                  <option value="Active">23:00</option>
+                  <option value="Active">24:00</option>
+                </select>
+              </label>
+              <label>
+                Start Time Offset:
+                <select
+                  className="input-status"
+                  onChange={this.handleChangeStatus}
+                >
+                  <option value="-1">Yesterday</option>
+                  <option value="0">Today</option>
+                  <option value="1">Tomorrow</option>
                 </select>
               </label>
               <label>
                 End Time:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
+                <select
+                  className="input-status"
+                  onChange={this.handleChangeStatus}
+                >
+                  <option value="Active">1:00</option>
+                  <option value="Active">2:00</option>
+                  <option value="Active">3:00</option>
+                  <option value="Active">4:00</option>
+                  <option value="Active">5:00</option>
+                  <option value="Active">6:00</option>
+                  <option value="Active">7:00</option>
+                  <option value="Active">8:00</option>
+                  <option value="Active">9:00</option>
+                  <option value="Active">10:00</option>
+                  <option value="Active">11:00</option>
+                  <option value="Active">12:00</option>
+                  <option value="Active">13:00</option>
+                  <option value="Active">14:00</option>
+                  <option value="Active">15:00</option>
+                  <option value="Active">16:00</option>
+                  <option value="Active">17:00</option>
+                  <option value="Active">18:00</option>
+                  <option value="Active">19:00</option>
+                  <option value="Active">20:00</option>
+                  <option value="Active">21:00</option>
+                  <option value="Active">22:00</option>
+                  <option value="Active">23:00</option>
+                  <option value="Active">24:00</option>
+                </select>
+              </label>
+              <label>
+                End Time Offset:
+                <select
+                  className="input-status"
+                  onChange={this.handleChangeStatus}
+                >
+                  <option value="-1">Yesterday</option>
+                  <option value="0">Today</option>
+                  <option value="1">Tomorrow</option>
+                </select>
               </label>
               <label>
                 Duration:

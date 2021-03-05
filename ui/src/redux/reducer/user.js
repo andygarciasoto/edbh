@@ -3,7 +3,8 @@ import {
   GET_ALL_USERS,
   GET_ROLES,
   GET_USER_INFO,
-  GET_ESCALATION
+  GET_ESCALATION,
+  GET_SITES
 } from "../constants/constants";
 
 const initialState = {
@@ -11,7 +12,8 @@ const initialState = {
   users: {},
   roles: {},
   userInfo: {},
-  escalation: {}
+  escalation: {},
+  sites:{}
 };
 
 export default (state = initialState, action) => {
@@ -36,6 +38,11 @@ export default (state = initialState, action) => {
         ...state,
         roles: { ...action.roles },
       };
+      case GET_SITES:
+      return {
+        ...state,
+        sites: { ...action.sites },
+      };
       case GET_ESCALATION:
       return {
         ...state,
@@ -51,5 +58,6 @@ export const GetDashboardInfo = (state) => state.userReducer.dashboardData;
 export const getAllUsers = (state) => state.userReducer.users;
 export const getUserInfo = (state) => state.userReducer.userInfo;
 export const getRoles = (state) => state.userReducer.roles;
+export const getSites = (state) => state.userReducer.sites;
 export const getEscalation = (state) => state.userReducer.escalation;
 

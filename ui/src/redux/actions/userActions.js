@@ -4,7 +4,8 @@ import {
   GET_ALL_USERS,
   GET_ROLES,
   GET_USER_INFO,
-  GET_ESCALATION
+  GET_ESCALATION,
+  GET_SITES
 } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
@@ -17,6 +18,19 @@ export const getDashboardInfo = (siteId) => {
         dashboardData: response.data[0],
       });
       return response.data[0];
+    });
+  };
+};
+
+export const getSites = () => {
+  var url = `${API}/find_sites`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_SITES,
+        sites: response.data,
+      });
+      return response.data;
     });
   };
 };
