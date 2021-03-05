@@ -56,7 +56,6 @@ export class DataToolService {
     public async importData(req, res: Response) {
         try {
             const file = req.file;
-            console.log(file);
             const arrayItems = JSON.parse(req.body.configurationItems);
             const site_id = JSON.parse(req.body.site_id);
 
@@ -75,35 +74,49 @@ export class DataToolService {
                     arrayItems.forEach((value) => {
                         if (worksheet.name == value.id) {
                             if (!headers[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
-                            let columns = headers[worksheet.name];
-                            let tableSourcesValues: any[] = [];
-                            let parameters = getParametersOfTable(worksheet.name, site_id);
-                            const mergeQuery = `MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
-                            //Read and get data from each row of the sheet
-                            const limit = worksheet.rowCount;
-                            let indexInsert = limit > getBatchCount(worksheet.name) ? getBatchCount(worksheet.name) : limit;
+
+                            //Initialize constants for each tab
+                            const columns = headers[worksheet.name];
+                            const parameters = getParametersOfTable(worksheet.name, site_id);
+                            const startMergeQuery = `MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+                            const endMergeQuery = `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+                            const initialLength = startMergeQuery.length + endMergeQuery.length;
+                            const rowCount = worksheet.rowCount;
+
+                            //Initialize query to store the values of the merge sentence
+                            let valuesMergeQuery = '';
+
                             worksheet.eachRow((row, rowNumber) => {
-                                let updateRow = '';
+                                let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
                                 let validRow = false;
                                 columns.forEach((col, colNumber) => {
                                     if (rowNumber === 1) {
                                         if (row.getCell(colNumber + 1).value === 'NULL') return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
                                     } else {
                                         if (row.getCell(colNumber + 1).value !== 'NULL') validRow = true;
+
                                         updateRow += getValuesFromHeaderTable(headers[worksheet.name], headers[worksheet.name][colNumber], row.getCell(colNumber + 1).value);
                                     }
                                 });
+                                updateRow += ')';
                                 if (rowNumber !== 1) {
                                     if (!validRow) return res.status(400).json({ message: 'Bad Request - Invalid file format contains a entire empty row. Please check file' });
-                                    tableSourcesValues.push('(' + updateRow + ')');
-                                }
-                                if (rowNumber === indexInsert) {
-                                    //console.log(indexInsert);
-                                    queries.push(mergeQuery + tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`);
-                                    //call execution
-                                    //await this.dxhdatarepository.executeGeneralImportQuery(queryInsert);
-                                    tableSourcesValues = [];
-                                    indexInsert = limit > (indexInsert + getBatchCount(worksheet.name)) ? (indexInsert + getBatchCount(worksheet.name)) : limit;
+
+                                    const newLength = valuesMergeQuery.length + updateRow.length + initialLength;
+                                    if (newLength < 4000 && rowNumber < rowCount) {
+                                        valuesMergeQuery += updateRow;
+                                    } else {
+                                        if (newLength >= 4000) {
+                                            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                                            valuesMergeQuery = updateRow.slice(1);
+                                        }
+                                        if (newLength < 4000) {
+                                            valuesMergeQuery += updateRow;
+                                        }
+                                        if (rowNumber === rowCount) {
+                                            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                                        }
+                                    }
                                 }
                             });
                         }
@@ -136,7 +149,7 @@ export class DataToolService {
             return res.status(400).json({ message: err.message });
         }
     }
-    
+
     public async exportData(req: Request, res: Response) {
 
         let site_id = req.query.site_id;
