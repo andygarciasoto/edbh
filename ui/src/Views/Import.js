@@ -215,6 +215,8 @@ class Import extends React.Component {
                                 <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
                                     <li>If the Excel sheet does not have data, do not include it in the import.</li>
                                     <li>This configuration will not delete data. It will only insert and update.</li>
+                                    <li>If you will update/insert into the DT Reasons table, please try to include only the reasons needed and not all of them.</li>
+                                    <li>If you are updating/inserting into the DT Reasons by Area, please do not include the children for that Area or you will get a Merge error.</li>
                                     <li>If an error shows up, try again importing the tables individually. Then, check the Excel sheet that is failing and if the error persists, contact the EY Team.</li>
                                 </p>
                             </Col>
