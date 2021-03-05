@@ -140,8 +140,7 @@ class Import extends React.Component {
                 axios(request_config).then(response => {
                     _this.setState({ isLoading: false, showActionMessage: true, error: false });
                 }).catch(e => {
-                    console.log(e);
-                    let errorMessage = e.response.data.message;
+                    let errorMessage = e.response && e.response.data ? e.response.data.message : 'Please try again';
                     _this.setState({
                         isLoading: false,
                         showActionMessage: true,
