@@ -25,7 +25,8 @@ export class DTReasonRepository {
         [Asset].[asset_code],[DTReason].[reason1],[DTReason].[reason2],[DTReason].[status],[DTReason].[type],[DTReason].[level],
 		A2.asset_code as site_code FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_id] = [Asset].[asset_id]
         JOIN dbo.Asset A2 ON ${site_id} = A2.asset_id
-        WHERE DTReason.site_id = ${site_id}`);
+        WHERE DTReason.site_id = ${site_id}
+        AND Asset.asset_level = 'Cell'`);
     }
 }
 

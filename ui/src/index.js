@@ -67,7 +67,7 @@ function init() {
     // Setup request interceptor
     axios.interceptors.request.use(function (config) {
         const url = config.url;
-        config.timeout = 15000;
+        config.timeout = url.indexOf("import_data") !== -1 ? 60000 : 15000;
         // TODO: Check if the "does not start with http" case is necessary
         const urlRequiresAuth = url.indexOf("http") !== 0 ||
             [API].some(function (domain) {
