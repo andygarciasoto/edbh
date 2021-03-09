@@ -40,9 +40,9 @@ if (window.location.pathname === "/" || window.location.pathname === "/login") {
   }
   ReactDOM.render(
     <Provider store={store}>
+      {" "}
       <App defaultAsset={machineName} />
     </Provider>,
-
     document.getElementById("root")
   );
 } else {
@@ -77,7 +77,7 @@ function init() {
   axios.interceptors.request.use(
     function (config) {
       const url = config.url;
-      config.timeout = 15000;
+      config.timeout = url.indexOf("import_data") !== -1 ? 60000 : 15000;
       // TODO: Check if the "does not start with http" case is necessary
       const urlRequiresAuth =
         url.indexOf("http") !== 0 ||

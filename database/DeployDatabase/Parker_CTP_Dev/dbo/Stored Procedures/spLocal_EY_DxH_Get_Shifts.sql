@@ -63,6 +63,7 @@ SET @TomorrowProductionDay = DATEADD(DAY, 1, @CurrentProductionDay);
             SELECT shift_id, 
                    shift_code, 
                    shift_name, 
+				   shift_description,
                    shift_sequence, 
 				   start_time,
                    DATEPART(hour, start_time) AS hour,
@@ -75,6 +76,7 @@ SET @TomorrowProductionDay = DATEADD(DAY, 1, @CurrentProductionDay);
 				   valid_from,
 				   valid_to,
 				   is_first_shift_of_day,
+				   status,
                    --GET INTERVAL SHIFT FOR TODAY
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, start_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS start_date_time_today,
 				   FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, end_time_offset_days, @CurrentProductionDay)), 'yyyy-MM-dd HH:mm') AS end_date_time_today,
