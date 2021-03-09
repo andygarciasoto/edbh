@@ -221,7 +221,7 @@ const appConfig = {
         new http.RestEndpoint('/api/sites', 'get', async (req: Request, res: Response) => {
             await assetService.getParkerSites(req, res);
         }, true),
-        new http.RestEndpoint('/api/insert_shift', 'get', async (req: Request, res: Response) => {
+        new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
         }, true)
     ],
