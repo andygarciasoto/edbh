@@ -64,34 +64,32 @@ class Shifts extends Component {
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
-              <th>Code</th>
               <th>Name</th>
+              <th>Description</th>
               <th>Sequence</th>
               <th>Start Time</th>
-              <th>Start Time Offset</th>
+              <th>Start Day</th>
               <th>End Time</th>
-              <th>End Time Offset</th>
+              <th>End Day</th>
               <th>Duration (minutes)</th>
-              <th>Valid From</th>
-              <th>Valid To</th>
-              <th>First Shift</th>
+              <th>Is First Shift ?</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
           {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
-                <td>{shift.shift_code}</td>
                 <td>{shift.shift_name}</td>
+                <td>{shift.shift_description}</td>
                 <td>{shift.shift_sequence}</td>
                 <td>{moment(shift.start_time).format("HH:mm A")}</td>
                 <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
                 <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
+                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
                 <td>{shift.duration_in_minutes}</td>
-                <td>{shift.valid_from}</td>
-                <td>{shift.valid_to}</td>
                 <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
+                <td>{shift.status}</td>
                 <td>
                   <img
                     src={EditIcon}

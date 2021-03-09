@@ -10,34 +10,95 @@
   margin-bottom: 30px;
 }
 
-.input-badge{
+.input-code {
+  margin-left: 56px;
+}
+.input-name {
+  margin-left: 52px;
+}
+
+.input-sequence {
+  margin-left: 27px;
+  padding-right: 44px;
+}
+
+.text-description {
+  margin-left: 15px;
+}
+
+.input-start {
+  margin-left: 24px;
+}
+
+.label-startoff {
+  margin-left: 20px;
+
+  .input-startoff {
+    margin-left: 25px;
+  }
+}
+.input-end {
+  margin-left: 30px;
+}
+
+.label-endoff {
+  margin-left: 20px;
+
+  .input-endoff {
+    margin-left: 31px;
+  }
+}
+
+.input-duration {
+  margin-left: 33px;
+  margin-right: 35px;
+}
+
+.validF {
+  margin-left: 20px;
+}
+
+.validT {
+  margin-left: 39px;
+}
+
+.input-fShift {
+  margin-left: 6px;
+  margin-right: 155px;
+}
+
+.input-badge {
   margin-left: 40px;
 }
 
-.input-username{
+.input-username {
   margin-left: 14px;
 }
 
-.input-firstname{
+.input-firstname {
   margin-left: 9px;
 }
 
-.input-lastname{
+.input-lastname {
   margin-left: 10px;
 }
 
-.input-role{
+.input-role {
   margin-left: 54px;
   padding-right: 133px;
 }
 
-.input-escalation{
+.input-escalation {
   margin-left: 15px;
   padding-right: 133px;
 }
 
-.input-status{
+.input-status {
   margin-left: 42px;
+
+  &.shift{
+    margin-left: 51px;
+  }
 }
 
 .filter-user {
@@ -63,9 +124,8 @@
     color: white;
     cursor: pointer;
 
-    &.filter{
+    &.filter {
       margin-right: 450px;
-
     }
   }
 

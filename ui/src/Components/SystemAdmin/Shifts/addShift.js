@@ -1,17 +1,75 @@
 import React, { Component } from "react";
+import Axios from "axios";
 import { Modal, Button } from "react-bootstrap";
+import { API } from "../../../Utils/Constants";
 
 export class AddShift extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      code: "",
+      name: "",
+      description: "",
+      sequence: "",
+      start_time: "1:00",
+      start_day: -1,
+      end_time: "1:00",
+      end_day: -1,
+      duration: 0,
+      first_shift: 1,
+      status: "Active",
+    };
   }
+
+  handleChange = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value,
+    });
+  };
 
   handleClose = () => {
     this.props.closeForm();
   };
 
+  createShift = (e) => {
+    e.preventDefault();
+    const {
+      code,
+      nam,
+      description,
+      sequence,
+      start_time,
+      start_day,
+      end_time,
+      end_day,
+      duration,
+      first_shift,
+      status,
+    } = this.state;
+
+    var url = `${API}/insert_shift`;
+
+    Axios.put(url, {
+     shift_id : 10,
+     shift_code : 10
+    }).then(
+      () => {
+        this.setState({
+          show: true,
+        });
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  };
+
   render() {
+    console.log(this.props);
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
@@ -21,22 +79,11 @@ export class AddShift extends Component {
           <Modal.Body>
             <form>
               <label>
-                Code:
-                <input
-                  className="input-badge"
-                  type="text"
-                  name="badge"
-                  // value={this.state.badge}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
                 Name:
                 <input
                   type="text"
-                  name="username"
-                  className="input-username"
+                  name="name"
+                  className="input-name"
                   // value={this.state.username}
                   autoComplete={"false"}
                   onChange={this.handleChange}
@@ -44,22 +91,18 @@ export class AddShift extends Component {
               </label>
               <label>
                 Description:
-                <textarea></textarea>
-                {/* <input
-                  type="text"
-                  name="firstname"
-                  className="input-firstname"
-                  //value={this.state.firstname}
-                  autoComplete={"false"}
+                <textarea
+                  className="text-description"
+                  name="description"
                   onChange={this.handleChange}
-                /> */}
+                ></textarea>
               </label>
               <label>
                 Sequence:
                 <input
                   type="text"
-                  name="lastname"
-                  className="input-lastname"
+                  name="sequence"
+                  className="input-sequence"
                   //value={this.state.lastname}
                   autoComplete={"false"}
                   onChange={this.handleChange}
@@ -68,40 +111,42 @@ export class AddShift extends Component {
               <label>
                 Start Time:
                 <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
+                  className="input-start"
+                  name="start_time"
+                  onChange={this.handleChange}
                 >
-                  <option value="Active">1:00</option>
-                  <option value="Active">2:00</option>
-                  <option value="Active">3:00</option>
-                  <option value="Active">4:00</option>
-                  <option value="Active">5:00</option>
-                  <option value="Active">6:00</option>
-                  <option value="Active">7:00</option>
-                  <option value="Active">8:00</option>
-                  <option value="Active">9:00</option>
-                  <option value="Active">10:00</option>
-                  <option value="Active">11:00</option>
-                  <option value="Active">12:00</option>
-                  <option value="Active">13:00</option>
-                  <option value="Active">14:00</option>
-                  <option value="Active">15:00</option>
-                  <option value="Active">16:00</option>
-                  <option value="Active">17:00</option>
-                  <option value="Active">18:00</option>
-                  <option value="Active">19:00</option>
-                  <option value="Active">20:00</option>
-                  <option value="Active">21:00</option>
-                  <option value="Active">22:00</option>
-                  <option value="Active">23:00</option>
-                  <option value="Active">24:00</option>
+                  <option value="1:00">1:00</option>
+                  <option value="2:00">2:00</option>
+                  <option value="3:00">3:00</option>
+                  <option value="4:00">4:00</option>
+                  <option value="5:00">5:00</option>
+                  <option value="6:00">6:00</option>
+                  <option value="7:00">7:00</option>
+                  <option value="8:00">8:00</option>
+                  <option value="9:00">9:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                  <option value="19:00">19:00</option>
+                  <option value="20:00">20:00</option>
+                  <option value="21:00">21:00</option>
+                  <option value="22:00">22:00</option>
+                  <option value="23:00">23:00</option>
+                  <option value="00:00">00:00</option>
                 </select>
               </label>
-              <label>
-                Start Time Offset:
+              <label className="label-startoff">
+                Start Day:
                 <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
+                  name="start_day"
+                  className="input-startoff"
+                  onChange={this.handleChange}
                 >
                   <option value="-1">Yesterday</option>
                   <option value="0">Today</option>
@@ -111,40 +156,42 @@ export class AddShift extends Component {
               <label>
                 End Time:
                 <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
+                  className="input-end"
+                  name="end_time"
+                  onChange={this.handleChange}
                 >
-                  <option value="Active">1:00</option>
-                  <option value="Active">2:00</option>
-                  <option value="Active">3:00</option>
-                  <option value="Active">4:00</option>
-                  <option value="Active">5:00</option>
-                  <option value="Active">6:00</option>
-                  <option value="Active">7:00</option>
-                  <option value="Active">8:00</option>
-                  <option value="Active">9:00</option>
-                  <option value="Active">10:00</option>
-                  <option value="Active">11:00</option>
-                  <option value="Active">12:00</option>
-                  <option value="Active">13:00</option>
-                  <option value="Active">14:00</option>
-                  <option value="Active">15:00</option>
-                  <option value="Active">16:00</option>
-                  <option value="Active">17:00</option>
-                  <option value="Active">18:00</option>
-                  <option value="Active">19:00</option>
-                  <option value="Active">20:00</option>
-                  <option value="Active">21:00</option>
-                  <option value="Active">22:00</option>
-                  <option value="Active">23:00</option>
-                  <option value="Active">24:00</option>
+                  <option value="1:00">1:00</option>
+                  <option value="2:00">2:00</option>
+                  <option value="3:00">3:00</option>
+                  <option value="4:00">4:00</option>
+                  <option value="5:00">5:00</option>
+                  <option value="6:00">6:00</option>
+                  <option value="7:00">7:00</option>
+                  <option value="8:00">8:00</option>
+                  <option value="9:00">9:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                  <option value="19:00">19:00</option>
+                  <option value="20:00">20:00</option>
+                  <option value="21:00">21:00</option>
+                  <option value="22:00">22:00</option>
+                  <option value="23:00">23:00</option>
+                  <option value="00:00">00:00</option>
                 </select>
               </label>
-              <label>
-                End Time Offset:
+              <label className="label-endoff">
+                End Day:
                 <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
+                  name="end_day"
+                  className="input-endoff"
+                  onChange={this.handleChange}
                 >
                   <option value="-1">Yesterday</option>
                   <option value="0">Today</option>
@@ -155,83 +202,35 @@ export class AddShift extends Component {
                 Duration:
                 <input
                   type="text"
-                  name="lastname"
-                  className="input-lastname"
+                  name="duration"
+                  className="input-duration"
                   //value={this.state.lastname}
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
               </label>
               <label>
-                Valid From:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                Valid To:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                Team Code:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                First Shift:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-
-              {/* <label>
-                Escalation:
+                Is First Shift?:
                 <select
-                  className="input-escalation"
-                  onChange={this.handleChangeEscalation}
+                  name="first_shift"
+                  className="input-fShift"
+                  onChange={this.handleChange}
                 >
-                  {this.state.escalation.map(this.renderEscalation)}
-                </select>
-              </label>
-              <label>
-                Role:
-                <select className="input-role" onChange={this.handleChangeRole}>
-                  {this.state.roles.map(this.renderRoles)}
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
                 </select>
               </label>
               <label>
                 Status:
                 <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
+                  name="status"
+                  className="input-status shift"
+                  onChange={this.handleChange}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
-              </label> */}
+              </label>
             </form>
           </Modal.Body>
           <Modal.Footer>

@@ -18,24 +18,29 @@ class AddUser extends Component {
       role: 1,
       status: "Active",
       escalation_id: 1,
+      site:"",
       roles: [],
       show: false,
       showForm: true,
       escalation: [],
+      sites: [],
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
 
-    return Promise.all([actions.getRoles(), actions.getEscalation()]).then(
-      (response) => {
-        this.setState({
-          roles: response[0],
-          escalation: response[1],
-        });
-      }
-    );
+    return Promise.all([
+      actions.getRoles(),
+      actions.getEscalation(),
+      actions.getSites(),
+    ]).then((response) => {
+      this.setState({
+        roles: response[0],
+        escalation: response[1],
+        sites: response[2],
+      });
+    });
   }
 
   handleChange = (event) => {
@@ -60,9 +65,22 @@ class AddUser extends Component {
     this.setState({ status: event.target.value });
   };
 
+  handleChangeSite = (event) => {
+    this.setState({ site: event.target.value });
+  };
+
   createUser = (e) => {
     e.preventDefault();
-    const { badge, username, firstname, lastname, role, status, escalation_id } = this.state;
+    const {
+      badge,
+      username,
+      firstname,
+      lastname,
+      role,
+      status,
+      escalation_id,
+      site
+    } = this.state;
 
     var url = `${API}/insert_user`;
 
@@ -74,6 +92,7 @@ class AddUser extends Component {
       role_id: role,
       site_id: this.props.user.site,
       escalation_id: parseInt(escalation_id, 10),
+      site: site,
       status: status,
     }).then(
       () => {
@@ -99,6 +118,14 @@ class AddUser extends Component {
     return (
       <option value={escalation.escalation_id} key={index}>
         {escalation.escalation_name}
+      </option>
+    );
+  }
+
+  renderSites(sites, index) {
+    return (
+      <option value={sites.asset_id} key={index}>
+        {sites.asset_name}
       </option>
     );
   }
@@ -162,7 +189,10 @@ class AddUser extends Component {
               </label>
               <label>
                 Escalation:
-                <select className="input-escalation" onChange={this.handleChangeEscalation}>
+                <select
+                  className="input-escalation"
+                  onChange={this.handleChangeEscalation}
+                >
                   {this.state.escalation.map(this.renderEscalation)}
                 </select>
               </label>
@@ -180,6 +210,12 @@ class AddUser extends Component {
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
+                </select>
+              </label>
+              <label>
+                Site:
+                <select className="input-role" onChange={this.handleChangeSite}>
+                  {this.state.sites.map(this.renderSites)}
                 </select>
               </label>
             </form>

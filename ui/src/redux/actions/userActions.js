@@ -23,7 +23,7 @@ export const getDashboardInfo = (siteId) => {
 };
 
 export const getSites = () => {
-  var url = `${API}/find_sites`;
+  var url = `${API}/sites`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
