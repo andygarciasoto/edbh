@@ -27,7 +27,7 @@ export class ShiftService {
     }
 
     public async putShifts(req: Request, res: Response) {
-        const shift_id = req.body.shift_id ? req.body.shift_id : undefined;
+        const shift_id = req.body.shift_id ? req.body.shift_id : null;
         const shift_code = req.body.shift_code ? req.body.shift_code : undefined;
         const shift_name = req.body.shift_name ? req.body.shift_name : undefined;
         const shift_description = req.body.shift_description ? req.body.shift_description: null;
@@ -43,7 +43,7 @@ export class ShiftService {
         const status = req.body.status ? req.body.status : 'Active';
         const site_id = req.body.site_id ? req.body.site_id : undefined;
  
-        if (shift_id === undefined || shift_code === undefined || shift_name === undefined || shift_sequence === undefined || start_time === undefined || end_time === undefined || start_time_offset_days === undefined || end_time_offset_days === undefined || valid_from === undefined || site_id === undefined) {
+        if (shift_code === undefined || shift_name === undefined || shift_sequence === undefined || start_time === undefined || end_time === undefined || start_time_offset_days === undefined || end_time_offset_days === undefined || valid_from === undefined || site_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let shifts: any;
