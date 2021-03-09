@@ -68,7 +68,7 @@ const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository,
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository);
-const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
+const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository, commonparametersRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
 

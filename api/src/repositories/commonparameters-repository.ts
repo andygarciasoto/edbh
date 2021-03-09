@@ -16,5 +16,9 @@ export class CommonParametersRepository {
         [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on]
         FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] AND [CommonParameters].[site_id] = ${site_id}`);
     }
-
+    public async getAssemblyUrl(asset_code: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT assembly_url FROM dbo.CommonParameters CP 
+        JOIN dbo.Asset A ON A.asset_code = '${asset_code}'
+        AND A.site_code = CP.site_name`);
+    }
 }
