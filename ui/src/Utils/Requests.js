@@ -70,6 +70,7 @@ function assignValuesToUser(user, newAttributes) {
   user.break_minutes = newAttributes.break_minutes;
   user.lunch_minutes = newAttributes.lunch_minutes;
   user.permissions = newAttributes.permissions;
+  user.site_prefix = newAttributes.site_prefix
   return user;
 }
 

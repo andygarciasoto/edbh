@@ -2,22 +2,23 @@ import React, { Component } from "react";
 import Axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import { API } from "../../../Utils/Constants";
+import Moment from "moment";
 
 export class AddShift extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: "",
       name: "",
       description: "",
-      sequence: "",
+      sequence: 0,
       start_time: "1:00",
       start_day: -1,
       end_time: "1:00",
       end_day: -1,
       duration: 0,
-      first_shift: 1,
+      first_shift: true,
       status: "Active",
+      show: false,
     };
   }
 
@@ -38,8 +39,7 @@ export class AddShift extends Component {
   createShift = (e) => {
     e.preventDefault();
     const {
-      code,
-      nam,
+      name,
       description,
       sequence,
       start_time,
@@ -54,8 +54,20 @@ export class AddShift extends Component {
     var url = `${API}/insert_shift`;
 
     Axios.put(url, {
-     shift_id : 10,
-     shift_code : 10
+      shift_code: `${this.props.user.site_prefix} - ${name}`,
+      shift_name: name,
+      shift_description: description,
+      shift_sequence: parseInt(sequence, 10),
+      start_time: start_time,
+      start_time_offset_days: parseInt(start_day, 10),
+      end_time: end_time,
+      end_time_offset_days: parseInt(end_day, 10),
+      duration_in_minutes: 480,
+      valid_from: Moment(),
+      valid_to: null,
+      is_first_shift_of_day: first_shift,
+      status: status,
+      site_id: this.props.user.site,
     }).then(
       () => {
         this.setState({
@@ -69,7 +81,7 @@ export class AddShift extends Component {
   };
 
   render() {
-    console.log(this.props);
+    console.log(this.state);
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
@@ -148,9 +160,9 @@ export class AddShift extends Component {
                   className="input-startoff"
                   onChange={this.handleChange}
                 >
-                  <option value="-1">Yesterday</option>
-                  <option value="0">Today</option>
-                  <option value="1">Tomorrow</option>
+                  <option value={-1}>Yesterday</option>
+                  <option value={0}>Today</option>
+                  <option value={1}>Tomorrow</option>
                 </select>
               </label>
               <label>
@@ -193,9 +205,9 @@ export class AddShift extends Component {
                   className="input-endoff"
                   onChange={this.handleChange}
                 >
-                  <option value="-1">Yesterday</option>
-                  <option value="0">Today</option>
-                  <option value="1">Tomorrow</option>
+                  <option value={-1}>Yesterday</option>
+                  <option value={0}>Today</option>
+                  <option value={1}>Tomorrow</option>
                 </select>
               </label>
               <label>
@@ -216,8 +228,8 @@ export class AddShift extends Component {
                   className="input-fShift"
                   onChange={this.handleChange}
                 >
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
+                  <option value={true}>Yes</option>
+                  <option value={false}>No</option>
                 </select>
               </label>
               <label>
@@ -234,7 +246,7 @@ export class AddShift extends Component {
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="Primary" onClick={(e) => this.createUser(e)}>
+            <Button variant="Primary" onClick={(e) => this.createShift(e)}>
               Confirm
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>
@@ -242,17 +254,17 @@ export class AddShift extends Component {
             </Button>
           </Modal.Footer>
         </Modal>
-        {/* <Modal show={this.state.show} onHide={this.handleClose}>
+        <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has been added</Modal.Body>
+          <Modal.Body>Shift has been added</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
             </Button>
           </Modal.Footer>
-        </Modal> */}
+        </Modal>
       </div>
     );
   }

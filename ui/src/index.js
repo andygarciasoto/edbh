@@ -128,6 +128,7 @@ function init() {
   genericRequest("get", API, "/me", {
     Authorization: "Bearer " + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
   }).then(async (response) => {
+    console.log('response', response);
     let user = {};
     user = assignValuesToUser(user, response.data[0]);
 
