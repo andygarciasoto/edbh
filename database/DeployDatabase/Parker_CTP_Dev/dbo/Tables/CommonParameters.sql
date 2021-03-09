@@ -22,7 +22,7 @@
     [break_minutes]                   FLOAT (53)     NULL,
     [lunch_minutes]                   FLOAT (53)     NULL,
     [site_prefix] NVARCHAR(100) NULL, 
-    [assembly_url] NVARCHAR(100) NULL, 
+    [assembly_url] NVARCHAR(256) NULL, 
     CONSTRAINT [PK_CommonParameters_Parameter_Id] PRIMARY KEY CLUSTERED ([parameter_id] ASC),
     CONSTRAINT [FK_CommonParameters_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
