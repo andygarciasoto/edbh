@@ -5,6 +5,7 @@ import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddShift from "./addShift";
+import EditShift from "./editShift";
 import moment from 'moment';
 
 import EditIcon from "../../../resources/u668.svg";
@@ -17,7 +18,7 @@ class Shifts extends Component {
       ShiftData: [],
       addShift: false,
       editShift: false,
-      badge: "",
+      shift_id: 0,
     };
   }
 
@@ -43,8 +44,20 @@ class Shifts extends Component {
     });
   };
 
+  showEditShift = (shift_id) => {
+    this.setState({
+      editShift: true,
+      shift_id: shift_id
+    });
+  };
+
+  closeEditShift = () => {
+    this.setState({
+        editShift: false,
+    });
+  };
+
   render() {
-    console.log(this.state);
     return (
       <div>
         <Filter
@@ -59,6 +72,14 @@ class Shifts extends Component {
             user={this.props.user}
             showForm={this.state.addShift}
             closeForm={this.closeAddShift}
+          />
+        )}
+        {this.state.editShift === true && (
+          <EditShift
+            user={this.props.user}
+            showForm={this.state.editShift}
+            closeForm={this.closeEditShift}
+            shift_id={this.state.shift_id}
           />
         )}
         <Table responsive="sm" bordered={true}>
@@ -95,7 +116,7 @@ class Shifts extends Component {
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    //onClick={() => this.showEditUser(shift.Badge)}
+                    onClick={() => this.showEditShift(shift.shift_id)}
                   />
                 </td>
               </tr>

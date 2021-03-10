@@ -9,3 +9,4 @@ export const GET_USER_INFO = 'GET_USER_INFO';
 
 //SHIFTS CONSTANTS
 export const GET_SHIFTS = 'GET_SHIFTS';
+export const GET_SHIFT_INFO = 'GET_SHIFT_INFO';

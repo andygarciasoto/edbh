@@ -1,7 +1,8 @@
-import { GET_SHIFTS } from "../constants/constants";
+import { GET_SHIFTS, GET_SHIFT_INFO } from "../constants/constants";
 
 const initialState = {
   shifts: {},
+  shift_info:{}
 };
 
 export default (state = initialState, action) => {
@@ -11,9 +12,15 @@ export default (state = initialState, action) => {
         ...state,
         shifts: { ...action.shifts },
       };
+      case GET_SHIFT_INFO:
+      return {
+        ...state,
+        shift_info: { ...action.shift_info },
+      };
     default:
       return state;
   }
 };
 
 export const getShifts = (state) => state.userReducer.shifts;
+export const getShiftInfo = (state) => state.userReducer.shift_info;

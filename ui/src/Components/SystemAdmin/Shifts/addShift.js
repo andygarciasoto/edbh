@@ -46,24 +46,28 @@ export class AddShift extends Component {
       start_day,
       end_time,
       end_day,
-      duration,
       first_shift,
       status,
     } = this.state;
 
     var url = `${API}/insert_shift`;
-    const date=Moment().format("YYYY-MM-DD");
+    const date = Moment().format("YYYY-MM-DD");
+
+    var startTime1 = new Date(`${date} ${start_time}`);
+    var endTime1 = new Date(`${date} ${end_time}`);
+    var difference = endTime1.getTime() - startTime1.getTime(); // This will give difference in milliseconds
+    var resultInMinutes = Math.round(difference / 60000);
 
     Axios.put(url, {
       shift_code: `${this.props.user.site_prefix} - ${name}`,
       shift_name: name,
       shift_description: description,
       shift_sequence: parseInt(sequence, 10),
-      start_time: `${date}T${start_time}`,
+      start_time: `${date}T${start_time}:00.000Z`,
       start_time_offset_days: parseInt(start_day, 10),
-      end_time: `${date}T${end_time}`,
+      end_time: `${date}T${end_time}:00.000Z`,
       end_time_offset_days: parseInt(end_day, 10),
-      duration_in_minutes: 480,
+      duration_in_minutes: resultInMinutes,
       valid_from: Moment(),
       valid_to: null,
       is_first_shift_of_day: first_shift,
@@ -82,7 +86,6 @@ export class AddShift extends Component {
   };
 
   render() {
-    console.log(Moment().format("YYYY-MM-DD"));
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
@@ -128,30 +131,30 @@ export class AddShift extends Component {
                   name="start_time"
                   onChange={this.handleChange}
                 >
-                  <option value="1:00:00.000Z">1:00</option>
-                  <option value="2:00:00.000Z">2:00</option>
-                  <option value="3:00:00.000Z">3:00</option>
-                  <option value="4:00:00.000Z">4:00</option>
-                  <option value="5:00:00.000Z">5:00</option>
-                  <option value="6:00:00.000Z">6:00</option>
-                  <option value="7:00:00.000Z">7:00</option>
-                  <option value="8:00:00.000Z">8:00</option>
-                  <option value="9:00:00.000Z">9:00</option>
-                  <option value="10:00:00.000Z">10:00</option>
-                  <option value="11:00:00.000Z">11:00</option>
-                  <option value="12:00:00.000Z">12:00</option>
-                  <option value="13:00:00.000Z">13:00</option>
-                  <option value="14:00:00.000Z">14:00</option>
-                  <option value="15:00:00.000Z">15:00</option>
-                  <option value="16:00:00.000Z">16:00</option>
-                  <option value="17:00:00.000Z">17:00</option>
-                  <option value="18:00:00.000Z">18:00</option>
-                  <option value="19:00:00.000Z">19:00</option>
-                  <option value="20:00:00.000Z">20:00</option>
-                  <option value="21:00:00.000Z">21:00</option>
-                  <option value="22:00:00.000Z">22:00</option>
-                  <option value="23:00:00.000Z">23:00</option>
-                  <option value="00:00:00.000Z">00:00</option>
+                  <option value="1:00">1:00</option>
+                  <option value="2:00">2:00</option>
+                  <option value="3:00">3:00</option>
+                  <option value="4:00">4:00</option>
+                  <option value="5:00">5:00</option>
+                  <option value="6:00">6:00</option>
+                  <option value="7:00">7:00</option>
+                  <option value="8:00">8:00</option>
+                  <option value="9:00">9:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                  <option value="19:00">19:00</option>
+                  <option value="20:00">20:00</option>
+                  <option value="21:00">21:00</option>
+                  <option value="22:00">22:00</option>
+                  <option value="23:00">23:00</option>
+                  <option value="00:00">00:00</option>
                 </select>
               </label>
               <label className="label-startoff">
@@ -173,30 +176,30 @@ export class AddShift extends Component {
                   name="end_time"
                   onChange={this.handleChange}
                 >
-                 <option value="1:00:00.000Z">1:00</option>
-                  <option value="2:00:00.000Z">2:00</option>
-                  <option value="3:00:00.000Z">3:00</option>
-                  <option value="4:00:00.000Z">4:00</option>
-                  <option value="5:00:00.000Z">5:00</option>
-                  <option value="6:00:00.000Z">6:00</option>
-                  <option value="7:00:00.000Z">7:00</option>
-                  <option value="8:00:00.000Z">8:00</option>
-                  <option value="9:00:00.000Z">9:00</option>
-                  <option value="10:00:00.000Z">10:00</option>
-                  <option value="11:00:00.000Z">11:00</option>
-                  <option value="12:00:00.000Z">12:00</option>
-                  <option value="13:00:00.000Z">13:00</option>
-                  <option value="14:00:00.000Z">14:00</option>
-                  <option value="15:00:00.000Z">15:00</option>
-                  <option value="16:00:00.000Z">16:00</option>
-                  <option value="17:00:00.000Z">17:00</option>
-                  <option value="18:00:00.000Z">18:00</option>
-                  <option value="19:00:00.000Z">19:00</option>
-                  <option value="20:00:00.000Z">20:00</option>
-                  <option value="21:00:00.000Z">21:00</option>
-                  <option value="22:00:00.000Z">22:00</option>
-                  <option value="23:00:00.000Z">23:00</option>
-                  <option value="00:00:00.000Z">00:00</option>
+                 <option value="1:00">1:00</option>
+                  <option value="2:00">2:00</option>
+                  <option value="3:00">3:00</option>
+                  <option value="4:00">4:00</option>
+                  <option value="5:00">5:00</option>
+                  <option value="6:00">6:00</option>
+                  <option value="7:00">7:00</option>
+                  <option value="8:00">8:00</option>
+                  <option value="9:00">9:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                  <option value="19:00">19:00</option>
+                  <option value="20:00">20:00</option>
+                  <option value="21:00">21:00</option>
+                  <option value="22:00">22:00</option>
+                  <option value="23:00">23:00</option>
+                  <option value="00:00">00:00</option>
                 </select>
               </label>
               <label className="label-endoff">
@@ -210,17 +213,6 @@ export class AddShift extends Component {
                   <option value={0}>Today</option>
                   <option value={1}>Tomorrow</option>
                 </select>
-              </label>
-              <label>
-                Duration:
-                <input
-                  type="text"
-                  name="duration"
-                  className="input-duration"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
               </label>
               <label>
                 Is First Shift?:
