@@ -11,18 +11,15 @@ class EditShift extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      badge: "",
-      username: "",
-      firstname: "",
-      lastname: "",
-      role: "",
-      role_id: 0,
+      shift_name: "",
+      shift_description: "",
+      shift_sequence: 0,
+      start_time: "",
+      start_day: 0,
+      end_time: "",
+      end_day: 0,
+      is_first_shift_of_day:true,
       status: "",
-      show: false,
-      showForm: true,
-      rolesArray: [],
-      escalation_id: 0,
-      escalationArray: [],
     };
   }
 
@@ -32,9 +29,16 @@ class EditShift extends Component {
     return actions
       .getShiftInfo(this.props.user.site, this.props.shift_id)
       .then((response) => {
-          console.log(response);
         this.setState({
-          ShiftData: response,
+          shift_name: response[0].shift_name,
+          shift_description: response[0].shift_description,
+          shift_sequence: response[0].shift_sequence,
+          start_time: response[0].start_time,
+          start_day: response[0].start_time_offset_days,
+          end_time: response[0].end_time,
+          end_day: response[0].end_time_offset_days,
+          is_first_shift_of_day: response[0].is_first_shift_of_day,
+          status: response[0].status
         });
       });
   }
@@ -117,15 +121,7 @@ class EditShift extends Component {
 
   render() {
     console.log(this.state);
-    const {
-      badge,
-      username,
-      firstname,
-      lastname,
-      role,
-      status,
-      escalation_id,
-    } = this.state;
+    const { ShiftData } = this.state;
 
     return (
       <div>

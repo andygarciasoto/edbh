@@ -69,7 +69,6 @@ export class AddShift extends Component {
       end_time_offset_days: parseInt(end_day, 10),
       duration_in_minutes: resultInMinutes,
       valid_from: Moment(),
-      valid_to: null,
       is_first_shift_of_day: first_shift,
       status: status,
       site_id: this.props.user.site,
