@@ -56,7 +56,7 @@ export class UserService {
         }
         let users: any;
         try {
-            if (badge !== null){
+            if (badge !== null) {
                 users = await this.userrepository.findUserByBadgeAndSite(site_id, badge);
             } else {
                 if (role_id === null && status === null) {
@@ -84,7 +84,7 @@ export class UserService {
         const status = req.body.status ? req.body.status : undefined;
         const site_id = req.body.site_id ? req.body.site_id : undefined;
         const escalation_id = req.body.escalation_id ? req.body.escalation_id : null;
-        
+
         if (badge === undefined || username === undefined || first_name === undefined || last_name === undefined || role_id === undefined || status === undefined || site_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters - Badge, Asset or Timestamp" });
         }
@@ -99,9 +99,14 @@ export class UserService {
     }
 
     public async getEscalation(req: Request, res: Response) {
+        const site_id = req.query.site_id ? req.query.site_id : undefined;
         let escalation: any;
         try {
-            escalation = await this.userrepository.getEscalation();
+            if (!site_id || site_id === null || site_id === undefined) {
+                escalation = await this.userrepository.getEscalation();
+            } else {
+                escalation = await this.userrepository.getEscalationBySite(site_id);
+            }
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
