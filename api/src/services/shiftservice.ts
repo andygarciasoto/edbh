@@ -20,7 +20,7 @@ export class ShiftService {
         let shifts: any;
         try {
             if (shift_id === undefined || !shift_id || shift_id === null) {
-                shifts = await this.shiftrepository.getShiftBySite(site);
+                shifts = await this.shiftrepository.getShiftBySiteExport(site);
             } else {
                 shifts = await this.shiftrepository.getShiftById(shift_id);
             }
@@ -43,7 +43,6 @@ export class ShiftService {
         const end_time_offset_days = req.body.end_time_offset_days ? parseInt(req.body.end_time_offset_days) : 0;
         const duration_in_minutes = req.body.duration_in_minutes ? req.body.duration_in_minutes : null;
         const valid_from = req.body.valid_from ? moment(new Date(req.body.valid_from)).format(this.format) : undefined;
-        const valid_to = req.body.valid_to ? moment(new Date(req.body.valid_to)).format(this.format) : null;
         const is_first_shift_of_day = req.body.is_first_shift_of_day ? req.body.is_first_shift_of_day : 0;
         const status = req.body.status ? req.body.status : 'Active';
         const site_id = req.body.site_id ? req.body.site_id : undefined;
@@ -53,7 +52,7 @@ export class ShiftService {
         }
         let shifts: any;
         try {
-            shifts = await this.shiftrepository.putShifts(shift_id, shift_code, shift_name, shift_description, shift_sequence, start_time, start_time_offset_days, end_time, end_time_offset_days, duration_in_minutes, valid_from, valid_to, is_first_shift_of_day, status, site_id);
+            shifts = await this.shiftrepository.putShifts(shift_id, shift_code, shift_name, shift_description, shift_sequence, start_time, start_time_offset_days, end_time, end_time_offset_days, duration_in_minutes, valid_from, is_first_shift_of_day, status, site_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

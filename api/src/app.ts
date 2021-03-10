@@ -217,13 +217,13 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/escalation', 'get', async (req: Request, res: Response) => {
             await userService.getEscalation(req, res);
-        }, false),
+        }, true),
         new http.RestEndpoint('/api/sites', 'get', async (req: Request, res: Response) => {
             await assetService.getParkerSites(req, res);
         }, true),
         new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
-        }, true)
+        }, false)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)
