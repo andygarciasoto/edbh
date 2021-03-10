@@ -13,12 +13,17 @@ export class ShiftService {
 
     public async getShiftBySite(req: Request, res: Response) {
         const site = req.query.site;
+        const shift_id = req.query.shift_id ? req.query.shift_id : undefined;
         if (!site) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
         let shifts: any;
         try {
-            shifts = await this.shiftrepository.getShiftBySite(site);
+            if (shift_id === undefined || !shift_id || shift_id === null) {
+                shifts = await this.shiftrepository.getShiftBySite(site);
+            } else {
+                shifts = await this.shiftrepository.getShiftById(shift_id);
+            }
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -27,11 +32,10 @@ export class ShiftService {
     }
 
     public async putShifts(req: Request, res: Response) {
-        console.log(req.body);
         const shift_id = req.body.shift_id ? req.body.shift_id : null;
         const shift_code = req.body.shift_code ? req.body.shift_code : undefined;
         const shift_name = req.body.shift_name ? req.body.shift_name : undefined;
-        const shift_description = req.body.shift_description ? req.body.shift_description: null;
+        const shift_description = req.body.shift_description ? req.body.shift_description : null;
         const shift_sequence = req.body.shift_sequence ? req.body.shift_sequence : undefined;
         const start_time = req.body.start_time ? moment(new Date(req.body.start_time)).format('HH:mm') : undefined;
         const start_time_offset_days = req.body.start_time_offset_days ? parseInt(req.body.start_time_offset_days) : 0;
