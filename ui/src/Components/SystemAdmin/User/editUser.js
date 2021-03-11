@@ -23,6 +23,7 @@ class EditUser extends Component {
       rolesArray: [],
       escalation_id: 0,
       escalationArray: [],
+      modalError: false,
     };
   }
 
@@ -100,25 +101,35 @@ class EditUser extends Component {
 
     var url = `${API}/insert_user`;
 
-    Axios.put(url, {
-      badge: this.props.badge,
-      username: username,
-      first_name: firstname,
-      last_name: lastname,
-      role_id: role_id,
-      site_id: this.props.user.site,
-      escalation_id: parseInt(escalation_id, 10),
-      status: status,
-    }).then(
-      () => {
-        this.setState({
-          show: true,
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    if (username !== "" && firstname !== "" && lastname !== "") {
+      Axios.put(url, {
+        badge: this.props.badge,
+        username: username,
+        first_name: firstname,
+        last_name: lastname,
+        role_id: role_id,
+        site_id: this.props.user.site,
+        escalation_id: parseInt(escalation_id, 10),
+        status: status,
+      }).then(
+        () => {
+          this.setState({
+            show: true,
+          });
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      this.setState({
+        modalError: true,
+      });
+    }
+  };
+
+  closeModalError = () => {
+    this.setState({ modalError: false });
   };
 
   handleClose = () => {
@@ -240,6 +251,17 @@ class EditUser extends Component {
           <Modal.Body>User has been updated</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={this.state.modalError} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Warning</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeModalError}>
               Close
             </Button>
           </Modal.Footer>

@@ -18,12 +18,13 @@ class AddUser extends Component {
       role: 1,
       status: "Active",
       escalation_id: 1,
-      site:"",
+      site: "",
       roles: [],
       show: false,
       showForm: true,
       escalation: [],
       sites: [],
+      modalError: false,
     };
   }
 
@@ -79,31 +80,41 @@ class AddUser extends Component {
       role,
       status,
       escalation_id,
-      site
+      site,
     } = this.state;
 
     var url = `${API}/insert_user`;
-
-    Axios.put(url, {
-      badge: badge,
-      username: username,
-      first_name: firstname,
-      last_name: lastname,
-      role_id: role,
-      site_id: this.props.user.site,
-      escalation_id: parseInt(escalation_id, 10),
-      site: site,
-      status: status,
-    }).then(
-      () => {
-        this.setState({
-          show: true,
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    if (
+      badge !== "" &&
+      username !== "" &&
+      firstname !== "" &&
+      lastname !== ""
+    ) {
+      Axios.put(url, {
+        badge: badge,
+        username: username,
+        first_name: firstname,
+        last_name: lastname,
+        role_id: role,
+        site_id: this.props.user.site,
+        escalation_id: parseInt(escalation_id, 10),
+        site: site,
+        status: status,
+      }).then(
+        () => {
+          this.setState({
+            show: true,
+          });
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      this.setState({
+        modalError: true,
+      });
+    }
   };
 
   renderRoles(roles, index) {
@@ -132,6 +143,10 @@ class AddUser extends Component {
 
   handleClose = () => {
     this.props.closeForm();
+  };
+
+  closeModalError = () => {
+    this.setState({ modalError: false });
   };
 
   render() {
@@ -236,6 +251,17 @@ class AddUser extends Component {
           <Modal.Body>User has been added</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={this.state.modalError} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Warning</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeModalError}>
               Close
             </Button>
           </Modal.Footer>

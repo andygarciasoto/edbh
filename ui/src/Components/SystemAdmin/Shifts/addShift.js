@@ -19,6 +19,7 @@ export class AddShift extends Component {
       first_shift: true,
       status: "Active",
       show: false,
+      modalError: false,
     };
   }
 
@@ -34,6 +35,10 @@ export class AddShift extends Component {
 
   handleClose = () => {
     this.props.closeForm();
+  };
+
+  closeModalError = () => {
+    this.setState({ modalError: false });
   };
 
   createShift = (e) => {
@@ -58,30 +63,36 @@ export class AddShift extends Component {
     var difference = endTime1.getTime() - startTime1.getTime(); // This will give difference in milliseconds
     var resultInMinutes = Math.round(difference / 60000);
 
-    Axios.put(url, {
-      shift_code: `${this.props.user.site_prefix} - ${name}`,
-      shift_name: name,
-      shift_description: description,
-      shift_sequence: parseInt(sequence, 10),
-      start_time: `${date}T${start_time}:00.000Z`,
-      start_time_offset_days: parseInt(start_day, 10),
-      end_time: `${date}T${end_time}:00.000Z`,
-      end_time_offset_days: parseInt(end_day, 10),
-      duration_in_minutes: resultInMinutes,
-      valid_from: Moment(),
-      is_first_shift_of_day: first_shift,
-      status: status,
-      site_id: this.props.user.site,
-    }).then(
-      () => {
-        this.setState({
-          show: true,
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    if (name !== "" && description !== "" && sequence === 0) {
+      Axios.put(url, {
+        shift_code: `${this.props.user.site_prefix} - ${name}`,
+        shift_name: name,
+        shift_description: description,
+        shift_sequence: parseInt(sequence, 10),
+        start_time: `${date}T${start_time}:00.000Z`,
+        start_time_offset_days: parseInt(start_day, 10),
+        end_time: `${date}T${end_time}:00.000Z`,
+        end_time_offset_days: parseInt(end_day, 10),
+        duration_in_minutes: resultInMinutes,
+        valid_from: Moment(),
+        is_first_shift_of_day: first_shift,
+        status: status,
+        site_id: this.props.user.site,
+      }).then(
+        () => {
+          this.setState({
+            show: true,
+          });
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      this.setState({
+        modalError: true,
+      });
+    }
   };
 
   render() {
@@ -175,7 +186,7 @@ export class AddShift extends Component {
                   name="end_time"
                   onChange={this.handleChange}
                 >
-                 <option value="1:00">1:00</option>
+                  <option value="1:00">1:00</option>
                   <option value="2:00">2:00</option>
                   <option value="3:00">3:00</option>
                   <option value="4:00">4:00</option>
@@ -253,6 +264,17 @@ export class AddShift extends Component {
           <Modal.Body>Shift has been added</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={this.state.modalError} onHide={this.handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Warning</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeModalError}>
               Close
             </Button>
           </Modal.Footer>
