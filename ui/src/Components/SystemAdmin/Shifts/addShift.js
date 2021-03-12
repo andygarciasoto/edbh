@@ -1,4 +1,8 @@
+/* eslint-disable array-callback-return */
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import { API } from "../../../Utils/Constants";
@@ -10,7 +14,7 @@ export class AddShift extends Component {
     this.state = {
       name: "",
       description: "",
-      sequence: 0,
+      sequence: 1,
       start_time: "1:00",
       start_day: -1,
       end_time: "1:00",
@@ -20,7 +24,27 @@ export class AddShift extends Component {
       status: "Active",
       show: false,
       modalError: false,
+      isRepeated: false,
+      shiftsArray: [],
     };
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+
+    return actions.getShifts(this.props.user.site).then((response) => {
+      this.setState({
+        shiftsArray: response,
+      });
+
+      this.state.shiftsArray.map((shift) => {
+        if (shift.shift_sequence === this.state.sequence) {
+          return this.setState({
+            sequence: shift.shift_sequence + 1,
+          });
+        }
+      });
+    });
   }
 
   handleChange = (event) => {
@@ -41,6 +65,7 @@ export class AddShift extends Component {
     this.setState({ modalError: false });
   };
 
+
   createShift = (e) => {
     e.preventDefault();
     const {
@@ -56,6 +81,7 @@ export class AddShift extends Component {
     } = this.state;
 
     var url = `${API}/insert_shift`;
+
     const date = Moment().format("YYYY-MM-DD");
 
     var startTime1 = new Date(`${date} ${start_time}`);
@@ -63,7 +89,12 @@ export class AddShift extends Component {
     var difference = endTime1.getTime() - startTime1.getTime(); // This will give difference in milliseconds
     var resultInMinutes = Math.round(difference / 60000);
 
-    if (name !== "" && description !== "" && sequence === 0) {
+    if (
+      name !== "" &&
+      description !== "" &&
+      sequence !== 0 &&
+      this.props.user.site_prefix !== null
+    ) {
       Axios.put(url, {
         shift_code: `${this.props.user.site_prefix} - ${name}`,
         shift_name: name,
@@ -93,6 +124,23 @@ export class AddShift extends Component {
         modalError: true,
       });
     }
+  };
+
+  increaseSecuence = (e) => {
+    e.preventDefault();
+    this.setState({
+      sequence: this.state.sequence + 1,
+    });
+  };
+
+  decreaseSecuence = (e) => {
+    e.preventDefault();
+    if (this.state.sequence !== 1) {
+      this.setState({
+        sequence: this.state.sequence - 1,
+      });
+    }
+    return this.state.sequence;
   };
 
   render() {
@@ -125,14 +173,11 @@ export class AddShift extends Component {
               </label>
               <label>
                 Sequence:
-                <input
-                  type="text"
-                  name="sequence"
-                  className="input-sequence"
-                  //value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
+                <div className="input-sequence">
+                  <button onClick={(e) => this.decreaseSecuence(e)}>-</button>
+                  <h5 className="h5">{this.state.sequence}</h5>
+                  <button className="increase" onClick={(e) => this.increaseSecuence(e)}>+</button>
+                </div>
               </label>
               <label>
                 Start Time:
@@ -272,7 +317,15 @@ export class AddShift extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Warning</Modal.Title>
           </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Body>
+            {this.props.user.site_prefix === null
+              ? "You need to add prefix first in common params"
+              : this.state.sequence === 0
+              ? "Sequence can't be 0"
+              : this.state.isRepeated === true
+              ? "The sequence already exists"
+              : "All inputs must be filled"}
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>
               Close
@@ -284,4 +337,10 @@ export class AddShift extends Component {
   }
 }
 
-export default AddShift;
+export const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(ShiftActions, dispatch),
+  };
+};
+
+export default connect(null, mapDispatch)(AddShift);

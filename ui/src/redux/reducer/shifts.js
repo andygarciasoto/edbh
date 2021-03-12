@@ -22,5 +22,5 @@ export default (state = initialState, action) => {
   }
 };
 
-export const getShifts = (state) => state.userReducer.shifts;
-export const getShiftInfo = (state) => state.userReducer.shift_info;
+export const getShifts = (state) => state.shiftReducer.shifts;
+export const getShiftInfo = (state) => state.shiftReducer.shift_info;
