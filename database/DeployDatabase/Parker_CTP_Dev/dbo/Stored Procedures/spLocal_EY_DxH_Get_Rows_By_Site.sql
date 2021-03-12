@@ -51,57 +51,57 @@ FROM dbo.Asset A
 	(
 		SELECT COUNT(*) AS Users
 		FROM dbo.TFDUsers TFD
-		WHERE TFD.Site = 1
+		WHERE TFD.Site = @site_id
 	) TFD
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS Shifts
 		FROM dbo.Shift S
-		WHERE S.asset_id = 1
+		WHERE S.asset_id = @site_id
 	) S
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS CommonParameters
 		FROM dbo.CommonParameters CP
-		WHERE CP.site_id = 1
+		WHERE CP.site_id = @site_id
 	) CP
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS DTReasons
 		FROM dbo.DTReason DT
-		WHERE DT.site_id = 1
+		WHERE DT.site_id = @site_id
 	) DT
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS Tags
 		FROM dbo.Tag T
-		WHERE T.site_id = 1
+		WHERE T.site_id = @site_id
 	) T
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS Workcells
 		FROM dbo.Workcell W
-		WHERE W.site_id = 1
+		WHERE W.site_id = @site_id
 	) W
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS AssetDisplaySystems
 		FROM dbo.AssetDisplaySystem AD
-		WHERE AD.site_id = 1
+		WHERE AD.site_id = @site_id
 	) AD
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS Unavailable
 		FROM dbo.Unavailable U
-		WHERE U.site_id = 1
+		WHERE U.site_id = @site_id
 	) U
 	OUTER APPLY
 	(
 		SELECT COUNT(*) AS UOM
 		FROM dbo.UOM UOM
-		WHERE UOM.site_id = 1
+		WHERE UOM.site_id = @site_id
 	) UOM
-WHERE A2.asset_id = 1
+WHERE A2.asset_id = @site_id
 GROUP BY TFD.Users, S.Shifts, CP.CommonParameters, DT.DTReasons, T.Tags,
 W.Workcells, AD.AssetDisplaySystems, U.Unavailable, UOM.UOM
 RETURN;
