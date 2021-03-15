@@ -186,7 +186,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/datatool/import_data', 'post', async (req, res: Response) => {
             await dataToolService.importData(req, res);
-        }, true, true),
+        }, true),
         new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
             await dataToolService.exportData(req, res);
         }, true),
@@ -228,7 +228,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
-        }, false)
+        }, true)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)
