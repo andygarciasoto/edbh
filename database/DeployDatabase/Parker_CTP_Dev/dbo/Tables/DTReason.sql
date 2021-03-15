@@ -13,8 +13,8 @@
     [last_modified_by]     NVARCHAR (100) CONSTRAINT [DF_DTReason_last_modified_by] DEFAULT (N'SQL Manual Entry') NULL,
     [last_modified_on]     DATETIME       CONSTRAINT [DF_DTReason_last_modified_on] DEFAULT (getdate()) NOT NULL,
     [asset_id]             INT            NULL,
-    [type]                 NVARCHAR (256) DEFAULT ('downtime') NULL,
-    [site_id]              INT            CONSTRAINT [DF_DTReason_site_id] DEFAULT ((1)) NOT NULL,
+    [type]                 NVARCHAR (256)  NULL,
+    [site_id]              INT             NOT NULL,
     CONSTRAINT [PK_DTReason_DTReason_Id] PRIMARY KEY CLUSTERED ([dtreason_id] ASC),
     CONSTRAINT [FK_DTReason_Asset_Id] FOREIGN KEY ([asset_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );
