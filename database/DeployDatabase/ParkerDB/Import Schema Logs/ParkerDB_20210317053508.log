@@ -1,0 +1,81 @@
+17/3/2021 11:35:08	This log contains information about the import schema operation into project 'ParkerDB' on computer 'CR2234087W1' by user 'JX254ZR'.
+17/3/2021 11:35:08	Import of database schema has started.
+17/3/2021 11:35:27	Gathering database credentials
+17/3/2021 11:35:27	Gathering database options
+17/3/2021 11:35:27	Gathering generic database scoped configuration option
+17/3/2021 11:35:27	Gathering users
+17/3/2021 11:35:27	Gathering roles
+17/3/2021 11:35:27	Gathering application roles
+17/3/2021 11:35:27	Gathering role memberships
+17/3/2021 11:35:27	Gathering filegroups
+17/3/2021 11:35:27	Gathering full-text catalogs
+17/3/2021 11:35:27	Gathering assemblies
+17/3/2021 11:35:27	Gathering certificates
+17/3/2021 11:35:27	Gathering symmetric keys
+17/3/2021 11:35:27	Gathering encrypted symmetric keys
+17/3/2021 11:35:27	Gathering schemas
+17/3/2021 11:35:27	Gathering XML schema collections
+17/3/2021 11:35:27	Gathering user-defined data types
+17/3/2021 11:35:27	Gathering user-defined types
+17/3/2021 11:35:27	Gathering table types
+17/3/2021 11:35:27	Gathering unique keys for table types
+17/3/2021 11:35:27	Gathering primary keys for table types
+17/3/2021 11:35:27	Gathering indexes for table types
+17/3/2021 11:35:27	Gathering check constraints for table types
+17/3/2021 11:35:27	Gathering default constraints for table types
+17/3/2021 11:35:27	Gathering partition functions
+17/3/2021 11:35:27	Gathering partition schemes
+17/3/2021 11:35:27	Gathering functions
+17/3/2021 11:35:27	Gathering encrypted functions
+17/3/2021 11:35:27	Gathering aggregates
+17/3/2021 11:35:27	Gathering procedures
+17/3/2021 11:35:29	Gathering encrypted procedures
+17/3/2021 11:35:29	Gathering tables
+17/3/2021 11:35:29	Gathering primary keys
+17/3/2021 11:35:29	Gathering unique constraints
+17/3/2021 11:35:29	Gathering foreign keys
+17/3/2021 11:35:29	Gathering default constraints
+17/3/2021 11:35:29	Gathering check constraints
+17/3/2021 11:35:29	Gathering views
+17/3/2021 11:35:29	Gathering encrypted views
+17/3/2021 11:35:29	Gathering indexes
+17/3/2021 11:35:29	Gathering statistics
+17/3/2021 11:35:29	Gathering full-text index stoplists
+17/3/2021 11:35:29	Gathering search property lists
+17/3/2021 11:35:29	Gathering search properties
+17/3/2021 11:35:29	Gathering full-text indexes
+17/3/2021 11:35:29	Gathering column store indexes
+17/3/2021 11:35:29	Gathering spatial indexes
+17/3/2021 11:35:29	Gathering XML indexes
+17/3/2021 11:35:29	Gathering Selective XML indexes
+17/3/2021 11:35:29	Gathering encrypted triggers
+17/3/2021 11:35:29	Gathering triggers
+17/3/2021 11:35:29	Gathering encrypted and clr ddl triggers
+17/3/2021 11:35:29	Gathering ddl triggers
+17/3/2021 11:35:29	Creating edge constraints
+17/3/2021 11:35:29	Gathering synonyms
+17/3/2021 11:35:29	Gathering defaults
+17/3/2021 11:35:29	Gathering data constraint uddt bindings
+17/3/2021 11:35:29	Gathering rules
+17/3/2021 11:35:29	Gathering data constraint uddt bindings
+17/3/2021 11:35:29	Gathering message types
+17/3/2021 11:35:29	Gathering queues
+17/3/2021 11:35:29	Gathering contracts
+17/3/2021 11:35:29	Gathering services
+17/3/2021 11:35:29	Gathering event notifications
+17/3/2021 11:35:29	Gathering remote service bindings
+17/3/2021 11:35:29	Gathering broker priorities
+17/3/2021 11:35:29	Gathering signatures
+17/3/2021 11:35:29	Gathering data compression options
+17/3/2021 11:35:29	Gathering sequence types
+17/3/2021 11:35:29	Gathering security policies
+17/3/2021 11:35:29	Gather column encryption keys
+17/3/2021 11:35:29	Gathering column master keys
+17/3/2021 11:35:29	Gathering external data sources
+17/3/2021 11:35:29	Gathering external tables
+17/3/2021 11:35:29	Gathering extended properties
+17/3/2021 11:35:38	Scanning project for duplicate elements
+17/3/2021 11:35:38	Finished duplicate element processing
+17/3/2021 11:35:40	Finished importing database.
+17/3/2021 11:35:40	A summary of the import was saved to the following location: C:\Users\JX254ZR\Documents\Projects\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\Import Schema Logs\ParkerDB_20210317053508.log
+17/3/2021 11:35:40	Click Finish to continue...
