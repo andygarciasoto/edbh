@@ -1,12 +1,12 @@
 ﻿CREATE TABLE [dbo].[CommentData] (
     [commentdata_id]   INT            IDENTITY (1, 1) NOT NULL,
     [dxhdata_id]       INT            NOT NULL,
-    [comment]          NVARCHAR (256) NULL,
-    [first_name]       NVARCHAR (100) NULL,
-    [last_name]        NVARCHAR (100) NULL,
-    [entered_by]       NVARCHAR (100) CONSTRAINT [DF_Comment_entered_by] DEFAULT (N'SQL Manual Entry') NULL,
+    [comment]          NVARCHAR (256) NOT NULL,
+    [first_name]       NVARCHAR (100) NOT NULL,
+    [last_name]        NVARCHAR (100) NOT NULL,
+    [entered_by]       NVARCHAR (100) CONSTRAINT [DF_Comment_entered_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
     [entered_on]       DATETIME       CONSTRAINT [DF_Comment_entered_on] DEFAULT (getdate()) NOT NULL,
-    [last_modified_by] NVARCHAR (100) CONSTRAINT [DF_Comment_last_modified_by] DEFAULT (N'SQL Manual Entry') NULL,
+    [last_modified_by] NVARCHAR (100) CONSTRAINT [DF_Comment_last_modified_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
     [last_modified_on] DATETIME       CONSTRAINT [DF_Comment_last_modified_on] DEFAULT (getdate()) NOT NULL,
     CONSTRAINT [PK_CommentData_CommentData_Id] PRIMARY KEY CLUSTERED ([commentdata_id] ASC),
     CONSTRAINT [FK_CommentData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id])
