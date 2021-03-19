@@ -120,6 +120,7 @@ BEGIN
 		CP.language,
 		CP.break_minutes,
 		CP.lunch_minutes,
+		CP.site_prefix,
 		FORMAT(GSPFunction.ProductionDay,'yyyy-MM-dd HH:mm') AS date_of_shift,
 		GSPFunction.ShiftId AS shift_id,
 		GSPFunction.ShiftName AS shift_name,

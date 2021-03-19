@@ -1,6 +1,4 @@
 import { SqlServerStore } from '../configurations/sqlserverstore';
-
-
 export class UserRepository {
     private static readonly table = 'TFDUsers';
     private readonly sqlServerStore: SqlServerStore;
@@ -76,10 +74,5 @@ export class UserRepository {
     }
     public async findUserInformation(badge: string, machine: string, asset_id: number, site_id: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_Information N'${badge}', N'${machine}', ${asset_id}, ${site_id}`);
-    }
-    public async getEscalation(): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT escalation_id, escalation_name, escalation_group, escalation_level, 
-        escalation_hours, status FROM dbo.Escalation
-		WHERE status = 'Active'`);
     }
 }

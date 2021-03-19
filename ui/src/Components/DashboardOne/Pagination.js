@@ -137,7 +137,7 @@ class Pagination extends React.Component {
 
     async applyToQueryOptions(object) {
         let search = qs.parse(this.props.history.location.search);
-        search.dt = moment(object.dt).format('YYYY/MM/DD');
+        search.dt = moment(object.dt).format('YYYY/MM/DD HH:mm');
         search.sf = object.sf;
         let parameters = $.param(search);
         await this.props.history.push(`${this.props.history.location.pathname}?${parameters}`);

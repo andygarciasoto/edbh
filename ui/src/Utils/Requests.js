@@ -49,30 +49,6 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
     });
 }
 
-function assignValuesToUser(user, newAttributes) {
-  user.id = newAttributes.id;
-  user.first_name = newAttributes.first_name;
-  user.last_name = newAttributes.last_name;
-  user.username = newAttributes.username;
-  user.role = newAttributes.role;
-  user.assing_role = newAttributes.assing_role;
-  user.badge = newAttributes.badge;
-  user.site = newAttributes.site;
-  user.max_regression = newAttributes.max_regression;
-  user.site_name = newAttributes.site_name;
-  user.timezone = newAttributes.timezone;
-  user.current_shift = newAttributes.shift_name;
-  user.shift_id = newAttributes.shift_id;
-  user.language = newAttributes.language;
-  user.date_of_shift = newAttributes.date_of_shift;
-  user.current_date_time = newAttributes.current_date_time;
-  user.vertical_shift_id = newAttributes.vertical_shift_id;
-  user.break_minutes = newAttributes.break_minutes;
-  user.lunch_minutes = newAttributes.lunch_minutes;
-  user.permissions = newAttributes.permissions;
-  return user;
-}
-
 function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);
 }
@@ -283,7 +259,6 @@ export {
   getCurrentShift,
   genericRequest,
   getResponseFromGeneric,
-  assignValuesToUser,
   getRowsFromShifts,
   formatTime,
   validPermission,

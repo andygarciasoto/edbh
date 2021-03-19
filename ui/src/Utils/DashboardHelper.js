@@ -8,6 +8,9 @@ import {
     formatNumber,
     validPermission
 } from '../Utils/Requests';
+import FontAwesome from 'react-fontawesome';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
 const helpers = {
 
@@ -43,32 +46,23 @@ const helpers = {
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
             if (useIndividualValues) {
-                style.backgroundColor = (rowValid.ideal === 0 && rowValid.target === 0) ||
-                    (rowValid._original.adjusted_actual === 0 && rowValid._original.target === 0) ||
-                    (rowValid._original.adjusted_actual < rowValid._original.target) ? '#b80600' : 'green';
-                style.backgroundImage = (rowValid.ideal === 0 && rowValid.target === 0) ||
-                    (rowValid._original.adjusted_actual === 0 && rowValid._original.target === 0) ||
-                    (rowValid._original.adjusted_actual < rowValid._original.target) ? 'url("../dark-circles.png")' :
-                    'url("../arabesque.png")';
+                style.backgroundColor = rowValid._original.background_color === 'red' ? '#b80600' : 'green';
+                style.backgroundImage = rowValid._original.background_color === 'red' ? 'url("../dark-circles.png")' : 'url("../arabesque.png")';
             } else {
-                style.backgroundColor = (rowValid._original.summary_ideal === 0 && rowValid._original.summary_target === 0) ||
-                    (rowValid._original.summary_adjusted_actual === 0 && rowValid._original.summary_target === 0) ||
-                    (rowValid._original.summary_adjusted_actual < rowValid._original.summary_target) ? '#b80600' : 'green';
-                style.backgroundImage = (rowValid._original.summary_ideal === 0 && rowValid._original.summary_target === 0) ||
-                    (rowValid._original.summary_adjusted_actual === 0 && rowValid._original.summary_target === 0) ||
-                    (rowValid._original.summary_adjusted_actual < rowValid._original.summary_target) ? 'url("../dark-circles.png")' :
-                    'url("../arabesque.png")';
+                style.backgroundColor = rowValid._original.summary_background_color === 'red' ? '#b80600' : 'green';
+                style.backgroundImage = rowValid._original.summary_background_color === 'red' ? 'url("../dark-circles.png")' : 'url("../arabesque.png")';
             }
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
+        } else if (rowValid && column.id === 'cumulative_actual' &&
+            rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
             style.backgroundColor = (rowValid._original.cumulative_adjusted_actual === 0) || (rowValid._original.cumulative_adjusted_actual < rowValid._original.cumulative_target) ? '#b80600' : 'green';
             style.backgroundImage = (rowValid._original.cumulative_adjusted_actual === 0) || (rowValid._original.cumulative_adjusted_actual < rowValid._original.cumulative_target) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) && rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
-
+        } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) &&
+            rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
             style.backgroundColor = '#b80600';
             style.backgroundImage = 'url("../dark-circles.png")';
             style.color = 'white';
@@ -95,12 +89,40 @@ const helpers = {
     },
 
     getTimeLostToSet(row) {
-        return moment(getCurrentTime(this.props.user.timezone)).isSame(moment(row.started_on_chunck), 'hours') ||
-            !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(row.started_on_chunck), 'hours') ? formatNumber(row.unallocated_time) : null;
+        const tz = this.props.user.timezone;
+        return moment.tz(tz).isSame(moment.tz(row.started_on_chunck, tz), 'hours') ||
+            !moment.tz(tz).isBefore(moment.tz(row.started_on_chunck, tz), 'hours') ? formatNumber(row.unallocated_time) : null;
     },
 
     getCommentsToSet(row) {
         return row.comment ? row.total_comments > 1 ? row.comment + ` (${(row.total_comments - 1)}+ more)` : row.comment : '';
+    },
+
+    renderSupervisorSignOffCell(state, row, prop, defaultValue) {
+        const actualEscalation = state.actualEscalation || {};
+        const classType = actualEscalation.escalation_level === 1 ? 'inital' : (actualEscalation.escalation_level === 2 ? 'warning' : 'danger');
+        const tz = this.props.user.timezone;
+        let valueToDisplay = (row[prop] ?
+            (isNaN(row[prop]) ? row[prop] : row[prop])
+            : defaultValue);
+        if (!row[prop] && !_.isEmpty(actualEscalation) && moment.tz(tz).add(-1, 'hours').isSame(moment.tz(row.started_on_chunck, tz), 'hours')) {
+            const renderTooltip = (props) => (
+                <Tooltip id="button-tooltip" {...props} className={'escalation_' + classType}>
+                    The {actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible
+                </Tooltip>
+            );
+            return (
+                <OverlayTrigger
+                    placement='left'
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderTooltip}
+                >
+                    <FontAwesome className={'icon escalation_' + classType + ' escalation_icon_' + classType} name='exclamation-triangle' />
+                </OverlayTrigger>
+            );
+        } else {
+            return (<span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span>);
+        }
     },
 
     getExpandClick(state, rowInfo, column) {
@@ -277,8 +299,8 @@ const helpers = {
             Header: this.getHeader(state.supervisorText),
             accessor: 'supervisor_signoff',
             minWidth: 90,
-            Cell: c => this.renderCell(c.original, '', ''),
-            Aggregated: a => this.renderCell(a.subRows[0]._original, 'supervisor_signoff', ''),
+            Cell: c => this.renderSupervisorSignOffCell(state, c.original, '', ''),
+            Aggregated: a => this.renderSupervisorSignOffCell(state, a.subRows[0]._original, 'supervisor_signoff', ''),
             getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
         });
 
@@ -354,7 +376,19 @@ const helpers = {
 
                 newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone);
 
-                this.setState(Object.assign(newModalProps));
+                if (modalType === 'supervisor_signoff' && !_.isEmpty(this.state.actualEscalation)) {
+                    if (this.props.user.escalation_level !== this.state.actualEscalation.escalation_level) {
+                        this.setState({
+                            modal_message_Is_Open: true,
+                            modal_type: 'Error',
+                            modal_message: 'Escalation level not reached. Please add ' + this.state.actualEscalation.escalation_name + ' signoff.'
+                        });
+                    } else {
+                        this.setState(Object.assign(newModalProps));
+                    }
+                } else {
+                    this.setState(Object.assign(newModalProps));
+                }
 
             }
 

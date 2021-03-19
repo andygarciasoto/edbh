@@ -24,17 +24,6 @@
     font-size    : large;
 }
 
-.escalateBlink {
-    border   : 2px solid $color-link;
-    animation: blink2 .5s step-end infinite alternate;
-}
-
-@keyframes blink2 {
-    50% {
-        border-color: $color-red;
-    }
-}
-
 .previousHours .col {
     max-width   : 1px;
     min-height  : 20px;

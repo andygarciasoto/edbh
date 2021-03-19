@@ -220,14 +220,16 @@ export class AuthService {
             }
             if (payload.body.sub) {
                 let badge = payload.body.user_badge;
-                let machine = payload.body.user_machine;
+                let machine = payload.body.user_machine || req.query.station || 0;
+                let site = req.query.site_id || 0;
                 let responseUser: any;
                 try {
-                    responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
+                    responseUser = await this.userrepository.findUserInformation(badge, machine, 0, site);
                     const differentRole = payload.body.assign_role && responseUser[0].role !== payload.body.assign_role;
                     responseUser[0].role = payload.body.assign_role || responseUser[0].role;
                     responseUser[0].assing_role = payload.body.assign_role;
                     responseUser[0].permissions = await this.rolerepository.getComponentsByRole((differentRole ? 0 : responseUser[0].role_id), payload.body.assign_role);
+                    responseUser[0].sites = await this.userrepository.findSitesByUser(badge);
                     return res.status(200).json(responseUser);
                 } catch (err) {
                     console.log(err);

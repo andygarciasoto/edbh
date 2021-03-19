@@ -36,3 +36,51 @@
   background-color: $color-red;
   border-color    : $color-red;
 }
+
+.escalation_inital {
+  color: $color-orange-back;
+}
+
+.escalation_warning {
+  color: $color-warning;
+}
+
+.escalation_danger {
+  color: $color-red;
+}
+
+.escalation_icon_inital,
+.escalation_icon_warning {
+  animation: blinker 1s step-end infinite alternate;
+}
+
+.escalation_icon_danger {
+  animation: blinker .1s step-end infinite alternate;
+}
+
+@keyframes blinker {
+  50% {
+    color: $color-white;
+  }
+}
+
+.border_escalation_inital {
+  border   : 2px solid $color-orange-back;
+  animation: blinker2 1s step-end infinite alternate;
+}
+
+.border_escalation_warning {
+  border   : 2px solid $color-warning;
+  animation: blinker2 1s step-end infinite alternate;
+}
+
+.border_escalation_danger {
+  border   : 2px solid $color-red;
+  animation: blinker2 .1s step-end infinite alternate;
+}
+
+@keyframes blinker2 {
+  50% {
+    border-color: $color-white;
+  }
+}
