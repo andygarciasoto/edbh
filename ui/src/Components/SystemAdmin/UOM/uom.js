@@ -3,60 +3,60 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
+import AddUOM from "./addUOM";
+import EditUOM from "./editUOM";
 import Filter from "../../CustomComponents/filter";
-
-
 
 class UOM extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ShiftData: [],
-      addShift: false,
-      editShift: false,
-      shift_id: 0,
+      UOMData: [],
+      addUOM: false,
+      editUOM: false,
+      uom_id: 0,
     };
   }
 
-//   componentDidMount() {
-//     const { actions } = this.props;
+  //   componentDidMount() {
+  //     const { actions } = this.props;
 
-//     return actions.getShifts(this.props.user.site).then((response) => {
-//       this.setState({
-//         ShiftData: response,
-//       });
-//     });
-//   }
+  //     return actions.getShifts(this.props.user.site).then((response) => {
+  //       this.setState({
+  //         ShiftData: response,
+  //       });
+  //     });
+  //   }
 
-//   showAddShift = () => {
-//     this.setState({
-//       addShift: true,
-//     });
-//   };
+  showAddUOM = () => {
+    this.setState({
+      addUOM: true,
+    });
+  };
 
-//   closeAddShift = () => {
-//     this.setState({
-//         addShift: false,
-//     });
-//   };
+  closeAddUOM = () => {
+    this.setState({
+      addUOM: false,
+    });
+  };
 
-//   showEditShift = (shift_id) => {
-//     this.setState({
-//       editShift: true,
-//       shift_id: shift_id
-//     });
-//   };
+  showEditUOM = (uom_id) => {
+    this.setState({
+      editShift: true,
+      uom_id: uom_id,
+    });
+  };
 
-//   closeEditShift = () => {
-//     this.setState({
-//         editShift: false,
-//     });
-//   };
+  closeEditUOM = () => {
+    this.setState({
+      editShift: false,
+    });
+  };
 
   render() {
     return (
       <div>
-       <Filter
+        <Filter
           className="filter-user"
           buttonName={"+ UOM"}
           buttonFilter={"Search"}
@@ -66,23 +66,23 @@ class UOM extends Component {
           automatedLevel={false}
           category={false}
           type={false}
-          onClick={() => this.showAddShift()}
+          onClick={() => this.showAddUOM()}
         ></Filter>
-        {/* {this.state.addShift === true && (
-          <AddShift
+        {this.state.addUOM === true && (
+          <AddUOM
             user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
+            showForm={this.state.addUOM}
+            closeForm={this.closeAddUOM}
           />
         )}
-        {this.state.editShift === true && (
-          <EditShift
+        {this.state.editUOM === true && (
+          <EditUOM
             user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
+            showForm={this.state.editUOM}
+            closeForm={this.closeEditUOM}
+            shift_id={this.state.uom_id}
           />
-        )} */}
+        )}
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
@@ -95,7 +95,7 @@ class UOM extends Component {
             </tr>
           </thead>
           <tbody>
-          {/* {this.state.ShiftData.map((shift, index) => (
+            {/* {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
@@ -124,7 +124,6 @@ class UOM extends Component {
   }
 }
 
-
 export const mapDispatch = (dispatch) => {
   return {
     actions: bindActionCreators(ShiftActions, dispatch),
@@ -132,4 +131,3 @@ export const mapDispatch = (dispatch) => {
 };
 
 export default connect(null, mapDispatch)(UOM);
-

@@ -10,6 +10,37 @@
   margin-bottom: 30px;
 }
 
+.input-uom-code {
+  margin-left: 59px;
+}
+
+.input-uom-name {
+  margin-left: 54px;
+}
+
+.select-uom-decimals {
+  margin-left: 32px;
+}
+
+.text-uom-description {
+  height: 140px;
+  width: 320px;
+  margin-left: 15px;
+}
+
+.input-display-name {
+  margin-left: 59px;
+}
+
+.input-display-asset {
+  margin-left: 63px;
+  margin-right: 17px;
+}
+
+.select-display-status {
+  margin-left: 58px;
+}
+
 .input-code {
   margin-left: 56px;
 }
@@ -127,80 +158,77 @@
   font-size: 14px;
   margin: 10px 10px;
 
-  &.label-language{
+  &.label-language {
     margin-left: -139px;
   }
 
-  &.label-vertical-dashboard{
+  &.label-vertical-dashboard {
     margin-left: -192px;
   }
 
-  &.label-default-break{
+  &.label-default-break {
     margin-left: 164px;
   }
 
-  &.label-site-code{
+  &.label-site-code {
     margin-left: -193px;
   }
 
-  &.label-ito{
+  &.label-ito {
     margin-left: 9px;
   }
 
-  .input{
+  .input {
     margin-left: 9px;
 
-    &.site-name{
+    &.site-name {
       margin-left: 135px;
     }
 
-    &.timezone{
+    &.timezone {
       margin-left: 28px;
     }
 
-    &.escalation1{
+    &.escalation1 {
       margin-left: 36px;
     }
 
-    &.escalation2{
+    &.escalation2 {
       margin-left: 36px;
     }
 
-    &.default-target{
+    &.default-target {
       margin-left: 11px;
     }
 
-    &.setup-minutes{
+    &.setup-minutes {
       margin-left: 20px;
     }
 
-    &.inactive-timeout{
+    &.inactive-timeout {
       margin-left: 9px;
     }
 
-    &.assembly-url{
+    &.assembly-url {
       margin-left: 59px;
     }
 
-    &.select-language{
+    &.select-language {
       margin-left: 63px;
     }
 
-    &.input-default-setup{
+    &.input-default-setup {
       margin-left: 59px;
     }
 
-    &.input-site-code{
+    &.input-site-code {
       margin-left: 112px;
     }
 
-    &.input-vertical-dashboard{
+    &.input-vertical-dashboard {
       margin-left: 30px;
-
     }
   }
-
-  
 }
 
 .filter-user {
@@ -256,11 +284,11 @@
       margin-left: 30px;
     }
 
-    &.level{
+    &.level {
       margin-left: 30px;
     }
 
-    &.automated{
+    &.automated {
       margin-left: 30px;
     }
   }

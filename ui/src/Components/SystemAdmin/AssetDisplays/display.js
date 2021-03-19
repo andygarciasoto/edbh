@@ -4,14 +4,15 @@ import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
+import AddDisplay from "./addDisplay";
 
 class Display extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ShiftData: [],
-      addShift: false,
-      editShift: false,
+      addDisplay: false,
+      editDisplay: false,
       shift_id: 0,
     };
   }
@@ -26,17 +27,17 @@ class Display extends Component {
   //     });
   //   }
 
-  //   showAddShift = () => {
-  //     this.setState({
-  //       addShift: true,
-  //     });
-  //   };
+  showAddDisplay = () => {
+    this.setState({
+      addDisplay: true,
+    });
+  };
 
-  //   closeAddShift = () => {
-  //     this.setState({
-  //         addShift: false,
-  //     });
-  //   };
+  closeAddDisplay = () => {
+    this.setState({
+      addDisplay: false,
+    });
+  };
 
   //   showEditShift = (shift_id) => {
   //     this.setState({
@@ -55,26 +56,26 @@ class Display extends Component {
     return (
       <div>
         <Filter
-         className="filter-user"
-         buttonName={"+ Asset Display"}
-         buttonFilter={"Search"}
-         role={false}
-         newClass={false}
-         level={false}
-         automatedLevel={false}
-         category={false}
-         type={false}
-         shifts={false}
-         onClick={() => this.showAddShift()}
+          className="filter-user"
+          buttonName={"+ Asset Display"}
+          buttonFilter={"Search"}
+          role={false}
+          newClass={false}
+          level={false}
+          automatedLevel={false}
+          category={false}
+          type={false}
+          shifts={false}
+          onClick={() => this.showAddDisplay()}
         ></Filter>
-        {/* {this.state.addShift === true && (
-          <AddShift
+        {this.state.addDisplay === true && (
+          <AddDisplay
             user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
+            showForm={this.state.addDisplay}
+            closeForm={this.closeAddDisplay}
           />
         )}
-        {this.state.editShift === true && (
+        {/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}
