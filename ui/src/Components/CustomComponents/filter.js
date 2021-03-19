@@ -2,7 +2,16 @@ import React from "react";
 import "../../sass/SystemAdmin.scss";
 import Form from "react-bootstrap/Form";
 
-const Filter = ({ className, buttonName, role, onClick, escalation, buttonFilter }) => (
+const Filter = ({
+  className,
+  buttonName,
+  role,
+  onClick,
+  escalation,
+  buttonFilter,
+  level,
+  automatedLevel,
+}) => (
   <div className={className}>
     <p className="p-filter">Filters:</p>
     <div>
@@ -24,10 +33,37 @@ const Filter = ({ className, buttonName, role, onClick, escalation, buttonFilter
       <div>
         <p className="p-status role">Role:</p>
         <Form>
-          <Form.Group
-            controlId="role"
-            className="drop-status"
-          >
+          <Form.Group controlId="role" className="drop-status">
+            <Form.Control as="select" size="sm" custom>
+              <option>All</option>
+              <option>Administrator</option>
+              <option>Operator</option>
+              <option>Supervisor</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </div>
+    )}
+    {level === true && (
+      <div>
+        <p className="p-status level">Level:</p>
+        <Form>
+          <Form.Group controlId="role" className="drop-status">
+            <Form.Control as="select" size="sm" custom>
+              <option>Cell</option>
+              <option>Administrator</option>
+              <option>Operator</option>
+              <option>Supervisor</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </div>
+    )}
+    {automatedLevel === true && (
+      <div>
+        <p className="p-status automated">Automated Level:</p>
+        <Form>
+          <Form.Group controlId="role" className="drop-status">
             <Form.Control as="select" size="sm" custom>
               <option>All</option>
               <option>Administrator</option>
@@ -42,10 +78,7 @@ const Filter = ({ className, buttonName, role, onClick, escalation, buttonFilter
       <div>
         <p className="p-status role">Escalation:</p>
         <Form>
-          <Form.Group
-            controlId="role"
-            className="drop-status"
-          >
+          <Form.Group controlId="role" className="drop-status">
             <Form.Control as="select" size="sm" custom>
               <option>All</option>
               <option>Site Manager</option>
@@ -57,7 +90,7 @@ const Filter = ({ className, buttonName, role, onClick, escalation, buttonFilter
         </Form>
       </div>
     )}
-     <button className="filter-button filter" onClick={onClick}>
+    <button className="filter-button filter" onClick={onClick}>
       {buttonFilter}
     </button>
     <button className="filter-button" onClick={onClick}>

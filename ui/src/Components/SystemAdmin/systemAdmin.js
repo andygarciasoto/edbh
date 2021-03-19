@@ -5,15 +5,15 @@ import * as UserActions from "../../redux/actions/userActions";
 import CardComponent from "../CustomComponents/card";
 import "../../sass/SystemAdmin.scss";
 import UserTable from "./userTable";
-import CommonParams from "./commonParams";
-import Assets from "./AdminTables/assets";
-import Reason from "./AdminTables/reason";
-import Device from "./AdminTables/device";
+import CommonParams from "./CommonParams/commonParams";
+import Assets from "./Assets/assets";
+import Reason from "./ReasonCodes/reason";
+import Device from "./DeviceTags/device";
 import Shifts from "./Shifts/shifts";
-import UOM from "./AdminTables/uom";
-import Break from "./AdminTables/break";
-import Display from "./AdminTables/display";
-import Workcells from "./AdminTables/workcells";
+import UOM from "./UOM/uom";
+import Break from "./BreakSchedule/break";
+import Display from "./AssetDisplays/display";
+import Workcells from "./Workcells/workcells";
 
 import UserIcon from "../../resources/u469.svg";
 import CommonIcon from "../../resources/u470.svg";
@@ -278,16 +278,18 @@ export class Administrator extends Component {
           onClick={() => this.toggleData("workcells")}
         />
 
-        {this.state.userTable === true && <UserTable user={this.props.user}/>}
-        {this.state.commonParams === true && <CommonParams />}
-        {this.state.assets === true && <Assets />}
-        {this.state.reason === true && <Reason />}
-        {this.state.device === true && <Device />}
-        {this.state.shifts === true && <Shifts user={this.props.user}/>}
-        {this.state.uom === true && <UOM />}
-        {this.state.break === true && <Break />}
-        {this.state.display === true && <Display />}
-        {this.state.workcells === true && <Workcells />}
+        {this.state.userTable === true && <UserTable user={this.props.user} />}
+        {this.state.commonParams === true && (
+          <CommonParams user={this.props.user} />
+        )}
+        {this.state.assets === true && <Assets user={this.props.user} />}
+        {this.state.reason === true && <Reason user={this.props.user} />}
+        {this.state.device === true && <Device user={this.props.user} />}
+        {this.state.shifts === true && <Shifts user={this.props.user} />}
+        {this.state.uom === true && <UOM user={this.props.user} />}
+        {this.state.break === true && <Break user={this.props.user} />}
+        {this.state.display === true && <Display user={this.props.user} />}
+        {this.state.workcells === true && <Workcells user={this.props.user} />}
       </div>
     );
   }

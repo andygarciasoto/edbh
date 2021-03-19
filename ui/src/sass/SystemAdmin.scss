@@ -22,12 +22,12 @@
   margin-left: 26px;
   margin-right: 181px;
 
-  .h5{
+  .h5 {
     margin-left: 33px;
     margin-top: -27px;
   }
 
-  .increase{
+  .increase {
     float: right;
     margin-left: 58px;
     /* float: none; */
@@ -115,6 +115,93 @@
     margin-left: 51px;
   }
 }
+.common-params {
+  margin-top: 30px;
+  border-style: groove;
+  border-radius: 5px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.common1 {
+  font-size: 14px;
+  margin: 10px 10px;
+
+  &.label-language{
+    margin-left: -139px;
+  }
+
+  &.label-vertical-dashboard{
+    margin-left: -192px;
+  }
+
+  &.label-default-break{
+    margin-left: 164px;
+  }
+
+  &.label-site-code{
+    margin-left: -193px;
+  }
+
+  &.label-ito{
+    margin-left: 9px;
+  }
+
+  .input{
+    margin-left: 9px;
+
+    &.site-name{
+      margin-left: 135px;
+    }
+
+    &.timezone{
+      margin-left: 28px;
+    }
+
+    &.escalation1{
+      margin-left: 36px;
+    }
+
+    &.escalation2{
+      margin-left: 36px;
+    }
+
+    &.default-target{
+      margin-left: 11px;
+    }
+
+    &.setup-minutes{
+      margin-left: 20px;
+    }
+
+    &.inactive-timeout{
+      margin-left: 9px;
+    }
+
+    &.assembly-url{
+      margin-left: 59px;
+    }
+
+    &.select-language{
+      margin-left: 63px;
+    }
+
+    &.input-default-setup{
+      margin-left: 59px;
+    }
+
+    &.input-site-code{
+      margin-left: 112px;
+    }
+
+    &.input-vertical-dashboard{
+      margin-left: 30px;
+
+    }
+  }
+
+  
+}
 
 .filter-user {
   margin-top: 30px;
@@ -162,6 +249,14 @@
     margin-top: -39px;
 
     &.role {
+      margin-left: 30px;
+    }
+
+    &.level{
+      margin-left: 30px;
+    }
+
+    &.automated{
       margin-left: 30px;
     }
   }

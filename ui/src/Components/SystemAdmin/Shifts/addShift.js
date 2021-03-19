@@ -26,6 +26,8 @@ export class AddShift extends Component {
       modalError: false,
       isRepeated: false,
       shiftsArray: [],
+      shiftsOject: {},
+      firstRepeated: false,
     };
   }
 
@@ -35,15 +37,19 @@ export class AddShift extends Component {
     return actions.getShifts(this.props.user.site).then((response) => {
       this.setState({
         shiftsArray: response,
+        shiftsOject: response,
       });
 
-      this.state.shiftsArray.map((shift) => {
-        if (shift.shift_sequence === this.state.sequence) {
-          return this.setState({
-            sequence: shift.shift_sequence + 1,
-          });
+      if (this.state.shiftsOject !== undefined) {
+        for (let value of Object.values(this.state.shiftsOject)) {
+          if (value.is_first_shift_of_day === this.state.first_shift) {
+            this.setState({
+              firstRepeated: true,
+            });
+            break;
+          }
         }
-      });
+      }
     });
   }
 
@@ -64,7 +70,6 @@ export class AddShift extends Component {
   closeModalError = () => {
     this.setState({ modalError: false });
   };
-
 
   createShift = (e) => {
     e.preventDefault();
@@ -92,7 +97,8 @@ export class AddShift extends Component {
     if (
       name !== "" &&
       description !== "" &&
-      sequence !== 0 &&
+      this.state.isRepeated !== true &&
+      this.state.firstRepeated !== true &&
       this.props.user.site_prefix !== null
     ) {
       Axios.put(url, {
@@ -131,6 +137,21 @@ export class AddShift extends Component {
     this.setState({
       sequence: this.state.sequence + 1,
     });
+    if (this.state.shiftsOject === undefined) {
+      for (let value of Object.values(this.state.shiftsOject)) {
+        if (value.shift_sequence === this.state.sequence) {
+          this.setState({
+            isRepeated: true,
+          });
+          break;
+        } else if (value.shift_sequence !== this.state.sequence) {
+          this.setState({
+            isRepeated: false,
+          });
+          break;
+        }
+      }
+    }
   };
 
   decreaseSecuence = (e) => {
@@ -140,7 +161,21 @@ export class AddShift extends Component {
         sequence: this.state.sequence - 1,
       });
     }
-    return this.state.sequence;
+    if (this.state.shiftsOject === undefined) {
+      for (let value of Object.values(this.state.shiftsOject)) {
+        if (value.shift_sequence === this.state.sequence) {
+          this.setState({
+            isRepeated: true,
+          });
+          break;
+        } else if (value.shift_sequence !== this.state.sequence) {
+          this.setState({
+            isRepeated: false,
+          });
+          break;
+        }
+      }
+    }
   };
 
   render() {
@@ -176,7 +211,12 @@ export class AddShift extends Component {
                 <div className="input-sequence">
                   <button onClick={(e) => this.decreaseSecuence(e)}>-</button>
                   <h5 className="h5">{this.state.sequence}</h5>
-                  <button className="increase" onClick={(e) => this.increaseSecuence(e)}>+</button>
+                  <button
+                    className="increase"
+                    onClick={(e) => this.increaseSecuence(e)}
+                  >
+                    +
+                  </button>
                 </div>
               </label>
               <label>
@@ -320,10 +360,12 @@ export class AddShift extends Component {
           <Modal.Body>
             {this.props.user.site_prefix === null
               ? "You need to add prefix first in common params"
-              : this.state.sequence === 0
-              ? "Sequence can't be 0"
+              : this.state.sequence === 1
+              ? "The sequence already exists"
               : this.state.isRepeated === true
               ? "The sequence already exists"
+              : this.state.firstRepeated === true
+              ? "The first shift already exists"
               : "All inputs must be filled"}
           </Modal.Body>
           <Modal.Footer>
