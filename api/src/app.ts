@@ -38,7 +38,12 @@ import { ScanRepository } from './repositories/scan-repository';
 import { ScanService } from './services/scanservice';
 import { RoleRepository } from './repositories/role-repository';
 import { RoleService } from './services/roleservice';
+import { SiteRepository } from './repositories/site-repository';
 import { SiteService } from './services/siteservice';
+import { EscalationRepository } from './repositories/escalation-repository';
+import { EscalationService } from './services/escalationservice';
+
+
 
 
 //INITIALIZE CONFIGURATION OF NODE JS//
@@ -64,10 +69,12 @@ const unavailableRepository = new UnavailableRepository(sqlServerStore);
 const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerStore);
 const scanRepository = new ScanRepository(sqlServerStore);
 const roleRepository = new RoleRepository(sqlServerStore);
+const siteRepository = new SiteRepository(sqlServerStore);
+const escalationRepository = new EscalationRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
-const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, userRepository);
+const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository, roleRepository);
@@ -82,6 +89,7 @@ const dataToolService = new DataToolService(workcellRepository, assetRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
 const scanService = new ScanService(scanRepository);
 const roleService = new RoleService(roleRepository);
+const escalationService = new EscalationService(escalationRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -209,7 +217,7 @@ const appConfig = {
             await productiondataService.getDigitalCups(req, res);
         }, true),
         new http.RestEndpoint('/api/total_rows', 'get', async (req: Request, res: Response) => {
-            await assetService.getRowsBySite(req, res);
+            await siteService.getRowsBySite(req, res);
         }, true),
         new http.RestEndpoint('/api/users', 'get', async (req: Request, res: Response) => {
             await userService.getUsersBySite(req, res);
@@ -221,10 +229,10 @@ const appConfig = {
             await userService.putUser(req, res);
         }, true),
         new http.RestEndpoint('/api/escalation', 'get', async (req: Request, res: Response) => {
-            await userService.getEscalation(req, res);
+            await escalationService.getEscalation(req, res);
         }, true),
         new http.RestEndpoint('/api/sites', 'get', async (req: Request, res: Response) => {
-            await assetService.getParkerSites(req, res);
+            await siteService.getParkerSites(req, res);
         }, true),
         new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
