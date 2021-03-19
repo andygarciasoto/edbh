@@ -58,9 +58,14 @@ class Reason extends Component {
       <div>
         <Filter
           className="filter-user"
-          buttonName={"+ Shift"}
+          buttonName={"+ Reason"}
           buttonFilter={"Search"}
           role={false}
+          newClass={false}
+          level={false}
+          automatedLevel={false}
+          category={true}
+          type={true}
           onClick={() => this.showAddShift()}
         ></Filter>
         {/* {this.state.addShift === true && (

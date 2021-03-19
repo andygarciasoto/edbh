@@ -9,8 +9,12 @@ const Filter = ({
   onClick,
   escalation,
   buttonFilter,
+  newClass,
   level,
   automatedLevel,
+  category,
+  type,
+  shifts
 }) => (
   <div className={className}>
     <p className="p-filter">Filters:</p>
@@ -36,6 +40,51 @@ const Filter = ({
           <Form.Group controlId="role" className="drop-status">
             <Form.Control as="select" size="sm" custom>
               <option>All</option>
+              <option>Administrator</option>
+              <option>Operator</option>
+              <option>Supervisor</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </div>
+    )}
+    {shifts === true && (
+      <div>
+        <p className="p-status role">Shifts:</p>
+        <Form>
+          <Form.Group controlId="role" className="drop-status">
+            <Form.Control as="select" size="sm" custom>
+              <option>All</option>
+              <option>Administrator</option>
+              <option>Operator</option>
+              <option>Supervisor</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </div>
+    )}
+    {category === true && (
+      <div>
+        <p className="p-status role">Category:</p>
+        <Form>
+          <Form.Group controlId="role" className="drop-status">
+            <Form.Control as="select" size="sm" custom>
+              <option>All</option>
+              <option>Administrator</option>
+              <option>Operator</option>
+              <option>Supervisor</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </div>
+    )}
+    {type === true && (
+      <div>
+        <p className="p-status role">Type:</p>
+        <Form>
+          <Form.Group controlId="role" className="drop-status">
+            <Form.Control as="select" size="sm" custom>
+              <option>Downtime</option>
               <option>Administrator</option>
               <option>Operator</option>
               <option>Supervisor</option>
@@ -90,7 +139,14 @@ const Filter = ({
         </Form>
       </div>
     )}
-    <button className="filter-button filter" onClick={onClick}>
+    <button
+      className={
+        newClass === true
+          ? "filter-button filter assets"
+          : "filter-button filter"
+      }
+      onClick={onClick}
+    >
       {buttonFilter}
     </button>
     <button className="filter-button" onClick={onClick}>

@@ -54,12 +54,18 @@ class Workcells extends Component {
   render() {
     return (
       <div>
-        <Filter
-          className="filter-user"
-          buttonName={"+ Shift"}
-          buttonFilter={"Search"}
-          role={false}
-          onClick={() => this.showAddShift()}
+      <Filter
+         className="filter-user"
+         buttonName={"+ Workcell"}
+         buttonFilter={"Search"}
+         role={false}
+         newClass={false}
+         level={false}
+         automatedLevel={false}
+         category={false}
+         type={false}
+         shifts={false}
+         onClick={() => this.showAddShift()}
         ></Filter>
         {/* {this.state.addShift === true && (
           <AddShift

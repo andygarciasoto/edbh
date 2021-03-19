@@ -55,11 +55,17 @@ class Break extends Component {
     return (
       <div>
         <Filter
-          className="filter-user"
-          buttonName={"+ Shift"}
-          buttonFilter={"Search"}
-          role={false}
-          onClick={() => this.showAddShift()}
+         className="filter-user"
+         buttonName={"+ Break"}
+         buttonFilter={"Search"}
+         role={false}
+         newClass={false}
+         level={false}
+         automatedLevel={false}
+         category={false}
+         type={false}
+         shifts={true}
+         onClick={() => this.showAddShift()}
         ></Filter>
         {/* {this.state.addShift === true && (
           <AddShift

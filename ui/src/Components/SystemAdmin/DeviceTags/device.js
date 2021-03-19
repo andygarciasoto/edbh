@@ -58,9 +58,14 @@ class Device extends Component {
       <div>
         <Filter
           className="filter-user"
-          buttonName={"+ Shift"}
+          buttonName={"+ Tag"}
           buttonFilter={"Search"}
           role={false}
+          newClass={false}
+          level={false}
+          automatedLevel={false}
+          category={false}
+          type={false}
           onClick={() => this.showAddShift()}
         ></Filter>
         {/* {this.state.addShift === true && (

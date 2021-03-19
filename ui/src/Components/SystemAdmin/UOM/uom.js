@@ -56,11 +56,16 @@ class UOM extends Component {
   render() {
     return (
       <div>
-        <Filter
+       <Filter
           className="filter-user"
-          buttonName={"+ Shift"}
+          buttonName={"+ UOM"}
           buttonFilter={"Search"}
           role={false}
+          newClass={false}
+          level={false}
+          automatedLevel={false}
+          category={false}
+          type={false}
           onClick={() => this.showAddShift()}
         ></Filter>
         {/* {this.state.addShift === true && (

@@ -61,6 +61,7 @@ class Assets extends Component {
           buttonName={"+ Asset"}
           buttonFilter={"Search"}
           role={false}
+          newClass={true}
           level={true}
           automatedLevel={true}
           onClick={() => this.showAddShift()}
