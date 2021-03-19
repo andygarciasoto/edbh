@@ -1,4 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data_new_2]    Script Date: 22/2/2021 20:22:31 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 22/2/2021 20:22:31 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -53,6 +53,7 @@
 --	20201221		C00V16 - Add join with Product table to return product name instead of product code
 --	20210218		C00V17 - Change variables type from varchar to nvarchar
 --	20210222		C00V18 - Change Shift id for starttime and endtime parameters (add fexibiltiy in the logic to search the data)
+--	20210318		C00V19 - Include dynamic target to get the current color hour
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data 35,'2021-02-22','2021-02-22 15:00', '2021-02-22 23:00', 1
@@ -106,7 +107,7 @@ AS
                         SUM(CONVERT(INT, PD.ideal)) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
                         SUM(CONVERT(INT, PD.ideal)) OVER(
                         ORDER BY PD.dxhdata_id) AS cumulative_ideal, 
-                        SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id) AS summary_target, 
+                        SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id) AS summary_target,
                         SUM(CONVERT(INT, PD.target)) OVER(
                         ORDER BY BD.started_on_chunck) AS cumulative_target, 
                         SUM(PD.actual) OVER(PARTITION BY PD.dxhdata_id) AS summary_actual, 
@@ -258,7 +259,12 @@ AS
                      WHERE DT.dxhdata_id = DH.dxhdata_id
                  ) DTD),
              CTE2
-             AS (SELECT CTE.*, 
+             AS (SELECT CTE.*,
+						actual - scrap AS adjusted_actual,
+						summary_actual - summary_scrap AS summary_adjusted_actual,
+						(cumulative_actual - cumulative_setup_scrap - cumulative_other_scrap) AS cumulative_adjusted_actual,
+						(DATEPART(minute, @current_time) * ISNULL(CTE.target,0) / 60) AS dynamic_target,
+						(DATEPART(minute, @current_time) * ISNULL(CTE.summary_target,0) / 60) AS dynamic_summary_target,
                         SUM(CASE
                                 WHEN ISNULL(CTE.order_id, 0) > 0
                                      AND CTE.Row# = 1
@@ -278,25 +284,25 @@ AS
                             ELSE 0
                         END AS result_final
                  FROM CTE2)
-             SELECT started_on_chunck, 
-                    ended_on_chunck, 
-                    hour_interval, 
+             SELECT started_on_chunck,
+                    ended_on_chunck,
+                    hour_interval,
 					shift_code,
-                    dxhdata_id, 
-                    operator_signoff, 
-                    operator_signoff_timestamp, 
-                    supervisor_signoff, 
-                    supervisor_signoff_timestamp, 
-                    start_time, 
-                    productiondata_id, 
-                    product_name AS product_code, 
-                    ideal, 
-                    target, 
-                    actual, 
-                    actual - scrap AS adjusted_actual, 
-                    scrap, 
-                    summary_scrap, 
-                    setup_scrap, 
+                    dxhdata_id,
+                    operator_signoff,
+                    operator_signoff_timestamp,
+                    supervisor_signoff,
+                    supervisor_signoff_timestamp,
+                    start_time,
+                    productiondata_id,
+                    product_name AS product_code,
+                    ideal,
+                    target,
+                    actual,
+                    adjusted_actual,
+                    scrap,
+                    summary_scrap,
+                    setup_scrap,
                     other_scrap,
                     CASE
                         WHEN productiondata_id IS NOT NULL
@@ -323,7 +329,7 @@ AS
                              AND result_final = 1
                         THEN new_ideal
                         ELSE NULL
-                    END AS summary_ideal, 
+                    END AS summary_ideal,
                     cumulative_ideal,
                     CASE
                         WHEN productiondata_id IS NOT NULL
@@ -337,24 +343,24 @@ AS
                              AND result_final = 1
                         THEN new_target
                         ELSE NULL
-                    END AS summary_target, 
-                    cumulative_target, 
-                    summary_actual, 
-                    summary_actual - summary_scrap AS summary_adjusted_actual, 
-                    cumulative_actual, 
-                    (cumulative_actual - cumulative_setup_scrap - cumulative_other_scrap) AS cumulative_adjusted_actual, 
-                    summary_setup_scrap, 
-                    cumulative_setup_scrap, 
-                    summary_other_scrap, 
-                    cumulative_other_scrap, 
-                    summary_product_code, 
-                    order_id, 
-                    order_number, 
-                    order_quantity, 
-                    routed_cycle_time, 
-                    target_percent_of_ideal, 
-                    setup_start_time, 
-                    setup_end_time, 
+                    END AS summary_target,
+                    cumulative_target,
+                    summary_actual,
+                    summary_adjusted_actual,
+                    cumulative_actual,
+                    cumulative_adjusted_actual,
+                    summary_setup_scrap,
+                    cumulative_setup_scrap,
+                    summary_other_scrap,
+                    cumulative_other_scrap,
+                    summary_product_code,
+                    order_id,
+                    order_number,
+                    order_quantity,
+                    routed_cycle_time,
+                    target_percent_of_ideal,
+                    setup_start_time,
+                    setup_end_time,
                     product_code_order,
                     CASE
                         WHEN summary_setup_minutes < 0
@@ -362,18 +368,38 @@ AS
                         WHEN summary_setup_minutes > 60
                         THEN 60
                         ELSE summary_setup_minutes
-                    END AS summary_setup_minutes, 
-                    default_routed_cycle_time, 
-                    default_target_percent_of_ideal, 
-                    summary_breakandlunch_minutes, 
-                    commentdata_id, 
-                    comment, 
-                    first_name, 
-                    last_name, 
-                    total_comments, 
+                    END AS summary_setup_minutes,
+                    default_routed_cycle_time,
+                    default_target_percent_of_ideal,
+                    summary_breakandlunch_minutes,
+                    commentdata_id,
+                    comment,
+                    first_name,
+                    last_name,
+                    total_comments,
                     timelost_summary,
                     summary_actual_quantity,
-					active_operators
+					active_operators,
+					CASE
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.adjusted_actual < dynamic_target THEN 'red'
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.adjusted_actual >= dynamic_target THEN 'green'
+                        WHEN (CTE3.ideal = 0 AND CTE3.target = 0) OR
+                            (CTE3.adjusted_actual = 0 AND CTE3.target = 0) OR
+                            (CTE3.adjusted_actual < CTE3.target)
+                        THEN 'red'
+                        ELSE 'green'
+                    END AS background_color,
+					dynamic_target,
+                    CASE
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.summary_adjusted_actual < dynamic_summary_target THEN 'red'
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.summary_adjusted_actual >= dynamic_summary_target THEN 'green'
+                        WHEN (CTE3.summary_ideal = 0 AND CTE3.summary_target = 0) OR
+                            (CTE3.summary_adjusted_actual = 0 AND CTE3.summary_target = 0) OR
+                            (CTE3.summary_adjusted_actual < CTE3.summary_target)
+                        THEN 'red'
+                        ELSE 'green'
+                    END AS summary_background_color,
+					dynamic_summary_target
              FROM CTE3
              ORDER BY started_on_chunck ASC, 
                       start_time DESC;

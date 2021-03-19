@@ -19,3 +19,7 @@
     CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY CLUSTERED ([product_id] ASC)
 );
 
+GO
+CREATE NONCLUSTERED INDEX [NCI_Product_product_name]
+    ON [dbo].[Product]([product_code])
+    INCLUDE([product_name]);

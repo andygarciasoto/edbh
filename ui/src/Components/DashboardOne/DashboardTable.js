@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactTable from 'react-table';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
     getRowsFromShifts,
     formatDate,
@@ -20,6 +20,8 @@ import CommentModal from '../Modal/CommentModal';
 import SignoffModal from '../Modal/SignoffModal';
 import OrderModal from '../Modal/OrderModal';
 import ActiveOperatorsModal from '../Modal/OperatorComponent/ActiveOperatorsModal';
+import MessageModal from '../Common/MessageModal';
+import EscalationModal from '../Common/EscalationModal';
 import 'react-table/react-table.css';
 import '../../sass/DashboardTable.scss';
 const axios = require('axios');
@@ -51,7 +53,13 @@ class DashboardTable extends React.Component {
             modal_signoff_IsOpen: false,
             signOffModalType: '',
             modal_order_IsOpen: false,
-            modal_active_operators_IsOpen: false
+            modal_active_operators_IsOpen: false,
+            actualEscalation: {},
+            modal_escalation_IsOpen: false,
+            modal_escalation_message: '',
+            modal_message_Is_Open: false,
+            modal_type: '',
+            modal_message: ''
         };
     }
 
@@ -184,8 +192,6 @@ class DashboardTable extends React.Component {
 
         if (filter && filter[0]) {
 
-            let tz = this.state.commonParams ? this.state.commonParams.value : props.user.timezone;
-
             const { start_date_time, end_date_time } = getStartEndDateTime(formatDate(filter[1]), filter[2], this.props.user);
 
             const parameters = {
@@ -206,7 +212,8 @@ class DashboardTable extends React.Component {
                 let data = response.data;
                 let alertModalOverProd = false;
                 let alertMessageOverProd = '';
-                if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
+                const currentDatetime = moment().tz(props.user.timezone);
+                if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && currentDatetime.minutes() === 0 &&
                     (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
                     alertModalOverProd = true;
                     alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
@@ -217,11 +224,58 @@ class DashboardTable extends React.Component {
                     currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
                 }
 
+                let sequentialRed = 0;
+                let actualEscalation = {};
+                let modal_escalation_IsOpen = false;
+                let modal_escalation_message = '';
+
+                if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
+                    _.chain(data)
+                        .groupBy('hour_interval')
+                        .map((value) => {
+                            const row = value[0];
+                            if (currentDatetime.isAfter(moment.tz(row.ended_on_chunck, props.user.timezone))) {
+                                sequentialRed = row.summary_background_color === 'red' ? sequentialRed + 1 : 0;
+                            }
+                            return {
+                                started_on_chunck: moment.tz(row.started_on_chunck, props.user.timezone),
+                                ended_on_chunck: moment.tz(row.ended_on_chunck, props.user.timezone),
+                                summary_background_color: row.summary_background_color
+                            };
+                        })
+                        .value();
+                    if (sequentialRed > 0) {
+                        _.forEach(props.user.escalations, escalation => {
+                            if (Number(escalation.escalation_hours) <= sequentialRed) {
+                                actualEscalation = escalation;
+                            }
+                        });
+
+                        const escalation = Number(localStorage.getItem('escalation'));
+                        const escalation_hour = Number(localStorage.getItem('escalation_hour'));
+                        if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour)) {
+                            modal_escalation_IsOpen = true;
+                            modal_escalation_message = `The ${actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible`;
+                            localStorage.setItem('escalation', actualEscalation.escalation_level);
+                            localStorage.setItem('escalation_hour', currentDatetime.hour());
+                        }
+                    }
+                }
+
+                const previousEscalation = this.state.actualEscalation;
+
                 this.setState({
                     data,
                     alertModalOverProd,
                     alertMessageOverProd,
-                    currentRow
+                    currentRow,
+                    actualEscalation,
+                    modal_escalation_IsOpen,
+                    modal_escalation_message
+                }, () => {
+                    if (!_.isEmpty(actualEscalation) || (_.isEmpty(actualEscalation) && !_.isEmpty(previousEscalation))) {
+                        this.setState(this.getTableColumns(this.state, this.props));
+                    }
                 });
             });
         }
@@ -241,7 +295,12 @@ class DashboardTable extends React.Component {
             modal_signoff_IsOpen: false,
             signOffModalType: '',
             modal_order_IsOpen: false,
-            modal_active_operators_IsOpen: false
+            modal_active_operators_IsOpen: false,
+            modal_escalation_IsOpen: false,
+            modal_escalation_message: '',
+            modal_message_Is_Open: false,
+            modal_type: '',
+            modal_message: ''
         });
     }
 
@@ -384,6 +443,20 @@ class DashboardTable extends React.Component {
                     currentRow={this.state.currentRow}
                     selectedAssetOption={this.state.selectedAssetOption}
                     t={t}
+                />
+                <MessageModal
+                    isOpen={this.state.modal_message_Is_Open}
+                    onRequestClose={this.closeModal}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
+                    t={this.props.t}
+                />
+                <EscalationModal
+                    isOpen={this.state.modal_escalation_IsOpen}
+                    onRequestClose={this.closeModal}
+                    message={this.state.modal_escalation_message}
+                    escalation={this.state.actualEscalation}
+                    t={this.props.t}
                 />
             </React.Fragment>
         );

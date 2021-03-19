@@ -50,20 +50,23 @@ AS
 		@asset_level		NVARCHAR(100) = 'Cell',
 		@asset_status		NVARCHAR(100) = 'Active',
 		@start_shift_utc	DATETIME,
-		@end_shift_utc		DATETIME;
+		@end_shift_utc		DATETIME,
+		@current_date_time	DATETIME;
 
         IF EXISTS (SELECT * FROM dbo.Asset A WHERE A.asset_id = @asset_id AND A.asset_level = @asset_site)
 		BEGIN
 			SELECT
 				@start_shift_utc =  @start_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC'
+				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
+				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE CP.site_timezone
 			FROM dbo.CommonParameters CP WHERE CP.site_id = @asset_id;
 		END
 		ELSE
 		BEGIN
 			SELECT
 				@start_shift_utc =  @start_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC'
+				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
+				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE CP.site_timezone
 			FROM dbo.CommonParameters CP WHERE CP.site_id = (
 				SELECT asset_id FROM dbo.Asset WHERE asset_level = 'Site' AND asset_code = (SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id)
 			);
@@ -86,8 +89,9 @@ AS
 				DXH.production_day,
 				DXH.operator_signoff,
 				DXH.supervisor_signoff,
-				ISNULL(SUM(PD.ideal) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_ideal,
-				ISNULL(SUM(PD.target) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_target,
+				(DATEPART(minute, @current_date_time) * ISNULL(SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id),0) / 60) as dynamic_target,
+				ISNULL(SUM(CONVERT(INT, PD.ideal)) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_ideal,
+				ISNULL(SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_target,
 				ISNULL(SUM(PD.actual) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_actual,
 				ISNULL(SUM(PD.setup_scrap + PD.other_scrap) OVER(PARTITION BY PD.dxhdata_id),0) AS summary_scrap,
 				OD.order_id,
@@ -129,12 +133,15 @@ AS
 			CTE1.production_day,
 			CTE1.operator_signoff,
 			CTE1.supervisor_signoff,
+			CTE1.dynamic_target,
 			CTE1.summary_ideal,
 			CTE1.summary_target,
 			CTE1.summary_actual,
 			CTE1.summary_scrap,
 			CTE1.summary_actual - CTE1.summary_scrap AS summary_adjusted_actual,
 			CASE
+				WHEN @current_date_time >= start_time AND @current_date_time < end_time AND (CTE1.summary_actual - CTE1.summary_scrap) < dynamic_target THEN 'red'
+				WHEN @current_date_time >= start_time AND @current_date_time < end_time AND (CTE1.summary_actual - CTE1.summary_scrap) >= dynamic_target THEN 'green'
 				WHEN (CTE1.summary_ideal = 0 AND CTE1.summary_target = 0) OR 
 				((CTE1.summary_actual - CTE1.summary_scrap) = 0 AND CTE1.summary_target = 0) OR
 				(CTE1.summary_actual < CTE1.summary_target)

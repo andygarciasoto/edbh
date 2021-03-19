@@ -6,15 +6,13 @@ import * as serviceWorker from './serviceWorker';
 import './i18n';
 import axios from 'axios';
 import configuration from './config.json';
-import { API } from './Utils/Constants';
+import { API, AUTH } from './Utils/Constants';
 import queryString from 'query-string';
+import { getResponseFromGeneric } from './Utils/Requests';
 import {
-    getCurrentShift,
-    genericRequest,
-    getResponseFromGeneric,
-    assignValuesToUser
-} from './Utils/Requests';
-import _ from 'lodash';
+    assignValuesToUser,
+    assignSiteConfiguration
+} from './Utils/Utils';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
@@ -105,66 +103,37 @@ function init() {
         return Promise.reject(error);
     });
 
-    genericRequest('get', API, '/me', { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) })
+    const parameters = {
+        station: params.st || localStorage.getItem('st'),
+        site_id: params.cs
+    }
+
+    getResponseFromGeneric('get', AUTH, '/me', { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY) }, parameters)
         .then(async (response) => {
             let user = {};
-            user = assignValuesToUser(user, response.data[0]);
+            user = assignValuesToUser(user, response[0]);
 
-            localStorage.setItem('ln', response.data[0].language);
+            localStorage.setItem('ln', user.language);
+            parameters.site_id = parameters.site_id || user.site;
 
-            let station = params.st || localStorage.getItem('st');
-            let site = params.cs;
-            let machine = null;
+            const siteInfomration = await getResponseFromGeneric('get', API, '/loadSiteConfiguration', {}, parameters) || {};
+            const machineValues = siteInfomration.dsystems[0] || {};
 
-            const shift = {
-                st: station,
-                site: site || user.site,
-                clock_number: user.badge
-            };
-            const asset = {
-                site: site || user.site,
-                level: 'All',
-                automation_level: 'All'
-            };
-
-            let res = await getResponseFromGeneric('get', API, '/asset_display_system', {}, shift, {}) || {};
-            const machineValues = res[0] || {};
-            machine = {
+            const machine = {
                 asset_code: machineValues.asset_code || 'No Data',
                 asset_name: machineValues.asset_name || 'No Data',
                 asset_level: machineValues.asset_level,
                 automation_level: machineValues.automation_level,
                 display_name: machineValues.displaysystem_name,
                 asset_description: machineValues.asset_description
-            }
+            };
 
-            user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, shift, {}) || [];
-            user.site_assets = await getResponseFromGeneric('get', API, '/machine', {}, asset, {}) || [];
-            user.machines = _.filter(user.site_assets, { asset_level: 'Cell' });
-            user.sites = await getResponseFromGeneric('get', API, '/find_sites', {}, shift, {}) || [];
-            user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, shift, {}) || [];
-            user.workcell = await getResponseFromGeneric('get', API, '/workcell', {}, shift, {}) || [];
-
-            if (site && Number(user.site) !== Number(site)) {
-                const parameters = {
-                    badge: user.badge,
-                    site_id: site
-                };
-
-                res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
-                let newUserValues = res[0] || {};
-                user = assignValuesToUser(user, newUserValues);
-            }
-
-            if (!user.shift_id) {
-                let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
-                user.date_of_shift = currentShiftInfo.date_of_shift;
-                user.current_shift = currentShiftInfo.current_shift;
-                user.shift_id = currentShiftInfo.shift_id;
-            }
+            user = assignSiteConfiguration(user, siteInfomration);
 
             ReactDOM.render(
-                <App user={user} defaultAsset={station} machineData={machine} socket={socket} />, document.getElementById('root'));
+                <App user={user} defaultAsset={parameters.station} machineData={machine} socket={socket} />,
+                document.getElementById('root')
+            );
 
         });
 };

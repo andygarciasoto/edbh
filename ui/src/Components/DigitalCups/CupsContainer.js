@@ -18,13 +18,15 @@ class CupsContainer extends React.Component {
     }
 
     getCups(assetList) {
-        const sortData = _.orderBy(assetList, ['escalation', 'background_color', 'redCount', 'asset_name'], ['desc', 'desc', 'desc']);
+        const sortData = _.orderBy(assetList, ['actualEscalation', 'background_color', 'redCount', 'asset_name'], ['desc', 'desc', 'desc']);
         return _.map(sortData, asset => {
             const children = _.initial(asset.children);
+            const actualEscalation = asset.actualEscalation;
+            const classType = actualEscalation.escalation_level === 1 ? 'inital' : (actualEscalation.escalation_level === 2 ? 'warning' : 'danger');
             return (
                 <Col
                     md={2} lg={2}
-                    className={'childrenCupDiv ' + (asset.escalation ? 'escalateBlink' : '')}
+                    className={'childrenCupDiv ' + (!asset.supervisor_signoff && actualEscalation.escalation_id ? 'border_escalation_' + classType : '')}
                     key={'child_' + asset.asset_id}
                     onClick={() => this.redirectToDashboard(asset)}>
                     <Row className='previousHours'>

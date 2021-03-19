@@ -1,28 +1,81 @@
+.activeModal .modal-dialog {
+  max-width: 50%; }
+
 .actualModal .modal-dialog {
   max-width: 20%; }
 
-.App {
-  text-align: center; }
+.btnYellow {
+  color: #ffb91d;
+  background-color: transparent;
+  border-color: #ffb91d; }
 
-.app-wrapper {
-  background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949); }
+.btnYellow:hover {
+  color: white;
+  background-color: #ffb91d;
+  border-color: #ffb91d; }
 
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear; */
-  height: 20vmin;
-  pointer-events: none; }
+.btnGreen {
+  color: green;
+  background-color: transparent;
+  border-color: green; }
 
-.App-link {
-  color: #61dafb; }
+.btnGreen:hover {
+  color: white;
+  background-color: green;
+  border-color: green; }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg); }
-  to {
-    transform: rotate(360deg); } }
+.btnRed {
+  color: #b80600;
+  background-color: transparent;
+  border-color: #b80600; }
+
+.btnRed:hover {
+  color: white;
+  background-color: #b80600;
+  border-color: #b80600; }
+
+.escalation_inital {
+  color: #cf9903; }
+
+.escalation_warning {
+  color: darkorange; }
+
+.escalation_danger {
+  color: #b80600; }
+
+.escalation_icon_inital,
+.escalation_icon_warning {
+  animation: blinker 1s step-end infinite alternate; }
+
+.escalation_icon_danger {
+  animation: blinker .1s step-end infinite alternate; }
+
+@keyframes blinker {
+  50% {
+    color: white; } }
+
+.border_escalation_inital {
+  border: 2px solid #cf9903;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_warning {
+  border: 2px solid darkorange;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_danger {
+  border: 2px solid #b80600;
+  animation: blinker2 .1s step-end infinite alternate; }
+
+@keyframes blinker2 {
+  50% {
+    border-color: white; } }
 
 .barcodeScannerModal {
   background-color: rgba(0, 0, 0, 0.3); }
+
+.operatorsCheckBoxDiv,
+.operatorsCheckBoxDiv .form-check {
+  margin-top: 1%; }
 
 .commentsModal-comment {
   font-size: 0.9em; }
@@ -66,7 +119,7 @@
   background-color: #f6f6f6;
   padding: 100%;
   overflow: scroll;
-  color: red; }
+  color: #b80600; }
 
 .ideal {
   padding: 5px 30px 5px 30px; }
@@ -78,16 +131,66 @@
     color: #ffb91d !important; }
 
 .signoff-reminder-true {
-  color: red;
+  color: #b80600;
   font-weight: bolder;
   animation: blinker 1s linear infinite;
   text-align: center; }
 
 .signoff-reminder-icon {
-  color: red;
+  color: #b80600;
   animation: blinker 1s linear infinite;
   text-align: center;
   width: 100%; }
+
+.buttonFilter {
+  padding: 0%;
+  margin-top: 1.2%; }
+
+.siteHeader {
+  margin-top: 1%;
+  margin-bottom: 1%; }
+
+.cupInformationDiv {
+  border: 1px solid #e2e2e2;
+  border-radius: 2em;
+  padding: 1%; }
+
+.childrenCupDiv {
+  margin-left: 1%;
+  margin-bottom: 1%;
+  padding: 1%;
+  font-weight: bold;
+  font-size: large; }
+
+.previousHours .col {
+  max-width: 1px;
+  min-height: 20px;
+  margin-right: 2%; }
+
+.green {
+  background-color: green; }
+
+.red {
+  background-color: #b80600; }
+
+.assetName {
+  margin-top: 3%;
+  border: 1px solid #e2e2e2;
+  min-width: 100%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: white; }
+
+.currentInformation {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.childrenCupDiv:hover {
+  cursor: pointer; }
 
 a {
   color: #ffb91d; }
@@ -158,13 +261,31 @@ a:hover {
   color: #353535;
   border: solid 1px #353535; }
 
+.machine-picker-button .dropdown-toggle::after {
+  margin-left: 6%;
+  float: right;
+  margin-top: 4%; }
+
+.dropdown-toggle,
+.btn-primary {
+  border: solid 1px #e2e2e2;
+  width: 60%;
+  background-color: #f6f6f6;
+  color: #1f1f1f;
+  text-align: left; }
+
+.machine-picker div {
+  max-height: 50vh !important;
+  overflow-y: scroll;
+  width: 60%; }
+
 .wrapper-main-import {
   background-color: white; }
 
 .import-wrapper {
   margin: 100px 75px 0px 75px;
   padding: 50px;
-  border: solid lightgray 1px; }
+  border: 1px solid #e2e2e2; }
 
 .intershift-communication-comments {
   margin-top: 30px;
@@ -212,7 +333,10 @@ a:hover {
 .logoffbuttons .btn {
   margin-left: 4%;
   height: 200%;
-  width: 50%; }
+  width: 50%;
+  font-weight: bold;
+  font-size: medium;
+  text-align: center; }
 
 .LogOffMessage {
   font-size: x-large; }
@@ -230,7 +354,7 @@ a:hover {
 
 .warning-message {
   display: inline;
-  color: red; }
+  color: #b80600; }
 
 .success-message {
   display: inline;
@@ -300,12 +424,12 @@ a:hover {
     padding: 0px 10px 0px 10px; }
   .number-field input {
     border-radius: 3px;
-    border: 1px solid #b9b9b9;
+    border: 1px solid #e2e2e2;
     width: 15%;
     text-align: center; }
 
 .new-timeloss {
-  border: 1px solid #b9b9b9;
+  border: 1px solid #e2e2e2;
   border-radius: 3px;
   padding: 10px; }
 
@@ -338,7 +462,7 @@ a:hover {
   font-size: 0.9em; }
 
 .timelost-field {
-  border: 1px solid #b9b9b9;
+  border: 1px solid #e2e2e2;
   border-radius: 3px;
   padding: 5px;
   text-align: center;
@@ -347,12 +471,6 @@ a:hover {
 .react_control__menu {
   height: 220px !important;
   overflow-y: hidden; }
-
-.reactTableTReason,
-.reactTableTReason .rt-table,
-.reactTableTReason .rt-tbody,
-.reactTableTReason .rt-td {
-  overflow: visible; }
 
 .scrapModal .modal-dialog {
   max-width: 50%; }
@@ -445,7 +563,7 @@ a:hover {
     opacity: 0; } }
 
 .SupervisorTitle {
-  color: khaki;
+  color: #ffb91d;
   width: 40%;
   vertical-align: middle;
   font-size: xx-large; }
@@ -464,4 +582,6 @@ a:hover {
 .roleButtons .btn {
   margin-left: 4%;
   height: 100px;
-  width: 200px; }
+  width: 200px;
+  font-weight: bold;
+  font-size: medium; }
