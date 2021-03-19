@@ -83,7 +83,7 @@ export class UserRepository {
 		WHERE status = 'Active'`);
     }
     public async getEscalationBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT DISTINCT TFD.escalation_id, TFD.badge, E.escalation_name, 
+        return await this.sqlServerStore.ExecuteQuery(`SELECT DISTINCT TFD.escalation_id, E.escalation_name, 
         e.escalation_group, e.escalation_hours, e.escalation_level, e.status FROM dbo.TFDUsers TFD
         JOIN dbo.Escalation E ON TFD.escalation_id = E.escalation_id AND TFD.site = ${site_id}
         AND E.Status = 'Active'`);
