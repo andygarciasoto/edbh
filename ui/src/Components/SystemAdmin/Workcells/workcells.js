@@ -4,15 +4,16 @@ import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
+import AddWorkcell from "./addWorkcell";
 
 class Workcells extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ShiftData: [],
-      addShift: false,
-      editShift: false,
-      shift_id: 0,
+      addWorkcell: false,
+      editWorkcell: false,
+      workcell_id: 0,
     };
   }
 
@@ -26,17 +27,17 @@ class Workcells extends Component {
   //     });
   //   }
 
-  //   showAddShift = () => {
-  //     this.setState({
-  //       addShift: true,
-  //     });
-  //   };
+    showAddWorkcell = () => {
+      this.setState({
+        addWorkcell: true,
+      });
+    };
 
-  //   closeAddShift = () => {
-  //     this.setState({
-  //         addShift: false,
-  //     });
-  //   };
+    closeAddWorkcell = () => {
+      this.setState({
+        addWorkcell: false,
+      });
+    };
 
   //   showEditShift = (shift_id) => {
   //     this.setState({
@@ -65,16 +66,16 @@ class Workcells extends Component {
          category={false}
          type={false}
          shifts={false}
-         onClick={() => this.showAddShift()}
+         onClick={() => this.showAddWorkcell()}
         ></Filter>
-        {/* {this.state.addShift === true && (
-          <AddShift
+        {this.state.addWorkcell === true && (
+          <AddWorkcell
             user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
+            showForm={this.state.addWorkcell}
+            closeForm={this.closeAddWorkcell}
           />
         )}
-        {this.state.editShift === true && (
+        {/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}
