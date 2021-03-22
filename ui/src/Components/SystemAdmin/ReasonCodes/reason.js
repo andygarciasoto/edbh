@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
+import AddReason from "./addReason";
 
 
 
@@ -12,8 +13,8 @@ class Reason extends Component {
     super(props);
     this.state = {
       ShiftData: [],
-      addShift: false,
-      editShift: false,
+      addReason: false,
+      editReason: false,
       shift_id: 0,
     };
   }
@@ -28,17 +29,17 @@ class Reason extends Component {
 //     });
 //   }
 
-//   showAddShift = () => {
-//     this.setState({
-//       addShift: true,
-//     });
-//   };
+  showAddReason = () => {
+    this.setState({
+      addReason: true,
+    });
+  };
 
-//   closeAddShift = () => {
-//     this.setState({
-//         addShift: false,
-//     });
-//   };
+  closeAddReason = () => {
+    this.setState({
+      addReason: false,
+    });
+  };
 
 //   showEditShift = (shift_id) => {
 //     this.setState({
@@ -66,16 +67,16 @@ class Reason extends Component {
           automatedLevel={false}
           category={true}
           type={true}
-          onClick={() => this.showAddShift()}
+          onClick={() => this.showAddReason()}
         ></Filter>
-        {/* {this.state.addShift === true && (
-          <AddShift
+        {this.state.addReason === true && (
+          <AddReason
             user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
+            showForm={this.state.addReason}
+            closeForm={this.closeAddReason}
           />
         )}
-        {this.state.editShift === true && (
+        {/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}

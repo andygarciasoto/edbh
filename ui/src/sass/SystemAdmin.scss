@@ -1,6 +1,13 @@
 #administrator {
   margin: 30px 30px;
 }
+
+.modal-reason {
+  width: 169%;
+  height: 500px;
+  margin-left: -169px;
+}
+
 .user-box {
   margin-top: 30px;
   border-style: groove;
@@ -8,6 +15,64 @@
   height: auto;
   width: auto;
   margin-bottom: 30px;
+}
+
+.input-tag-code {
+  margin-left: 48px;
+}
+
+.label-tag-category {
+  margin-left: -50px;
+}
+
+.select-tag-category {
+  margin-left: 41px;
+}
+
+.input-tag-name {
+  margin-left: 43px;
+}
+
+.input-tag-description {
+  width: 250px;
+  height: 100px;
+  margin-left: 5px;
+}
+
+.input-tag-tag {
+  margin-left: 12px;
+}
+
+.input-tag-aggregation {
+  margin-left: 14px;
+}
+
+.select-tag-type {
+  margin-left: 24px;
+}
+
+.input-reason-code {
+  margin-left: 10px;
+}
+
+.label-reason-category {
+  margin-left: -90px;
+}
+
+.select-reason-category {
+  margin-left: 10px;
+}
+
+.input-reason-name {
+  margin-left: 5px;
+}
+
+.label-reason-type {
+  margin-left: -90px;
+}
+
+.select-reason-type {
+  margin-left: 41px;
 }
 
 .input-uom-code {
@@ -52,6 +117,10 @@
 }
 .input-name {
   margin-left: 52px;
+
+  &.fix-name {
+    margin-right: 59px;
+  }
 }
 
 .input-sequence {
@@ -76,6 +145,10 @@
   height: 168px;
   width: 367px;
   margin-left: 15px;
+
+  &.fix-description {
+    margin-right: 185px;
+  }
 }
 
 .input-start {
@@ -87,6 +160,10 @@
 
   .input-startoff {
     margin-left: 25px;
+
+    &.fix-start {
+      margin-right: 281px;
+    }
   }
 }
 .input-end {

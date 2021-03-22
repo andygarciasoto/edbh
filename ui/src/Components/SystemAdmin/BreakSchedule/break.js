@@ -4,14 +4,15 @@ import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
+import AddBreak from "./addBreak";
 
 class Break extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ShiftData: [],
-      addShift: false,
-      editShift: false,
+      addBreak: false,
+      editBreak: false,
       shift_id: 0,
     };
   }
@@ -26,17 +27,17 @@ class Break extends Component {
   //     });
   //   }
 
-  //   showAddShift = () => {
-  //     this.setState({
-  //       addShift: true,
-  //     });
-  //   };
+    showAddBreak = () => {
+      this.setState({
+        addBreak: true,
+      });
+    };
 
-  //   closeAddShift = () => {
-  //     this.setState({
-  //         addShift: false,
-  //     });
-  //   };
+    closeAddBreak = () => {
+      this.setState({
+          addBreak: false,
+      });
+    };
 
   //   showEditShift = (shift_id) => {
   //     this.setState({
@@ -65,16 +66,16 @@ class Break extends Component {
          category={false}
          type={false}
          shifts={true}
-         onClick={() => this.showAddShift()}
+         onClick={() => this.showAddBreak()}
         ></Filter>
-        {/* {this.state.addShift === true && (
-          <AddShift
+        {this.state.addBreak === true && (
+          <AddBreak
             user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
+            showForm={this.state.addBreak}
+            closeForm={this.closeAddBreak}
           />
         )}
-        {this.state.editShift === true && (
+        {/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}
