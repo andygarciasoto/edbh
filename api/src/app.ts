@@ -42,9 +42,10 @@ import { SiteRepository } from './repositories/site-repository';
 import { SiteService } from './services/siteservice';
 import { EscalationRepository } from './repositories/escalation-repository';
 import { EscalationService } from './services/escalationservice';
-
-
-
+import { LanguageRepository } from './repositories/language-repository';
+import { LanguageService } from './services/languageservice';
+import { TimezoneRepository } from './repositories/timezone-repository';
+import { TimezoneService } from './services/timezoneservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
@@ -71,6 +72,8 @@ const scanRepository = new ScanRepository(sqlServerStore);
 const roleRepository = new RoleRepository(sqlServerStore);
 const siteRepository = new SiteRepository(sqlServerStore);
 const escalationRepository = new EscalationRepository(sqlServerStore);
+const languageRepository = new LanguageRepository(sqlServerStore);
+const timezoneRepository = new TimezoneRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
@@ -90,6 +93,8 @@ const dataToolService = new DataToolService(workcellRepository, assetRepository,
 const scanService = new ScanService(scanRepository);
 const roleService = new RoleService(roleRepository);
 const escalationService = new EscalationService(escalationRepository);
+const languageService = new LanguageService(languageRepository);
+const timezoneService = new TimezoneService(timezoneRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -236,6 +241,12 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
+        }, true),
+        new http.RestEndpoint('/api/languages', 'get', async (req: Request, res: Response) => {
+            await languageService.getLanguages(req, res);
+        }, true), 
+        new http.RestEndpoint('/api/languages', 'get', async (req: Request, res: Response) => {
+            await timezoneService.getTimezones(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
