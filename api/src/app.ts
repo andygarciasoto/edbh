@@ -194,7 +194,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/datatool/import_data', 'post', async (req, res: Response) => {
             await dataToolService.importData(req, res);
-        }, true),
+        }, true, true),
         new http.RestEndpoint('/datatool/export_data', 'get', async (req: Request, res: Response) => {
             await dataToolService.exportData(req, res);
         }, true),

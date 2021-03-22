@@ -219,6 +219,7 @@ export class AuthService {
                 });
             }
             if (payload.body.sub) {
+                req.query.station = req.query.station && req.query.station !== 'null' ? req.query.station : null;
                 let badge = payload.body.user_badge;
                 let machine = payload.body.user_machine || req.query.station || 0;
                 let site = req.query.site_id || 0;
