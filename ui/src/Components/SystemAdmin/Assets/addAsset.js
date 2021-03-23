@@ -4,30 +4,63 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as UserActions from "../../../redux/actions/userActions";
 //import { API } from "../../../Utils/Constants";
-import { Modal, Button, Form, Col } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import "../../../sass/SystemAdmin.scss";
-import AvailableAssets from "../../CustomComponents/availableAssets";
+import Step1 from "./step1";
+import Step2 from "./step2";
+import Step3 from "./step3";
+import Step4 from "./step4";
 
-class AddReason extends Component {
+class AddAsset extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      badge: "",
-      username: "",
-      firstname: "",
-      lastname: "",
-      role: 1,
-      status: "Active",
-      escalation_id: 1,
-      site: "",
-      roles: [],
-      show: false,
-      showForm: true,
-      escalation: [],
-      sites: [],
-      modalError: false,
+      step1: true,
+      step2: false,
+      step3: false,
+      step4: false,
     };
   }
+
+  assetSteps = (step, e) => {
+    e.preventDefault();
+    switch (step) {
+      case 1:
+        this.setState({
+          step1: true,
+          step2: false,
+          step3: false,
+          step4: false,
+        });
+        break;
+      case 2:
+        this.setState({
+          step1: false,
+          step2: true,
+          step3: false,
+          step4: false,
+        });
+        break;
+      case 3:
+        this.setState({
+          step1: false,
+          step2: false,
+          step3: true,
+          step4: false,
+        });
+        break;
+      case 4:
+        this.setState({
+          step1: false,
+          step2: false,
+          step3: false,
+          step4: true,
+        });
+        break;
+      default:
+        break;
+    }
+  };
 
   //   componentDidMount() {
   //     const { actions } = this.props;
@@ -137,74 +170,29 @@ class AddReason extends Component {
   render() {
     return (
       <div>
-        <Modal
-          show={this.props.showForm}
-          onHide={this.handleClose}
-          contentClassName="modal-reason"
-        >
+        <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Add Reason</Modal.Title>
+            <Modal.Title>Add Asset</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form>
-              <Form.Row>
-                <Col>
-                  <label>
-                    Code:
-                    <input
-                      className="input-reason-code"
-                      type="text"
-                      name="code"
-                      value={this.state.badge}
-                      autoComplete={"false"}
-                      onChange={this.handleChange}
-                    />
-                  </label>
-                </Col>
-                <Col>
-                  <label className="label-reason-category">
-                    Category:
-                    <select
-                      className="select-reason-category"
-                      name="decimals"
-                      onChange={this.handleChange}
-                    >
-                      <option value="Active">Cost</option>
-                      <option value="Inactive">Cost</option>
-                    </select>
-                  </label>
-                </Col>
-              </Form.Row>
-              <Form.Row>
-                <Col>
-                  <label>
-                    Name:
-                    <input
-                      className="input-reason-name"
-                      type="text"
-                      name="name"
-                      value={this.state.badge}
-                      autoComplete={"false"}
-                      onChange={this.handleChange}
-                    />
-                  </label>
-                </Col>
-                <Col>
-                  <label className="label-reason-type">
-                    Type:
-                    <select
-                      className="select-reason-type"
-                      name="type"
-                      onChange={this.handleChange}
-                    >
-                      <option value="Active">Downtime</option>
-                      <option value="Inactive">Cost</option>
-                    </select>
-                  </label>
-                </Col>
-              </Form.Row>
-            </form>
-            <AvailableAssets></AvailableAssets>
+            {this.state.step1 === true && (
+              <Step1 nextStep={(e) => this.assetSteps(2, e)} />
+            )}
+            {this.state.step2 === true && (
+              <Step2
+                nextStep={(e) => this.assetSteps(3, e)}
+                back={(e) => this.assetSteps(1, e)}
+              />
+            )}
+            {this.state.step3 === true && (
+              <Step3
+                nextStep={(e) => this.assetSteps(4, e)}
+                back={(e) => this.assetSteps(2, e)}
+              />
+            )}
+            {this.state.step4 === true && (
+              <Step4 back={(e) => this.assetSteps(3, e)} />
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>
@@ -219,7 +207,7 @@ class AddReason extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Reason has been added</Modal.Body>
+          <Modal.Body>Asset has been added</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
@@ -248,4 +236,4 @@ export const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(AddReason);
+export default connect(null, mapDispatch)(AddAsset);
