@@ -245,7 +245,7 @@ const appConfig = {
         new http.RestEndpoint('/api/languages', 'get', async (req: Request, res: Response) => {
             await languageService.getLanguages(req, res);
         }, true), 
-        new http.RestEndpoint('/api/languages', 'get', async (req: Request, res: Response) => {
+        new http.RestEndpoint('/api/timezones', 'get', async (req: Request, res: Response) => {
             await timezoneService.getTimezones(req, res);
         }, true)
     ],
