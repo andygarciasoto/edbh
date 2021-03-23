@@ -170,7 +170,11 @@ class AddAsset extends Component {
   render() {
     return (
       <div>
-        <Modal show={this.props.showForm} onHide={this.handleClose}>
+        <Modal
+          show={this.props.showForm}
+          onHide={this.handleClose}
+          contentClassName="modal-reason"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Add Asset</Modal.Title>
           </Modal.Header>
