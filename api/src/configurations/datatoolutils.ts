@@ -147,7 +147,8 @@ export function getParametersOfTable(tableName, siteId) {
             break;
         case 'Asset':
             parametersObject.extraColumns = ', w.workcell_id';
-            parametersObject.joinSentence = `LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name`;
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset a ON a.asset_code = s.site_code
+            LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name AND A.asset_id = w.site_id`;
             parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
             parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], 
                 t.[asset_level] = s.[asset_level], t.[parent_asset_code] = s.[parent_asset_code], t.[value_stream] = s.[value_stream], 
@@ -166,7 +167,7 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', a.asset_id, a2.asset_id as site_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code
                 JOIN dbo.Asset a2 ON a.site_code = a2.asset_code`;
-            parametersObject.matchParameters = 's.asset_id = t.asset_id';
+            parametersObject.matchParameters = 's.asset_id = t.asset_id AND s.displaysystem_name = t.displaysystem_name';
             parametersObject.updateSentence = `t.[displaysystem_name] = s.[displaysystem_name], t.[status] = s.[status], 
                 t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE()`;
             parametersObject.insertSentence = `([displaysystem_name], [status], [entered_by], [last_modified_by], [asset_id]) 

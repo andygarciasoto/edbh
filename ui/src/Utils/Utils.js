@@ -35,6 +35,7 @@ function assignSiteConfiguration(user, newAttributes) {
     user.machines = newAttributes.machines;
     user.uoms = newAttributes.uoms;
     user.workcell = newAttributes.workcell;
+    user.assets_workcell = newAttributes.assets_workcell;
     user.escalations = newAttributes.escalations;
     return user;
 }
@@ -61,6 +62,14 @@ function getAreaAssetOptionsDC(user) {
         asset.value = asset.asset_id;
         asset.label = asset.asset_name;
         return asset;
+    });
+}
+
+function getWorkcellOptionsDC(user) {
+    return _.map(user.workcell, workcell => {
+        workcell.value = workcell.workcell_name;
+        workcell.label = workcell.workcell_name;
+        return workcell;
     });
 }
 
@@ -125,6 +134,7 @@ export {
     getDtReason,
     getLevelOptions,
     getAreaAssetOptionsDC,
+    getWorkcellOptionsDC,
     getWorkcellValueOptionsDC,
     getStartEndDateTime,
     GetShiftProductionDayFromSiteAndDate

@@ -102,7 +102,7 @@ class DigitalCups extends React.Component {
                             if (currentDatetime.isAfter(moment.tz(row.end_time, this.props.user.timezone))) {
                                 sequentialRed = row.background_color === 'red' ? sequentialRed + 1 : 0;
                             }
-                            
+
                         });
                         if (sequentialRed > 0) {
                             _.forEach(this.props.user.escalations, escalation => {
@@ -113,7 +113,7 @@ class DigitalCups extends React.Component {
                         }
                     }
                     const redCount = (_.filter(_.initial(value), { background_color: 'red' }) || []).length;
-                    
+
                     return {
                         asset_id: actualHour.asset_id,
                         asset_code: key,
@@ -125,7 +125,9 @@ class DigitalCups extends React.Component {
                         redCount: redCount,
                         children: value,
                         sequentialRed: sequentialRed,
-                        actualEscalation: actualEscalation
+                        actualEscalation: actualEscalation,
+                        escalation: !_.isEmpty(actualEscalation),
+                        escalation_level: _.isEmpty(actualEscalation) ? null : actualEscalation.escalation_level
                     };
                 })
                 .value();

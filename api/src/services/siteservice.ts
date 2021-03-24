@@ -4,6 +4,7 @@ import { ShiftRepository } from '../repositories/shift-repository';
 import { UomRepository } from '../repositories/uom-repository';
 import { SiteRepository } from '../repositories/site-repository';
 import { EscalationRepository } from '../repositories/escalation-repository';
+import { WorkcellRepository } from '../repositories/workcell-repository';
 import _ from 'lodash';
 
 export class SiteService {
@@ -13,14 +14,16 @@ export class SiteService {
     private readonly uomrepository: UomRepository;
     private readonly siterepository: SiteRepository;
     private readonly escalationrepository: EscalationRepository;
+    private readonly workcellrepository: WorkcellRepository;
 
-    public constructor(assetRepository: AssetRepository, shiftsRepository: ShiftRepository, uomRepository: UomRepository, 
-        siteRepository: SiteRepository, escalationRepository: EscalationRepository) {
+    public constructor(assetRepository: AssetRepository, shiftsRepository: ShiftRepository, uomRepository: UomRepository,
+        siteRepository: SiteRepository, escalationRepository: EscalationRepository, workcellRepository: WorkcellRepository) {
         this.assetrepository = assetRepository;
         this.shiftsrepository = shiftsRepository;
         this.uomrepository = uomRepository;
         this.siterepository = siteRepository;
         this.escalationrepository = escalationRepository;
+        this.workcellrepository = workcellRepository;
     }
 
     public async loadSiteConfiguration(req: Request, res: Response) {
@@ -30,7 +33,7 @@ export class SiteService {
             return res.status(400).json({ message: 'Bad Request - Missing Site id Parameter' });
         }
 
-        let siteInformation = { dsystems: [], shifts: [], site_assets: [], machines: [], uoms: [], workcell: [], escalations: [] };
+        let siteInformation = { dsystems: [], shifts: [], site_assets: [], machines: [], uoms: [], workcell: [], assets_workcell: [], escalations: [] };
 
         try {
             if (station) {
@@ -41,7 +44,8 @@ export class SiteService {
             siteInformation.site_assets = await this.assetrepository.getAssetBySite(site_id, 'All', 'All');
             siteInformation.machines = _.filter(siteInformation.site_assets, { asset_level: 'Cell' });
             siteInformation.uoms = await this.uomrepository.getUomBySite(site_id);
-            siteInformation.workcell = await this.assetrepository.getAssetByWorkcell(station || 'Null', site_id);
+            siteInformation.workcell = await this.workcellrepository.getWorkcellBySite(site_id);
+            siteInformation.assets_workcell = await this.assetrepository.getAssetByWorkcell(station || 'Null', site_id);
             siteInformation.escalations = await this.escalationrepository.getEscalationBySite(site_id);
 
         } catch (ex) {

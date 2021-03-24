@@ -39,7 +39,7 @@ const helpers = {
             }
         }
 
-        if (rowValid && (rowValid.hour_interval.includes('Shift'))) {
+        if (rowValid && (rowValid.hour_interval.toLowerCase().includes('shift'))) {
             style.textAlign = 'center';
             style.borderRight = 'solid 1px rgb(219, 219, 219)';
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
@@ -76,12 +76,12 @@ const helpers = {
     renderCell(row, prop, defaultValue) {
         if (row) {
             //validation for timelost and latest comment, don't work on render the value of each one only the text in the vertical view
-            prop = !row.hour_interval.includes('Shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
+            prop = !row.hour_interval.toLowerCase().toLowerCase().includes('shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
             let valueToDisplay = (row[prop] ?
                 (isNaN(row[prop]) ? row[prop] : row[prop])
                 : defaultValue);
             return valueToDisplay || valueToDisplay === 0 ?
-                <span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
+                <span className={row.hour_interval.toLowerCase().includes('shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
                 <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
         } else {
             return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
@@ -121,7 +121,7 @@ const helpers = {
                 </OverlayTrigger>
             );
         } else {
-            return (<span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span>);
+            return (<span className={row.hour_interval.toLowerCase().includes('shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span>);
         }
     },
 
@@ -188,7 +188,7 @@ const helpers = {
                 minWidth: 130,
                 Pivot: (row) => {
                     let rowValid = row ? (row.subRows ? row.subRows[0] : row.row) : null;
-                    if (rowValid && (rowValid.hour_interval.includes('Shift'))) {
+                    if (rowValid && (rowValid.hour_interval.toLowerCase().includes('shift'))) {
                         return <span className={'wordwrap'} data-tip={row.value}>{row.value}</span>
                     } else {
                         return <span>{moment(row.subRows[0]._original.started_on_chunck).isSame(moment(getCurrentTime(props.user.timezone)), 'hours') ? row.value + '*' : row.value}</span>
@@ -311,7 +311,7 @@ const helpers = {
         let openModal = false;
         let modalType = '';
         let row = {};
-        if ((rowInfo.level === 0 && !rowInfo.subRows[0]._original.hour_interval.includes('Shift')) || rowInfo.level === 1) {
+        if ((rowInfo.level === 0 && !rowInfo.subRows[0]._original.hour_interval.toLowerCase().includes('shift')) || rowInfo.level === 1) {
             switch (column.id) {
                 case 'product_code':
                 case 'timelost_summary':

@@ -253,11 +253,13 @@ class DashboardTable extends React.Component {
 
                         const escalation = Number(localStorage.getItem('escalation'));
                         const escalation_hour = Number(localStorage.getItem('escalation_hour'));
-                        if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour)) {
+                        const escalation_asset = localStorage.getItem('escalation_asset');
+                        if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour || escalation_asset !== filter[0].asset_code)) {
                             modal_escalation_IsOpen = true;
                             modal_escalation_message = `The ${actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible`;
                             localStorage.setItem('escalation', actualEscalation.escalation_level);
                             localStorage.setItem('escalation_hour', currentDatetime.hour());
+                            localStorage.setItem('escalation_asset', filter[0].asset_code);
                         }
                     }
                 }

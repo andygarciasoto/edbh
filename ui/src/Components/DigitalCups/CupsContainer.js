@@ -18,7 +18,7 @@ class CupsContainer extends React.Component {
     }
 
     getCups(assetList) {
-        const sortData = _.orderBy(assetList, ['actualEscalation', 'background_color', 'redCount', 'asset_name'], ['desc', 'desc', 'desc']);
+        const sortData = _.orderBy(assetList, ['escalation', 'escalation_level', 'background_color', 'redCount', 'asset_name'], ['desc', 'desc', 'desc', 'desc']);
         return _.map(sortData, asset => {
             const children = _.initial(asset.children);
             const actualEscalation = asset.actualEscalation;

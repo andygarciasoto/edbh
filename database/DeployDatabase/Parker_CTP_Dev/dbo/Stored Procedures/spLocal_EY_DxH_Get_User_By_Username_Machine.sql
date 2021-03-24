@@ -1,123 +1,126 @@
-﻿
---exec [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'Paul Davis', '0'
+﻿--
+-- Copyright © 2019 Ernst & Young LLP
+-- All Rights Reserved
+-- spLocal_EY_DxH_Get_User_By_Username_Machine
+--
+--  Purpose:
 
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (@username as NVARCHAR(100), @machine as NVARCHAR(100))
+--	Given a username and other optional data, return the existing information of the user from TFDUser, CommonParameters, Shift and GlobalParameters tables
+--
+--	This code could be used to get the all the information of the user.
+--
+--	To Do:
+--
+--  Output Parameters:
+---
+--  Input Parameters:
+--- None
+---
+---	
+--  Trigger:
+---
+--  Data Read Other Inputs:  
+--- 
+---	
+--  Data Written Results:
+---
+--  Assumptions:
+--- 
+--  Dependencies: 
+---	None
+---
+--  Variables:
+---
+---
+--  Tables Modified:
+---
+-- Modification Change History:
+--------------------------------------------------------------------------------
+--	20210122		C00V00 - Intial code create
+--		
+-- Example Call:
+--  EXEC [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'AdministratorEaton', '0' --Search by username
+--  EXEC [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] 'AdministratorEaton', 'CR2080435W1' --Search by username and machine
+--
 
-  AS  BEGIN 
- DECLARE
- @site				INT,
- @name				NVARCHAR(100),
- @timezone			NVARCHAR(100),
- @timezone2			NVARCHAR(100),
- @Shift_Name		NVARCHAR(100),
- @Shift_Id			INT,
- @language			NVARCHAR(100),
- @summary_timeout	FLOAT,
- @inactive_timeout_minutes FLOAT,
- @socket_timeout		FLOAT,
- @max_regression		FLOAT,
- @token_expiration	FLOAT,
- @CurrentDateTime	DATETIME,
- @StartDayCurrent	DATETIME,
- @DateOfShift		DATETIME;
 
-IF @machine = '0'
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_By_Username_Machine] (
+	@username	AS	NVARCHAR(100),
+	@machine	AS	NVARCHAR(100)
+)
+AS
 BEGIN
+	
+	DECLARE
+		@site				INT,
+		@site_code			VARCHAR(100),
+		@asset_level		VARCHAR(100) = 'Site',
+		@vert_sf_name		VARCHAR(100) = 'Vertical',
+		@vert_sf_status		VARCHAR(100) = 'Inactive';
 
-SELECT TOP 1 
-@site = site 
-FROM dbo.TFDUsers 
-WHERE username = @username;
+	IF ISNULL(@machine, '0') != '0'
+	BEGIN
+		SELECT
+			@site = asset_id, 
+			@site_code = site_code
+		FROM dbo.Asset 
+		WHERE asset_code IN 
+			(SELECT site_code FROM DBO.Asset WHERE asset_id IN 
+				(SELECT asset_id FROM DBO.AssetDisplaySystem WHERE displaysystem_name like CONCAT(@machine,'%'))
+			);
+	END
+	ELSE
+	BEGIN
+		SELECT TOP 1 
+			@site = site 
+		FROM dbo.TFDUsers 
+		WHERE Username = @username;
+		SELECT
+			@site_code = asset_code
+		FROM dbo.Asset where asset_id = @site;
+	END
 
-SELECT TOP 1 @name = asset_code 
-FROM dbo.Asset 
-WHERE asset_id = @site;
-END
-ELSE
-BEGIN
-SELECT @site = asset_id, 
-@name = site_code
-FROM DBO.Asset 
-WHERE asset_code IN 
-(SELECT site_code FROM DBO.Asset WHERE asset_id IN 
-(SELECT asset_id FROM DBO.AssetDisplaySystem WHERE displaysystem_name like CONCAT(@machine,'%')));
-END
-
-SELECT 
-@timezone = ui_timezone,
-@timezone2 = site_timezone,
-@language = language
-FROM dbo.CommonParameters where site_id = @site;
-
-SELECT @CurrentDateTime = SYSDATETIME() at time zone 'UTC' at time zone @timezone2;
-SET @StartDayCurrent = FORMAT(@CurrentDateTime, 'yyyy-MM-dd');
-
-SELECT
-@summary_timeout = summary_timeout,
-@inactive_timeout_minutes = inactive_timeout_minutes,
-@socket_timeout = socket_timeout,
-@max_regression = max_regression,
-@token_expiration = token_expiration
-FROM dbo.GlobalParameters;
-
-WITH CTE AS
-(SELECT shift_id, shift_name, is_first_shift_of_day,
---GET INTERVAL SHIFT FOR TODAY
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 1
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, -1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), @StartDayCurrent), 'yyyy-MM-dd HH'), ':00')
-END AS start_date_time_today,
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 0
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, 1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), @StartDayCurrent), 'yyyy-MM-dd HH'), ':00')
-END AS end_date_time_today,
---GET INTERVAL SHIFT FOR YESTERDAY
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 1
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, -1, DATEADD(DAY, -1, @StartDayCurrent))), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, -1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-END AS start_date_time_yesterday,
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 0
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, 1, DATEADD(DAY, -1, @StartDayCurrent))), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, -1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-END AS end_date_time_yesterday,
---GET INTERVAL SHIFT FOR TOMORROW
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 1
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, -1, DATEADD(DAY, 1, @StartDayCurrent))), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, start_time), DATEADD(DAY, 1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-END AS start_date_time_tomorrow,
-CASE
-	WHEN end_time < start_time AND is_first_shift_of_day = 0
-	THEN CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, 1, DATEADD(DAY, 1, @StartDayCurrent))), 'yyyy-MM-dd HH'), ':00')
-	ELSE CONCAT(FORMAT(DATEADD(HOUR, DATEPART(HOUR, end_time), DATEADD(DAY, 1, @StartDayCurrent)), 'yyyy-MM-dd HH'), ':00')
-END AS end_date_time_tomorrow
-FROM dbo.Shift WHERE asset_id = @Site AND STATUS = 'Active')
-SELECT 
-@Shift_Id = [shift_id],
-@Shift_Name = [shift_name],
-@DateOfShift = CASE
-WHEN @CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday THEN  DATEADD(DAY, -1, @StartDayCurrent)
-WHEN @CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow THEN DATEADD(DAY, 1, @StartDayCurrent)
-ELSE @StartDayCurrent
-END
-FROM CTE WHERE 
-@CurrentDateTime BETWEEN start_date_time_today AND end_date_time_today OR 
-@CurrentDateTime BETWEEN start_date_time_yesterday AND end_date_time_yesterday OR
-@CurrentDateTime BETWEEN start_date_time_tomorrow AND end_date_time_tomorrow;
-
-SELECT TFD.ID as id, TFD.badge, TFD.username, TFD.first_name, TFD.last_name, R.name as role, TFD.role_id, E.escalation_name, 
-E.escalation_level, E.escalation_hours, TFD.site, @name as site_name, @timezone as timezone, @Shift_Id as shift_id, 
-@Shift_Name as shift_name, FORMAT(@DateOfShift,'yyyy-MM-dd HH:mm') AS date_of_shift, FORMAT(@CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time, 
-@language as language, @summary_timeout as summary_timeout, @inactive_timeout_minutes as inactive_timeout_minutes,
-@socket_timeout as socket_timeout, @max_regression as max_regression, @token_expiration as token_expiration 
-FROM dbo.TFDUsers TFD
-JOIN dbo.Role R ON TFD.role_id = R.role_id 
-LEFT JOIN dbo.Escalation E ON TFD.escalation_id = E.escalation_id
-WHERE TFD.username = @username AND Site = @site;
-
+	SELECT
+		TFDU.ID AS id,
+		TFDU.Badge AS badge,
+		TFDU.Username AS username,
+		TFDU.First_Name AS first_name,
+		TFDU.Last_Name AS last_name,
+		R.name AS role,
+		TFDU.role_id as role_id,
+		E.escalation_name as escalation_name,
+		E.escalation_level as escalation_level,
+		E.escalation_hours as escalation_hours,
+		TFDU.Site AS site,
+		@site_code AS site_code,
+		CP.site_name,
+		CP.ui_timezone AS timezone,
+		CP.language,
+		CP.break_minutes,
+		CP.lunch_minutes,
+		CP.site_prefix,
+		FORMAT(GSPFunction.ProductionDay,'yyyy-MM-dd HH:mm') AS date_of_shift,
+		GSPFunction.ShiftId AS shift_id,
+		GSPFunction.ShiftName AS shift_name,
+		FORMAT(GSPFunction.CurrentDateTime,'yyyy-MM-dd HH:mm') AS current_date_time,
+		GP.summary_timeout,
+		GP.inactive_timeout_minutes,
+		GP.socket_timeout,
+		GP.max_regression,
+		GP.token_expiration,	
+		SF.shift_id AS vertical_shift_id
+		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@site, NULL) AS GSPFunction
+		INNER JOIN dbo.TFDUsers AS TFDU
+			ON TFDU.Site = @site AND TFDU.Username = @username
+		INNER JOIN dbo.Role AS R
+			ON TFDU.role_id = R.role_id
+		INNER JOIN dbo.CommonParameters AS CP
+			ON CP.site_id = @site
+		LEFT JOIN dbo.Shift AS SF
+			ON SF.asset_id = @site AND SF.status = @vert_sf_status AND SF.shift_name = @vert_sf_name
+		LEFT JOIN dbo.GlobalParameters AS GP
+			ON 1 = 1
+		LEFT JOIN dbo.Escalation AS E
+			ON TFDU.escalation_id = E.escalation_id;
 
 END

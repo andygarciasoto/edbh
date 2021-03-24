@@ -17,6 +17,7 @@ import { getCurrentTime, validPermission, validMenuOption } from '../../Utils/Re
 import {
     getLevelOptions,
     getAreaAssetOptionsDC,
+    getWorkcellOptionsDC,
     getWorkcellValueOptionsDC
 } from '../../Utils/Utils';
 import configuration from '../../config.json';
@@ -54,7 +55,7 @@ class Header extends React.Component {
         const sldc = search.sldc || 'Site';
         const levelOptionsDC = getLevelOptions();
         const assetOptionsDC = getAreaAssetOptionsDC(props.user);
-        const workcellOptionsDC = getWorkcellValueOptionsDC('workcell_name', props.user);
+        const workcellOptionsDC = getWorkcellOptionsDC(props.user);
         const valueStreamOptionsDC = getWorkcellValueOptionsDC('value_stream', props.user);
         const sadc = search.sadc || '';
         const selectedAssetDC = sadc !== '' ?

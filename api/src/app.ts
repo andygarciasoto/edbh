@@ -74,7 +74,7 @@ const escalationRepository = new EscalationRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
-const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository);
+const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository, roleRepository);
