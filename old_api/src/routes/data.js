@@ -51,7 +51,7 @@ router.use(function (req, res, next) {
         res.status(401);
         return res.json({
             success: false,
-            message: 'Auth token is not supplied'
+            message: 'Auth token was not supplied'
         });
     }
 });
@@ -201,7 +201,7 @@ router.get('/me', async function (req, res) {
         res.status(401);
         return res.json({
             success: false,
-            message: 'Auth token is not supplied'
+            message: 'Auth token was not supplied'
         });
     }
 });

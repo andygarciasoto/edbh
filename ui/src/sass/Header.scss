@@ -1,0 +1,108 @@
+@import "./colors";
+
+a {
+    color: $color-link;
+}
+
+a:hover {
+    color           : $color-link;
+    text-decoration : none;
+    background-color: $color-dark-grey;
+}
+
+.navbar {
+    height          : 10vh;
+    background-color: $color-black;
+}
+
+.navbar-brand {
+    padding-left: 15px;
+}
+
+.navbar-light .navbar-toggler {
+    background-color: $color-link;
+    border-color    : $color-link;
+}
+
+.App-logo-header {
+    height: 90%;
+    width : auto;
+}
+
+.mega-menu-wrapper {
+    padding: 30px;
+}
+
+.opened {
+    display: block !important;
+}
+
+.dropdown-content {
+    display         : none;
+    position        : fixed;
+    margin-top      : 25px;
+    background-color: $color-white;
+    width           : 100%;
+    left            : 0;
+    right           : 0;
+    box-shadow      : 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index         : 1;
+}
+
+.dropdown-toggle,
+.btn-primary {
+    border          : solid 1px $color-light-grey;
+    width           : 60%;
+    background-color: $color-white;
+    color           : $color-black;
+    text-align      : left;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.date-picker-field {
+    padding-top   : 6px;
+    padding-bottom: 6px;
+    border        : solid 1px $color-light-grey;
+    border-radius : 4px;
+    text-indent   : 10px;
+}
+
+.date-picker-field:hover {
+    background-color: $color-blue;
+    color           : $color-white;
+}
+
+.mega-menu-children {
+    color: $color-link;
+}
+
+.query-button {
+    color : $color-grey;
+    border: solid 1px $color-grey;
+}
+
+.machine-picker-button {
+    .dropdown-toggle::after {
+        margin-left: 6%;
+        float      : right;
+        margin-top : 4%;
+    }
+}
+
+.dropdown-toggle,
+.btn-primary {
+    border          : solid 1px $color-grey-border;
+    width           : 60%;
+    background-color: $color-white-back;
+    color           : $color-black;
+    text-align      : left;
+}
+
+.machine-picker div {
+    max-height: 50vh !important;
+    overflow-y: scroll;
+    width     : 60%;
+}

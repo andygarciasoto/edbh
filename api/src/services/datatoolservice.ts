@@ -10,9 +10,9 @@ import { UnavailableRepository } from '../repositories/unavailable-repository';
 import { UserRepository } from '../repositories/user-repository';
 import { AssetDisplaySystemRepository } from '../repositories/assetdisplaysystem-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
-import { headers, getParametersOfTable, getValuesFromHeaderTable } from '../configurations/datatoolutils';
+import { headers, getParametersOfTable, getValuesFromHeaderTable, getBatchCount } from '../configurations/datatoolutils';
 import Excel from 'exceljs';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 export class DataToolService {
 
@@ -58,7 +58,6 @@ export class DataToolService {
             const file = req.file;
             const arrayItems = JSON.parse(req.body.configurationItems);
             const site_id = JSON.parse(req.body.site_id);
-            let mergeQuery = '';
 
             if (!file) {
                 return res.status(400).json({ message: "Bad Request - Missing Excel file to import." });
@@ -70,41 +69,79 @@ export class DataToolService {
             // read from a file
             let workbook = new Excel.Workbook();
             workbook.xlsx.readFile(file.path).then(async () => {
+                let queries = [];
                 workbook.eachSheet((worksheet, sheetId) => {
                     arrayItems.forEach((value) => {
                         if (worksheet.name == value.id) {
                             if (!headers[worksheet.name]) return res.status(400).json({ message: "Bad Request - Invalid tab name" + " " + worksheet.name });
-                            let columns = headers[worksheet.name];
-                            let tableSourcesValues: any[] = [];
-                            let parameters = getParametersOfTable(worksheet.name, site_id);
-                            mergeQuery = mergeQuery ? mergeQuery + ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES` : ` MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
-                            //Read and get data from each row of the sheet
+
+                            //Initialize constants for each tab
+                            const columns = headers[worksheet.name];
+                            const parameters = getParametersOfTable(worksheet.name, site_id);
+                            const startMergeQuery = `MERGE [dbo].[${worksheet.name}] t USING (SELECT ${'s.' + columns.map(e => e.header).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+                            const endMergeQuery = `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+                            const initialLength = startMergeQuery.length + endMergeQuery.length;
+                            const rowCount = worksheet.rowCount;
+
+                            //Initialize query to store the values of the merge sentence
+                            let valuesMergeQuery = '';
+
                             worksheet.eachRow((row, rowNumber) => {
-                                let updateRow = '';
+                                let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
                                 let validRow = false;
                                 columns.forEach((col, colNumber) => {
                                     if (rowNumber === 1) {
                                         if (row.getCell(colNumber + 1).value === 'NULL') return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
                                     } else {
                                         if (row.getCell(colNumber + 1).value !== 'NULL') validRow = true;
+
                                         updateRow += getValuesFromHeaderTable(headers[worksheet.name], headers[worksheet.name][colNumber], row.getCell(colNumber + 1).value);
                                     }
                                 });
+                                updateRow += ')';
                                 if (rowNumber !== 1) {
                                     if (!validRow) return res.status(400).json({ message: 'Bad Request - Invalid file format contains a entire empty row. Please check file' });
-                                    tableSourcesValues.push('(' + updateRow + ')');
+
+                                    const newLength = valuesMergeQuery.length + updateRow.length + initialLength;
+                                    if (newLength < 4000 && rowNumber < rowCount) {
+                                        valuesMergeQuery += updateRow;
+                                    } else {
+                                        if (newLength >= 4000) {
+                                            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                                            valuesMergeQuery = updateRow.slice(1);
+                                        }
+                                        if (newLength < 4000) {
+                                            valuesMergeQuery += updateRow;
+                                        }
+                                        if (rowNumber === rowCount) {
+                                            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                                        }
+                                    }
                                 }
                             });
-                            //create merge sentence with the data extracted from the sheet
-                            mergeQuery += tableSourcesValues.join(',') + `) AS S(${columns.map(e => e.header)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
                         }
                     });
                 });
-                console.log(mergeQuery);
                 //call execution
-                await this.dxhdatarepository.executeGeneralImportQuery(mergeQuery);
-                //
-                return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
+                if (!_.isEmpty(queries)) {
+                    const queriesLength = queries.length;
+                    console.log('Queries execution begin');
+                    console.log('Queries to execute: ', queriesLength);
+                    _.forEach(queries, async (query, index) => {
+                        try {
+                            await this.dxhdatarepository.executeGeneralImportQuery(query);
+                        } catch (e) {
+                            return res.status(500).send({ message: 'Error ' + e.message });
+                        }
+                        if ((queriesLength - 1) === index) {
+                            console.log('Queries execution end');
+                            console.log('Queries count: ', queriesLength);
+                            return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
+                        }
+                    });
+                } else {
+                    return res.status(200).send('Excel File ' + file.filename + ' Entered Succesfully');
+                }
             }).catch((e) => {
                 return res.status(500).send({ message: 'Error ' + e.message });
             });

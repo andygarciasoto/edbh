@@ -1,0 +1,30 @@
+@import "./colors";
+
+.SupervisorTitle {
+    color         : $color-orange;
+    width         : 40%;
+    vertical-align: middle;
+    font-size     : xx-large;
+}
+
+.SupervisorTitle .icon {
+    margin-right: 5%;
+    margin-left : 5%;
+}
+
+.supervisorMessage {
+    font-size: larger;
+}
+
+.roleButtons {
+    margin-top   : 5%;
+    margin-bottom: 5%;
+}
+
+.roleButtons .btn {
+    margin-left: 4%;
+    height     : 100px;
+    width      : 200px;
+    font-weight: bold;
+    font-size  : medium;
+}

@@ -1,0 +1,11 @@
+@import "./colors";
+
+.wrapper-main-import {
+    background-color: $color-white;
+}
+
+.import-wrapper {
+    margin : 100px 75px 0px 75px;
+    padding: 50px;
+    border : 1px solid $color-grey-border;
+}

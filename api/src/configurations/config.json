@@ -1,35 +1,35 @@
 {
     "sql_section": {
-        "user": "appUser",
-        "password": "5sHEMk45PEtPqxjv8uk9w5gS",
-        "server": "phc-diviot01-prd-sql.database.windows.net",
+        "user": "parkeradmin",
+        "password": "VFM9rqSkunX4pFPm",
+        "server": "parker-ctpdev-test.database.windows.net",
         "database": "FCGFOTF"
     },
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service Production API",
+        "service_name": "Dxh Service Dev API",
         "cors": [
-            "https://parkerdaybyhourapi.us.parker.corp",
-            "https://parkerdaybyhour.us.parker.corp"
+            "http://localhost:8080",
+            "http://localhost:3000"
         ],
-        "redirect_uri": "https://parkerdaybyhourapi.us.parker.corp/auth/token",
+        "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",
-        "URL": "https://parkerdaybyhour.us.parker.corp",
-        "badLogin": "https://parkerdaybyhour.us.parker.corp?err=true",
-        "badLoginUser": "https://parkerdaybyhour.us.parker.corp/login?err=true",
-        "loginURL": "https://parkerdaybyhour.us.parker.corp/dashboard"
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
     },
     "ad_authentication_section": {
-        "app_reg_name": "PHIOTEDxH",
-        "client_id": "773c82d8-4a87-488b-80f1-f6d955f5f62e",
-        "secret": "tgnY6?j1.-mg-21-NA_CLgbRR7.Ut5.o",
+        "app_reg_name": "PHIOTFCGFOTFDev",
+        "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+        "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
         "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127"
     },
     "azure_section": {
-        "appInsights": "363e8d3c-d6ee-465a-898c-71e8b489718d"
+        "appInsights": "4fd470bc-86cd-4558-86e3-74371a00bc3c"
     }
 }

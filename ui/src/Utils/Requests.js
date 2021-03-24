@@ -16,7 +16,7 @@ function genericRequest(method, baseURL, route, headers, parameters, body, cance
 }
 
 async function getResponseFromGeneric(method, baseURL, route, headers, parameters, body, cancelTok) {
-  //return new Promise((resolve, reject) => {
+
   return axios({
     method: method,
     url: `${baseURL}${route}`,
@@ -47,15 +47,16 @@ async function getResponseFromGeneric(method, baseURL, route, headers, parameter
         return {};
       }
     });
-  //});
 }
 
 function assignValuesToUser(user, newAttributes) {
+  user.id = newAttributes.id;
   user.first_name = newAttributes.first_name;
   user.last_name = newAttributes.last_name;
   user.username = newAttributes.username;
   user.role = newAttributes.role;
-  user.clock_number = newAttributes.badge;
+  user.assing_role = newAttributes.assing_role;
+  user.badge = newAttributes.badge;
   user.site = newAttributes.site;
   user.max_regression = newAttributes.max_regression;
   user.site_name = newAttributes.site_name;
@@ -66,28 +67,15 @@ function assignValuesToUser(user, newAttributes) {
   user.date_of_shift = newAttributes.date_of_shift;
   user.current_date_time = newAttributes.current_date_time;
   user.vertical_shift_id = newAttributes.vertical_shift_id;
+  user.break_minutes = newAttributes.break_minutes;
+  user.lunch_minutes = newAttributes.lunch_minutes;
+  user.permissions = newAttributes.permissions;
+  user.site_prefix = newAttributes.site_prefix
   return user;
 }
 
 function BuildGet(url, parameters, config) {
   return axios.get(url, parameters, config);
-}
-
-function mapShift(rawshift) {//REVISAR METODO NO DEBERÍA DE USARSE
-  let shift = 1;
-  if (rawshift === 'Select Shift') {
-    shift = 1;
-  }
-  if (rawshift === '1st Shift') {
-    shift = 1;
-  }
-  if (rawshift === '2nd Shift') {
-    shift = 2;
-  }
-  if (rawshift === '3rd Shift') {
-    shift = 3;
-  }
-  return shift;
 }
 
 async function sendPost(data, route) {//CAMBIAR FORMA DE USO SOLO LLAMAR EL POST MANEJAR EN
@@ -142,6 +130,10 @@ function formatDateWithTime(date) {
   return moment(date).format('YYYY/MM/DD HH:mm');
 }
 
+function formatTime(date) {
+  return moment(date).format('HH:mm:ss');
+}
+
 function getCurrentTime(timezone) {
   if (timezone) {
     return moment().tz(timezone).format('YYYY/MM/DD HH:mm');
@@ -154,92 +146,6 @@ function getCurrentTimeOnly(timezone) {
     return moment().tz(timezone).format('HH:mm');
   }
   return moment().format('HH:mm');
-}
-
-function isComponentValid(user_role, name) {
-  let role;
-  if (user_role) {
-    role = user_role.toLowerCase();
-  }
-  const componentStructure = {
-    administrator: [
-      'menu',
-      'menu-dashbaord',
-      'menu-import',
-      'menu-summary',
-      'megamenu',
-      'sitename',
-      'actual',
-      'partnumber',
-      'timelost',
-      'ideal',
-      'target',
-      'comments',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'pagination',
-      'neworder',
-      'manualentry',
-      'import',
-      'scrap',
-      'dashboardOne',
-      'summary'
-    ],
-    supervisor: [
-      'menu',
-      'menu-dashbaord',
-      'menu-summary',
-      'megamenu',
-      'actual',
-      'timelost',
-      'comments',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'pagination',
-      'neworder',
-      'manualentry',
-      'dashboardOne',
-      'summary',
-      'scrap'
-    ],
-    operator: [
-      'actual',
-      'timelost',
-      'comments',
-      'pagination',
-      'supervisor_signoff',
-      'operator_signoff',
-      'intershifts',
-      'neworder',
-      'dashboardOne',
-      'scrap'
-    ],
-    summary: [
-      'megamenu',
-      'timelost',
-      'comments',
-      'intershifts',
-      'summary'
-    ]
-  }
-
-  if (!['administrator', 'supervisor', 'operator', 'summary'].includes(role)) {
-    return false;
-  }
-  if (!componentStructure.administrator.includes(name)) {
-    return false;
-  }
-  let match = undefined;
-  for (let i of componentStructure[role]) {
-    if (name === i) {
-      match = i;
-    }
-  }
-  if (match === undefined) {
-    return false;
-  } else { return true }
 }
 
 function isFieldAllowed(role, row, timezone) {
@@ -265,20 +171,6 @@ function formatNumber(number, decimals) {
   } else {
     return number.toFixed(decimals);
   }
-}
-
-function convertNumber(num, uom_asset, target) {
-  let result = 0;
-  if (uom_asset && uom_asset.decimals) {
-    result = (Math.round(Math.round(num) * 10 + Number.EPSILON) / 10);
-  } else {
-    if (target && (target === 'target' || target === 'summary_target')) {
-      result = Math.floor(num);
-    } else {
-      result = Math.floor(Math.round(num));
-    }
-  }
-  return result;
 }
 
 function getDateAccordingToShifts(filterDate, user) {
@@ -338,31 +230,63 @@ function getRowsFromShifts(props, summary) {
     let totalMinutes = _.sumBy(props.user.shifts, 'duration_in_minutes');
     rows = (totalMinutes / 60) + props.user.shifts.length;
   } else {
-    let currentShift = props.search.sf ? props.search.sf : props.user.current_shift;
+    let currentShift = props.selectedShift;
     let shift = _.find(props.user.shifts, { shift_name: currentShift });
     rows = (shift.duration_in_minutes / 60);
   }
   return rows;
 }
 
+function validPermission(user, componentName, action) {
+  return _.find(user.permissions, { component_name: componentName, ['can_' + action]: true }) ? true : false;
+}
+
+function validMenuOption(optionName, viewName) {
+  let views =
+  {
+    '/dashboard': [
+      'megamenu-machine-option',
+      'megamenu-date-option',
+      'megamenu-shift-option',
+      'megamenu-language-option'
+    ],
+    '/summary': [
+      'megamenu-machine-option',
+      'megamenu-date-option',
+      'megamenu-language-option'
+    ],
+    '/import': [
+      'megamenu-language-option'
+    ],
+    '/digitalcups': [
+      'megamenu-level-option',
+      'megamenu-area-option',
+      'megamenu-date-option',
+      'megamenu-shift-option',
+      'megamenu-language-option'
+    ],
+  };
+  return _.indexOf(views[viewName], optionName) !== -1;
+}
+
 export {
   getRequest,
-  mapShift,
   formatDate,
   formatDateWithTime,
   getCurrentTime,
   sendPost,
   sendPut,
-  isComponentValid,
   isFieldAllowed,
   formatNumber,
   getCurrentTimeOnly,
   BuildGet,
-  convertNumber,
   getDateAccordingToShifts,
   getCurrentShift,
   genericRequest,
   getResponseFromGeneric,
   assignValuesToUser,
-  getRowsFromShifts
+  getRowsFromShifts,
+  formatTime,
+  validPermission,
+  validMenuOption
 }

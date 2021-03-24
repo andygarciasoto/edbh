@@ -1,7 +1,7 @@
 import { Request } from 'tedious';
 import ConnectionPool from 'tedious-connection-pool';
 import moment from 'moment';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 const poolConfig = {
     min: 60,
@@ -28,9 +28,13 @@ export class SqlServerStore {
         };
         this.pool = new Promise<ConnectionPool>((resolve, reject) => {
             const pool = new ConnectionPool(poolConfig, connConfig);
-            pool.on('error', reject);
+            pool.on('error', err => {
+                console.log(err);
+                reject(err);
+            });
             pool.acquire((err, conn) => {
                 if (err) {
+                    console.log(err);
                     reject(err);
                     return;
                 }

@@ -1,0 +1,72 @@
+@import "_colors";
+
+.buttonFilter {
+    padding   : 0%;
+    margin-top: 1.2%;
+}
+
+.siteHeader {
+    margin-top   : 1%;
+    margin-bottom: 1%;
+}
+
+.cupInformationDiv {
+    border       : 1px solid $color-grey-border;
+    border-radius: 2em;
+    padding      : 1%;
+}
+
+.childrenCupDiv {
+    margin-left  : 1%;
+    margin-bottom: 1%;
+    padding      : 1%;
+    font-weight  : bold;
+    font-size    : large;
+}
+
+.escalateBlink {
+    border   : 2px solid $color-link;
+    animation: blink2 .5s step-end infinite alternate;
+}
+
+@keyframes blink2 {
+    50% {
+        border-color: $color-red;
+    }
+}
+
+.previousHours .col {
+    max-width   : 1px;
+    min-height  : 20px;
+    margin-right: 2%;
+}
+
+.green {
+    background-color: $color-green;
+}
+
+.red {
+    background-color: $color-red;
+}
+
+.assetName {
+    margin-top     : 3%;
+    border         : 1px solid $color-grey-border;
+    min-width      : 100%;
+    min-height     : 100px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    overflow       : hidden;
+    color          : $color-white;
+}
+
+.currentInformation {
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+}
+
+.childrenCupDiv:hover{
+    cursor: pointer;
+}

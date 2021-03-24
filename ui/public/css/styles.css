@@ -1,4 +1,403 @@
-#signIn {
+.actualModal .modal-dialog {
+  max-width: 20%; }
+
+.btnYellow {
+  color: #ffb91d;
+  background-color: transparent;
+  border-color: #ffb91d; }
+
+.btnYellow:hover {
+  color: white;
+  background-color: #ffb91d;
+  border-color: #ffb91d; }
+
+.btnGreen {
+  color: green;
+  background-color: transparent;
+  border-color: green; }
+
+.btnGreen:hover {
+  color: white;
+  background-color: green;
+  border-color: green; }
+
+.btnRed {
+  color: #b80600;
+  background-color: transparent;
+  border-color: #b80600; }
+
+.btnRed:hover {
+  color: white;
+  background-color: #b80600;
+  border-color: #b80600; }
+
+.barcodeScannerModal {
+  background-color: rgba(0, 0, 0, 0.3); }
+
+.commentsModal-comment {
+  font-size: 0.9em; }
+
+.commentsModal-date {
+  font-size: 0.75em; }
+
+.commentsModal-user {
+  width: 20%; }
+
+.commentModal .modal-dialog {
+  max-width: 60%; }
+
+.wrapper-main {
+  background-color: white;
+  padding: 2%; }
+
+.fa-search-plus {
+  float: right; }
+
+.dashboard-modal-field-group > * {
+  display: inline; }
+
+.empty-field {
+  padding-right: 24px; }
+
+.table-click:hover {
+  cursor: pointer;
+  color: #ffb91d; }
+
+.wordwrap {
+  white-space: pre-line !important;
+  word-wrap: break-word; }
+
+.editable:hover {
+  color: #ffb91d;
+  cursor: pointer; }
+
+.editable {
+  cursor: pointer;
+  background-color: #f6f6f6;
+  padding: 100%;
+  overflow: scroll;
+  color: #b80600; }
+
+.ideal {
+  padding: 5px 30px 5px 30px; }
+
+.ideal:hover {
+  color: #ffb91d !important;
+  cursor: pointer; }
+  .ideal:hover * {
+    color: #ffb91d !important; }
+
+.signoff-reminder-true {
+  color: #b80600;
+  font-weight: bolder;
+  animation: blinker 1s linear infinite;
+  text-align: center; }
+
+.signoff-reminder-icon {
+  color: #b80600;
+  animation: blinker 1s linear infinite;
+  text-align: center;
+  width: 100%; }
+
+a {
+  color: #ffb91d; }
+
+a:hover {
+  color: #ffb91d;
+  text-decoration: none;
+  background-color: #515151; }
+
+.navbar {
+  height: 10vh;
+  background-color: #1f1f1f; }
+
+.navbar-brand {
+  padding-left: 15px; }
+
+.navbar-light .navbar-toggler {
+  background-color: #ffb91d;
+  border-color: #ffb91d; }
+
+.App-logo-header {
+  height: 90%;
+  width: auto; }
+
+.mega-menu-wrapper {
+  padding: 30px; }
+
+.opened {
+  display: block !important; }
+
+.dropdown-content {
+  display: none;
+  position: fixed;
+  margin-top: 25px;
+  background-color: white;
+  width: 100%;
+  left: 0;
+  right: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1; }
+
+.dropdown-toggle,
+.btn-primary {
+  border: solid 1px #e2e1dd;
+  width: 60%;
+  background-color: white;
+  color: #1f1f1f;
+  text-align: left; }
+
+.dropdown-toggle::after {
+  display: none; }
+
+.date-picker-field {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: solid 1px #e2e1dd;
+  border-radius: 4px;
+  text-indent: 10px; }
+
+.date-picker-field:hover {
+  background-color: #007bff;
+  color: white; }
+
+.mega-menu-children {
+  color: #ffb91d; }
+
+.query-button {
+  color: #353535;
+  border: solid 1px #353535; }
+
+.machine-picker-button .dropdown-toggle::after {
+  margin-left: 6%;
+  float: right;
+  margin-top: 4%; }
+
+.dropdown-toggle,
+.btn-primary {
+  border: solid 1px #e2e2e2;
+  width: 60%;
+  background-color: #f6f6f6;
+  color: #1f1f1f;
+  text-align: left; }
+
+.machine-picker div {
+  max-height: 50vh !important;
+  overflow-y: scroll;
+  width: 60%; }
+
+.wrapper-main-import {
+  background-color: white; }
+
+.import-wrapper {
+  margin: 100px 75px 0px 75px;
+  padding: 50px;
+  border: 1px solid #e2e2e2; }
+
+.intershift-communication-comments {
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 5px;
+  border: 1px solid #e2e2e2; }
+
+.intershift-read-more {
+  float: right;
+  text-decoration: underline; }
+
+.intershift-read-more:hover {
+  cursor: pointer;
+  color: #ffb91d; }
+
+.intershift-comment div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: inherit; }
+
+#intershift-table {
+  max-height: 200px;
+  overflow-x: hidden; }
+
+.intershift-comment-date {
+  font-size: 0.75em; }
+
+.order-modal-two {
+  list-style-type: none; }
+
+.intershift-info {
+  width: 20%; }
+
+.intershift-modal .modal-dialog {
+  max-width: 70%; }
+
+.loadingModal {
+  background-color: rgba(0, 0, 0, 0.3); }
+
+.logoffbuttons {
+  margin-top: 5%;
+  margin-bottom: 5%; }
+
+.logoffbuttons .btn {
+  margin-left: 4%;
+  height: 200%;
+  width: 50%;
+  font-weight: bold;
+  font-size: medium;
+  text-align: center; }
+
+.LogOffMessage {
+  font-size: x-large; }
+
+.manualEntryModal .modal-dialog {
+  max-width: 50%; }
+
+.close-modal-icon {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  cursor: pointer; }
+
+.warning-message {
+  display: inline;
+  color: #b80600; }
+
+.success-message {
+  display: inline;
+  color: green; }
+
+.icon {
+  font-size: 2em; }
+
+.close-button {
+  display: block;
+  margin: 0 auto; }
+
+.messageModal {
+  background-color: rgba(0, 0, 0, 0.3); }
+
+.activeOp {
+  margin-left: 2%; }
+
+.operatorComponent {
+  margin-bottom: 1%; }
+
+#semi-button-deck {
+  background-color: #ffb91d;
+  color: #353535;
+  padding-left: 3%;
+  padding-right: 3%;
+  padding-bottom: 5px; }
+
+.icon-arrow {
+  font-weight: 400;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 1.4em; }
+
+#previous-shift,
+#current-shift {
+  text-decoration: underline;
+  padding: 8px 8px 8px 5px;
+  margin-bottom: 5px !important; }
+
+#previous-shift:hover,
+#current-shift:hover {
+  background-color: #cf9903;
+  cursor: pointer; }
+
+.icon-arrow:hover {
+  text-decoration: underline; }
+
+.close-modal-icon {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  cursor: pointer; }
+
+.dashboard-modal-field-dropdown {
+  display: inline !important;
+  padding: 10px; }
+
+.number-field {
+  padding: 5px 0px 5px 0px; }
+  .number-field p,
+  .number-field input {
+    display: inline; }
+  .number-field p {
+    padding: 0px 10px 0px 10px; }
+  .number-field input {
+    border-radius: 3px;
+    border: 1px solid #e2e2e2;
+    width: 15%;
+    text-align: center; }
+
+.new-timeloss {
+  border: 1px solid #e2e2e2;
+  border-radius: 3px;
+  padding: 10px; }
+
+.new-timeloss-unallocated input {
+  margin-left: 8%; }
+
+.new-timeloss-allocate input {
+  margin-left: 4%; }
+
+.new-timeloss-data {
+  margin: 20px 0px 40px 0px; }
+
+.new-timeloss-button {
+  text-align: center;
+  margin-bottom: 20px; }
+
+.new-timeloss-data {
+  padding-bottom: 30px; }
+
+.timeloss-top {
+  display: inline; }
+
+.new-timeloss-reasoncode {
+  margin-bottom: 5px; }
+
+.new-timeloss-close {
+  text-align: right; }
+
+.new-timelost-label {
+  font-size: 0.9em; }
+
+.timelost-field {
+  border: 1px solid #e2e2e2;
+  border-radius: 3px;
+  padding: 5px;
+  text-align: center;
+  width: 50%; }
+
+.react_control__menu {
+  height: 220px !important;
+  overflow-y: hidden; }
+
+.reactTableTReason,
+.reactTableTReason .rt-table,
+.reactTableTReason .rt-tbody,
+.reactTableTReason .rt-td {
+  overflow: visible; }
+
+.scrapModal .modal-dialog {
+  max-width: 50%; }
+
+.main {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)), url("../resources/eDBH_IndustryBackground.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  width: 100%;
+  height: 100%; }
+
+.signIn {
   padding-top: 22%;
   text-align: right;
   margin-left: 10%;
@@ -9,10 +408,38 @@
 
 .app-info > * {
   color: white;
-  text-shadow: 2px 1px #000000;
+  text-shadow: 2px 1px #1f1f1f;
   padding: 10px 10px 10px 20px;
   margin-top: 100px;
   max-width: 35%; }
+
+.App-logo {
+  height: 20vmin;
+  pointer-events: none; }
+
+.dashboard-modal-signoff-header {
+  text-transform: capitalize; }
+
+.signoff-buttons {
+  display: table;
+  margin: auto;
+  width: 20%; }
+
+.signoff-list-parent li {
+  list-style-type: none;
+  margin-right: 4%; }
+
+.signoff-list-parent li p {
+  display: inline; }
+
+.signoff-list-parent {
+  text-align: center; }
+
+.signOffModal .modal-dialog {
+  max-width: 50%; }
+
+.divButtonsSignOff {
+  width: 100%; }
 
 .spinner {
   margin: auto;
@@ -48,381 +475,26 @@
   100% {
     opacity: 0; } }
 
-/* Tooltip container */
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-  /* If you want dots under the hoverable text */ }
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1; }
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible; }
-
-body {
-  background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: 0px auto;
-  padding: 0px auto; }
-
-html {
-  height: 100%; }
-
-body {
-  height: 100%;
-  overflow-x: hidden; }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace; }
-
-.drop-shadow {
-  text-shadow: 1px 2px 3px #000000; }
-
-a {
-  color: #ffb91d; }
-
-a:hover {
+.SupervisorTitle {
   color: #ffb91d;
-  text-decoration: none; }
+  width: 40%;
+  vertical-align: middle;
+  font-size: xx-large; }
 
-.App {
-  text-align: center; }
+.SupervisorTitle .icon {
+  margin-right: 5%;
+  margin-left: 5%; }
 
-.app-wrapper {
-  background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949); }
+.supervisorMessage {
+  font-size: larger; }
 
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear; */
-  height: 20vmin;
-  pointer-events: none; }
+.roleButtons {
+  margin-top: 5%;
+  margin-bottom: 5%; }
 
-.App-link {
-  color: #61dafb; }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg); }
-  to {
-    transform: rotate(360deg); } }
-
-.intershift-communication-comments {
-  margin-top: 30px;
-  padding: 30px;
-  border-radius: 5px;
-  border: 1px solid #e2e2e2; }
-
-.intershift-read-more {
-  float: right;
-  text-decoration: underline; }
-
-.intershift-read-more:hover {
-  cursor: pointer;
-  color: #e28710; }
-
-.intershift-comment div {
-  max-width: 80%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; }
-
-#intershift-table {
-  max-height: 200px;
-  overflow-x: hidden; }
-
-.intershift-comment-date {
-  font-size: 0.75em; }
-
-.wrapper-main {
-  background-color: white;
-  padding: 2%; }
-
-.empty-field {
-  padding-right: 24px; }
-
-.fa-search-plus {
-  float: right; }
-
-.dashboard-modal-field-group > * {
-  display: inline; }
-
-.table-click:hover {
-  cursor: pointer;
-  color: #e28710; }
-
-.icon-arrow {
-  font-weight: 400;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 1.4em; }
-
-.shift-arrow-text {
-  text-decoration: underline; }
-
-.shift-buttons {
-  margin-bottom: 10px; }
-
-#previous-shift:hover, #current-shift:hover, .icon-arrow:hover {
-  text-decoration: underline;
-  cursor: pointer; }
-
-.semi-button-shift-change-right {
-  float: right; }
-
-#semi-button-deck {
-  background-color: #ffb91d;
-  color: #3d3d3d;
-  padding-left: 3%;
-  padding-right: 3%;
-  padding-bottom: 5px; }
-
-.wordwrap {
-  white-space: pre-line !important;
-  word-wrap: break-word; }
-
-.editable:hover {
-  color: #ffb91d;
-  cursor: pointer; }
-
-.editable {
-  cursor: pointer;
-  background-color: #f6f6f6;
-  padding: 100%;
-  overflow: scroll;
-  color: red; }
-
-.comments {
-  font-size: 0.8em; }
-
-#previous-shift, #current-shift {
-  text-decoration: underline;
-  padding: 8px 8px 8px 5px;
-  margin-bottom: 5px !important; }
-
-#previous-shift:hover, #current-shift:hover {
-  background-color: #cf9903; }
-
-.pattern-red {
-  background-color: red; }
-
-.pattern-green {
-  background-color: green; }
-
-@keyframes blink {
-  /**
-     * At the start of the animation the dot
-     * has an opacity of .2
-     */
-  0% {
-    opacity: .2; }
-  /**
-     * At 20% the dot is fully visible and
-     * then fades out slowly
-     */
-  20% {
-    opacity: 1; }
-  /**
-     * Until it reaches an opacity of .2 and
-     * the animation can start again
-     */
-  100% {
-    opacity: .2; } }
-
-.saving span {
-  /**
-     * Use the blink animation, which is defined above
-     */
-  animation-name: blink;
-  /**
-     * The animation should take 1.4 seconds
-     */
-  animation-duration: 1.4s;
-  /**
-     * It will repeat itself forever
-     */
-  animation-iteration-count: infinite;
-  /**
-     * This makes sure that the starting style (opacity: .2)
-     * of the animation is applied before the animation starts.
-     * Otherwise we would see a short flash or would have
-     * to set the default styling of the dots to the same
-     * as the animation. Same applies for the ending styles.
-     */
-  animation-fill-mode: both; }
-
-.saving span:nth-child(2) {
-  /**
-     * Starts the animation of the third dot
-     * with a delay of .2s, otherwise all dots
-     * would animate at the same time
-     */
-  animation-delay: .2s; }
-
-.saving span:nth-child(3) {
-  /**
-     * Starts the animation of the third dot
-     * with a delay of .4s, otherwise all dots
-     * would animate at the same time
-     */
-  animation-delay: .4s; }
-
-.saving {
-  display: inline; }
-
-.close-modal-icon {
-  position: absolute;
-  top: 0;
-  right: 5px;
-  width: 10px;
-  height: 10px;
-  cursor: pointer; }
-
-.commentsModal-comment {
-  width: 70%; }
-
-.commentsModal-date {
-  font-size: 0.8em; }
-
-.date-picker-field {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  border: solid 1px lightgrey;
-  border-radius: 4px;
-  text-indent: 10px; }
-
-.close-modal-icon {
-  position: absolute;
-  top: 0;
-  right: 5px;
-  width: 10px;
-  height: 10px;
-  cursor: pointer; }
-
-.dashboard-modal-field-dropdown {
-  display: inline !important;
-  padding: 10px; }
-
-.close-modal-icon {
-  position: absolute;
-  top: 0;
-  right: 5px;
-  width: 10px;
-  height: 10px;
-  cursor: pointer; }
-
-.dashboard-modal-error-field-head {
-  font-size: 0.7em; }
-
-.warning-message {
-  display: inline; }
-
-.icon {
-  color: red;
-  font-size: 2em; }
-
-.error-button {
-  display: block;
-  margin: 0 auto; }
-
-.navbar {
-  height: 10vh;
-  background-color: #1f1f1f; }
-  .navbar .links {
-    padding-bottom: 10px !important; }
-  .navbar .App-logo {
-    height: 90%;
-    width: auto; }
-  .navbar .row {
-    width: 100%; }
-  .navbar .header-item, .navbar #mega-menu {
-    display: inline-block;
-    padding: 10px 10px 10px 10px;
-    color: #ffb91d;
-    float: right; }
-  .navbar .header-item:hover {
-    background-color: #515151;
-    text-decoration: none; }
-  .navbar .header-elem {
-    cursor: pointer; }
-
-.language-picker-button .dropdown-toggle::after {
-  float: right;
-  margin-top: 4%; }
-
-.dropdown-toggle, .btn-primary {
-  border: solid 1px lightgrey;
-  width: 65%;
-  background-color: white;
-  color: black;
-  text-align: left; }
-
-#mega-menu .dropdown-content {
-  display: none;
-  position: fixed;
-  margin-top: 25px;
-  background-color: #f9f9f9;
-  width: 100%;
-  left: 0;
-  right: 0;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1; }
-
-.opened {
-  display: block !important; }
-
-.mega-menu-wrapper {
-  padding: 30px; }
-
-/* Create three equal columns that floats next to each other */
-.mega-menu-children:nth-child(5) p {
-  visibility: hidden; }
-
-.query-button {
-  color: #353535;
-  border: solid 1px #353535; }
-
-.shift-picker-button .dropdown-toggle::after {
-  float: right;
-  margin-top: 4%; }
-
-.dropdown-toggle, .btn-primary {
-  border: solid 1px lightgrey;
-  width: 35%;
-  background-color: white;
-  color: black;
-  text-align: left; }
-
-.intershift-comment-modal {
-  font-size: 0.9em; }
-
-.intershift-date-modal {
-  font-size: 0.75em; }
-
-.intershift-info {
-  width: 20%; }
-
-.signin-code-field {
-  padding-top: 5px;
-  display: inline;
-  width: 50%; }
-
-#barcodeScanner {
-  float: right; }
-
-.signin-result {
-  padding-top: 30px;
-  font-size: 1.1em; }
+.roleButtons .btn {
+  margin-left: 4%;
+  height: 100px;
+  width: 200px;
+  font-weight: bold;
+  font-size: medium; }

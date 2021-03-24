@@ -9,10 +9,10 @@ export class AssetDisplaySystemRepository {
     }
 
     public async getAssetDisplaySystemBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT [AssetDisplaySystem].[displaysystem_name], [AssetDisplaySystem].[status], [Asset].[asset_code], 
-        [AssetDisplaySystem].[entered_by], [AssetDisplaySystem].[entered_on], [AssetDisplaySystem].[last_modified_by], [AssetDisplaySystem].[last_modified_on] 
-        FROM [dbo].[AssetDisplaySystem] JOIN [dbo].[Asset] ON [AssetDisplaySystem].[asset_id] = [Asset].[asset_id] WHERE 
-        [Asset].[site_code] = (SELECT asset_code FROM [dbo].[Asset] WHERE asset_id = ${site_id})`);
+        return await this.sqlServerStore.ExecuteQuery(`SELECT AD.displaysystem_name, AD.status, A.asset_code, A2.asset_code as site_code
+        FROM dbo.AssetDisplaySystem AD
+        JOIN dbo.Asset A ON AD.asset_id = A.asset_id
+        JOIN dbo.Asset A2 ON AD.site_id = A2.asset_id
+        WHERE AD.site_id = ${​​site_id}​​`);
     }
-
 }

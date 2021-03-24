@@ -1,0 +1,27 @@
+﻿CREATE TABLE [dbo].[Asset] (
+    [asset_id]                INT            IDENTITY (1, 1) NOT NULL,
+    [asset_code]              NVARCHAR (100) NULL,
+    [asset_name]              NVARCHAR (200) NULL,
+    [asset_description]       NVARCHAR (256) NULL,
+    [asset_level]             VARCHAR (100)  NOT NULL,
+    [site_code]               NVARCHAR (100) NULL,
+    [parent_asset_code]       NVARCHAR (100) CONSTRAINT [DF_Asset_parent_asset_code] DEFAULT (' ') NULL,
+    [value_stream]            NVARCHAR (100) NULL,
+    [automation_level]        VARCHAR (100)  NULL,
+    [include_in_escalation]   BIT            NULL,
+    [grouping1]               NVARCHAR (256) NULL,
+    [grouping2]               NVARCHAR (256) NULL,
+    [grouping3]               NVARCHAR (256) NULL,
+    [grouping4]               NVARCHAR (256) NULL,
+    [grouping5]               NVARCHAR (256) NULL,
+    [status]                  VARCHAR (50)   NOT NULL,
+    [entered_by]              NVARCHAR (100) CONSTRAINT [DF_Asset_Entered_By] DEFAULT (N'SQL Manual Entry') NULL,
+    [entered_on]              DATETIME       CONSTRAINT [DF_Asset_entered_on] DEFAULT (getdate()) NOT NULL,
+    [last_modified_by]        NVARCHAR (100) CONSTRAINT [DF_Asset_last_modified_by] DEFAULT (N'SQL Manual Entry') NULL,
+    [last_modified_on]        DATETIME       CONSTRAINT [DF_Asset_last_modified_on] DEFAULT (getdate()) NOT NULL,
+    [target_percent_of_ideal] FLOAT (53)     NULL,
+    [is_multiple]             BIT            NULL,
+    CONSTRAINT [PK_Asset_Asset_Id] PRIMARY KEY CLUSTERED ([asset_id] ASC),
+    CONSTRAINT [UNC_Asset_Asset_Code] UNIQUE NONCLUSTERED ([asset_code] ASC)
+);
+

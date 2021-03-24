@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/user-repository';
+import { ScanRepository } from '../repositories/scan-repository';
+import { AssetRepository } from '../repositories/asset-repository';
+import { RoleRepository } from '../repositories/role-repository';
 import jwt from 'jsonwebtoken';
 import localStorage from 'localStorage';
 let nJwt = require('njwt');
@@ -9,10 +12,16 @@ let request = require('request');
 export class AuthService {
 
     private readonly userrepository: UserRepository;
+    private readonly assetrepository: AssetRepository;
+    private readonly scanrepository: ScanRepository;
+    private readonly rolerepository: RoleRepository;
     private readonly config: any;
 
-    public constructor(userrepository: UserRepository, config: any) {
+    public constructor(userrepository: UserRepository, assetrepository: AssetRepository, scanrepository: ScanRepository, rolerepository: RoleRepository, config: any) {
         this.userrepository = userrepository;
+        this.assetrepository = assetrepository;
+        this.scanrepository = scanrepository;
+        this.rolerepository = rolerepository;
         this.config = config;
     }
 
@@ -29,37 +38,47 @@ export class AuthService {
         machine = params.st == 'null' || params.st == 'undefined' ? 0 : params.st;
         let responseUser: any;
         try {
-            responseUser = await this.userrepository.findUserByBadgeAndMachine(params.badge, machine);
+            responseUser = await this.userrepository.findUserInformation(params.badge, machine, 0, 0);
+            responseUser = responseUser[0];
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
         }
 
-        if (responseUser[0] === undefined) {
+        if (responseUser === undefined) {
             return res.redirect(303, this.config.app_section.badLogin);
         }
 
-        let role = responseUser[0].role;
+        let role = responseUser.role;
         if (role === 'Supervisor' || role === 'Administrator') {
-            localStorage.setItem('user_id', responseUser[0].id);
-            localStorage.setItem('user_badge', responseUser[0].badge);
+            localStorage.setItem('user_id', responseUser.id);
+            localStorage.setItem('user_badge', responseUser.badge);
             localStorage.setItem('user_machine', machine);
-            localStorage.setItem('inactive_timeout_minutes', responseUser[0].inactive_timeout_minutes);
+            localStorage.setItem('inactive_timeout_minutes', responseUser.inactive_timeout_minutes);
             const url = `https://login.microsoftonline.com/${this.config.ad_authentication_section.tenant_id}/oauth2/authorize?client_id=${this.config.ad_authentication_section.client_id}&response_type=code&scope=openid&redirect_uri=${this.config.app_section.redirect_uri}`;
             return res.redirect(302, url);
         } else {
             let claimsList = {
                 user: {
                     iss: this.config.app_section.URL,
-                    sub: 'users/' + responseUser[0].badge,
+                    sub: 'users/' + responseUser.badge,
                     scope: role,
-                    user_id: responseUser[0].id,
-                    user_badge: responseUser[0].badge,
-                    user_machine: machine
+                    user_id: responseUser.id,
+                    user_badge: responseUser.badge,
+                    user_machine: machine,
+                    assign_role: null
                 },
             }
+            if (machine) {
+                let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
+                assetInformation = assetInformation[0];
+                if (assetInformation.is_multiple) {
+                    this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                        'Check-In', 'Active', responseUser.site, 0, 0);
+                }
+            }
             let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
-            jwt.setExpiration(new Date().getTime() + (responseUser[0].inactive_timeout_minutes * 60000));
+            jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
             let token = jwt.compact();
             return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
         }
@@ -134,32 +153,44 @@ export class AuthService {
         let responseUser: any;
         try {
             responseUser = await this.userrepository.findUserByUsernameAndMachine(params.username, machine);
+            responseUser = responseUser[0];
         } catch (err) {
             return res.redirect(303, this.config.app_section.badLoginUser);
         }
 
-        if (responseUser[0] === undefined) {
+        if (responseUser === undefined) {
             return res.redirect(303, this.config.app_section.badLoginUser);
         }
 
-        let role = responseUser[0].role;
+        let role = responseUser.role;
         let claimsList = {
             user: {
                 iss: this.config.app_section.URL,
-                sub: 'users/' + responseUser[0].badge,
+                sub: 'users/' + responseUser.badge,
                 scope: role,
-                user_id: responseUser[0].id,
-                user_badge: responseUser[0].badge,
-                user_machine: machine
+                user_id: responseUser.id,
+                user_badge: responseUser.badge,
+                user_machine: machine,
+                assign_role: null
             },
         }
 
         try {
             if (claimsList.user && params.password === 'parkerdxh2019') {
+                if (machine) {
+                    let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
+                    assetInformation = assetInformation[0];
+                    if (assetInformation.is_multiple && role === 'Operator') {
+                        this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                            'Check-In', 'Active', responseUser.site, 0, 0);
+                    }
+                } else {
+                    claimsList.user.assign_role = role;
+                }
                 let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
-                jwt.setExpiration(new Date().getTime() + ((responseUser[0].role === 'Summary' ? responseUser[0].summary_timeout : responseUser[0].inactive_timeout_minutes) * 60000));
+                jwt.setExpiration(new Date().getTime() + ((responseUser.role === 'Summary' ? responseUser.summary_timeout : responseUser.inactive_timeout_minutes) * 60000));
                 let token = jwt.compact();
-                const url = `${req.get('origin')}/${responseUser[0].role === 'Summary' ? 'summary' : 'dashboard'}#token=${token}`;
+                const url = `${req.get('origin')}/${responseUser.role === 'Summary' ? 'summary' : 'dashboard'}#token=${token}`;
                 return res.redirect(302, url);
             }
             return res.redirect(401, this.config.app_section.loginURL);
@@ -177,7 +208,7 @@ export class AuthService {
             token = token.slice(7, token.length).trimLeft();
         }
         if (token) {
-            let payload = { body: { sub: null, user_id: null, user_badge: null, user_machine: null } };
+            let payload = { body: { sub: null, user_id: null, user_badge: null, user_machine: null, assign_role: null } };
             try {
                 payload = await this.proccessToken(token);
             } catch (e) {
@@ -192,13 +223,83 @@ export class AuthService {
                 let machine = payload.body.user_machine;
                 let responseUser: any;
                 try {
-                    responseUser = await this.userrepository.findUserByBadgeAndMachine(badge, machine);
+                    responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
+                    const differentRole = payload.body.assign_role && responseUser[0].role !== payload.body.assign_role;
+                    responseUser[0].role = payload.body.assign_role || responseUser[0].role;
+                    responseUser[0].assing_role = payload.body.assign_role;
+                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole((differentRole ? 0 : responseUser[0].role_id), payload.body.assign_role);
+                    return res.status(200).json(responseUser);
                 } catch (err) {
                     console.log(err);
                     res.status(500).json({ message: err.message });
                     return;
                 }
-                return res.status(200).json(responseUser);
+            } else {
+                res.status(401);
+                return res.json({
+                    success: false,
+                    message: 'Auth token is invalid'
+                });
+            }
+        } else {
+            res.status(401);
+            return res.json({
+                success: false,
+                message: 'Auth token is not supplied'
+            });
+        }
+    }
+
+    public async assignRoleToken(req: Request, res: Response) {
+        const params = req.query;
+
+        if (!params.newRole || !params.token) {
+            return res.status(400).json({ message: "Bad Request - Missing Role" });
+        }
+
+        let token = params.token;
+
+        if (token) {
+            let payload = { body: { sub: null, user_id: null, user_badge: null, user_machine: null, assign_role: null } };
+            try {
+                payload = await this.proccessToken(token);
+            } catch (e) {
+                res.status(401);
+                return res.json({
+                    success: false,
+                    message: e.message
+                });
+            }
+            if (payload.body.sub) {
+                let badge = payload.body.user_badge;
+                let machine = payload.body.user_machine;
+                try {
+                    let responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
+                    responseUser = responseUser[0];
+
+                    let claimsList = {
+                        user: {
+                            iss: this.config.app_section.URL,
+                            sub: 'users/' + badge,
+                            scope: responseUser.role,
+                            assign_role: params.newRole,
+                            user_id: payload.body.user_id,
+                            user_badge: badge,
+                            user_machine: machine
+                        }
+                    }
+
+                    let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
+                    jwt.setExpiration(new Date().getTime() + ((responseUser.role === 'Summary' ? responseUser.summary_timeout : responseUser.inactive_timeout_minutes) * 60000));
+                    let token = jwt.compact();
+
+                    return res.status(200).send(token);
+
+                } catch (err) {
+                    console.log(err);
+                    res.status(500).json({ message: err.message });
+                    return;
+                }
             } else {
                 res.status(401);
                 return res.json({

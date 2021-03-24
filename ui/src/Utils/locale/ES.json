@@ -120,5 +120,15 @@
     "Please choose the Configuration Items to": "Por favor seleccione la Configuración de Items a",
     "All Configuration Items": "Todos los Items de Configuración",
     "Available Configuration Items": "Item de Configuración Disponibles",
-    "Selected Configuration Items to": "Items de Configuración seleccionados para"
+    "Selected Configuration Items to": "Items de Configuración seleccionados para",
+    "Scrap Count": "Conteo del Desperdicio",
+    "Scrap Code": "Código del Desperdicio",
+    "Scrap Definition": "Definición del Desperdicio",
+    "New Setup Scrap Entry": "Nueva Entrada de Desperdicio Configurado",
+    "New Production Scrap Entry": "Nueva Entrada de Desperdicio de Producción",
+    "Production Scrap": "Desperdicio de Producción",
+    "Search/Select Scrap Code": "Buscar/Seleccionar Código de Desperdicio",
+    "Success": "Éxito",
+    "Error": "Error",
+    "Scrap Entries Saved": "Desperdicio Guardado"
 }

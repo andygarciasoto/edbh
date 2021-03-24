@@ -1,0 +1,14 @@
+@import "./colors";
+
+.wrapper-main {
+    background-color: $color-white;
+    padding         : 2%;
+}
+
+.fa-search-plus {
+    float: right;
+}
+
+.dashboard-modal-field-group>* {
+    display: inline
+}

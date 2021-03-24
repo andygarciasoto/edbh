@@ -20,19 +20,21 @@ export class DxHDataService {
 
     public async getShiftData(req: Request, res: Response) {
         const params = req.query;
-        if (params.dt == undefined || params.mc == undefined || params.hr == undefined || params.sf == undefined || params.st == undefined) {
+        if (params.mc == undefined || params.start_date_time == undefined || params.end_date_time == undefined || params.st == undefined || params.dt == undefined) {
             return res.status(400).send("Missing parameters");
         }
         let date = params.dt;
         params.dt = moment(params.dt, 'YYYYMMDD').format('YYYYMMDD');
+        params.start_date_time = moment(new Date(params.start_date_time)).format(this.format);
+        params.end_date_time = moment(new Date(params.end_date_time)).format(this.format);
         let data: any[] = [];
         let asset: any;
         try {
             asset = await this.assetrepository.getAssetByCode(params.mc);
             asset = asset[0] || {};
             asset.asset_id = asset.asset_id || null;
-            data = await this.dxhdatarepository.getShiftData(asset.asset_id, params.dt, params.sf, params.st);
-            data = utils.createUnallocatedTime2(data, params.hr, date);
+            data = await this.dxhdatarepository.getShiftData(asset.asset_id, params.dt, params.start_date_time, params.end_date_time, params.st);
+            data = utils.createUnallocatedTime(data, params.hr, date);
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
@@ -107,11 +109,12 @@ export class DxHDataService {
         let asset: any;
         let dxhData: any;
         try {
-            user = await this.userrepository.findUserByBadgeAndAsset(clocknumber, asset_code);
+            asset = await this.assetrepository.getAssetByCode(asset_code);
+            user = await this.userrepository.findUserInformation(clocknumber, '', asset[0].asset_id, 0);
             const role = user[0].role;
-            if (role === 'Supervisor') {
+            if (role === 'Supervisor' || role === 'Administrator') {
                 if (dxh_data_id == undefined) {
-                    asset = await this.assetrepository.getAssetByCode(asset_code);
+
                     dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
                     dxh_data_id = dxhData[0].dxhdata_id;
                     if (clocknumber) {

@@ -1,6 +1,9 @@
 ui/node_modules
 ui/build
 ui/.vscode
+old_ui/node_modules
+old_ui/build
+old_ui/.vscode
 api/bin
 api/node_modules
 api/.deployment
@@ -8,3 +11,12 @@ api/.vscode
 old_api/node_modules
 old_api/bin
 old_api/.vscode
+database/DeployDatabase/.vs
+database/DeployDatabase/Parker_CTP_Dev/bin
+database/DeployDatabase/Parker_CTP_Dev/obj
+database/DeployDatabase/Parker_CTP_Dev/Parker_CTP_Dev.dbmdl
+database/DeployDatabase/Parker_CTP_Dev/Parker_CTP_Dev.jfm
+database/DeployDatabase/ParkerDB/bin
+database/DeployDatabase/ParkerDB/obj
+database/DeployDatabase/ParkerDB/ParkerDB.dbmdl
+database/DeployDatabase/ParkerDB/ParkerDB.jfm

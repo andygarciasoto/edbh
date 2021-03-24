@@ -1,0 +1,83 @@
+28/1/2021 17:45:15	This log contains information about the import schema operation into project 'Parker_CTP_Dev' on computer 'CR2234087W1' by user 'JX254ZR'.
+28/1/2021 17:45:16	Import of database schema has started.
+28/1/2021 17:45:22	Gathering logins
+28/1/2021 17:45:31	Gathering database credentials
+28/1/2021 17:45:31	Gathering database options
+28/1/2021 17:45:31	Gathering generic database scoped configuration option
+28/1/2021 17:45:31	Gathering users
+28/1/2021 17:45:31	Gathering roles
+28/1/2021 17:45:31	Gathering application roles
+28/1/2021 17:45:31	Gathering role memberships
+28/1/2021 17:45:31	Gathering filegroups
+28/1/2021 17:45:31	Gathering full-text catalogs
+28/1/2021 17:45:31	Gathering assemblies
+28/1/2021 17:45:31	Gathering certificates
+28/1/2021 17:45:31	Gathering symmetric keys
+28/1/2021 17:45:31	Gathering encrypted symmetric keys
+28/1/2021 17:45:31	Gathering schemas
+28/1/2021 17:45:31	Gathering XML schema collections
+28/1/2021 17:45:31	Gathering user-defined data types
+28/1/2021 17:45:31	Gathering user-defined types
+28/1/2021 17:45:31	Gathering table types
+28/1/2021 17:45:31	Gathering unique keys for table types
+28/1/2021 17:45:31	Gathering primary keys for table types
+28/1/2021 17:45:31	Gathering indexes for table types
+28/1/2021 17:45:31	Gathering check constraints for table types
+28/1/2021 17:45:31	Gathering default constraints for table types
+28/1/2021 17:45:31	Gathering partition functions
+28/1/2021 17:45:31	Gathering partition schemes
+28/1/2021 17:45:31	Gathering functions
+28/1/2021 17:45:32	Gathering encrypted functions
+28/1/2021 17:45:32	Gathering aggregates
+28/1/2021 17:45:32	Gathering procedures
+28/1/2021 17:45:32	Gathering encrypted procedures
+28/1/2021 17:45:32	Gathering tables
+28/1/2021 17:45:32	Gathering primary keys
+28/1/2021 17:45:32	Gathering unique constraints
+28/1/2021 17:45:32	Gathering foreign keys
+28/1/2021 17:45:32	Gathering default constraints
+28/1/2021 17:45:32	Gathering check constraints
+28/1/2021 17:45:32	Gathering views
+28/1/2021 17:45:32	Gathering encrypted views
+28/1/2021 17:45:32	Gathering indexes
+28/1/2021 17:45:32	Gathering statistics
+28/1/2021 17:45:32	Gathering full-text index stoplists
+28/1/2021 17:45:32	Gathering search property lists
+28/1/2021 17:45:32	Gathering search properties
+28/1/2021 17:45:32	Gathering full-text indexes
+28/1/2021 17:45:32	Gathering column store indexes
+28/1/2021 17:45:32	Gathering spatial indexes
+28/1/2021 17:45:32	Gathering XML indexes
+28/1/2021 17:45:32	Gathering Selective XML indexes
+28/1/2021 17:45:32	Gathering encrypted triggers
+28/1/2021 17:45:32	Gathering triggers
+28/1/2021 17:45:32	Gathering encrypted and clr ddl triggers
+28/1/2021 17:45:32	Gathering ddl triggers
+28/1/2021 17:45:32	Creating edge constraints
+28/1/2021 17:45:32	Gathering synonyms
+28/1/2021 17:45:32	Gathering defaults
+28/1/2021 17:45:32	Gathering data constraint uddt bindings
+28/1/2021 17:45:32	Gathering rules
+28/1/2021 17:45:32	Gathering data constraint uddt bindings
+28/1/2021 17:45:32	Gathering message types
+28/1/2021 17:45:32	Gathering queues
+28/1/2021 17:45:32	Gathering contracts
+28/1/2021 17:45:32	Gathering services
+28/1/2021 17:45:32	Gathering event notifications
+28/1/2021 17:45:32	Gathering remote service bindings
+28/1/2021 17:45:32	Gathering broker priorities
+28/1/2021 17:45:32	Gathering signatures
+28/1/2021 17:45:32	Gathering data compression options
+28/1/2021 17:45:32	Gathering sequence types
+28/1/2021 17:45:32	Gathering security policies
+28/1/2021 17:45:32	Gather column encryption keys
+28/1/2021 17:45:32	Gathering column master keys
+28/1/2021 17:45:32	Gathering external data sources
+28/1/2021 17:45:32	Gathering external tables
+28/1/2021 17:45:32	Gathering extended properties
+28/1/2021 17:45:34	Gathering logins
+28/1/2021 17:45:37	Scanning project for duplicate elements
+28/1/2021 17:45:37	Finished duplicate element processing
+28/1/2021 17:45:38	Finished importing database.
+28/1/2021 17:45:38	A summary of the import was saved to the following location: C:\Users\JX254ZR\Documents\Projects\Business%20Technologies%20-%20eDBH\database\DeployDatabase\Parker_CTP_Dev\Import Schema Logs\Parker_CTP_Dev_20210128114515.log
+28/1/2021 17:45:38	Click Finish to continue...
