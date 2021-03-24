@@ -44,7 +44,7 @@ class MachinePickerCustom extends React.Component {
     }
 
     getMachineArray(props) {
-        let machines = props.history.location.pathname === '/summary' ? props.user.workcell : props.user.machines;
+        let machines = props.history.location.pathname === '/summary' ? props.user.assets_workcell : props.user.machines;
         let machineArray = [];
         _.forEach(machines, item => {
             machineArray.push({ asset_name: item.asset_name, asset_code: item.asset_code, automation_level: item.automation_level })

@@ -24,7 +24,8 @@ class DashboardOne extends React.Component {
   }
 
   getInitialState(props) {
-    const selectedAssetOption = _.find(props.user.machines, machine => { return machine.asset_code === props.search.mc || machine.asset_code === props.machineData.asset_code; }) || props.machineData;
+    const mc = props.search.mc || props.machineData.asset_code;
+    const selectedAssetOption = _.find(props.user.machines, { asset_code: mc }) || props.machineData;
     return {
       selectedAssetOption,
       selectedDate: props.search.dt || props.user.date_of_shift || getCurrentTime(props.user.timezone),
@@ -35,7 +36,8 @@ class DashboardOne extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const selectedAssetOption = _.find(nextProps.user.machines, machine => { return machine.asset_code === nextProps.search.mc || machine.asset_code === nextProps.machineData.asset_code; }) || nextProps.machineData;
+    const mc = nextProps.search.mc || nextProps.machineData.asset_code;
+    const selectedAssetOption = _.find(nextProps.user.machines, { asset_code: mc }) || nextProps.machineData;
     const selectedDate = nextProps.search.dt || nextProps.user.date_of_shift || getCurrentTime(nextProps.user.timezone);
     const selectedShift = nextProps.search.sf || nextProps.user.current_shift;
     const currentLanguage = nextProps.search.ln || nextProps.user.language;

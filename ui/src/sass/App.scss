@@ -65,18 +65,18 @@
 }
 
 .border_escalation_inital {
-  border   : 2px solid $color-orange-back;
+  border   : 8px solid $color-orange-back;
   animation: blinker2 1s step-end infinite alternate;
 }
 
 .border_escalation_warning {
-  border   : 2px solid $color-warning;
+  border   : 8px solid $color-warning;
   animation: blinker2 1s step-end infinite alternate;
 }
 
 .border_escalation_danger {
-  border   : 2px solid $color-red;
-  animation: blinker2 .1s step-end infinite alternate;
+  border   : 8px solid $color-red;
+  animation: blinker2 .5s step-end infinite alternate;
 }
 
 @keyframes blinker2 {

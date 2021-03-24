@@ -78,7 +78,7 @@ AS
 			ISH.shift_code,
 			ISH.comment,
 			ISH.entered_by,
-			CONVERT(VARCHAR, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone) AS entered_on,
+			CONVERT(NVARCHAR(19), ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone, 20) AS entered_on,
 			ISH.first_name,
 			ISH.last_name
 		FROM dbo.InterShiftData ISH
