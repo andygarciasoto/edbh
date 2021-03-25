@@ -168,8 +168,7 @@ const helpers = {
                 resizable: false,
                 sortable: false,
                 Aggregated: cellInfo => {
-                    const needsExpander =
-                        cellInfo.subRows && cellInfo.subRows.length > 1 ? true : false;
+                    const needsExpander = cellInfo.subRows && cellInfo.subRows.length > 1;
                     const expanderEnabled = !cellInfo.column.disableExpander;
                     return needsExpander && expanderEnabled ? (
                         <div
@@ -195,8 +194,7 @@ const helpers = {
                     }
                 },
                 disableExpander: false,
-                filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
+                filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
                 filterAll: true,
                 getProps: (state, rowInfo, column) => {
                     let style = this.getStyle(true, 'left', rowInfo, column);
@@ -321,7 +319,7 @@ const helpers = {
                     if (rowInfo.level === 0) {
                         modalType = column.id === 'product_code' ? 'manualentry' : (column.id === 'timelost_summary' ? 'timelost' : (column.id === 'latest_comment' ? 'comments' : column.id));
                         row = rowInfo.subRows[0]._original;
-                        openModal = true;
+                        openModal = modalType === 'operator_signoff' || modalType === 'supervisor_signoff' ? !row[modalType] : true;
                     }
                     break;
                 case 'actual':
@@ -374,7 +372,9 @@ const helpers = {
                         break;
                 }
 
-                newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone);
+                newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') &&
+                    isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone) &&
+                    currentRow.current_order_id;
 
                 if (modalType === 'supervisor_signoff' && !_.isEmpty(this.state.actualEscalation)) {
                     if (this.props.user.escalation_level !== this.state.actualEscalation.escalation_level) {

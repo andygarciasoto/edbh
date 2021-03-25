@@ -240,9 +240,15 @@ class Intershift extends React.Component {
                     }
                     <span className="dashboard-modal-field-group">
                         <p>{t('Enter new communication')}:</p>
-                        <Form.Control style={{ paddingTop: '5px' }} type="text" value={this.state.value} disabled={!this.props.isEditable} onChange={(e) => this.setState({ value: e.target.value })}></Form.Control>
+                        <Form.Control
+                            id='intershiftField'
+                            style={{ paddingTop: '5px' }}
+                            type="text"
+                            value={this.state.value}
+                            disabled={!this.props.isEditable}
+                            onChange={(e) => this.setState({ value: e.target.value })} />
                     </span>
-                    <Button variant="outline-primary" style={{ marginTop: '10px' }} disabled={!this.props.isEditable} onClick={this.enterCommunication}>{t('Submit')}</Button>
+                    <Button id='intershiftSubmit' variant="outline-primary" style={{ marginTop: '10px' }} disabled={!this.props.isEditable} onClick={this.enterCommunication}>{t('Submit')}</Button>
                     <IntershiftModal
                         isOpen={this.state.modal_Intershift_Is_Open}
                         onRequestClose={this.closeModal}

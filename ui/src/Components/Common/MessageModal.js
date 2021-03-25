@@ -63,7 +63,7 @@ class MessageModal extends React.Component {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant={this.state.classButton} style={{ marginTop: '20px' }} className={'close-button'} onClick={this.props.onRequestClose}>{this.state.closeText}</Button>
+                    <Button id='messageButton' variant={this.state.classButton} style={{ marginTop: '20px' }} className={'close-button'} onClick={this.props.onRequestClose}>{this.state.closeText}</Button>
                 </Modal.Footer>
             </Modal>
         )

@@ -38,7 +38,7 @@
 }
 
 .escalation_inital {
-  color: $color-orange-back;
+  color: $color-link;
 }
 
 .escalation_warning {
@@ -55,7 +55,7 @@
 }
 
 .escalation_icon_danger {
-  animation: blinker .1s step-end infinite alternate;
+  animation: blinker .5s step-end infinite alternate;
 }
 
 @keyframes blinker {
@@ -65,7 +65,7 @@
 }
 
 .border_escalation_inital {
-  border   : 8px solid $color-orange-back;
+  border   : 8px solid $color-link;
   animation: blinker2 1s step-end infinite alternate;
 }
 

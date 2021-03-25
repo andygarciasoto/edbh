@@ -176,8 +176,15 @@ class DashboardTable extends React.Component {
 
                 let currentRow = this.state.currentRow;
                 if (currentRow) {
-                    currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    if (currentRow.productiondata_id) {
+                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id });
+                    } else if (currentRow.dxhdata_id) {
+                        currentRow = _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    } else {
+                        currentRow = _.find(data, { started_on_chunck: currentRow.started_on_chunck, ended_on_chunck: currentRow.ended_on_chunck });
+                    }
                 }
+
                 this.setState({
                     data,
                     currentRow
@@ -221,7 +228,13 @@ class DashboardTable extends React.Component {
 
                 let currentRow = this.state.currentRow;
                 if (currentRow) {
-                    currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    if (currentRow.productiondata_id) {
+                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id });
+                    } else if (currentRow.dxhdata_id) {
+                        currentRow = _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    } else {
+                        currentRow = _.find(data, { started_on_chunck: currentRow.started_on_chunck, ended_on_chunck: currentRow.ended_on_chunck });
+                    }
                 }
 
                 let sequentialRed = 0;
@@ -339,6 +352,7 @@ class DashboardTable extends React.Component {
                             }
                         }}
                         sortable={false}
+                        sorted={[{ id: 'productiondata_id', desc: true }]}
                         data={data}
                         columns={columns}
                         showPaginationBottom={false}
