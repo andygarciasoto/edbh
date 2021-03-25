@@ -30,7 +30,7 @@ export const SOCKET = 'http://localhost:8080';
 //  export const SOCKET = 'https://edxhapitst.us.parker.corp';
 
 //private Prod
-export const API = 'https://parkerdaybyhourapi.us.parker.corp/api';
-export const AUTH = 'https://parkerdaybyhourapi.us.parker.corp/auth';
-export const DATATOOL = 'https://parkerdaybyhourapi.us.parker.corp/datatool';
-export const SOCKET = 'https://parkerdaybyhourapi.us.parker.corp';
+// export const API = 'https://parkerdaybyhourapi.us.parker.corp/api';
+// export const AUTH = 'https://parkerdaybyhourapi.us.parker.corp/auth';
+// export const DATATOOL = 'https://parkerdaybyhourapi.us.parker.corp/datatool';
+// export const SOCKET = 'https://parkerdaybyhourapi.us.parker.corp';
