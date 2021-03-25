@@ -3,8 +3,7 @@ import ReactTable from 'react-table';
 import { Modal, Button } from 'react-bootstrap';
 import {
     getResponseFromGeneric,
-    formatDate,
-    formatTime
+    formatDate
 } from '../../../Utils/Requests';
 import { API } from '../../../Utils/Constants';
 import _ from 'lodash';
@@ -25,11 +24,11 @@ class ActiveOperatorsModal extends React.Component {
             Header: 'Name',
             accessor: 'name'
         }, {
-            Header: 'Check-In Time',
+            Header: 'Check-In',
             accessor: 'start_time',
             Cell: c => this.getCellTime(c.original, 'start_time', ''),
         }, {
-            Header: 'Check-Out Time',
+            Header: 'Check-Out',
             accessor: 'end_time',
             Cell: c => this.getCellTime(c.original, 'end_time', ''),
         }, {
@@ -54,7 +53,7 @@ class ActiveOperatorsModal extends React.Component {
         if (row) {
             let valueToDisplay = row[prop] ? row[prop] : defaultValue;
             return valueToDisplay || valueToDisplay === 0 ?
-                <span className={'wordwrap'} data-tip={valueToDisplay}>{formatTime(valueToDisplay)}</span> :
+                <span className={'wordwrap'} data-tip={valueToDisplay}>{formatDate(valueToDisplay)}</span> :
                 <span style={{ paddingRight: '90%' }} className={'empty-field'}></span>;
         } else {
             return <span style={{ paddingRight: '90%' }} className={'empty-field'}></span>;
@@ -63,12 +62,10 @@ class ActiveOperatorsModal extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.isOpen && !_.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.currentRow, prevState.currentRow)) {
-            console.log('update for row');
             return {
                 currentRow: nextProps.currentRow
             };
         } else if (nextProps.isOpen && _.isEmpty(nextProps.currentRow) && !_.isEqual(nextProps.activeOperators, prevState.activeOperators)) {
-            console.log('update for list');
             return {
                 activeOperators: nextProps.activeOperators
             };

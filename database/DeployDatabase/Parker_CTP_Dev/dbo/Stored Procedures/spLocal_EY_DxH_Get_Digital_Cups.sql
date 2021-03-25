@@ -150,8 +150,7 @@ AS
 			END AS background_color
 		FROM CTE1
 		WHERE
-			CTE1.order_id IS NOT NULL AND
-			(CTE1.production_id_count > 0 OR CTE1.intershift_id_count > 0)
+			CTE1.production_id_count > 0 OR CTE1.intershift_id_count > 0
 		ORDER BY CTE1.asset_code, CTE1.started_on_chunck ASC;
 
     END;

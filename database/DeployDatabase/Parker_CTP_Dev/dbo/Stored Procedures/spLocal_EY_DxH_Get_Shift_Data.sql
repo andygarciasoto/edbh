@@ -54,6 +54,7 @@
 --	20210218		C00V17 - Change variables type from varchar to nvarchar
 --	20210222		C00V18 - Change Shift id for starttime and endtime parameters (add fexibiltiy in the logic to search the data)
 --	20210318		C00V19 - Include dynamic target to get the current color hour
+--	20210324		C00V20 - Include current active order to know if the asset have at least one active order
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Shift_Data 35,'2021-02-22','2021-02-22 15:00', '2021-02-22 23:00', 1
@@ -179,7 +180,8 @@ AS
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
-                        ORDER BY BD.started_on_chunck) AS Row#
+                        ORDER BY BD.started_on_chunck) AS Row#,
+                        ODActive.order_id AS current_order_id
                  FROM [dbo].[GetRangesBetweenDates](@Start_DateTime, @End_DateTime, 60, 1) AS BD
 					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
 					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
@@ -207,57 +209,65 @@ AS
                       LEFT JOIN dbo.Product P ON PD.product_code = P.product_code
 					  --GET ACTIVE OPERATORS WITH MULTIPLE ASSETS
 					  OUTER APPLY
-				(
-					SELECT COUNT (DISTINCT S.badge) as active_operators
-					FROM dbo.Scan S
-					WHERE S.asset_id = @Asset_Id
-							AND S.status = 'Active'
-							AND S.start_time < BD.ended_on_chunck
-							AND (S.end_time IS NULL OR S.end_time > BD.started_on_chunck)
-				) S
-					   --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
+                      (
+					    SELECT COUNT (DISTINCT S.badge) as active_operators
+					    FROM dbo.Scan S
+					    WHERE S.asset_id = @Asset_Id
+							    AND S.status = 'Active'
+							    AND S.start_time < BD.ended_on_chunck
+							    AND (S.end_time IS NULL OR S.end_time > BD.started_on_chunck)
+                      ) S
+					  --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
                       OUTER APPLY
-                 (
-                     SELECT SUM(U.duration_in_minutes) AS summary_breakandlunch_minutes
-                     FROM dbo.Unavailable U
-                     WHERE U.asset_id = @Asset_Id
-                           AND U.STATUS = 'Active'
-                           AND BD.started_on_chunck <= CONCAT(FORMAT(BD.started_on_chunck, 'yyyy-MM-dd'), ' ', U.start_time)
-                           AND BD.ended_on_chunck >= CONCAT(FORMAT(BD.ended_on_chunck, 'yyyy-MM-dd'), ' ', U.end_time)
-                     GROUP BY u.asset_id
-                 ) U
+                      (
+                         SELECT SUM(U.duration_in_minutes) AS summary_breakandlunch_minutes
+                         FROM dbo.Unavailable U
+                         WHERE U.asset_id = @Asset_Id
+                               AND U.STATUS = 'Active'
+                               AND BD.started_on_chunck <= CONCAT(FORMAT(BD.started_on_chunck, 'yyyy-MM-dd'), ' ', U.start_time)
+                               AND BD.ended_on_chunck >= CONCAT(FORMAT(BD.ended_on_chunck, 'yyyy-MM-dd'), ' ', U.end_time)
+                         GROUP BY u.asset_id
+                      ) U
                       --GET THE TOTAL PRODUCTION DATA OF THE CURRENT ORDER ACCORDING TO THE PRODUCTION DATA
                       OUTER APPLY
-                 (
-                     SELECT SUM(CASE
-                                    WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH')
-                                         AND CONVERT(INT, PD1.target) > (CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap)
+                      (
+                        SELECT SUM(CASE
+                            WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH') AND
+                                CONVERT(INT, PD1.target) > (CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap)
                                     THEN CONVERT(INT, PD1.target)
                                     ELSE CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap
-                                END) AS summary_actual_quantity
-                     FROM dbo.ProductionData PD1
-                     WHERE PD1.order_id = OD.order_id
-                     GROUP BY PD1.order_id
-                 ) PD1
+                            END) AS summary_actual_quantity
+                        FROM dbo.ProductionData PD1
+                        WHERE PD1.order_id = OD.order_id
+                        GROUP BY PD1.order_id
+                      ) PD1
                       --GET THE QUANTITY OF INSERTED COMMENTS FOR THE ROWS AND THE LAST COMMENT
                       OUTER APPLY
-                 (
-                     SELECT TOP 1 C.commentdata_id, 
+                      (
+                        SELECT TOP 1 C.commentdata_id, 
                                   C.comment, 
                                   C.first_name, 
                                   C.last_name, 
                                   COUNT(*) OVER(PARTITION BY C.dxhdata_id) AS total_comments
-                     FROM dbo.CommentData C
-                     WHERE C.dxhdata_id = DH.dxhdata_id
-                     ORDER BY last_modified_on DESC
-                 ) CD
+                         FROM dbo.CommentData C
+                         WHERE C.dxhdata_id = DH.dxhdata_id
+                         ORDER BY last_modified_on DESC
+                      ) CD
                       --GET THE DT REASON MINUTES OF EACH ROW
                       OUTER APPLY
-                 (
-                     SELECT TOP 1 SUM(DT.dtminutes) OVER(PARTITION BY DT.dxhdata_id) AS summary_minutes
-                     FROM dbo.DTData DT
-                     WHERE DT.dxhdata_id = DH.dxhdata_id
-                 ) DTD),
+                      (
+                         SELECT TOP 1 SUM(DT.dtminutes) OVER(PARTITION BY DT.dxhdata_id) AS summary_minutes
+                         FROM dbo.DTData DT
+                         WHERE DT.dxhdata_id = DH.dxhdata_id
+                      ) DTD
+                      --GET THE ACTIVE ORDER
+                      OUTER APPLY
+                      (
+                         SELECT TOP 1 order_id
+                         FROM dbo.OrderData OD2
+                         WHERE OD2.asset_id = @Asset_Id AND OD2.end_time IS NULL
+                      ) ODActive
+                 ),
              CTE2
              AS (SELECT CTE.*,
 						actual - scrap AS adjusted_actual,
@@ -399,7 +409,8 @@ AS
                         THEN 'red'
                         ELSE 'green'
                     END AS summary_background_color,
-					dynamic_summary_target
+					dynamic_summary_target,
+                    current_order_id
              FROM CTE3
              ORDER BY started_on_chunck ASC, 
                       start_time DESC;

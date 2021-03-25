@@ -29,6 +29,7 @@ class OperatorComponent extends React.Component {
 
     getInitialState(props) {
         return {
+            allOperators: [],
             activeOperators: [],
             selectedAssetOption: props.selectedAssetOption,
             modal_validate_IsOpen: false,
@@ -53,6 +54,7 @@ class OperatorComponent extends React.Component {
     static getDerivedStateFromProps(nextProps, prevState) {
         if (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption)) {
             return {
+                allOperators: [],
                 activeOperators: [],
                 selectedAssetOption: nextProps.selectedAssetOption
             }
@@ -75,8 +77,8 @@ class OperatorComponent extends React.Component {
         };
 
         getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
-            let user_list = response || [];
-            const activeOperators = _.filter(user_list, { status: 'Active', is_current_scan: true });
+            const allOperators = response || [];
+            const activeOperators = _.filter(allOperators, { status: 'Active', is_current_scan: true });
             if (this.props.user.role === 'Operator' && _.isEmpty(activeOperators)) {
                 // remove stored data
                 localStorage.removeItem('accessToken');
@@ -86,6 +88,7 @@ class OperatorComponent extends React.Component {
             } else {
                 this.props.updateActiveOperators(activeOperators);
                 this.setState({
+                    allOperators: _.filter(allOperators, scan => { return scan.is_current_scan && scan.reason !== 'Check-Out'; }),
                     activeOperators
                 });
             }
@@ -238,7 +241,7 @@ class OperatorComponent extends React.Component {
                 <CheckOutModal
                     isOpen={this.state.showCheckOutModal}
                     selectedAssetOption={this.state.selectedAssetOption}
-                    activeOperators={this.state.activeOperators}
+                    activeOperators={this.state.allOperators}
                     Refresh={this.fetchData}
                     onRequestClose={this.closeModal}
                     user={props.user}
