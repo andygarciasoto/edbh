@@ -1,3 +1,6 @@
+.activeModal .modal-dialog {
+  max-width: 50%; }
+
 .actualModal .modal-dialog {
   max-width: 20%; }
 
@@ -31,8 +34,48 @@
   background-color: #b80600;
   border-color: #b80600; }
 
+.escalation_inital {
+  color: #cf9903; }
+
+.escalation_warning {
+  color: darkorange; }
+
+.escalation_danger {
+  color: #b80600; }
+
+.escalation_icon_inital,
+.escalation_icon_warning {
+  animation: blinker 1s step-end infinite alternate; }
+
+.escalation_icon_danger {
+  animation: blinker .1s step-end infinite alternate; }
+
+@keyframes blinker {
+  50% {
+    color: white; } }
+
+.border_escalation_inital {
+  border: 2px solid #cf9903;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_warning {
+  border: 2px solid darkorange;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_danger {
+  border: 2px solid #b80600;
+  animation: blinker2 .1s step-end infinite alternate; }
+
+@keyframes blinker2 {
+  50% {
+    border-color: white; } }
+
 .barcodeScannerModal {
   background-color: rgba(0, 0, 0, 0.3); }
+
+.operatorsCheckBoxDiv,
+.operatorsCheckBoxDiv .form-check {
+  margin-top: 1%; }
 
 .commentsModal-comment {
   font-size: 0.9em; }
@@ -98,6 +141,56 @@
   animation: blinker 1s linear infinite;
   text-align: center;
   width: 100%; }
+
+.buttonFilter {
+  padding: 0%;
+  margin-top: 1.2%; }
+
+.siteHeader {
+  margin-top: 1%;
+  margin-bottom: 1%; }
+
+.cupInformationDiv {
+  border: 1px solid #e2e2e2;
+  border-radius: 2em;
+  padding: 1%; }
+
+.childrenCupDiv {
+  margin-left: 1%;
+  margin-bottom: 1%;
+  padding: 1%;
+  font-weight: bold;
+  font-size: large; }
+
+.previousHours .col {
+  max-width: 1px;
+  min-height: 20px;
+  margin-right: 2%; }
+
+.green {
+  background-color: green; }
+
+.red {
+  background-color: #b80600; }
+
+.assetName {
+  margin-top: 3%;
+  border: 1px solid #e2e2e2;
+  min-width: 100%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: white; }
+
+.currentInformation {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.childrenCupDiv:hover {
+  cursor: pointer; }
 
 a {
   color: #ffb91d; }
@@ -378,12 +471,6 @@ a:hover {
 .react_control__menu {
   height: 220px !important;
   overflow-y: hidden; }
-
-.reactTableTReason,
-.reactTableTReason .rt-table,
-.reactTableTReason .rt-tbody,
-.reactTableTReason .rt-td {
-  overflow: visible; }
 
 .scrapModal .modal-dialog {
   max-width: 50%; }

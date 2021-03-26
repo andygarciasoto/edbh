@@ -284,9 +284,9 @@ export {
   getCurrentShift,
   genericRequest,
   getResponseFromGeneric,
-  assignValuesToUser,
   getRowsFromShifts,
   formatTime,
   validPermission,
-  validMenuOption
+  validMenuOption,
+  assignValuesToUser
 }

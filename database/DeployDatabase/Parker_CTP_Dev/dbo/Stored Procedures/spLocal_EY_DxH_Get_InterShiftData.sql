@@ -65,11 +65,12 @@ AS
 		@timezone	NVARCHAR(100);
 
 		SELECT
-			@start_utc = @Start_Datetime AT TIME ZONE CP.site_timezone  AT TIME ZONE 'UTC',
-			@end_utc = @End_Datetime AT TIME ZONE CP.site_timezone  AT TIME ZONE 'UTC',
-			@timezone = CP.site_timezone
-		FROM dbo.CommonParameters CP
-		WHERE CP.site_id = @Site_Id;
+			@start_utc = @Start_Datetime AT TIME ZONE T.sql_timezone  AT TIME ZONE 'UTC',
+			@end_utc = @End_Datetime AT TIME ZONE T.sql_timezone  AT TIME ZONE 'UTC',
+			@timezone = T.sql_timezone
+		FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+		ON CP.timezone_id = T.timezone_id
+		AND CP.site_id = @Site_Id;
 
 		SELECT
 			ISH.intershift_id,
@@ -78,7 +79,7 @@ AS
 			ISH.shift_code,
 			ISH.comment,
 			ISH.entered_by,
-			CONVERT(VARCHAR, ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone) AS entered_on,
+			CONVERT(NVARCHAR(19), ISH.entered_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone, 20) AS entered_on,
 			ISH.first_name,
 			ISH.last_name
 		FROM dbo.InterShiftData ISH

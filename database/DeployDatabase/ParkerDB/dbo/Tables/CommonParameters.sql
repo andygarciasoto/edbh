@@ -19,6 +19,7 @@
     [last_modified_by]                VARCHAR (100)  NULL,
     [last_modified_on]                DATETIME       NULL,
     [summary_timeout]                 INT            NULL,
+    [assembly_url]                    NVARCHAR (256) NULL,
     CONSTRAINT [PK_CommonParametersTest_Parameter_Id] PRIMARY KEY NONCLUSTERED ([parameter_id] ASC),
     CONSTRAINT [FK_CommonParametersTest_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id])
 );

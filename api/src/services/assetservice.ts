@@ -59,28 +59,4 @@ export class AssetService {
         }
         return res.status(200).json(assets);
     }
-    public async getRowsBySite(req: Request, res: Response) {
-        let params = req.query;
-        if (!params.site_id || params.site_id === null || params.site_id === undefined) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
-        }
-        let rows: any;
-        try {
-            rows = await this.assetrepository.getRowsBySite(params.site_id);
-        } catch (err) {
-            res.status(500).json({ message: err.message });
-            return;
-        }
-        return res.status(200).json(rows);
-    }
-    public async getParkerSites(req: Request, res: Response) {
-        let sites: any;
-        try {
-            sites = await this.assetrepository.getParkerSites();
-        } catch (err) {
-            res.status(500).json({ message: err.message });
-            return;
-        }
-        return res.status(200).json(sites);
-    }
 }

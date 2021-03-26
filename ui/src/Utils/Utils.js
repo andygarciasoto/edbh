@@ -1,6 +1,45 @@
 import _ from 'lodash';
 import moment from 'moment-timezone';
 
+function assignValuesToUser(user, newAttributes) {
+    user.id = newAttributes.id;
+    user.first_name = newAttributes.first_name;
+    user.last_name = newAttributes.last_name;
+    user.username = newAttributes.username;
+    user.role = newAttributes.role;
+    user.assing_role = newAttributes.assing_role;
+    user.badge = newAttributes.badge;
+    user.site = newAttributes.site;
+    user.max_regression = newAttributes.max_regression;
+    user.site_name = newAttributes.site_name;
+    user.timezone = newAttributes.timezone;
+    user.current_shift = newAttributes.shift_name;
+    user.shift_id = newAttributes.shift_id;
+    user.language = newAttributes.language;
+    user.date_of_shift = newAttributes.date_of_shift;
+    user.current_date_time = newAttributes.current_date_time;
+    user.vertical_shift_id = newAttributes.vertical_shift_id;
+    user.break_minutes = newAttributes.break_minutes;
+    user.lunch_minutes = newAttributes.lunch_minutes;
+    user.permissions = newAttributes.permissions;
+    user.sites = newAttributes.sites;
+    user.escalation_name = newAttributes.escalation_name;
+    user.escalation_level = newAttributes.escalation_level;
+    user.escalation_hours = newAttributes.escalation_hours;
+    return user;
+}
+
+function assignSiteConfiguration(user, newAttributes) {
+    user.shifts = newAttributes.shifts;
+    user.site_assets = newAttributes.site_assets;
+    user.machines = newAttributes.machines;
+    user.uoms = newAttributes.uoms;
+    user.workcell = newAttributes.workcell;
+    user.assets_workcell = newAttributes.assets_workcell;
+    user.escalations = newAttributes.escalations;
+    return user;
+}
+
 function getDtReason(reasons) {
     _.forEach(reasons, reason => {
         reason.label = reason.dtreason_name;
@@ -23,6 +62,14 @@ function getAreaAssetOptionsDC(user) {
         asset.value = asset.asset_id;
         asset.label = asset.asset_name;
         return asset;
+    });
+}
+
+function getWorkcellOptionsDC(user) {
+    return _.map(user.workcell, workcell => {
+        workcell.value = workcell.workcell_name;
+        workcell.label = workcell.workcell_name;
+        return workcell;
     });
 }
 
@@ -57,7 +104,7 @@ function GetShiftProductionDayFromSiteAndDate(user) {
     const last_shift = user.shifts[user.shifts.length - 1];
     let first_shift_start_time = moment.tz(data.production_day, user.timezone).add(first_shift.start_time_offset_days, 'days').add(first_shift.hour, 'hours');
     let last_shift_end_time = moment.tz(data.production_day, user.timezone).add(last_shift.end_time_offset_days, 'days').add(last_shift.end_hour, 'hours');
-    
+
     if (data.current_datetime.isBefore(first_shift_start_time)) {
         data.production_day.add(-1, 'days');
     } else if (data.current_datetime.isSameOrAfter(last_shift_end_time)) {
@@ -82,9 +129,12 @@ function GetShiftProductionDayFromSiteAndDate(user) {
 }
 
 export {
+    assignValuesToUser,
+    assignSiteConfiguration,
     getDtReason,
     getLevelOptions,
     getAreaAssetOptionsDC,
+    getWorkcellOptionsDC,
     getWorkcellValueOptionsDC,
     getStartEndDateTime,
     GetShiftProductionDayFromSiteAndDate

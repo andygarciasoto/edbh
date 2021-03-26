@@ -5,7 +5,7 @@ import LoadingModal from '../Common/LoadingModal';
 import MessageModal from '../Common/MessageModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
 import { getCurrentTime, formatDateWithTime, getResponseFromGeneric } from '../../Utils/Requests';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import '../../sass/CommentModal.scss';
 
 
@@ -47,7 +47,8 @@ class CommentsModal extends React.Component {
 
     async loadData(props) {
         const parameters = {
-            dxh_data_id: this.state.currentRow.dxhdata_id
+            dxh_data_id: this.state.currentRow.dxhdata_id,
+            site_id: props.user.site
         }
         let res = await getResponseFromGeneric('get', API, '/comments_dxh_data', {}, parameters, {}) || [];
         this.setState({ comments: res, modal_loading_IsOpen: false, actualDxH_Id: this.state.currentRow.dxhdata_id });

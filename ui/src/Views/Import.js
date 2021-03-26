@@ -199,7 +199,7 @@ class Import extends React.Component {
                         </Col>
                         <Col md={1}>
                             <label>
-                                <input type="radio" value="Export" checked={this.state.selectedAction === 'Export'}
+                                <input id='exportRadioButton' type="radio" value="Export" checked={this.state.selectedAction === 'Export'}
                                     onChange={(e) => this.handleInputChange(e)} />
                                 {' ' + this.state.exportText}
                             </label>
@@ -238,7 +238,7 @@ class Import extends React.Component {
                             {this.state.isLoading ? this.state.importingText : this.state.importText}
                         </button>
                         :
-                        <button onClick={this.exportEvent} disabled={this.state.isExporting} style={{ marginTop: "25px", marginRight: "-15px", width: "150px", height: "40px", fontSize: "16px" }}>
+                        <button id='exportButton' onClick={this.exportEvent} disabled={this.state.isExporting} style={{ marginTop: "25px", marginRight: "-15px", width: "150px", height: "40px", fontSize: "16px" }}>
                             {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                         </button>
                     }

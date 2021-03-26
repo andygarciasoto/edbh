@@ -85,20 +85,17 @@ export let headers = {
         { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 15 },
         { header: 'site_name', type: 'VARCHAR', key: 'site_name', width: 15 },
         { header: 'production_day_offset_minutes', type: 'FLOAT', key: 'production_day_offset_minutes', width: 31 },
-        { header: 'site_timezone', type: 'VARCHAR', key: 'site_timezone', width: 24 },
-        { header: 'ui_timezone', type: 'VARCHAR', key: 'ui_timezone', width: 24 },
-        { header: 'escalation_level1_minutes', type: 'FLOAT', key: 'escalation_level1_minutes', width: 26 },
-        { header: 'escalation_level2_minutes', type: 'FLOAT', key: 'escalation_level2_minutes', width: 26 },
+        { header: 'timezone', type: 'VARCHAR', key: 'timezone', width: 24 },
         { header: 'default_target_percent_of_ideal', type: 'FLOAT', key: 'default_target_percent_of_ideal', width: 32 },
         { header: 'default_setup_minutes', type: 'FLOAT', key: 'default_setup_minutes', width: 23 },
         { header: 'default_routed_cycle_time', type: 'FLOAT', key: 'default_routed_cycle_time', width: 26 },
-        { header: 'setup_lookback_minutes', type: 'FLOAT', key: 'setup_lookback_minutes', width: 25 },
-        { header: 'language', type: 'VARCHAR', key: 'language', width: 13 },
+        { header: 'site_language', type: 'VARCHAR', key: 'site_language', width: 15 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'summary_timeout', type: 'INT', key: 'summary_timeout', width: 19 },
         { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
         { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 },
-        { header: 'site_prefix', type: 'VARCHAR', key: 'site_prefix', width: 17 }
+        { header: 'site_prefix', type: 'VARCHAR', key: 'site_prefix', width: 17 },
+        { header: 'assembly_url', type: 'VARCHAR', key: 'assembly_url', width: 17 }
 
     ],
     Unavailable: [
@@ -146,7 +143,8 @@ export function getParametersOfTable(tableName, siteId) {
             break;
         case 'Asset':
             parametersObject.extraColumns = ', w.workcell_id';
-            parametersObject.joinSentence = `LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name`;
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset a ON a.asset_code = s.site_code
+            LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name AND A.asset_id = w.site_id`;
             parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
             parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], 
                 t.[asset_level] = s.[asset_level], t.[parent_asset_code] = s.[parent_asset_code], t.[value_stream] = s.[value_stream], 
@@ -165,7 +163,7 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.extraColumns = ', a.asset_id, a2.asset_id as site_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code
                 JOIN dbo.Asset a2 ON a.site_code = a2.asset_code`;
-            parametersObject.matchParameters = 's.asset_id = t.asset_id';
+            parametersObject.matchParameters = 's.asset_id = t.asset_id AND s.displaysystem_name = t.displaysystem_name';
             parametersObject.updateSentence = `t.[displaysystem_name] = s.[displaysystem_name], t.[status] = s.[status], 
                 t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE()`;
             parametersObject.insertSentence = `([displaysystem_name], [status], [entered_by], [last_modified_by], [asset_id]) 
@@ -227,26 +225,25 @@ export function getParametersOfTable(tableName, siteId) {
                 s.[site_id], s.[asset_id], s.[max_change])`;
             break;
         case 'CommonParameters':
-            parametersObject.extraColumns = ', a.asset_id as site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'`;
+            parametersObject.extraColumns = ', a.asset_id as site_id, L.language_id as language_id, T.timezone_id as timezone_id';
+            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'
+            JOIN dbo.Language L ON s.site_language = L.translation
+            JOIN dbo.Timezone T ON s.timezone = T.name`;
             parametersObject.matchParameters = 's.site_id = t.site_id';
             parametersObject.updateSentence = `t.site_id = s.site_id, t.[site_name] = s.[site_name], 
-                t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[site_timezone] = s.[site_timezone], 
-                t.[ui_timezone] = s.[ui_timezone], t.[escalation_level1_minutes] = s.[escalation_level1_minutes], 
-                t.[escalation_level2_minutes] = s.[escalation_level2_minutes], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], 
+                t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[language_id] = s.[language_id],
+                t.[timezone_id] = s.[timezone_id], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], 
                 t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], 
-                t.[setup_lookback_minutes] = s.[setup_lookback_minutes], t.[language] = s.[language], t.[status] = s.[status], 
-                t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
+                t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
                 t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes],
-                t.[site_prefix] = s.[site_prefix]`;
-            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], 
-                [escalation_level1_minutes], [escalation_level2_minutes], [default_target_percent_of_ideal], [default_setup_minutes], 
-                [default_routed_cycle_time], [setup_lookback_minutes], [language], [status], [entered_by], [last_modified_by], [summary_timeout],
-                [break_minutes], [lunch_minutes], [site_prefix]) 
-                VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], 
-                s.[escalation_level1_minutes], s.[escalation_level2_minutes], s.[default_target_percent_of_ideal], s.[default_setup_minutes], 
-                s.[default_routed_cycle_time], s.[setup_lookback_minutes], s.[language], s.[status], 'Administration Tool',
-                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix])`;
+                t.[site_prefix] = s.[site_prefix], t.[assembly_url] = s.[assembly_url]`;
+            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [language_id], [timezone_id],
+                [default_target_percent_of_ideal], [default_setup_minutes], 
+                [default_routed_cycle_time], [status], [entered_by], [last_modified_by], [summary_timeout],
+                [break_minutes], [lunch_minutes], [site_prefix], [assembly_url]) 
+                VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[language_id], s.[timezone_id],
+                s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[language], s.[status], 'Administration Tool',
+                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url])`;
             break;
         case 'Unavailable':
             parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';

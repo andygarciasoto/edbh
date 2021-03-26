@@ -18,12 +18,12 @@ export class CommentDataService {
     }
 
     public async getCommentDataByDxHDataId(req: Request, res: Response) {
-        if (!req.query.dxh_data_id) {
+        if (!req.query.dxh_data_id && !req.query.site_id) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let comments: any;
         try {
-            comments = await this.commentdatarepository.getCommentDataByDxHDataId(req.query.dxh_data_id);
+            comments = await this.commentdatarepository.getCommentDataByDxHDataId(req.query.dxh_data_id, req.query.site_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
