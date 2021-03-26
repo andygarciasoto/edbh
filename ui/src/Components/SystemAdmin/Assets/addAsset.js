@@ -190,25 +190,25 @@ class AddAsset extends Component {
 								<p className="step-number">1</p>
 								<p className="step-name">Step 1</p>
 								<p className="step-description">Define Asset</p>
-								<i class="arrow right step-1"></i>
+								<i className="arrow right step-1"></i>
 							</div>
 							<div className={this.state.step2 === true ? 'step2 active' : 'step2'}>
 								<p className="step-number-2">2</p>
 								<p className="step-name-2">Step 2</p>
 								<p className="step-description-2">Define Tag</p>
-								<i class="arrow right step-2"></i>
+								<i className="arrow right step-2"></i>
 							</div>
 							<div className={this.state.step3 === true ? 'step3 active' : 'step3'}>
 								<p className="step-number-3">3</p>
 								<p className="step-name-3">Step 3</p>
 								<p className="step-description-3">Define Reason</p>
-								<i class="arrow right step-3"></i>
+								<i className="arrow right step-3"></i>
 							</div>
 							<div className={this.state.step4 === true ? 'step4 active' : 'step4'}>
 								<p className="step-number-4">4</p>
 								<p className="step-name-4">Step 4</p>
 								<p className="step-description-4">Define Break</p>
-								<i class="arrow right step-4"></i>
+								<i className="arrow right step-4"></i>
 							</div>
 						</div>
 						<Button variant="Primary" onClick={(e) => this.createUser(e)}>

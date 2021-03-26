@@ -31,6 +31,7 @@
 			margin-top: -54px;
 			margin-left: 17px;
 			font-size: 15px;
+			margin-bottom: 20px;
 		}
 
 		.step-description {
@@ -52,6 +53,7 @@
 			margin-top: -54px;
 			margin-left: 17px;
 			font-size: 15px;
+			margin-bottom: 20px;
 		}
 
 		.step-description-2 {
@@ -73,6 +75,8 @@
 			margin-top: -54px;
 			margin-left: 17px;
 			font-size: 15px;
+			margin-bottom: 20px;
+
 		}
 
 		.step-description-3 {
@@ -94,6 +98,8 @@
 			margin-top: -54px;
 			margin-left: 17px;
 			font-size: 15px;
+			margin-bottom: 20px;
+
 		}
 
 		.step-description-4 {
@@ -119,25 +125,25 @@
 
 .step-1 {
 	margin-left: 75px;
-	margin-top: -52px;
+	margin-top: -55px;
 	float: left;
 }
 
 .step-2 {
 	margin-left: 75px;
-	margin-top: -55px;
+	margin-top: -58px;
 	float: left;
 }
 
 .step-3 {
 	margin-left: 75px;
-	margin-top: -55px;
+	margin-top: -61px;
 	float: left;
 }
 
 .step-4 {
 	margin-left: 75px;
-	margin-top: -55px;
+	margin-top: -61px;
 	float: left;
 }
 
@@ -629,7 +635,6 @@
 	&.common {
 		margin-left: 250px;
 		margin-top: -143px;
-		padding-bottom: 10px;
 	}
 
 	&.assets {
@@ -669,6 +674,7 @@
 	&.work {
 		margin-left: 1000px;
 		margin-top: -142px;
+		padding-bottom: 10px;
 	}
 
 	//   :hover {
