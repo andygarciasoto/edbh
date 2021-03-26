@@ -27,25 +27,27 @@ AS
         SET @site_code =
         (
             SELECT site_code
-            FROM Asset
+            FROM dbo.Asset
             WHERE asset_code = @asset_code
         );
         SET @site_id =
         (
             SELECT asset_id
-            FROM Asset
+            FROM dbo.Asset
             WHERE asset_code = @site_code
         );
         SET @timezone =
         (
-            SELECT site_timezone
-            FROM CommonParameters
-            WHERE site_id = @site_id
+            SELECT T.sql_timezone
+            FROM dbo.CommonParameters CP
+			INNER JOIN dbo.Timezone T
+			ON T.timezone_id = CP.timezone_id
+            AND CP.site_id = @site_id
         );
         SET @asset_id =
         (
             SELECT asset_id
-            FROM Asset
+            FROM dbo.Asset
             WHERE asset_code = @asset_code
         );
         IF @production_status = 'production'

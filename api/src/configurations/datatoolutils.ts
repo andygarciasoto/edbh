@@ -85,12 +85,11 @@ export let headers = {
         { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 15 },
         { header: 'site_name', type: 'VARCHAR', key: 'site_name', width: 15 },
         { header: 'production_day_offset_minutes', type: 'FLOAT', key: 'production_day_offset_minutes', width: 31 },
-        { header: 'site_timezone', type: 'VARCHAR', key: 'site_timezone', width: 24 },
-        { header: 'ui_timezone', type: 'VARCHAR', key: 'ui_timezone', width: 24 },
+        { header: 'timezone', type: 'VARCHAR', key: 'timezone', width: 24 },
         { header: 'default_target_percent_of_ideal', type: 'FLOAT', key: 'default_target_percent_of_ideal', width: 32 },
         { header: 'default_setup_minutes', type: 'FLOAT', key: 'default_setup_minutes', width: 23 },
         { header: 'default_routed_cycle_time', type: 'FLOAT', key: 'default_routed_cycle_time', width: 26 },
-        { header: 'language', type: 'VARCHAR', key: 'language', width: 13 },
+        { header: 'site_language', type: 'VARCHAR', key: 'site_language', width: 15 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'summary_timeout', type: 'INT', key: 'summary_timeout', width: 19 },
         { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
@@ -226,21 +225,23 @@ export function getParametersOfTable(tableName, siteId) {
                 s.[site_id], s.[asset_id], s.[max_change])`;
             break;
         case 'CommonParameters':
-            parametersObject.extraColumns = ', a.asset_id as site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'`;
+            parametersObject.extraColumns = ', a.asset_id as site_id, L.language_id as language_id, T.timezone_id as timezone_id';
+            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'
+            JOIN dbo.Language L ON s.site_language = L.translation
+            JOIN dbo.Timezone T ON s.timezone = T.name`;
             parametersObject.matchParameters = 's.site_id = t.site_id';
             parametersObject.updateSentence = `t.site_id = s.site_id, t.[site_name] = s.[site_name], 
-                t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[site_timezone] = s.[site_timezone], 
-                t.[ui_timezone] = s.[ui_timezone], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], 
+                t.[production_day_offset_minutes] = s.[production_day_offset_minutes], t.[language_id] = s.[language_id],
+                t.[timezone_id] = s.[timezone_id], t.[default_target_percent_of_ideal] = s.[default_target_percent_of_ideal], 
                 t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], 
-                t.[language] = s.[language], t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
+                t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
                 t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes],
                 t.[site_prefix] = s.[site_prefix], t.[assembly_url] = s.[assembly_url]`;
-            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [site_timezone], [ui_timezone], 
+            parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [language_id], [timezone_id],
                 [default_target_percent_of_ideal], [default_setup_minutes], 
-                [default_routed_cycle_time], [language], [status], [entered_by], [last_modified_by], [summary_timeout],
+                [default_routed_cycle_time], [status], [entered_by], [last_modified_by], [summary_timeout],
                 [break_minutes], [lunch_minutes], [site_prefix], [assembly_url]) 
-                VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[site_timezone], s.[ui_timezone], 
+                VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[language_id], s.[timezone_id],
                 s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[language], s.[status], 'Administration Tool',
                 'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url])`;
             break;

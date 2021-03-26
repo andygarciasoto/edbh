@@ -65,8 +65,9 @@ AS
                  @site_id = asset_id
                  FROM dbo.Asset WHERE asset_code = ( SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id)
 
-                SELECT @timezone = (SELECT GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE site_timezone)
-                FROM dbo.CommonParameters where site_id = @site_id;
+                SELECT @timezone = (SELECT GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE T.sql_timezone)
+                FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+				ON T.timezone_id = CP.timezone_id AND CP.site_id = @site_id;
 
                 INSERT INTO dbo.TagData
                     (tag_name, 

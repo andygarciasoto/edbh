@@ -32,6 +32,7 @@ import { WorkcellRepository } from './repositories/workcell-repository';
 import { ProductRepository } from './repositories/product-repository';
 import { TagRepository } from './repositories/tag-repository';
 import { CommonParametersRepository } from './repositories/commonparameters-repository';
+import { CommonParametersService } from './services/commonparametersservice';
 import { UnavailableRepository } from './repositories/unavailable-repository';
 import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-repository';
 import { ScanRepository } from './repositories/scan-repository';
@@ -95,6 +96,7 @@ const roleService = new RoleService(roleRepository);
 const escalationService = new EscalationService(escalationRepository);
 const languageService = new LanguageService(languageRepository);
 const timezoneService = new TimezoneService(timezoneRepository);
+const commonparametersService = new CommonParametersService(commonparametersRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -247,6 +249,12 @@ const appConfig = {
         }, true), 
         new http.RestEndpoint('/api/timezones', 'get', async (req: Request, res: Response) => {
             await timezoneService.getTimezones(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_commonparameter', 'put', async (req: Request, res: Response) => {
+            await commonparametersService.putCommonParameter(req, res);
+        }, true),
+        new http.RestEndpoint('/api/commonparameters', 'get', async (req: Request, res: Response) => {
+            await commonparametersService.getCommonParameterBySite(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
