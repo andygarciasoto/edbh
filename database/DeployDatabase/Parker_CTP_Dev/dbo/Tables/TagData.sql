@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[TagData] (
     [tagdata_id]       INT            IDENTITY (1, 1) NOT NULL,
-    [tag_name]         NVARCHAR (200) NULL,
+    [tag_name]         NVARCHAR (200) NOT NULL,
     [tagdata_value]    VARCHAR (256)  NULL,
     [entered_by]       VARCHAR (100)  CONSTRAINT [DF_TagData_entered_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
     [entered_on]       DATETIME       CONSTRAINT [DF_TagData_entered_on] DEFAULT (getdate()) NOT NULL,

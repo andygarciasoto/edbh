@@ -42,22 +42,30 @@
 --
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_CommentData_By_DxHData_Id]
 --Declare
-	@DxHData_id			INT
+	@DxHData_id			INT,
+	@Site_Id			INT
 AS
 
 BEGIN
 -- SET NOCOUNT ON added to prevent extra result sets from
 -- interfering with SELECT statements.
 	SET NOCOUNT ON;
+	DECLARE
+		@timezone	NVARCHAR(100);
 
-SELECT
-		CD.commentdata_id,
-		CD.dxhdata_id,
-		CD.comment,
-		CD.first_name,
-		CD.last_name,
-		CD.last_modified_on
-	FROM dbo.CommentData CD WHERE CD.dxhdata_id = @DxHData_id;
+	SELECT
+		@timezone = CP.site_timezone
+	FROM dbo.CommonParameters CP
+	WHERE CP.site_id = @Site_Id;
+
+	SELECT
+			CD.commentdata_id,
+			CD.dxhdata_id,
+			CD.comment,
+			CD.first_name,
+			CD.last_name,
+			CONVERT(NVARCHAR(19), CD.last_modified_on AT TIME ZONE 'UTC' AT TIME ZONE @timezone, 20) AS last_modified_on
+		FROM dbo.CommentData CD WHERE CD.dxhdata_id = @DxHData_id;
 
 END
 

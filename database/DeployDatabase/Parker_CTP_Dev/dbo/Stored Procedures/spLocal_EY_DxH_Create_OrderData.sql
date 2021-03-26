@@ -125,10 +125,11 @@ SET @site_id = (SELECT site_id
 				WHERE site_name = @site_code
 				AND status = 'Active')
 
-Select @Site_Timezone = site_timezone
-From dbo.CommonParameters cp with (nolock)
-Where site_id = @site_id
-	And cp.status = 'Active'
+SELECT @Site_Timezone = T.sql_timezone
+FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+ON CP.timezone_id = T.timezone_id
+AND CP.site_id = @site_id
+AND CP.status = 'Active'
 
 Select @Timestamp = getutcdate() at time zone 'UTC' at time zone @Site_Timezone
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'

@@ -104,9 +104,10 @@ SET @asset_id = (SELECT asset_id
 SELECT @Site_Id = asset_id
 FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id=@asset_id);
 
-Select @Site_Timezone = site_timezone
-From dbo.CommonParameters cpt with (nolock)
-Where site_id = @Site_Id AND status = 'Active';
+Select @Site_Timezone = T.sql_timezone
+From dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+ON T.timezone_id = CP.timezone_id
+AND site_id = @Site_Id AND CP.status = 'Active';
 
 Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC'
 
