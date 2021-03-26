@@ -26,6 +26,7 @@ function assignValuesToUser(user, newAttributes) {
     user.escalation_name = newAttributes.escalation_name;
     user.escalation_level = newAttributes.escalation_level;
     user.escalation_hours = newAttributes.escalation_hours;
+    user.site_prefix = newAttributes.site_prefix;
     return user;
 }
 
