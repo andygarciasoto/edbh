@@ -1,0 +1,133 @@
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as ShiftActions from "../../../redux/actions/shiftsActions";
+import Table from "react-bootstrap/Table";
+import AddUOM from "./addUOM";
+import EditUOM from "./editUOM";
+import Filter from "../../CustomComponents/filter";
+
+class UOM extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      UOMData: [],
+      addUOM: false,
+      editUOM: false,
+      uom_id: 0,
+    };
+  }
+
+  //   componentDidMount() {
+  //     const { actions } = this.props;
+
+  //     return actions.getShifts(this.props.user.site).then((response) => {
+  //       this.setState({
+  //         ShiftData: response,
+  //       });
+  //     });
+  //   }
+
+  showAddUOM = () => {
+    this.setState({
+      addUOM: true,
+    });
+  };
+
+  closeAddUOM = () => {
+    this.setState({
+      addUOM: false,
+    });
+  };
+
+  showEditUOM = (uom_id) => {
+    this.setState({
+      editShift: true,
+      uom_id: uom_id,
+    });
+  };
+
+  closeEditUOM = () => {
+    this.setState({
+      editShift: false,
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <Filter
+          className="filter-user"
+          buttonName={"+ UOM"}
+          buttonFilter={"Search"}
+          role={false}
+          newClass={false}
+          level={false}
+          automatedLevel={false}
+          category={false}
+          type={false}
+          onClick={() => this.showAddUOM()}
+        ></Filter>
+        {this.state.addUOM === true && (
+          <AddUOM
+            user={this.props.user}
+            showForm={this.state.addUOM}
+            closeForm={this.closeAddUOM}
+          />
+        )}
+        {this.state.editUOM === true && (
+          <EditUOM
+            user={this.props.user}
+            showForm={this.state.editUOM}
+            closeForm={this.closeEditUOM}
+            shift_id={this.state.uom_id}
+          />
+        )}
+        <Table responsive="sm" bordered={true}>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Decimals</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* {this.state.ShiftData.map((shift, index) => (
+              <tr key={index}>
+                <td>{shift.shift_name}</td>
+                <td>{shift.shift_description}</td>
+                <td>{shift.shift_sequence}</td>
+                <td>{moment(shift.start_time).format("HH:mm A")}</td>
+                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
+                <td>{moment(shift.end_time).format("HH:mm A")}</td>
+                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
+                <td>{shift.duration_in_minutes}</td>
+                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
+                <td>{shift.status}</td>
+                <td>
+                  <img
+                    src={EditIcon}
+                    alt={`edit-icon`}
+                    className="icon"
+                    onClick={() => this.showEditShift(shift.shift_id)}
+                  />
+                </td>
+              </tr>
+            ))} */}
+          </tbody>
+        </Table>
+      </div>
+    );
+  }
+}
+
+export const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(ShiftActions, dispatch),
+  };
+};
+
+export default connect(null, mapDispatch)(UOM);
