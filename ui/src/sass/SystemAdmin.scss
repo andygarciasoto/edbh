@@ -2,8 +2,8 @@
 	margin: 30px 30px;
 }
 
-.fix-form{
-  padding-bottom: 173px;
+.fix-form {
+	padding-bottom: 173px;
 }
 
 .step-bar {
@@ -76,7 +76,6 @@
 			margin-left: 17px;
 			font-size: 15px;
 			margin-bottom: 20px;
-
 		}
 
 		.step-description-3 {
@@ -99,7 +98,6 @@
 			margin-left: 17px;
 			font-size: 15px;
 			margin-bottom: 20px;
-
 		}
 
 		.step-description-4 {
@@ -473,21 +471,32 @@
 	height: auto;
 	margin-bottom: 30px;
 }
+.button-edit-2 {
+	width: auto;
+    height: auto;
+    background-color: #49b5f3;
+    border-style: groove;
+    border-radius: 5px;
+    border: none;
+    padding-left: 20px;
+    padding-right: 25px;
+    color: white;
+    cursor: pointer;
+    margin-top: -65px;
+    margin-left: 815px;
+    position: absolute;
+
+		&.fix{
+			margin-left: 950px;
+		}
+}
 
 .common1 {
 	font-size: 14px;
 	margin: 10px 10px;
 
-	&.label-language {
-		margin-left: -139px;
-	}
-
 	&.label-vertical-dashboard {
 		margin-left: -192px;
-	}
-
-	&.label-default-break {
-		margin-left: 164px;
 	}
 
 	&.label-site-code {
@@ -506,7 +515,7 @@
 		}
 
 		&.timezone {
-			margin-left: 28px;
+			margin-left: 86px;
 		}
 
 		&.escalation1 {

@@ -15,3 +15,29 @@ export const getParams = (siteId) => {
   };
 };
 
+
+export const getTimezones = () => {
+  var url = `${API}/timezones`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_TIMEZONES,
+        timezones: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getLanguages = () => {
+  var url = `${API}/languages`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_LANGUAGES,
+        languages: response.data,
+      });
+      return response.data;
+    });
+  };
+};

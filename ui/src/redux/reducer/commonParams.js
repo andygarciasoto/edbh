@@ -1,7 +1,9 @@
 import { GET_PARAMS, GET_LANGUAGES, GET_TIMEZONES } from "../constants/constants";
 
 const initialState = {
-  params: {}
+  params: {},
+  timezones: {},
+  languages: {}
 };
 
 export default (state = initialState, action) => {
@@ -11,10 +13,20 @@ export default (state = initialState, action) => {
         ...state,
         params: { ...action.params },
       };
+      case GET_TIMEZONES:
+      return {
+        ...state,
+        timezones: { ...action.timezones },
+      };
+      case GET_LANGUAGES:
+      return {
+        ...state,
+        languages: { ...action.languages },
+      };
     default:
       return state;
   }
 };
 
 export const getParams = (state) => state.commonReducer.commonParams;
-export const getShiftInfo = (state) => state.shiftReducer.shift_info;
+export const getTimezones = (state) => state.commonReducer.timezones;

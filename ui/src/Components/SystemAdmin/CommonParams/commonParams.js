@@ -4,36 +4,187 @@ import { bindActionCreators } from 'redux';
 import * as CommonActions from '../../../redux/actions/commonActions';
 import Axios from 'axios';
 import { API } from '../../../Utils/Constants';
-import { Form, Col } from 'react-bootstrap';
-import { timezones } from '../../../Utils/timezones';
+import { Form, Col, Modal, Button } from 'react-bootstrap';
 
 class CommonParams extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			commonData: {},
+			defaultRouted: 0,
+			defaultLunch: 0,
+			productionOffset: 0,
+			language: '',
+			defaultBreak: 0,
+			timezone: '',
+			timezone_id: 0,
+			language_id: 0,
+			inactiveTimeout: 0,
+			defaultPercent: 0,
+			verticalDashboard: 0,
+			defaultMinutes: 0,
+			siteCode: '',
+			status: '',
+			assembly_url: '',
+			timezonesData: [],
+			languagesData: [],
+			modalError: false,
+			show: false,
+			readOnly: true,
+			editButton: true,
+			confirmButton: false,
+			cancelButton: false,
 		};
 	}
 
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return actions.getParams(this.props.user.site).then((response) => {
+		return Promise.all([
+			actions.getParams(this.props.user.site),
+			actions.getTimezones(),
+			actions.getLanguages(),
+		]).then((response) => {
 			this.setState({
-				commonData: response,
+				defaultRouted: response[0].default_routed_cycle_time,
+				defaultLunch: response[0].lunch_minutes,
+				productionOffset: response[0].production_day_offset_minutes,
+				language: response[0].language,
+				language_id: response[0].language_id,
+				defaultBreak: response[0].break_minutes,
+				timezone: response[0].ui_timezone,
+				timezone_id: response[0].timezone_id,
+				inactiveTimeout: response[0].summary_timeout,
+				assembly_url: response[0].assembly_url,
+				defaultPercent: response[0].default_target_percent_of_ideal,
+				verticalDashboard: response[0].inactive_timeout_minutes,
+				defaultMinutes: response[0].default_setup_minutes,
+				siteCode: response[0].site_code,
+				status: response[0].status,
+				timezonesData: response[1],
+				languagesData: response[2],
 			});
 		});
 	}
 
+	handleChange = (event) => {
+		const target = event.target;
+		const value = target.value;
+		const name = target.name;
+
+		this.setState({
+			[name]: value,
+		});
+	};
+
 	renderTimezones(timezones, index) {
 		return (
-			<option value={timezones.offset} key={index}>
+			<option value={timezones.timezone_id} key={index}>
 				{timezones.name}
 			</option>
 		);
 	}
+
+	renderLanguages(languages, index) {
+		return (
+			<option value={languages.language_id} key={index}>
+				{languages.translation.charAt(0).toUpperCase() + languages.translation.slice(1)}
+			</option>
+		);
+	}
+
+	updateParams = (e) => {
+		e.preventDefault();
+		const {
+			defaultRouted,
+			defaultLunch,
+			productionOffset,
+			language_id,
+			defaultBreak,
+			timezone_id,
+			inactiveTimeout,
+			assembly_url,
+			defaultPercent,
+			verticalDashboard,
+			defaultMinutes,
+			siteCode,
+			status,
+		} = this.state;
+
+		var url = `${API}/insert_commonparameter`;
+
+		if (
+			defaultRouted !== '' &&
+			defaultLunch !== '' &&
+			productionOffset != '' &&
+			language_id !== null &&
+			defaultBreak !== 0 &&
+			timezone_id !== null &&
+			inactiveTimeout !== 0 &&
+			assembly_url !== '' &&
+			defaultPercent !== 0 &&
+			verticalDashboard !== 0 &&
+			defaultMinutes !== 0 &&
+			siteCode !== ''
+		) {
+			Axios.put(url, {
+				site_id: this.props.user.site,
+				site_name: this.props.user.site_name,
+				production_day_offset_minutes: parseInt(productionOffset, 10),
+				default_target_percent_of_ideal: parseInt(defaultPercent / 100, 10),
+				default_setup_minutes: parseInt(defaultMinutes, 10),
+				default_routed_cycle_time: parseInt(defaultRouted, 10),
+				inactive_timeout_minutes: parseInt(inactiveTimeout, 10),
+				status: status,
+				summary_timeout: parseInt(verticalDashboard, 10),
+				break_minutes: parseInt(defaultBreak, 10),
+				lunch_minutes: parseInt(defaultLunch, 10),
+				site_prefix: siteCode,
+				assembly_url: assembly_url,
+				timezone_id: parseInt(timezone_id, 10),
+				language_id: parseInt(language_id, 10),
+			}).then(
+				() => {
+					this.setState({
+						show: true,
+					});
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+		} else {
+			this.setState({
+				modalError: true,
+			});
+		}
+	};
+
+	editInfo = (e) => {
+		e.preventDefault();
+		this.setState({
+			readOnly: false,
+			cancelButton: true,
+			confirmButton: true,
+			editButton: false,
+		});
+	};
+
+	cancelInfo = (e) => {
+		e.preventDefault();
+		this.setState({
+			readOnly: true,
+			cancelButton: false,
+			confirmButton: false,
+			editButton: true,
+		});
+	};
+
+	closeModal = (e) => {
+		e.preventDefault(e);
+		this.setState({ show: false });
+	};
+
 	render() {
-		const { commonData } = this.state;
 		return (
 			<div className="common-params">
 				<Form>
@@ -58,9 +209,10 @@ class CommonParams extends Component {
 									type="text"
 									name="defaultRouted"
 									className="input"
-									value={commonData.default_routed_cycle_time}
+									value={this.state.defaultRouted}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -72,9 +224,10 @@ class CommonParams extends Component {
 									type="text"
 									name="defaultLunch"
 									className="input"
-									value={commonData.lunch_minutes}
+									value={this.state.defaultLunch}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -88,25 +241,27 @@ class CommonParams extends Component {
 									type="text"
 									name="productionOffset"
 									className="input"
-									value={commonData.production_day_offset_minutes}
+									value={this.state.productionOffset}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
-						<label className="common1 label-language">
-							{' '}
-							Default Language:
-							<select
-								className="input select-language"
-								name="language"
-								//onChange={this.handleChange}
-                value={commonData.language}
-
-							>
-								<option value="1:00">1:00</option>
-							</select>
-						</label>
+						<Col>
+							<label className="common1 label-language">
+								Default Language:
+								<select
+									className="input select-language"
+									name="language_id"
+									onChange={this.handleChange}
+									value={this.state.language_id}
+									readOnly={this.state.readOnly}
+								>
+									{this.state.languagesData.map(this.renderLanguages)}
+								</select>
+							</label>
+						</Col>
 						<Col>
 							<label className="common1 label-default-break">
 								{' '}
@@ -115,9 +270,10 @@ class CommonParams extends Component {
 									type="text"
 									name="defaultBreak"
 									className="input"
-                  value={commonData.break_minutes}
+									value={this.state.defaultBreak}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -129,12 +285,12 @@ class CommonParams extends Component {
 								Timezone:
 								<select
 									className="input timezone"
-									name="timezone"
-                  value={commonData.ui_timezone}
-
-									//onChange={this.handleChange}
+									name="timezone_id"
+									value={this.state.timezone_id}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								>
-									{timezones.map(this.renderTimezones)}
+									{this.state.timezonesData.map(this.renderTimezones)}
 								</select>
 							</label>
 						</Col>
@@ -146,9 +302,10 @@ class CommonParams extends Component {
 									type="text"
 									name="inactiveTimeout"
 									className="input inactive-timeout"
-                  value={commonData.ui_timezone}
+									value={this.state.inactiveTimeout}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -158,11 +315,12 @@ class CommonParams extends Component {
 								Assembly URL:
 								<input
 									type="text"
-									name="inactiveTimeout"
+									name="assembly_url"
 									className="input assembly-url"
-                  value={commonData.assembly_url}
+									value={this.state.assembly_url}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -176,9 +334,10 @@ class CommonParams extends Component {
 									type="text"
 									name="defaultPercent"
 									className="input default-target"
-                  value={commonData.default_target_percent_of_ideal}
+									value={this.state.defaultPercent}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -190,9 +349,10 @@ class CommonParams extends Component {
 									type="text"
 									name="verticalDashboard"
 									className="input input-vertical-dashboard"
-                  value={commonData.ui_timezone}
+									value={this.state.verticalDashboard}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -200,34 +360,71 @@ class CommonParams extends Component {
 					<Form.Row>
 						<Col>
 							<label className="common1 label-default-setup">
-								{' '}
 								Default Setup Minutes:
 								<input
 									type="text"
 									name="defaultMinutes"
 									className="input input-default-setup"
-                  value={commonData.default_setup_minutes}
+									value={this.state.defaultMinutes}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
 						<Col>
 							<label className="common1 label-site-code">
-								{' '}
 								Site Code:
 								<input
 									type="text"
 									name="siteCode"
 									className="input input-site-code"
-                  value={commonData.site_code}
+									value={this.state.siteCode}
 									autoComplete={'false'}
-									//onChange={this.handleChange}
+									onChange={this.handleChange}
+									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
 					</Form.Row>
+					{this.state.editButton === true && (
+						<button onClick={(e) => this.editInfo(e)} className="button-edit-2">
+							Edit
+						</button>
+					)}
+					{this.state.confirmButton === true && (
+						<div>
+							<button onClick={(e) => this.updateParams(e)} className="button-edit-2">
+								Confirm
+							</button>
+							<button onClick={(e) => this.cancelInfo(e)} className="button-edit-2 fix">
+								Cancel
+							</button>
+						</div>
+					)}
 				</Form>
+				<Modal show={this.state.show} onHide={this.handleClose}>
+					<Modal.Header closeButton>
+						<Modal.Title>Sucess</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Info has been updated</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={(e) => this.closeModal(e)}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={this.state.modalError} onHide={this.handleClose}>
+					<Modal.Header closeButton>
+						<Modal.Title>Warning</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeModalError}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
 			</div>
 		);
 	}
