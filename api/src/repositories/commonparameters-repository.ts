@@ -10,9 +10,9 @@ export class CommonParametersRepository {
 
     public async getCommonParametersBySite(site_id: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`SELECT A.asset_code AS site_code, CP.site_name, CP.production_day_offset_minutes, T.name as timezone, 
-        T.sql_timezone as site_timezone, T.ui_timezone, CP.default_target_percent_of_ideal, CP.default_setup_minutes, CP.default_routed_cycle_time, L.name as language, 
-        L.translation as site_language, CP.status, CP.entered_by, CP.entered_on, CP.last_modified_by, CP.last_modified_on, CP.summary_timeout, CP.break_minutes, 
-        CP.lunch_minutes, CP.site_prefix, CP.assembly_url
+        T.sql_timezone as site_timezone, T.ui_timezone, CP.default_target_percent_of_ideal, CP.default_setup_minutes, CP.default_routed_cycle_time, 
+		CP.inactive_timeout_minutes, L.name as language, T.timezone_id, L.language_id, L.translation as site_language, CP.status, CP.entered_by, 
+		CP.entered_on, CP.last_modified_by, CP.last_modified_on, CP.summary_timeout, CP.break_minutes, CP.lunch_minutes, CP.site_prefix, CP.assembly_url
         FROM dbo.CommonParameters CP
         JOIN dbo.Timezone T ON CP.timezone_id = T.timezone_id
         JOIN dbo.Language L ON CP.language_id = L.language_id
