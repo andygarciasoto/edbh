@@ -9,13 +9,13 @@ export class UnavailableService {
     }
 
     public async getUniqueUnavailableBySite(req: Request, res: Response) {
-        let site_id = req.query.site_id;
-        if (!site_id || site_id === null || site_id === undefined) {
+        let site = req.query.site;
+        if (!site || site === null || site === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let unavailable: any;
         try {
-            unavailable = await this.unavailablerepository.getUniqueUnavailableBySite(site_id);
+            unavailable = await this.unavailablerepository.getUniqueUnavailableBySite(site);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
