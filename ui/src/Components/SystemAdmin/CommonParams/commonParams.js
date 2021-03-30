@@ -30,9 +30,6 @@ class CommonParams extends Component {
 			modalError: false,
 			show: false,
 			readOnly: true,
-			editButton: true,
-			confirmButton: false,
-			cancelButton: false,
 		};
 	}
 
@@ -111,7 +108,8 @@ class CommonParams extends Component {
 		} = this.state;
 
 		var url = `${API}/insert_commonparameter`;
-
+		const newPercent = defaultPercent / 100;
+		console.log(newPercent);
 		if (
 			defaultRouted !== '' &&
 			defaultLunch !== '' &&
@@ -121,7 +119,6 @@ class CommonParams extends Component {
 			timezone_id !== null &&
 			inactiveTimeout !== 0 &&
 			assembly_url !== '' &&
-			defaultPercent !== 0 &&
 			verticalDashboard !== 0 &&
 			defaultMinutes !== 0 &&
 			siteCode !== ''
@@ -130,7 +127,7 @@ class CommonParams extends Component {
 				site_id: this.props.user.site,
 				site_name: this.props.user.site_name,
 				production_day_offset_minutes: parseInt(productionOffset, 10),
-				default_target_percent_of_ideal: parseInt(defaultPercent / 100, 10),
+				default_target_percent_of_ideal: newPercent,
 				default_setup_minutes: parseInt(defaultMinutes, 10),
 				default_routed_cycle_time: parseInt(defaultRouted, 10),
 				inactive_timeout_minutes: parseInt(inactiveTimeout, 10),
@@ -147,6 +144,7 @@ class CommonParams extends Component {
 					this.setState({
 						show: true,
 					});
+					this.componentDidMount();
 				},
 				(error) => {
 					console.log(error);
@@ -159,29 +157,9 @@ class CommonParams extends Component {
 		}
 	};
 
-	editInfo = (e) => {
-		e.preventDefault();
-		this.setState({
-			readOnly: false,
-			cancelButton: true,
-			confirmButton: true,
-			editButton: false,
-		});
-	};
-
-	cancelInfo = (e) => {
-		e.preventDefault();
-		this.setState({
-			readOnly: true,
-			cancelButton: false,
-			confirmButton: false,
-			editButton: true,
-		});
-	};
-
 	closeModal = (e) => {
 		e.preventDefault(e);
-		this.setState({ show: false });
+		this.setState({ show: false, modalError: false });
 	};
 
 	render() {
@@ -212,7 +190,6 @@ class CommonParams extends Component {
 									value={this.state.defaultRouted}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -227,7 +204,6 @@ class CommonParams extends Component {
 									value={this.state.defaultLunch}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -244,7 +220,6 @@ class CommonParams extends Component {
 									value={this.state.productionOffset}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -256,7 +231,6 @@ class CommonParams extends Component {
 									name="language_id"
 									onChange={this.handleChange}
 									value={this.state.language_id}
-									readOnly={this.state.readOnly}
 								>
 									{this.state.languagesData.map(this.renderLanguages)}
 								</select>
@@ -273,7 +247,6 @@ class CommonParams extends Component {
 									value={this.state.defaultBreak}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -288,7 +261,6 @@ class CommonParams extends Component {
 									name="timezone_id"
 									value={this.state.timezone_id}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								>
 									{this.state.timezonesData.map(this.renderTimezones)}
 								</select>
@@ -305,7 +277,6 @@ class CommonParams extends Component {
 									value={this.state.inactiveTimeout}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -320,7 +291,6 @@ class CommonParams extends Component {
 									value={this.state.assembly_url}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -337,7 +307,6 @@ class CommonParams extends Component {
 									value={this.state.defaultPercent}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -352,7 +321,6 @@ class CommonParams extends Component {
 									value={this.state.verticalDashboard}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
@@ -368,13 +336,12 @@ class CommonParams extends Component {
 									value={this.state.defaultMinutes}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
 						<Col>
 							<label className="common1 label-site-code">
-								Site Code:
+								Site Identifier:
 								<input
 									type="text"
 									name="siteCode"
@@ -382,26 +349,18 @@ class CommonParams extends Component {
 									value={this.state.siteCode}
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									readOnly={this.state.readOnly}
 								/>
 							</label>
 						</Col>
 					</Form.Row>
-					{this.state.editButton === true && (
-						<button onClick={(e) => this.editInfo(e)} className="button-edit-2">
-							Edit
+					<div>
+						<button onClick={(e) => this.updateParams(e)} className="button-edit-2">
+							Confirm
 						</button>
-					)}
-					{this.state.confirmButton === true && (
-						<div>
-							<button onClick={(e) => this.updateParams(e)} className="button-edit-2">
-								Confirm
-							</button>
-							<button onClick={(e) => this.cancelInfo(e)} className="button-edit-2 fix">
-								Cancel
-							</button>
-						</div>
-					)}
+						<button className="button-edit-2 fix">
+							Cancel
+						</button>
+					</div>
 				</Form>
 				<Modal show={this.state.show} onHide={this.handleClose}>
 					<Modal.Header closeButton>
@@ -420,7 +379,7 @@ class CommonParams extends Component {
 					</Modal.Header>
 					<Modal.Body>All inputs must be filled</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
+						<Button variant="secondary" onClick={(e) => this.closeModal(e)}>
 							Close
 						</Button>
 					</Modal.Footer>
