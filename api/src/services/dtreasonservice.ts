@@ -137,5 +137,20 @@ export class DTReasonService {
             return res.status(500).json({ message: err.message });
         }
     }
+
+    public async getUniqueReasonBySite(req: Request, res: Response) {
+        let site_id = req.query.site_id;
+        if (!site_id || site_id === null || site_id === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let reasons: any;
+        try {
+            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site_id);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(reasons);
+    }
 }
 

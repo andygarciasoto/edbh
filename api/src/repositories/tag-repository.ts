@@ -13,5 +13,4 @@ export class TagRepository {
         [Tag].[UOM_code],[Tag].[rollover_point],[Tag].[aggregation],[Tag].[status],[Tag].[entered_by],[Tag].[entered_on],[Tag].[last_modified_by],
         [Tag].[last_modified_on],[Tag].[max_change] FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] AND [Tag].[site_id] = ${site_id}`);
     }
-
 }

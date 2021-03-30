@@ -28,6 +28,13 @@ export class DTReasonRepository {
         WHERE DTReason.site_id = ${site_id}
         AND Asset.asset_level = 'Cell'`);
     }
+    public async getUniqueReasonBySite(site_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT dtreason_code, MIN(dtreason_name) as dtreason_name, MIN(dtreason_description) as dtreason_description, MIN(dtreason_category) as dtreason_category,
+        MIN(reason1) as reason1, MIN(reason2) as reason2, MIN(status) as status, MIN(type) as type, MIN(level) as level FROM dbo.DTReason
+        WHERE site_id = ${site_id}
+        GROUP BY dtreason_code
+        ORDER BY dtreason_code`);
+    }
 }
 
 
