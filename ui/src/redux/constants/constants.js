@@ -15,3 +15,15 @@ export const GET_SHIFT_INFO = 'GET_SHIFT_INFO';
 export const GET_PARAMS = 'GET_PARAMS';
 export const GET_TIMEZONES = 'GET_TIMEZONES';
 export const GET_LANGUAGES = 'GET_LANGUAGES';
+
+//UOM CONSTANTS
+export const GET_UOM = 'GET_UOM';
+
+//DISPLAY CONSTANTS
+export const GET_DISPLAY = 'GET_DISPLAY';
+
+//REASONS CONSTANTS
+export const GET_REASONS = 'GET_REASONS';
+
+//BREAK CONSTANTS
+export const GET_BREAK = 'GET_BREAK';
