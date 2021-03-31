@@ -89,26 +89,27 @@ class Display extends Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Description</th>
               <th>Asset</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
+            {this.state.DisplayData.map((display, index) => (
               <tr key={index}>
-                <td>{shift.shift_name}</td>
+                <td>{display.displaysystem_name}</td>
+                <td>{display.asset_code}</td>
+                <td>{display.status}</td>
                 <td>
-                  <img
+                  {/* <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
+                    onClick={() => this.showEditShift(display.shift_id)}
+                  /> */}
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </Table>
       </div>

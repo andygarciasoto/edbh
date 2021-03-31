@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
+import * as ReasonActions from "../../../redux/actions/reasonActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddReason from "./addReason";
@@ -12,22 +12,22 @@ class Reason extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ShiftData: [],
+      ReasonData: [],
       addReason: false,
       editReason: false,
       shift_id: 0,
     };
   }
 
-//   componentDidMount() {
-//     const { actions } = this.props;
+  componentDidMount() {
+    const { actions } = this.props;
 
-//     return actions.getShifts(this.props.user.site).then((response) => {
-//       this.setState({
-//         ShiftData: response,
-//       });
-//     });
-//   }
+    return actions.getReasons(this.props.user.site).then((response) => {
+      this.setState({
+        ReasonData: response,
+      });
+    });
+  }
 
   showAddReason = () => {
     this.setState({
@@ -91,33 +91,29 @@ class Reason extends Component {
               <th>Name</th>
               <th>Category</th>
               <th>Type</th>
-              <th>Asset Account</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-          {/* {this.state.ShiftData.map((shift, index) => (
+          {this.state.ReasonData.map((reason, index) => (
               <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
+                <td>{reason.dtreason_code}</td>
+                <td>{reason.dtreason_name}</td>
+                <td>{reason.dtreason_category}</td>
+                <td>{reason.type}</td>
+                <td>{reason.status}</td>
+
                 <td>
-                  <img
+                  {/* <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
+                    onClick={() => this.showEditShift(reason.shift_id)}
+                  /> */}
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </Table>
       </div>
@@ -128,7 +124,7 @@ class Reason extends Component {
 
 export const mapDispatch = (dispatch) => {
   return {
-    actions: bindActionCreators(ShiftActions, dispatch),
+    actions: bindActionCreators(ReasonActions, dispatch),
   };
 };
 

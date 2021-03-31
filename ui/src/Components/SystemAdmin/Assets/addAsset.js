@@ -180,7 +180,7 @@ class AddAsset extends Component {
 							<Step2 nextStep={(e) => this.assetSteps(3, e)} back={(e) => this.assetSteps(1, e)} />
 						)}
 						{this.state.step3 === true && (
-							<Step3 nextStep={(e) => this.assetSteps(4, e)} back={(e) => this.assetSteps(2, e)} />
+							<Step3 user={this.props.user} nextStep={(e) => this.assetSteps(4, e)} back={(e) => this.assetSteps(2, e)} />
 						)}
 						{this.state.step4 === true && <Step4 back={(e) => this.assetSteps(3, e)} />}
 					</Modal.Body>

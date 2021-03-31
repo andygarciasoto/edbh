@@ -68,3 +68,8 @@ export const id2List = {
     droppable: 'availableListTabs',
     droppable2: 'selectedListTabs'
 };
+
+export const ReasonList = {
+    droppable: 'ReasonData',
+    droppable2: 'selected'
+};

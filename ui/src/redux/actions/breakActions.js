@@ -1,14 +1,14 @@
 import Axios from "axios";
-import { GET_DISPLAY } from "../constants/constants";
+import { GET_BREAK } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
-export const getDisplay = (siteId) => {
-  var url = `${API}/display_by_site?site_id=${siteId}`;
+export const getBreak = (siteId) => {
+  var url = `${API}/unique_unavailable?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
-        type: GET_DISPLAY,
-        display: response.data,
+        type: GET_BREAK,
+        break: response.data,
       });
       return response.data;
     });
