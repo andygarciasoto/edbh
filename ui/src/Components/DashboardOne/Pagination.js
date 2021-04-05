@@ -61,7 +61,7 @@ class Pagination extends React.Component {
 
     fetchData(props) {
         let newState = this.state;
-        
+
         newState.diffDays = 0;
         newState.actual_regresion = 0;
         const { production_day, current_datetime, shift_id } = GetShiftProductionDayFromSiteAndDate(props.user);
@@ -151,6 +151,7 @@ class Pagination extends React.Component {
                     <React.Fragment>
                         {this.state.max_regresion - this.state.actual_regresion >= this.state.max_regresion ?
                             < FontAwesome
+                                id='iconDoubleLeftJump'
                                 name="angle-double-left"
                                 data-tip='shift'
                                 data-for='last-shift'
@@ -181,13 +182,14 @@ class Pagination extends React.Component {
                 <div className='float-right'>
                     {this.state.display_next && !this.state.display_go_current_shift ?
                         <React.Fragment>
-                            <span id="current-shift" onClick={() => this.goNextShift(1)}>{t('Next Shift')}</span>
+                            <span id="next-shift" onClick={() => this.goNextShift(1)}>{t('Next Shift')}</span>
                             <FontAwesome
                                 name="caret-right fa-2"
                                 className="icon-arrow"
                                 onClick={() => this.goNextShift(1)} />
                             {this.state.max_regresion - this.state.actual_regresion <= (this.state.max_regresion - 2) ?
                                 <FontAwesome
+                                    id='iconDoubleRightJump'
                                     data-tip='shift'
                                     data-for='current-shift'
                                     name="angle-double-right fa-2"
