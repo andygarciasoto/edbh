@@ -145,7 +145,7 @@ class Header extends React.Component {
     getSiteOptions() {
         let options = [];
         _.forEach(this.props.user.sites, site => {
-            options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.Site}>{site.asset_name}</Dropdown.Item>);
+            options.push(<Dropdown.Item id={'siteOption-' + site.asset_code} onClick={() => this.changeSite(site)} key={site.Site}>{site.asset_name}</Dropdown.Item>);
         });
         return options;
     }
@@ -198,8 +198,8 @@ class Header extends React.Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
                     {validPermission(this.props.user, 'site-menu', 'read') ?
-                        <Dropdown className="customToogleSite">
-                            <Dropdown.Toggle as={customToogleSite} id="dropdown-basic">
+                        <Dropdown id='siteDropdownId' className='customToogleSite'>
+                            <Dropdown.Toggle as={customToogleSite}>
                                 {this.props.t('Site') + ': ' + _.find(this.props.user.sites, ['Site', parseInt(this.state.cs)]).asset_name}
                             </Dropdown.Toggle>
                             {this.props.user.sites.length > 1 ?
@@ -211,7 +211,7 @@ class Header extends React.Component {
                         : null}
                     {validPermission(this.props.user, 'megamenu', 'read') ?
                         <span>
-                            <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
+                            <Nav.Link id='megaMenuId' onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>
                             <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history} selectedLevelDC={this.state.selectedLevelDC}>
                                 {validMenuOption('megamenu-level-option', actualView) ?
@@ -227,6 +227,7 @@ class Header extends React.Component {
                                     : null}
                                 {validPermission(this.props.user, 'megamenu-machine-option', 'read') && validMenuOption('megamenu-machine-option', actualView) ?
                                     <MachinePickerCustom
+                                        id='assetHeaderButton'
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         user={this.props.user}
@@ -293,8 +294,8 @@ class Header extends React.Component {
                             : null : null
                     }
                     {validPermission(this.props.user, 'menu', 'read') ?
-                        <Dropdown className="customToogle">
-                            <Dropdown.Toggle as={customToogle} id="dropdown-basic">
+                        <Dropdown id='menuOptionsId' className='customToogle'>
+                            <Dropdown.Toggle as={customToogle}>
                                 {this.props.t('Menu')}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
@@ -305,7 +306,7 @@ class Header extends React.Component {
                             </Dropdown.Menu>
                         </Dropdown>
                         : null}
-                    <Nav.Link onClick={() => this.logOff()}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
+                    <Nav.Link id='LogoutLink' onClick={() => this.logOff()}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
                 </Navbar.Collapse>
             </Navbar>
         )
