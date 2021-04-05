@@ -60,7 +60,7 @@ export const getListStyleDrop = (isDraggingOver, height) => ({
     height: height,
     overflowY: "scroll",
     maxHeight: 350,
-    position: "relative"
+    position: "relative",
 
 });
 

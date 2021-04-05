@@ -133,6 +133,10 @@
 	float: left;
 }
 
+.col-fix-reason{
+	margin-top: 31px;
+}
+
 .step-3 {
 	margin-left: 75px;
 	margin-top: -61px;
@@ -149,6 +153,10 @@
 	width: 169%;
 	height: 500px;
 	margin-left: -169px;
+
+	&.reasons{
+		height: 618px;
+	}
 }
 
 .selected-reasons {
