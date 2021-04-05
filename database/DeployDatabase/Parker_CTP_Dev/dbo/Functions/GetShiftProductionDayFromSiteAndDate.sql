@@ -37,8 +37,10 @@ BEGIN
 	@Shift_Id					AS INT;
 
 	SELECT 
-		@timezone = site_timezone
-	FROM dbo.CommonParameters WHERE site_id = @site_id;
+		@timezone = T.sql_timezone
+	FROM dbo.CommonParameters CP LEFT JOIN dbo.Timezone T
+	ON CP.timezone_id = T.timezone_id AND
+	site_id = @site_id;
 
 	SELECT @CurrentDateTime =
 		CASE

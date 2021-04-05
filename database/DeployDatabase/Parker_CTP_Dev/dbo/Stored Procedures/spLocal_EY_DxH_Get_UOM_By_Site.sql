@@ -59,8 +59,7 @@ AS
 			   U.last_modified_by,
 			   U.last_modified_on, 
                U.site_id, 
-               U.decimals, 
-               NULL
+               U.decimals
         FROM dbo.UOM U WITH(NOLOCK)
 		JOIN dbo.Asset A ON U.site_id = A.asset_id
         WHERE U.status = 'Active'

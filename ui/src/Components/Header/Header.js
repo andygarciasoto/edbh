@@ -300,7 +300,7 @@ class Header extends React.Component {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {this.props.history.location.pathname !== '/dashboard' && validPermission(this.props.user, 'menu-dashboard', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('dashboard')}>{this.props.t('Dashboard')}</Dropdown.Item> : null}
-                                {this.props.history.location.pathname !== '/import' && validPermission(this.props.user, 'menu-import', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Import/Export')}</Dropdown.Item> : null}
+                                {this.props.history.location.pathname !== '/import' && validPermission(this.props.user, 'menu-import', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('import')}>{this.props.t('Site Administration')}</Dropdown.Item> : null}
                                 {this.props.history.location.pathname !== '/summary' && validPermission(this.props.user, 'menu-summary', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('summary')}>{this.props.t('Summary Dashoard')}</Dropdown.Item> : null}
                                 {this.props.history.location.pathname !== '/digitalcups' && validPermission(this.props.user, 'menu-digitalcups', 'read') ? <Dropdown.Item onClick={() => this.redirectTo('digitalcups')}>{this.props.t('Digital Cups')}</Dropdown.Item> : null}
                             </Dropdown.Menu>

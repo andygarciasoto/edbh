@@ -20,7 +20,11 @@
     [lunch_minutes]                   FLOAT (53)     NULL,
     [site_prefix] NVARCHAR(100) NULL, 
     [assembly_url] NVARCHAR(256) NULL, 
+    [timezone_id] INT NULL, 
+    [language_id] INT NULL, 
     CONSTRAINT [PK_CommonParameters_Parameter_Id] PRIMARY KEY CLUSTERED ([parameter_id] ASC),
-    CONSTRAINT [FK_CommonParameters_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id])
+    CONSTRAINT [FK_CommonParameters_Site_Id] FOREIGN KEY ([site_id]) REFERENCES [dbo].[Asset] ([asset_id]),
+    CONSTRAINT [FK_CommonParameters_Timezone_Id] FOREIGN KEY ([timezone_id]) REFERENCES [dbo].[Timezone] ([timezone_id]),
+    CONSTRAINT [FK_CommonParameters_Language_Id] FOREIGN KEY ([language_id]) REFERENCES [dbo].[Language] ([language_id])
 );
 

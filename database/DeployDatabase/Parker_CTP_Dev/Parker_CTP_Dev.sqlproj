@@ -514,5 +514,6 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Shifts.sql" />
     <Build Include="dbo\Tables\Language.sql" />
     <Build Include="dbo\Tables\Timezone.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommonParameters.sql" />
   </ItemGroup>
 </Project>

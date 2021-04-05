@@ -111,10 +111,11 @@ AS
             FROM [dbo].[Asset]
             WHERE asset_id = @asset_id
         );
-        SELECT @Site_Timezone = site_timezone
-        FROM dbo.CommonParameters cpt WITH(NOLOCK)
-        WHERE site_id = @Site_Id
-              AND STATUS = 'Active';
+        SELECT @Site_Timezone = T.sql_timezone
+        FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T 
+		ON T.timezone_id = CP.timezone_id
+        AND site_id = @Site_Id
+        AND CP.status = 'Active';
 
 		Select @Timestamp_UTC = @Timestamp at time zone @Site_Timezone at time zone 'UTC';
 

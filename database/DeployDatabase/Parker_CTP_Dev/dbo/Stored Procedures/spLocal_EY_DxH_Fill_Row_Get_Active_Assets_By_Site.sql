@@ -57,9 +57,11 @@ AS
 			@end_shift_utc DATETIME;
 
 		SELECT
-			@start_shift_utc =  @start_shift AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-			@end_shift_utc =  @site_round_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC'
-		FROM dbo.CommonParameters CP WHERE CP.site_id = @site_id;
+			@start_shift_utc =  @start_shift AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC',
+			@end_shift_utc =  @site_round_time AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC'
+		FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+		ON CP.timezone_id = T.timezone_id 
+		AND CP.site_id = @site_id;
 
         SELECT
 			DISTINCT
