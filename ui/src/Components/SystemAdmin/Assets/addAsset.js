@@ -170,7 +170,17 @@ class AddAsset extends Component {
 	render() {
 		return (
 			<div>
-				<Modal show={this.props.showForm} onHide={this.handleClose} contentClassName="modal-reason">
+				<Modal
+					show={this.props.showForm}
+					onHide={this.handleClose}
+					contentClassName={
+						this.state.step3 === true
+							? 'modal-reason reasons'
+							: this.state.step4 === true
+							? 'modal-reason reasons'
+							: 'modal-reason'
+					}
+				>
 					<Modal.Header closeButton>
 						<Modal.Title>Add Asset</Modal.Title>
 					</Modal.Header>
@@ -180,9 +190,15 @@ class AddAsset extends Component {
 							<Step2 nextStep={(e) => this.assetSteps(3, e)} back={(e) => this.assetSteps(1, e)} />
 						)}
 						{this.state.step3 === true && (
-							<Step3 user={this.props.user} nextStep={(e) => this.assetSteps(4, e)} back={(e) => this.assetSteps(2, e)} />
+							<Step3
+								user={this.props.user}
+								nextStep={(e) => this.assetSteps(4, e)}
+								back={(e) => this.assetSteps(2, e)}
+							/>
 						)}
-						{this.state.step4 === true && <Step4 back={(e) => this.assetSteps(3, e)} />}
+						{this.state.step4 === true && (
+							<Step4 user={this.props.user} back={(e) => this.assetSteps(3, e)} />
+						)}
 					</Modal.Body>
 					<Modal.Footer>
 						<div className="step-bar">

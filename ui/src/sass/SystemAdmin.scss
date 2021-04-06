@@ -133,6 +133,10 @@
 	float: left;
 }
 
+.col-fix-reason{
+	margin-top: 31px;
+}
+
 .step-3 {
 	margin-left: 75px;
 	margin-top: -61px;
@@ -149,6 +153,10 @@
 	width: 169%;
 	height: 500px;
 	margin-left: -169px;
+
+	&.reasons{
+		height: 618px;
+	}
 }
 
 .selected-reasons {
@@ -226,9 +234,11 @@
 
 .select-tag-category {
 	margin-left: 41px;
+	padding-right: 42px;
 
 	&.asset-automation {
 		margin-left: 10px;
+		padding-right: 42px;
 	}
 }
 
@@ -267,7 +277,7 @@
 }
 
 .select-tag-type {
-	margin-left: 24px;
+	margin-left: 15px;
 
 	&.asset-level {
 		margin-left: 59px;
@@ -283,6 +293,10 @@
 
 	&.asset-workcell {
 		margin-left: 74px;
+	}
+
+	&.uom-code{
+		margin-left: 24px;
 	}
 }
 

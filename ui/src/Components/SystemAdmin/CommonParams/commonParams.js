@@ -184,7 +184,7 @@ class CommonParams extends Component {
 							<label className="common1">
 								Default Routed Cycle Time:
 								<input
-									type="text"
+									type="number"
 									name="defaultRouted"
 									className="input"
 									value={this.state.defaultRouted}
@@ -198,7 +198,7 @@ class CommonParams extends Component {
 								{' '}
 								Default Lunch Allowed:
 								<input
-									type="text"
+									type="number"
 									name="defaultLunch"
 									className="input"
 									value={this.state.defaultLunch}
@@ -214,7 +214,7 @@ class CommonParams extends Component {
 								{' '}
 								Production Day Offset Minutes:
 								<input
-									type="text"
+									type="number"
 									name="productionOffset"
 									className="input"
 									value={this.state.productionOffset}
@@ -241,7 +241,7 @@ class CommonParams extends Component {
 								{' '}
 								Default Break Allowed:
 								<input
-									type="text"
+									type="number"
 									name="defaultBreak"
 									className="input"
 									value={this.state.defaultBreak}
@@ -271,7 +271,7 @@ class CommonParams extends Component {
 								{' '}
 								Dashboard Token Timeout:
 								<input
-									type="text"
+									type="number"
 									name="inactiveTimeout"
 									className="input inactive-timeout"
 									value={this.state.inactiveTimeout}
@@ -301,7 +301,7 @@ class CommonParams extends Component {
 								{' '}
 								Default Target Percent of Ideal:
 								<input
-									type="text"
+									type="number"
 									name="defaultPercent"
 									className="input default-target"
 									value={this.state.defaultPercent}
@@ -315,7 +315,7 @@ class CommonParams extends Component {
 								{' '}
 								Vertical Token Timeout:
 								<input
-									type="text"
+									type="number"
 									name="verticalDashboard"
 									className="input input-vertical-dashboard"
 									value={this.state.verticalDashboard}
@@ -330,7 +330,7 @@ class CommonParams extends Component {
 							<label className="common1 label-default-setup">
 								Default Setup Minutes:
 								<input
-									type="text"
+									type="number"
 									name="defaultMinutes"
 									className="input input-default-setup"
 									value={this.state.defaultMinutes}

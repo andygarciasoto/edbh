@@ -64,11 +64,10 @@ export class Step3 extends Component {
 	getList = (id) => this.state[ReasonList[id]];
 
 	render() {
-		console.log(this.state.ReasonData[0]);
 		return (
 			<div>
 				<DragDropContext onDragEnd={this.onDragEnd}>
-					<form className="fix-form">
+					<form>
 						<Form.Row>
 							<Col>
 								<label>Available Reasons</label>
@@ -101,12 +100,13 @@ export class Step3 extends Component {
 									)}
 								</Droppable>
 							</Col>
-							<Col className="col-fix">
+							<Col>
+							<label>Selected Reasons</label>
 								<Droppable droppableId="droppable2">
 									{(provided, snapshot) => (
 										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
 											{this.state.selected.map((item, index) => (
-												<Draggable key={item.id} draggableId={item.id} index={index}>
+												<Draggable key={item.dtreason_code} draggableId={item.dtreason_code} index={index}>
 													{(provided, snapshot) => (
 														<div
 															ref={provided.innerRef}
@@ -117,7 +117,7 @@ export class Step3 extends Component {
 																provided.draggableProps.style
 															)}
 														>
-															{item.content}
+															{item.dtreason_name}
 														</div>
 													)}
 												</Draggable>
