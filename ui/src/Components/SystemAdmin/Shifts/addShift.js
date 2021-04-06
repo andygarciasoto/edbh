@@ -94,6 +94,11 @@ export class AddShift extends Component {
     var difference = endTime1.getTime() - startTime1.getTime(); // This will give difference in milliseconds
     var resultInMinutes = Math.round(difference / 60000);
 
+    if(first_shift === "false"){
+      this.setState({firstRepeated : false })
+      console.log('comparacion cambiada',this.state.firstRepeated);
+    }
+
     if (
       name !== "" &&
       description !== "" &&
@@ -179,6 +184,7 @@ export class AddShift extends Component {
   };
 
   render() {
+    console.log(this.state);
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>

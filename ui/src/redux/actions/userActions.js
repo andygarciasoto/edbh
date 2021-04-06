@@ -48,6 +48,19 @@ export const getAllUsers = (siteId) => {
   };
 };
 
+export const getUserFilter = (siteId, status, role, escalation) => {
+  var url = `${API}/users?site_id=${siteId}&status=${status}&role=${role}&escalation=${escalation}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_ALL_USERS,
+        users: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
 export const getUserInfo = (siteId, badge) => {
   var url = `${API}/users?site_id=${siteId}&badge=${badge}`;
   return (dispatch) => {

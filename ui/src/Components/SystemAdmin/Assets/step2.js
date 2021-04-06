@@ -50,7 +50,7 @@ export class Step2 extends Component {
                   <label className="label-tag-category">
                     UOM Code:
                     <select
-                      className="select-tag-type"
+                      className="select-tag-type uom-code"
                       name="type"
                       onChange={this.handleChange}
                     >
@@ -117,7 +117,7 @@ export class Step2 extends Component {
                   <label>
                     Data Type:
                     <select
-                      className="select-tag-type"
+                      className="select-tag-type "
                       name="type"
                       onChange={this.handleChange}
                     >
