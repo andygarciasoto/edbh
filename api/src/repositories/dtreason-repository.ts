@@ -21,9 +21,10 @@ export class DTReasonRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_DTData ${dxh_data_id}, ${productiondata_id}, ${dt_reason_id}, ${dt_minutes}, ${quantity}, N'${responsible}', Null, N'${first_name}', N'${last_name}', '${timestamp}', ${update}`);
     }
     public async getDTReasonBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT [DTReason].[dtreason_code],[DTReason].[dtreason_name],[DTReason].[dtreason_description],[DTReason].[dtreason_category],
-        [Asset].[asset_code],[DTReason].[reason1],[DTReason].[reason2],[DTReason].[status],[DTReason].[type],[DTReason].[level],
-		A2.asset_code as site_code FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_id] = [Asset].[asset_id]
+        return await this.sqlServerStore.ExecuteQuery(`SELECT [DTReason].[dtreason_id],[DTReason].[dtreason_code],[DTReason].[dtreason_name],
+        [DTReason].[dtreason_description],[DTReason].[dtreason_category],[Asset].[asset_code],[DTReason].[reason1],[DTReason].[reason2],
+        [DTReason].[status],[DTReason].[type],[DTReason].[level],A2.asset_code as site_code 
+        FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_id] = [Asset].[asset_id]
         JOIN dbo.Asset A2 ON ${site_id} = A2.asset_id
         WHERE DTReason.site_id = ${site_id}
         AND Asset.asset_level = 'Cell'`);
