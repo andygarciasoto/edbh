@@ -282,6 +282,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_workcell', 'put', async (req: Request, res: Response) => {
             await workcellService.putWorkcell(req, res);
+        }, true),
+        new http.RestEndpoint('/api/asset_by_site', 'get', async (req: Request, res: Response) => {
+            await assetService.getAssetBySiteExport(req, res);
         }, true) 
     ],
     router: configutils.routerWhithoutToken(config),
