@@ -63,18 +63,17 @@ BEGIN
 
 	IF EXISTS (SELECT assetdisplaysystem_id FROM dbo.AssetDisplaySystem
 	WHERE
-	site_id = @site_id AND assetdisplaysystem_id = @assetdisplaysystem_id
-	AND asset_id = @Asset_Id)
+	site_id = @site_id AND assetdisplaysystem_id = @assetdisplaysystem_id)
 		BEGIN
 			UPDATE dbo.AssetDisplaySystem
 			SET 
 			displaysystem_name = @DisplaySystem_Name,
 			status = @status,
+			asset_id = @Asset_Id,
 			last_modified_by = 'Administration Tool',
 			last_modified_on = GETDATE()
 			WHERE
 			site_id = @site_id AND assetdisplaysystem_id = @assetdisplaysystem_id
-			AND asset_id = @Asset_Id
 		END
 	ELSE
 		BEGIN
