@@ -18,15 +18,15 @@ class Device extends Component {
     };
   }
 
-//   componentDidMount() {
-//     const { actions } = this.props;
+  //   componentDidMount() {
+  //     const { actions } = this.props;
 
-//     return actions.getShifts(this.props.user.site).then((response) => {
-//       this.setState({
-//         ShiftData: response,
-//       });
-//     });
-//   }
+  //     return actions.getShifts(this.props.user.site).then((response) => {
+  //       this.setState({
+  //         ShiftData: response,
+  //       });
+  //     });
+  //   }
 
   showAddTag = () => {
     this.setState({
@@ -40,20 +40,21 @@ class Device extends Component {
     });
   };
 
-//   showEditShift = (shift_id) => {
-//     this.setState({
-//       editShift: true,
-//       shift_id: shift_id
-//     });
-//   };
+  //   showEditShift = (shift_id) => {
+  //     this.setState({
+  //       editShift: true,
+  //       shift_id: shift_id
+  //     });
+  //   };
 
-//   closeEditShift = () => {
-//     this.setState({
-//         editShift: false,
-//     });
-//   };
+  //   closeEditShift = () => {
+  //     this.setState({
+  //         editShift: false,
+  //     });
+  //   };
 
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Filter
@@ -67,6 +68,7 @@ class Device extends Component {
           category={false}
           type={false}
           onClick={() => this.showAddTag()}
+          t={t}
         ></Filter>
         {this.state.addTag === true && (
           <AddTag
@@ -102,7 +104,7 @@ class Device extends Component {
             </tr>
           </thead>
           <tbody>
-          {/* {this.state.ShiftData.map((shift, index) => (
+            {/* {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>

@@ -40,7 +40,7 @@ class Shifts extends Component {
 
   closeAddShift = () => {
     this.setState({
-        addShift: false,
+      addShift: false,
     });
   };
 
@@ -53,11 +53,12 @@ class Shifts extends Component {
 
   closeEditShift = () => {
     this.setState({
-        editShift: false,
+      editShift: false,
     });
   };
 
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Filter
@@ -66,6 +67,7 @@ class Shifts extends Component {
           buttonFilter={"Search"}
           role={false}
           onClick={() => this.showAddShift()}
+          t={t}
         ></Filter>
         {this.state.addShift === true && (
           <AddShift
@@ -99,7 +101,7 @@ class Shifts extends Component {
             </tr>
           </thead>
           <tbody>
-          {this.state.ShiftData.map((shift, index) => (
+            {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>

@@ -163,6 +163,7 @@ class CommonParams extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div className="common-params">
 				<Form>
