@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as UserActions from "../../redux/actions/userActions";
+import * as UserActions from "../../../redux/actions/userActions";
 import Table from "react-bootstrap/Table";
-import Filter from "../CustomComponents/filter";
-import AddUser from "./User/addUser";
-import EditUser from "./User/editUser";
-
-import EditIcon from "../../resources/u668.svg";
+import Filter from "../../CustomComponents/filter";
+import AddUser from "./addUser";
+import EditUser from "./editUser";
+import EditIcon from "../../../resources/u668.svg";
 
 class UserTable extends Component {
   constructor(props) {
@@ -17,28 +16,39 @@ class UserTable extends Component {
       user: false,
       edit: false,
       badge: "",
+      statusFilter: 'All',
+      roleFilter: 'All',
+      escalationFilter: 'All'
     };
   }
 
   componentDidMount() {
-    const { actions } = this.props;
+    this.loadData();
+  }
 
-    return actions.getAllUsers(this.props.user.site).then((response) => {
+  loadData = () => {
+    const { actions } = this.props;
+    const { statusFilter, roleFilter, escalationFilter } = this.state;
+
+    const params = {
+      site_id: this.props.user.site,
+      status: statusFilter,
+      role: roleFilter,
+      escalation: escalationFilter
+    }
+
+    actions.getUsersFilter(params).then((response) => {
       this.setState({
         usersData: response,
       });
     });
   }
 
-  // componentDidUpdate() {
-  //   const { actions } = this.props;
-
-  //   return actions.getAllUsers(this.props.user.site).then((response) => {
-  //     this.setState({
-  //       usersData: response,
-  //     });
-  //   });
-  // }
+  applyFilter = (statusFilter, roleFilter, escalationFilter) => {
+    this.setState({ statusFilter, roleFilter, escalationFilter }, () => {
+      this.loadData();
+    })
+  }
 
   showAddUser = () => {
     this.setState({
@@ -66,21 +76,26 @@ class UserTable extends Component {
   };
 
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Filter
           className="filter-user"
-          buttonName={"+ User"}
+          buttonName={'+ ' + t('User')}
           role={true}
           escalation={true}
-          buttonFilter={"Search"}
+          buttonFilter={t('Search')}
           onClick={() => this.showAddUser()}
+          onClickFilter={this.applyFilter}
+          t={t}
         ></Filter>
         {this.state.user === true && (
           <AddUser
             user={this.props.user}
             showForm={this.state.user}
             closeForm={this.closeAddUser}
+            Refresh={this.loadData}
+            t={t}
           />
         )}
         {this.state.edit === true && (
@@ -89,19 +104,21 @@ class UserTable extends Component {
             showForm={this.state.edit}
             closeForm={this.closeEditUser}
             badge={this.state.badge}
+            Refresh={this.loadData}
+            t={t}
           />
         )}
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
-              <th>Badge</th>
-              <th>Username</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Escalation</th>
-              <th>Actions</th>
+              <th>{t('Badge')}</th>
+              <th>{t('Username')}</th>
+              <th>{t('First Name')}</th>
+              <th>{t('Last Name')}</th>
+              <th>{t('Role')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Escalation')}</th>
+              <th>{t('Actions')}</th>
             </tr>
           </thead>
           <tbody>

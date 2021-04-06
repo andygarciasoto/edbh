@@ -8,6 +8,7 @@ import {
   GET_SITES
 } from "../constants/constants";
 import { API } from "../../Utils/Constants";
+import { genericRequest } from '../../Utils/Requests';
 
 export const getDashboardInfo = (siteId) => {
   var url = `${API}/total_rows?site_id=${siteId}`;
@@ -39,6 +40,18 @@ export const getAllUsers = (siteId) => {
   var url = `${API}/users?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_ALL_USERS,
+        users: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getUsersFilter = (params) => {
+  return (dispatch) => {
+    return genericRequest('get', API, '/users', null, params).then((response) => {
       dispatch({
         type: GET_ALL_USERS,
         users: response.data,

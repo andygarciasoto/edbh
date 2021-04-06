@@ -130,5 +130,38 @@
     "Search/Select Scrap Code": "Search/Select Scrap Code",
     "Success": "Success",
     "Error": "Error",
-    "Scrap Entries Saved": "Scrap Entries Saved"
+    "Scrap Entries Saved": "Scrap Entries Saved",
+
+
+
+
+    "Site Administration": "Site Administration",
+    "Excel Import/Export": "Excel Import/Export",
+    "Users": "Users",
+    "Assets": "Assets",
+    "Shifts": "Shifts",
+    "Reason Codes": "Reason Codes",
+    "Device Tags": "Device Tags",
+    "Workcells": "Workcells",
+    "UOM": "UOM",
+    "Break Schedule": "Break Schedule",
+    "Asset Displays": "Asset Displays",
+    "Common Parameters": "Common Parameters",
+    "Filters": "Filters",
+    "Status": "Status",
+    "Role": "Role",
+    "Category": "Category",
+    "Type": "Type",
+    "Level": "Level",
+    "Automated Level": "Automated Level",
+    "Escalation": "Escalation",
+    "Search": "Search",
+    "Badge": "Badge",
+    "Username": "Username",
+    "First Name": "First Name",
+    "Last Name": "Last Name",
+    "Actions": "Actions",
+    "Add User": "Add User",
+    "Confirm": "Confirm",
+    "Edit User": "Edit User"
 }

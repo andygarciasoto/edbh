@@ -102,6 +102,7 @@ class AddUser extends Component {
         status: status,
       }).then(
         () => {
+          this.props.Refresh();
           this.setState({
             show: true,
           });
@@ -150,16 +151,17 @@ class AddUser extends Component {
   };
 
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Add User</Modal.Title>
+            <Modal.Title>{t('Add User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <form>
               <label>
-                Badge:
+                {t('Badge')}:
                 <input
                   className="input-badge"
                   type="text"
@@ -170,7 +172,7 @@ class AddUser extends Component {
                 />
               </label>
               <label>
-                Username:
+                {t('Username')}:
                 <input
                   type="text"
                   name="username"
@@ -181,7 +183,7 @@ class AddUser extends Component {
                 />
               </label>
               <label>
-                First Name:
+                {t('First Name')}:
                 <input
                   type="text"
                   name="firstname"
@@ -192,7 +194,7 @@ class AddUser extends Component {
                 />
               </label>
               <label>
-                Last Name:
+                {t('Last Name')}:
                 <input
                   type="text"
                   name="lastname"
@@ -203,7 +205,7 @@ class AddUser extends Component {
                 />
               </label>
               <label>
-                Escalation:
+                {t('Escalation')}:
                 <select
                   className="input-escalation"
                   onChange={this.handleChangeEscalation}
@@ -212,13 +214,13 @@ class AddUser extends Component {
                 </select>
               </label>
               <label>
-                Role:
+                {t('Role')}:
                 <select className="input-role" onChange={this.handleChangeRole}>
                   {this.state.roles.map(this.renderRoles)}
                 </select>
               </label>
               <label>
-                Status:
+                {t('Status')}:
                 <select
                   className="input-status"
                   onChange={this.handleChangeStatus}
@@ -228,7 +230,7 @@ class AddUser extends Component {
                 </select>
               </label>
               <label>
-                Site:
+                {t('Site')}:
                 <select className="input-role" onChange={this.handleChangeSite}>
                   {this.state.sites.map(this.renderSites)}
                 </select>
@@ -237,10 +239,10 @@ class AddUser extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>
-              Confirm
+              {t('Confirm')}
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>
-              Close
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>

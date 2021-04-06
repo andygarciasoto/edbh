@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as UserActions from '../../redux/actions/userActions';
 import CardComponent from '../CustomComponents/card';
 import '../../sass/SystemAdmin.scss';
-import UserTable from './userTable';
+import UserTable from './User/userTable';
 import CommonParams from './CommonParams/commonParams';
 import Assets from './Assets/assets';
 import Reason from './ReasonCodes/reason';
@@ -205,6 +205,7 @@ export class Administrator extends Component {
 
 	render() {
 		const { panelData } = this.state;
+		const t = this.props.t;
 		return (
 			<div id="administrator">
 				<CardComponent
@@ -213,6 +214,7 @@ export class Administrator extends Component {
 					number={panelData.Users}
 					name={'Users'}
 					onClick={() => this.toggleData('userTable')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component common'}
@@ -220,6 +222,7 @@ export class Administrator extends Component {
 					number={panelData.Assets}
 					name={'Assets'}
 					onClick={() => this.toggleData('assets')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component assets'}
@@ -227,6 +230,7 @@ export class Administrator extends Component {
 					number={panelData.Shifts}
 					name={'Shifts'}
 					onClick={() => this.toggleData('shifts')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component reason'}
@@ -234,6 +238,7 @@ export class Administrator extends Component {
 					number={panelData.DTReasons}
 					name={'Reason Codes'}
 					onClick={() => this.toggleData('reason')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component device'}
@@ -241,6 +246,7 @@ export class Administrator extends Component {
 					number={panelData.Tags}
 					name={'Device Tags'}
 					onClick={() => this.toggleData('device')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component shifts'}
@@ -248,6 +254,7 @@ export class Administrator extends Component {
 					number={panelData.Workcells}
 					name={'Workcells'}
 					onClick={() => this.toggleData('workcells')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component uom'}
@@ -255,6 +262,7 @@ export class Administrator extends Component {
 					number={panelData.UOM}
 					name={'UOM'}
 					onClick={() => this.toggleData('uom')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component break'}
@@ -262,6 +270,7 @@ export class Administrator extends Component {
 					number={panelData.Unavailable}
 					name={'Break Schedule'}
 					onClick={() => this.toggleData('break')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component display'}
@@ -269,6 +278,7 @@ export class Administrator extends Component {
 					number={panelData.AssetDisplaySystems}
 					name={'Asset Displays'}
 					onClick={() => this.toggleData('display')}
+					t={t}
 				/>
 				<CardComponent
 					className={'card-component work'}
@@ -276,9 +286,10 @@ export class Administrator extends Component {
 					number={null}
 					name={'Common Parameters'}
 					onClick={() => this.toggleData('commonParams')}
+					t={t}
 				/>
 
-				{this.state.userTable === true && <UserTable user={this.props.user} />}
+				{this.state.userTable === true && <UserTable user={this.props.user} t={t}/>}
 				{this.state.commonParams === true && <CommonParams user={this.props.user} />}
 				{this.state.assets === true && <Assets user={this.props.user} />}
 				{this.state.reason === true && <Reason user={this.props.user} />}

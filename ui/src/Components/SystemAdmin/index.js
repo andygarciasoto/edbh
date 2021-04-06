@@ -6,19 +6,18 @@ import { useTranslation } from "react-i18next";
 import * as qs from "query-string";
 import Administrator from "./systemAdmin";
 
-const { t } = useTranslation();
-
 class SystemAdmin extends Component {
-
-  
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Tabs defaultActiveKey="siteAdmin" transition={false} id="system-tab">
-          <Tab eventKey="siteAdmin" title="Site Administration">
-            <Administrator user={this.props.user} />
+          <Tab eventKey="siteAdmin" title={t('Site Administration')}>
+            <Administrator
+              t={t}
+              user={this.props.user} />
           </Tab>
-          <Tab eventKey="import" title="Excel Import/Export">
+          <Tab eventKey="import" title={t('Excel Import/Export')}>
             <Import
               t={t}
               history={this.props.history}
