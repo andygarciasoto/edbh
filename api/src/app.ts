@@ -32,6 +32,7 @@ import { WorkcellRepository } from './repositories/workcell-repository';
 import { WorkcellService } from './services/workcellservice';
 import { ProductRepository } from './repositories/product-repository';
 import { TagRepository } from './repositories/tag-repository';
+import { TagService } from './services/tagservice';
 import { CommonParametersRepository } from './repositories/commonparameters-repository';
 import { CommonParametersService } from './services/commonparametersservice';
 import { UnavailableRepository } from './repositories/unavailable-repository';
@@ -103,6 +104,7 @@ const commonparametersService = new CommonParametersService(commonparametersRepo
 const unavailableService = new UnavailableService(unavailableRepository);
 const assetdisplaysystemService = new AssetDisplaySystemService(assetdisplaysystemRepository);
 const workcellService = new WorkcellService(workcellRepository);
+const tagService = new TagService(tagRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -285,7 +287,16 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/asset_by_site', 'get', async (req: Request, res: Response) => {
             await assetService.getAssetBySiteExport(req, res);
-        }, true) 
+        }, true),
+        new http.RestEndpoint('/api/unavailable', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getUnavailableBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/reasons_by_site', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getReasonsBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
+            await tagService.getTags(req, res);
+        }, true)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)

@@ -22,5 +22,19 @@ export class UnavailableService {
         }
         return res.status(200).json(unavailable);
     }
+    public async getUnavailableBySite(req: Request, res: Response) {
+        let site = req.query.site;
+        if (!site || site === null || site === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let unavailable: any;
+        try {
+            unavailable = await this.unavailablerepository.getUnavailableBySite(site);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(unavailable);
+    }
 }
 
