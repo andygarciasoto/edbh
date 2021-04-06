@@ -6,7 +6,6 @@ export const GET_SITES = 'GET_SITES';
 export const GET_ESCALATION = 'GET_ESCALATION';
 export const GET_USER_INFO = 'GET_USER_INFO';
 
-
 //SHIFTS CONSTANTS
 export const GET_SHIFTS = 'GET_SHIFTS';
 export const GET_SHIFT_INFO = 'GET_SHIFT_INFO';
@@ -30,3 +29,6 @@ export const GET_BREAK = 'GET_BREAK';
 
 //WORKCELL CONSTANTS
 export const GET_WORKCELLS = 'GET_WORKCELLS';
+
+//ASSETS CONSTANTS
+export const GET_ASSETS = 'GET_ASSETS';

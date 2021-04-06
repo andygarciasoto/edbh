@@ -106,12 +106,12 @@ class Display extends Component {
                 <td>{display.asset_code}</td>
                 <td>{display.status}</td>
                 <td>
-                  {/* <img
+                  <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(display.shift_id)}
-                  /> */}
+                    onClick={() => this.showEditShift(display.assetdisplaysystem_id)}
+                  />
                 </td>
               </tr>
             ))}

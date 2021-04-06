@@ -1,29 +1,31 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import * as AssetActions from '../../../redux/actions/assetActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddAsset from './addAsset';
+import EditIcon from "../../../resources/u668.svg";
+
 
 class Assets extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			ShiftData: [],
+			AssetsData: [],
 			addAsset: false,
 		};
 	}
 
-	//   componentDidMount() {
-	//     const { actions } = this.props;
+	componentDidMount() {
+		const { actions } = this.props;
 
-	//     return actions.getShifts(this.props.user.site).then((response) => {
-	//       this.setState({
-	//         ShiftData: response,
-	//       });
-	//     });
-	//   }
+		return actions.getAssets(this.props.user.site).then((response) => {
+			this.setState({
+				AssetsData: response,
+			});
+		});
+	}
 
 	showAddAsset = () => {
 		this.setState({
@@ -82,35 +84,30 @@ class Assets extends Component {
 							<th>Level</th>
 							<th>Parent Code</th>
 							<th>Automation Level</th>
-							<th>Target Percent of Ideal</th>
-							<th>Include in Escalation</th>
 							<th>Status</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						{/* {this.state.ShiftData.map((shift, index) => (
+						{this.state.AssetsData.map((asset, index) => (
               <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
+                <td>{asset.asset_code}</td>
+                <td>{asset.asset_name}</td>
+                <td>{asset.asset_description}</td>
+                <td>{asset.asset_level}</td>
+                <td>{asset.parent_asset_code}</td>
+                <td>{asset.automation_level}</td>
+                <td>{"Status"}</td>
                 <td>
                   <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
+                    onClick={() => this.showEditShift(asset.asset_id)}
                   />
                 </td>
               </tr>
-            ))} */}
+            ))}
 					</tbody>
 				</Table>
 			</div>
@@ -120,7 +117,7 @@ class Assets extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(ShiftActions, dispatch),
+		actions: bindActionCreators(AssetActions, dispatch),
 	};
 };
 

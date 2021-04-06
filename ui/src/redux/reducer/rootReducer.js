@@ -8,6 +8,7 @@ import displayReducer from "../reducer/display";
 import reasonsReducer from "../reducer/reasons";
 import breakReducer from "../reducer/break";
 import workcellReducer from "../reducer/workcell";
+import assetsReducer from "../reducer/assets";
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   reasons: reasonsReducer,
   break: breakReducer,
   workcells: workcellReducer,
+  assets: assetsReducer,
 });
 
 export default rootReducer;
