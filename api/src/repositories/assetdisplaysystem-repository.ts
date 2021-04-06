@@ -15,4 +15,7 @@ export class AssetDisplaySystemRepository {
         JOIN dbo.Asset A2 ON AD.site_id = A2.asset_id
         WHERE AD.site_id = ${site_id}`);
     }
+    public async putAssetDisplaySystem(assetdisplaysystem_id: number, asset_id: number, displaysystem_name: string, site_id: number, status: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_AssetDisplaySystem ${assetdisplaysystem_id}, ${asset_id}, '${displaysystem_name}', ${site_id}, '${status}'`);
+     }
 }
