@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
+import * as WorkcellActions from "../../../redux/actions/workcellActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddWorkcell from "./addWorkcell";
@@ -10,22 +10,22 @@ class Workcells extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ShiftData: [],
+      WorkcellData: [],
       addWorkcell: false,
       editWorkcell: false,
       workcell_id: 0,
     };
   }
 
-  //   componentDidMount() {
-  //     const { actions } = this.props;
+    componentDidMount() {
+      const { actions } = this.props;
 
-  //     return actions.getShifts(this.props.user.site).then((response) => {
-  //       this.setState({
-  //         ShiftData: response,
-  //       });
-  //     });
-  //   }
+      return actions.getWorkcells(this.props.user.site).then((response) => {
+        this.setState({
+          WorkcellData: response,
+        });
+      });
+    }
 
     showAddWorkcell = () => {
       this.setState({
@@ -124,7 +124,7 @@ class Workcells extends Component {
 
 export const mapDispatch = (dispatch) => {
   return {
-    actions: bindActionCreators(ShiftActions, dispatch),
+    actions: bindActionCreators(WorkcellActions, dispatch),
   };
 };
 

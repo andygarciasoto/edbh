@@ -365,7 +365,7 @@ export class AddShift extends Component {
           </Modal.Header>
           <Modal.Body>
             {this.props.user.site_prefix === null
-              ? "You need to add prefix first in common params"
+              ? "Please add a prefix for your site in the Common Parameters module"
               : this.state.sequence === 1
               ? "The sequence already exists"
               : this.state.isRepeated === true
