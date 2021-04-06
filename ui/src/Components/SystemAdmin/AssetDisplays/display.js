@@ -55,6 +55,8 @@ class Display extends Component {
   //   };
 
   render() {
+    const t = this.props.t;
+
     return (
       <div>
         <Filter
@@ -69,11 +71,15 @@ class Display extends Component {
           type={false}
           shifts={false}
           onClick={() => this.showAddDisplay()}
+          t={t}
+
         ></Filter>
         {this.state.addDisplay === true && (
           <AddDisplay
             user={this.props.user}
             showForm={this.state.addDisplay}
+            t={t}
+
             closeForm={this.closeAddDisplay}
           />
         )}

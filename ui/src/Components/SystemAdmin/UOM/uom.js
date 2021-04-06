@@ -55,6 +55,8 @@ class UOM extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
+
 		return (
 			<div>
 				<Filter
@@ -68,9 +70,12 @@ class UOM extends Component {
 					category={false}
 					type={false}
 					onClick={() => this.showAddUOM()}
+					t={t}
+
 				></Filter>
 				{this.state.addUOM === true && (
-					<AddUOM user={this.props.user} showForm={this.state.addUOM} closeForm={this.closeAddUOM} />
+					<AddUOM user={this.props.user} showForm={this.state.addUOM} closeForm={this.closeAddUOM} 					t={t}
+					/>
 				)}
 				{this.state.editUOM === true && (
 					<EditUOM
@@ -78,6 +83,8 @@ class UOM extends Component {
 						showForm={this.state.editUOM}
 						closeForm={this.closeEditUOM}
 						shift_id={this.state.uom_id}
+						t={t}
+
 					/>
 				)}
 				<Table responsive="sm" bordered={true}>

@@ -1,81 +1,85 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as WorkcellActions from "../../../redux/actions/workcellActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddWorkcell from "./addWorkcell";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as WorkcellActions from '../../../redux/actions/workcellActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddWorkcell from './addWorkcell';
 
 class Workcells extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      WorkcellData: [],
-      addWorkcell: false,
-      editWorkcell: false,
-      workcell_id: 0,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			WorkcellData: [],
+			addWorkcell: false,
+			editWorkcell: false,
+			workcell_id: 0,
+		};
+	}
 
-    componentDidMount() {
-      const { actions } = this.props;
+	componentDidMount() {
+		const { actions } = this.props;
 
-      return actions.getWorkcells(this.props.user.site).then((response) => {
-        this.setState({
-          WorkcellData: response,
-        });
-      });
-    }
+		return actions.getWorkcells(this.props.user.site).then((response) => {
+			this.setState({
+				WorkcellData: response,
+			});
+		});
+	}
 
-    showAddWorkcell = () => {
-      this.setState({
-        addWorkcell: true,
-      });
-    };
+	showAddWorkcell = () => {
+		this.setState({
+			addWorkcell: true,
+		});
+	};
 
-    closeAddWorkcell = () => {
-      this.setState({
-        addWorkcell: false,
-      });
-    };
+	closeAddWorkcell = () => {
+		this.setState({
+			addWorkcell: false,
+		});
+	};
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+	//   showEditShift = (shift_id) => {
+	//     this.setState({
+	//       editShift: true,
+	//       shift_id: shift_id
+	//     });
+	//   };
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+	//   closeEditShift = () => {
+	//     this.setState({
+	//         editShift: false,
+	//     });
+	//   };
 
-  render() {
-    return (
-      <div>
-      <Filter
-         className="filter-user"
-         buttonName={"+ Workcell"}
-         buttonFilter={"Search"}
-         role={false}
-         newClass={false}
-         level={false}
-         automatedLevel={false}
-         category={false}
-         type={false}
-         shifts={false}
-         onClick={() => this.showAddWorkcell()}
-        ></Filter>
-        {this.state.addWorkcell === true && (
-          <AddWorkcell
-            user={this.props.user}
-            showForm={this.state.addWorkcell}
-            closeForm={this.closeAddWorkcell}
-          />
-        )}
-        {/* {this.state.editShift === true && (
+	render() {
+		const t = this.props.t;
+
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ Workcell'}
+					buttonFilter={'Search'}
+					role={false}
+					newClass={false}
+					level={false}
+					automatedLevel={false}
+					category={false}
+					type={false}
+					shifts={false}
+					onClick={() => this.showAddWorkcell()}
+					t={t}
+				></Filter>
+				{this.state.addWorkcell === true && (
+					<AddWorkcell
+						t={t}
+						user={this.props.user}
+						showForm={this.state.addWorkcell}
+						closeForm={this.closeAddWorkcell}
+					/>
+				)}
+				{/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}
@@ -83,17 +87,17 @@ class Workcells extends Component {
             shift_id={this.state.shift_id}
           />
         )} */}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{/* {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
@@ -115,17 +119,17 @@ class Workcells extends Component {
                 </td>
               </tr>
             ))} */}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(WorkcellActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(WorkcellActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Workcells);

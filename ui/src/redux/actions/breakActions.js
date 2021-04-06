@@ -3,7 +3,7 @@ import { GET_BREAK } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getBreak = (siteId) => {
-  var url = `${API}/unique_unavailable?site_id=${siteId}`;
+  var url = `${API}/unique_unavailable?site=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
