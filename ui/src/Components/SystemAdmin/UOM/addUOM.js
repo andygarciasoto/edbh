@@ -143,17 +143,6 @@ class AddUOM extends Component {
           <Modal.Body>
             <form>
               <label>
-                Code:
-                <input
-                  className="input-uom-code"
-                  type="text"
-                  name="code"
-                  value={this.state.badge}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
                 Name:
                 <input
                   type="text"
@@ -181,6 +170,17 @@ class AddUOM extends Component {
                 >
                   <option value="1:00">No</option>
                   <option value="2:00">Yes</option>
+                </select>
+              </label>
+              <label>
+                Status:
+                <select
+                  className="select-display-status uom-status"
+                  name="decimals"
+                  onChange={this.handleChange}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
                 </select>
               </label>
             </form>

@@ -329,11 +329,13 @@
 }
 
 .input-uom-name {
-	margin-left: 54px;
+	margin-left: 53px;
 }
 
 .select-uom-decimals {
 	margin-left: 32px;
+	margin-right: 146px;
+	padding-right: 32px;
 }
 
 .text-uom-description {
@@ -359,6 +361,10 @@
 
 .select-display-status {
 	margin-left: 58px;
+
+	&.uom-status{
+		margin-left: 53px;
+	}
 }
 
 .input-code {

@@ -72,7 +72,6 @@ class Display extends Component {
           shifts={false}
           onClick={() => this.showAddDisplay()}
           t={t}
-
         ></Filter>
         {this.state.addDisplay === true && (
           <AddDisplay

@@ -5,6 +5,8 @@ import * as WorkcellActions from '../../../redux/actions/workcellActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddWorkcell from './addWorkcell';
+import EditIcon from "../../../resources/u668.svg";
+
 
 class Workcells extends Component {
 	constructor(props) {
@@ -54,7 +56,6 @@ class Workcells extends Component {
 
 	render() {
 		const t = this.props.t;
-
 		return (
 			<div>
 				<Filter
@@ -92,33 +93,24 @@ class Workcells extends Component {
 						<tr>
 							<th>Name</th>
 							<th>Description</th>
-							<th>Status</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						{/* {this.state.ShiftData.map((shift, index) => (
-              <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
-                <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
-                </td>
-              </tr>
-            ))} */}
+						{this.state.WorkcellData.map((workcell, index) => (
+							<tr key={index}>
+								<td>{workcell.workcell_name}</td>
+								<td>{workcell.workcell_description}</td>
+								<td>
+									<img
+										src={EditIcon}
+										alt={`edit-icon`}
+										className="icon"
+										onClick={() => this.showEditShift(workcell.workcell_id)}
+									/>
+								</td>
+							</tr>
+						))}
 					</tbody>
 				</Table>
 			</div>
