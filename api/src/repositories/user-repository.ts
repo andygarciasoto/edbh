@@ -1,4 +1,5 @@
 import { SqlServerStore } from '../configurations/sqlserverstore';
+import _ from 'lodash';
 export class UserRepository {
     private static readonly table = 'TFDUsers';
     private readonly sqlServerStore: SqlServerStore;
@@ -9,6 +10,19 @@ export class UserRepository {
 
     public async findUserByUsernameAndMachine(username: string, machine: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_User_By_Username_Machine N'${username}', N'${machine}'`);
+    }
+    public async findUserByFilter(parameters: any[]): Promise<any> {
+        const query: string = `SELECT TFD.Badge, TFD.Username, TFD.First_Name, TFD.Last_Name, R.name AS Role, TFD.role_id, TFD.status,
+        E.escalation_name, E.escalation_level, E.escalation_hours
+        FROM dbo.TFDUsers TFD 
+        INNER JOIN dbo.Role R ON TFD.role_id = R.role_id
+        LEFT JOIN dbo.Escalation E ON TFD.escalation_id = E.escalation_id
+        ${_.isEmpty(parameters) ? '' :
+                'WHERE ' + _.join(parameters, ' AND ')
+            }
+        ORDER BY TFD.Last_Name, TFD.First_Name`;
+        console.log(query);
+        return await this.sqlServerStore.ExecuteQuery(query);
     }
     public async findUserBySite(site_id: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`SELECT TFD.Badge, TFD.Username, TFD.First_Name, TFD.Last_Name, R.Name as Role, TFD.role_id, 

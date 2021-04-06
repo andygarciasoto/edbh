@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { RoleRepository } from '../repositories/role-repository';
 import { UserRepository } from '../repositories/user-repository';
+import { getUserParameters } from '../validators/userValidator';
 
 export class UserService {
 
@@ -59,15 +60,7 @@ export class UserService {
             if (badge !== null) {
                 users = await this.userrepository.findUserByBadgeAndSite(site_id, badge);
             } else {
-                if (role_id === null && status === null) {
-                    users = await this.userrepository.findUserBySite(site_id);
-                } else if (role_id === null && status !== null) {
-                    users = await this.userrepository.findUserBySiteAndStatus(site_id, status);
-                } else if (role_id !== null && status === null) {
-                    users = await this.userrepository.findUserBySiteAndRole(site_id, role_id);
-                } else {
-                    users = await this.userrepository.findUserBySiteAndStatuAndRole(site_id, status, role_id);
-                }
+                users = await this.userrepository.findUserByFilter(getUserParameters(params));
             }
         } catch (err) {
             return res.status(500).json({ message: err.message });

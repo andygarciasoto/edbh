@@ -113,6 +113,7 @@ class EditUser extends Component {
         status: status,
       }).then(
         () => {
+          this.props.Refresh();
           this.setState({
             show: true,
           });
@@ -137,27 +138,28 @@ class EditUser extends Component {
   };
 
   render() {
-    console.log(this.state);
     const {
       badge,
       username,
       firstname,
       lastname,
-      role,
+      role_id,
       status,
       escalation_id,
     } = this.state;
+
+    const t = this.props.t;
 
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit User</Modal.Title>
+            <Modal.Title>{t('Edit User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <form>
               <label>
-                Badge:
+                {t('Badge')}:
                 <input
                   className="input-badge"
                   type="text"
@@ -169,7 +171,7 @@ class EditUser extends Component {
                 />
               </label>
               <label>
-                Username:
+                {t('Username')}:
                 <input
                   type="text"
                   name="username"
@@ -180,7 +182,7 @@ class EditUser extends Component {
                 />
               </label>
               <label>
-                First Name:
+                {t('First Name')}:
                 <input
                   type="text"
                   name="firstname"
@@ -191,7 +193,7 @@ class EditUser extends Component {
                 />
               </label>
               <label>
-                Last Name:
+                {t('Last Name')}:
                 <input
                   type="text"
                   name="lastname"
@@ -202,7 +204,7 @@ class EditUser extends Component {
                 />
               </label>
               <label>
-                Escalation:
+                {t('Escalation')}:
                 <select
                   value={escalation_id}
                   className="input-escalation"
@@ -213,9 +215,9 @@ class EditUser extends Component {
                 </select>
               </label>
               <label>
-                Role:
+                {t('Role')}:
                 <select
-                  value={role}
+                  value={role_id}
                   className="input-role"
                   onChange={this.handleChangeRole}
                 >
@@ -223,7 +225,7 @@ class EditUser extends Component {
                 </select>
               </label>
               <label>
-                Status:
+                {t('Status')}:
                 <select
                   value={status}
                   className="input-status"
@@ -237,10 +239,10 @@ class EditUser extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>
-              Confirm
+              {t('Confirm')}
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>
-              Close
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>

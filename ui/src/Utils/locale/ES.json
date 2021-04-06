@@ -130,5 +130,38 @@
     "Search/Select Scrap Code": "Buscar/Seleccionar Código de Desperdicio",
     "Success": "Éxito",
     "Error": "Error",
-    "Scrap Entries Saved": "Desperdicio Guardado"
+    "Scrap Entries Saved": "Desperdicio Guardado",
+    
+
+
+    
+    "Site Administration": "Administración de la Planta",
+    "Excel Import/Export": "Importar/Exportar Excel",
+    "Users": "Usuarios",
+    "Assets": "Máquinas",
+    "Shifts": "Turnos",
+    "Reason Codes": "Códigos de Razon",
+    "Device Tags": "Etiquetas de Equipo",
+    "Workcells": "Celdas de trabajo",
+    "UOM": "Unidades de Medida",
+    "Break Schedule": "Horario de Descanso",
+    "Asset Displays": "Pantallas de Máquina",
+    "Common Parameters": "Parámetros en Común",
+    "Filters": "Filtros",
+    "Status": "Estado",
+    "Role": "Rol",
+    "Category": "Categoría",
+    "Type": "Tipo",
+    "Level": "Nivel",
+    "Automated Level": "Nivel de Automatización",
+    "Escalation": "Escalación",
+    "Search": "Buscar",
+    "Badge": "Insignia",
+    "Username": "Usuario",
+    "First Name": "Nombre",
+    "Last Name": "Primer Apellido",
+    "Actions": "Acciones",
+    "Add User": "Agregar Usuario",
+    "Confirm": "Confirmar",
+    "Edit User": "Editar Usuario"
 }
