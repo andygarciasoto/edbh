@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Import from "../../Views/Import";
-import { useTranslation } from "react-i18next";
 import * as qs from "query-string";
 import Administrator from "./systemAdmin";
 

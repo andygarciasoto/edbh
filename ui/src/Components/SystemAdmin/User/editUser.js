@@ -143,7 +143,6 @@ class EditUser extends Component {
       username,
       firstname,
       lastname,
-      role,
       role_id,
       status,
       escalation_id,
