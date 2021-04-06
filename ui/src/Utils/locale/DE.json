@@ -118,5 +118,38 @@
     "Please choose the Configuration Items to": "Bitte wählen Sie die Konfigurationselemente aus, um",
     "All Configuration Items": "Alle Konfigurationselemente",
     "Available Configuration Items": "Verfügbare Konfigurationselemente",
-    "Selected Configuration Items to": "Ausgewählte Konfigurationselemente, um"
+    "Selected Configuration Items to": "Ausgewählte Konfigurationselemente, um",
+    
+
+
+
+    "Site Administration": "Standort Administration",
+    "Excel Import/Export": "Excel Importieren/Exportieren",
+    "Users": "Benutzer",
+    "Assets": "Maschine",
+    "Shifts": "Schicht",
+    "Reason Codes": "Ausfallparameter",
+    "Device Tags": "Geräte-Tags",
+    "Workcells": "Arbeitszellen",
+    "UOM": "Maßeinheit",
+    "Break Schedule": "Zeitplan brechen",
+    "Asset Displays": "Maschinenanzeigen",
+    "Common Parameters": "Gemeinsame Parameter",
+    "Filters": "Filter",
+    "Status": "Status",
+    "Role": "Rolle",
+    "Category": "Kategorie",
+    "Type": "Art",
+    "Level": "Niveau",
+    "Automated Level": "Automatisierte Ebene",
+    "Escalation": "Eskalation",
+    "Search": "Suche",
+    "Badge": "Abzeichen",
+    "Username": "Nutzername",
+    "First Name": "Vorname",
+    "Last Name": "Vorname",
+    "Actions": "Aktionen",
+    "Add User": "Nutzer Hinzufügen",
+    "Confirm": "estätigen",
+    "Edit User": "Benutzer Bearbeiten"
 }
