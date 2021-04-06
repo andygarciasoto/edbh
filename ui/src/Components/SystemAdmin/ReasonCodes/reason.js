@@ -41,20 +41,21 @@ class Reason extends Component {
     });
   };
 
-//   showEditShift = (shift_id) => {
-//     this.setState({
-//       editShift: true,
-//       shift_id: shift_id
-//     });
-//   };
+  //   showEditShift = (shift_id) => {
+  //     this.setState({
+  //       editShift: true,
+  //       shift_id: shift_id
+  //     });
+  //   };
 
-//   closeEditShift = () => {
-//     this.setState({
-//         editShift: false,
-//     });
-//   };
+  //   closeEditShift = () => {
+  //     this.setState({
+  //         editShift: false,
+  //     });
+  //   };
 
   render() {
+    const t = this.props.t;
     return (
       <div>
         <Filter
@@ -68,6 +69,7 @@ class Reason extends Component {
           category={true}
           type={true}
           onClick={() => this.showAddReason()}
+          t={t}
         ></Filter>
         {this.state.addReason === true && (
           <AddReason
@@ -96,7 +98,7 @@ class Reason extends Component {
             </tr>
           </thead>
           <tbody>
-          {this.state.ReasonData.map((reason, index) => (
+            {this.state.ReasonData.map((reason, index) => (
               <tr key={index}>
                 <td>{reason.dtreason_code}</td>
                 <td>{reason.dtreason_name}</td>
