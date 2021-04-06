@@ -1,81 +1,83 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddBreak from "./addBreak";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddBreak from './addBreak';
 
 class Break extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ShiftData: [],
-      addBreak: false,
-      editBreak: false,
-      shift_id: 0,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			ShiftData: [],
+			addBreak: false,
+			editBreak: false,
+			shift_id: 0,
+		};
+	}
 
-  //   componentDidMount() {
-  //     const { actions } = this.props;
+	//   componentDidMount() {
+	//     const { actions } = this.props;
 
-  //     return actions.getShifts(this.props.user.site).then((response) => {
-  //       this.setState({
-  //         ShiftData: response,
-  //       });
-  //     });
-  //   }
+	//     return actions.getShifts(this.props.user.site).then((response) => {
+	//       this.setState({
+	//         ShiftData: response,
+	//       });
+	//     });
+	//   }
 
-    showAddBreak = () => {
-      this.setState({
-        addBreak: true,
-      });
-    };
+	showAddBreak = () => {
+		this.setState({
+			addBreak: true,
+		});
+	};
 
-    closeAddBreak = () => {
-      this.setState({
-          addBreak: false,
-      });
-    };
+	closeAddBreak = () => {
+		this.setState({
+			addBreak: false,
+		});
+	};
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+	//   showEditShift = (shift_id) => {
+	//     this.setState({
+	//       editShift: true,
+	//       shift_id: shift_id
+	//     });
+	//   };
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+	//   closeEditShift = () => {
+	//     this.setState({
+	//         editShift: false,
+	//     });
+	//   };
 
-  render() {
-    return (
-      <div>
-        <Filter
-         className="filter-user"
-         buttonName={"+ Break"}
-         buttonFilter={"Search"}
-         role={false}
-         newClass={false}
-         level={false}
-         automatedLevel={false}
-         category={false}
-         type={false}
-         shifts={true}
-         onClick={() => this.showAddBreak()}
-        ></Filter>
-        {this.state.addBreak === true && (
-          <AddBreak
-            user={this.props.user}
-            showForm={this.state.addBreak}
-            closeForm={this.closeAddBreak}
-          />
-        )}
-        {/* {this.state.editShift === true && (
+	render() {
+		const t = this.props.t;
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ Break'}
+					buttonFilter={'Search'}
+					role={false}
+					newClass={false}
+					level={false}
+					automatedLevel={false}
+					category={false}
+					type={false}
+					shifts={true}
+					onClick={() => this.showAddBreak()}
+				></Filter>
+				{this.state.addBreak === true && (
+					<AddBreak
+						t={t}
+						user={this.props.user}
+						showForm={this.state.addBreak}
+						closeForm={this.closeAddBreak}
+					/>
+				)}
+				{/* {this.state.editShift === true && (
           <EditShift
             user={this.props.user}
             showForm={this.state.editShift}
@@ -83,23 +85,23 @@ class Break extends Component {
             shift_id={this.state.shift_id}
           />
         )} */}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Start Time</th>
-              <th>Start Day</th>
-              <th>End Time</th>
-              <th>End Day</th>
-              <th>Duration (minutes)</th>
-              <th>Asset Count</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Start Time</th>
+							<th>Start Day</th>
+							<th>End Time</th>
+							<th>End Day</th>
+							<th>Duration (minutes)</th>
+							<th>Asset Count</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{/* {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
@@ -121,17 +123,17 @@ class Break extends Component {
                 </td>
               </tr>
             ))} */}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(ShiftActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(ShiftActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Break);

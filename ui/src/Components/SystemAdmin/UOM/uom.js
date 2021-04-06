@@ -6,7 +6,7 @@ import Table from 'react-bootstrap/Table';
 import AddUOM from './addUOM';
 import EditUOM from './editUOM';
 import Filter from '../../CustomComponents/filter';
-import EditIcon from "../../../resources/u668.svg";
+import EditIcon from '../../../resources/u668.svg';
 
 class UOM extends Component {
 	constructor(props) {
@@ -72,8 +72,7 @@ class UOM extends Component {
 					t={t}
 				></Filter>
 				{this.state.addUOM === true && (
-					<AddUOM user={this.props.user} showForm={this.state.addUOM} closeForm={this.closeAddUOM} 					t={t}
-					/>
+					<AddUOM user={this.props.user} showForm={this.state.addUOM} closeForm={this.closeAddUOM} t={t} />
 				)}
 				{this.state.editUOM === true && (
 					<EditUOM

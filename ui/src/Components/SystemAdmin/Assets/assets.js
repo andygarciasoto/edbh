@@ -84,6 +84,8 @@ class Assets extends Component {
 							<th>Level</th>
 							<th>Parent Code</th>
 							<th>Automation Level</th>
+							<th>Target Percent of Ideal</th>
+							<th>Include in Escalation</th>
 							<th>Status</th>
 							<th>Actions</th>
 						</tr>
@@ -97,7 +99,9 @@ class Assets extends Component {
                 <td>{asset.asset_level}</td>
                 <td>{asset.parent_asset_code}</td>
                 <td>{asset.automation_level}</td>
-                <td>{"Status"}</td>
+								<td>{asset.target_percent_of_ideal}</td>
+								<td>{asset.include_in_escalation}</td>
+                <td>{asset.status}</td>
                 <td>
                   <img
                     src={EditIcon}

@@ -3,7 +3,7 @@ import { GET_ASSETS } from '../constants/constants';
 import { API } from '../../Utils/Constants';
 
 export const getAssets = (siteId) => {
-	var url = `${API}/machine?site=${siteId}&level=cell&automation_level=all`;
+	var url = `${API}/asset_by_site?site=${siteId}`;
 	return (dispatch) => {
 		return Axios.get(url).then((response) => {
 			dispatch({
