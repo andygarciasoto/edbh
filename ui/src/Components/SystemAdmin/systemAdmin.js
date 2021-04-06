@@ -289,16 +289,16 @@ export class Administrator extends Component {
 					t={t}
 				/>
 
-				{this.state.userTable === true && <UserTable user={this.props.user} t={t}/>}
-				{this.state.commonParams === true && <CommonParams user={this.props.user} />}
-				{this.state.assets === true && <Assets user={this.props.user} />}
-				{this.state.reason === true && <Reason user={this.props.user} />}
-				{this.state.device === true && <Device user={this.props.user} />}
-				{this.state.shifts === true && <Shifts user={this.props.user} />}
-				{this.state.uom === true && <UOM user={this.props.user} />}
-				{this.state.break === true && <Break user={this.props.user} />}
-				{this.state.display === true && <Display user={this.props.user} />}
-				{this.state.workcells === true && <Workcells user={this.props.user} />}
+				{this.state.userTable === true && <UserTable user={this.props.user} t={t} />}
+				{this.state.commonParams === true && <CommonParams user={this.props.user} t={t} />}
+				{this.state.assets === true && <Assets user={this.props.user} t={t} />}
+				{this.state.reason === true && <Reason user={this.props.user} t={t} />}
+				{this.state.device === true && <Device user={this.props.user} t={t} />}
+				{this.state.shifts === true && <Shifts user={this.props.user} t={t} />}
+				{this.state.uom === true && <UOM user={this.props.user} t={t} />}
+				{this.state.break === true && <Break user={this.props.user} t={t} />}
+				{this.state.display === true && <Display user={this.props.user} t={t} />}
+				{this.state.workcells === true && <Workcells user={this.props.user} t={t} />}
 			</div>
 		);
 	}

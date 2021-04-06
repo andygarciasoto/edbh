@@ -1,94 +1,95 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddAsset from "./addAsset";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddAsset from './addAsset';
 
 class Assets extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ShiftData: [],
-      addAsset: false,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			ShiftData: [],
+			addAsset: false,
+		};
+	}
 
-  //   componentDidMount() {
-  //     const { actions } = this.props;
+	//   componentDidMount() {
+	//     const { actions } = this.props;
 
-  //     return actions.getShifts(this.props.user.site).then((response) => {
-  //       this.setState({
-  //         ShiftData: response,
-  //       });
-  //     });
-  //   }
+	//     return actions.getShifts(this.props.user.site).then((response) => {
+	//       this.setState({
+	//         ShiftData: response,
+	//       });
+	//     });
+	//   }
 
-  
+	showAddAsset = () => {
+		this.setState({
+			addAsset: true,
+		});
+	};
 
-    showAddAsset = () => {
-      this.setState({
-        addAsset: true,
-      });
-    };
+	closeAddAsset = () => {
+		this.setState({
+			addAsset: false,
+		});
+	};
 
-    closeAddAsset = () => {
-      this.setState({
-        addAsset: false,
-      });
-    };
+	//   showEditShift = (shift_id) => {
+	//     this.setState({
+	//       editShift: true,
+	//       shift_id: shift_id
+	//     });
+	//   };
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+	//   closeEditShift = () => {
+	//     this.setState({
+	//         editShift: false,
+	//     });
+	//   };
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
-
-  render() {
-    return (
-      <div>
-        <Filter
-          className="filter-user"
-          buttonName={"+ Asset"}
-          buttonFilter={"Search"}
-          role={false}
-          newClass={true}
-          level={true}
-          automatedLevel={true}
-          onClick={() => this.showAddAsset()}
-        ></Filter>
-        {this.state.addAsset === true && (
-          <AddAsset
-            user={this.props.user}
-            showForm={this.state.addAsset}
-            closeForm={this.closeAddAsset}
-          />
-        )}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Level</th>
-              <th>Parent Code</th>
-              <th>Automation Level</th>
-              <th>Target Percent of Ideal</th>
-              <th>Include in Escalation</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
+	render() {
+		const t = this.props.t;
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ Asset'}
+					buttonFilter={'Search'}
+					role={false}
+					newClass={true}
+					level={true}
+					automatedLevel={true}
+					onClick={() => this.showAddAsset()}
+					t={t}
+				></Filter>
+				{this.state.addAsset === true && (
+					<AddAsset
+						t={t}
+						user={this.props.user}
+						showForm={this.state.addAsset}
+						closeForm={this.closeAddAsset}
+					/>
+				)}
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th>Code</th>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Level</th>
+							<th>Parent Code</th>
+							<th>Automation Level</th>
+							<th>Target Percent of Ideal</th>
+							<th>Include in Escalation</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{/* {this.state.ShiftData.map((shift, index) => (
               <tr key={index}>
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
@@ -110,17 +111,17 @@ class Assets extends Component {
                 </td>
               </tr>
             ))} */}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(ShiftActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(ShiftActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Assets);
