@@ -139,13 +139,13 @@ export class DTReasonService {
     }
 
     public async getUniqueReasonBySite(req: Request, res: Response) {
-        let site_id = req.query.site_id;
-        if (!site_id || site_id === null || site_id === undefined) {
+        let site = req.query.site;
+        if (!site || site === null || site === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let reasons: any;
         try {
-            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site_id);
+            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

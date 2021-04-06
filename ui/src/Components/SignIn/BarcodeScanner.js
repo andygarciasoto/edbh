@@ -68,6 +68,7 @@ class BarcodeScanner extends Component {
     return (
       <div id="barcodeScanner">
         <BarcodeReader
+          id='barcodeScannerReader'
           onError={this.handleError}
           onScan={this.handleScan}
           minLength={2}

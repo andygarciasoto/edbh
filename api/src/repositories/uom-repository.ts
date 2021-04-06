@@ -21,5 +21,4 @@ export class UomRepository {
         return await this.sqlServerStore.ExecuteQuery(`select top 1 a.asset_id, o.uom_code, u.decimals from asset a 
         join orderdata o on a.asset_id = ${asset_id} and a.asset_id = o.asset_id join uom u on o.uom_code = u.uom_code`);
     }
-
 }
