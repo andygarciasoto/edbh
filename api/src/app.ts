@@ -29,6 +29,7 @@ import { OrderDataRepository } from './repositories/orderdata-repository';
 import { OrderDataService } from './services/orderdataservice';
 import { DataToolService } from './services/datatoolservice';
 import { WorkcellRepository } from './repositories/workcell-repository';
+import { WorkcellService } from './services/workcellservice';
 import { ProductRepository } from './repositories/product-repository';
 import { TagRepository } from './repositories/tag-repository';
 import { CommonParametersRepository } from './repositories/commonparameters-repository';
@@ -101,6 +102,7 @@ const timezoneService = new TimezoneService(timezoneRepository);
 const commonparametersService = new CommonParametersService(commonparametersRepository);
 const unavailableService = new UnavailableService(unavailableRepository);
 const assetdisplaysystemService = new AssetDisplaySystemService(assetdisplaysystemRepository);
+const workcellService = new WorkcellService(workcellRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -268,7 +270,16 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/display_by_site', 'get', async (req: Request, res: Response) => {
             await assetdisplaysystemService.getAssetDisplayBySite(req, res);
-        }, true)
+        }, true),
+        new http.RestEndpoint('/api/workcell_by_site', 'get', async (req: Request, res: Response) => {
+            await workcellService.getWorkcellBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_uom', 'put', async (req: Request, res: Response) => {
+            await uomService.putUOM(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_displaysystem', 'put', async (req: Request, res: Response) => {
+            await assetdisplaysystemService.putAssetDisplaySystem(req, res);
+        }, true) 
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)
