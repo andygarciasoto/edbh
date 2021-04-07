@@ -16,6 +16,7 @@ const Filter = ({
   category,
   type,
   shifts,
+  view,
   t
 }) => {
   // Declare multiple state variables
@@ -155,7 +156,12 @@ const Filter = ({
             ? "filter-button filter assets"
             : "filter-button filter"
         }
-        onClick={() => onClickFilter(statusFilter, roleFilter, escalationFilter)}
+        onClick={() => {
+          if (view === 'User')
+            onClickFilter(statusFilter, roleFilter, escalationFilter);
+          if (view === 'Shift')
+            onClickFilter(statusFilter);
+        }}
       >
         {buttonFilter}
       </button>
