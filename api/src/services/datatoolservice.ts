@@ -10,7 +10,7 @@ import { UnavailableRepository } from '../repositories/unavailable-repository';
 import { UserRepository } from '../repositories/user-repository';
 import { AssetDisplaySystemRepository } from '../repositories/assetdisplaysystem-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
-import { headers, getParametersOfTable, getValuesFromHeaderTable, getBatchCount } from '../configurations/datatoolutils';
+import { headers, getParametersOfTable, getValuesFromHeaderTable } from '../configurations/datatoolutils';
 import Excel from 'exceljs';
 import _ from 'lodash';
 

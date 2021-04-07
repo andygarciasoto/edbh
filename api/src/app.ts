@@ -296,7 +296,10 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
             await tagService.getTags(req, res);
-        }, true)
+        }, true),
+        new http.RestEndpoint('/api/dragndrop', 'put', async (req: Request, res: Response) => {
+            await siteService.dragAndDropAdminTool(req, res);
+        }, false)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)
