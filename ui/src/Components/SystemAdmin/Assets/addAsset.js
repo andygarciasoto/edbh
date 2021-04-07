@@ -19,6 +19,7 @@ class AddAsset extends Component {
 			step2: false,
 			step3: false,
 			step4: false,
+			showForm: true,
 		};
 	}
 
@@ -160,18 +161,22 @@ class AddAsset extends Component {
 	//   }
 
 	handleClose = () => {
-		this.props.closeForm();
+		this.setState({ showForm: false });
 	};
 
 	closeModalError = () => {
 		this.setState({ modalError: false });
 	};
 
+	closeSuccessModal = () => {
+		this.setState({ show: false });
+	};
+
 	render() {
 		return (
 			<div>
 				<Modal
-					show={this.props.showForm}
+					show={this.state.showForm}
 					onHide={this.handleClose}
 					contentClassName={
 						this.state.step3 === true

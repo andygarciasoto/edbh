@@ -29,6 +29,18 @@ class AddWorkcell extends Component {
 		});
 	};
 
+	handleClose = () => {
+		this.setState({ showForm: false });
+	};
+
+	closeModalError = () => {
+		this.setState({ modalError: false });
+	};
+
+	closeSuccessModal = () => {
+		this.setState({ show: false });
+	};
+
 	createWorkcell = (e) => {
 		e.preventDefault();
 		const { name, description } = this.state;
@@ -43,6 +55,7 @@ class AddWorkcell extends Component {
 					this.setState({
 						show: true,
 					});
+					this.handleClose();
 				},
 				(error) => {
 					console.log(error);
@@ -55,19 +68,10 @@ class AddWorkcell extends Component {
 		}
 	};
 
-	handleClose = () => {
-		this.props.closeForm();
-	};
-
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
-
 	render() {
-    console.log(this.props);
 		return (
 			<div>
-				<Modal show={this.props.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
 						<Modal.Title>Add Workcell</Modal.Title>
 					</Modal.Header>
@@ -103,18 +107,18 @@ class AddWorkcell extends Component {
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.show} onHide={this.handleClose}>
+				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>Workcell has been added</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.handleClose}>
+				<Modal show={this.state.modalError} onHide={this.closeModalError}>
 					<Modal.Header closeButton>
 						<Modal.Title>Warning</Modal.Title>
 					</Modal.Header>

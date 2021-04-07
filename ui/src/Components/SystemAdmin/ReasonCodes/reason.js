@@ -5,8 +5,7 @@ import * as ReasonActions from "../../../redux/actions/reasonActions";
 import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddReason from "./addReason";
-
-
+import EditIcon from "../../../resources/u668.svg";
 
 class Reason extends Component {
   constructor(props) {
@@ -22,7 +21,7 @@ class Reason extends Component {
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions.getReasons(this.props.user.site).then((response) => {
+    return actions.getReasonsBySite(this.props.user.site).then((response) => {
       this.setState({
         ReasonData: response,
       });
@@ -107,12 +106,12 @@ class Reason extends Component {
                 <td>{reason.status}</td>
 
                 <td>
-                  {/* <img
+                  <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(reason.shift_id)}
-                  /> */}
+                    onClick={() => this.showEditShift(reason.dtreason_id)}
+                  />
                 </td>
               </tr>
             ))}

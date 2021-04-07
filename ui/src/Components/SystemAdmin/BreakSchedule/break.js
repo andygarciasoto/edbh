@@ -1,31 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import * as BreakActions from '../../../redux/actions/breakActions';
+import moment from 'moment';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddBreak from './addBreak';
+import EditIcon from "../../../resources/u668.svg";
 
 class Break extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			ShiftData: [],
+			BreakData: [],
 			addBreak: false,
 			editBreak: false,
 			shift_id: 0,
 		};
 	}
 
-	//   componentDidMount() {
-	//     const { actions } = this.props;
+	  componentDidMount() {
+	    const { actions } = this.props;
 
-	//     return actions.getShifts(this.props.user.site).then((response) => {
-	//       this.setState({
-	//         ShiftData: response,
-	//       });
-	//     });
-	//   }
+	    return actions.getBreakBySite(this.props.user.site).then((response) => {
+	      this.setState({
+	        BreakData: response,
+	      });
+	    });
+	  }
 
 	showAddBreak = () => {
 		this.setState({
@@ -58,8 +60,8 @@ class Break extends Component {
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Break'}
-					buttonFilter={'Search'}
+					buttonName={'+ ' + t('Break')}
+					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -67,6 +69,7 @@ class Break extends Component {
 					category={false}
 					type={false}
 					shifts={true}
+					t={t}
 					onClick={() => this.showAddBreak()}
 				></Filter>
 				{this.state.addBreak === true && (
@@ -91,9 +94,7 @@ class Break extends Component {
 							<th>Name</th>
 							<th>Description</th>
 							<th>Start Time</th>
-							<th>Start Day</th>
 							<th>End Time</th>
-							<th>End Day</th>
 							<th>Duration (minutes)</th>
 							<th>Asset Count</th>
 							<th>Status</th>
@@ -101,28 +102,25 @@ class Break extends Component {
 						</tr>
 					</thead>
 					<tbody>
-						{/* {this.state.ShiftData.map((shift, index) => (
+						{this.state.BreakData.map((unavailable, index) => (
               <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
+								<td>{unavailable.unavailable_name}</td>
+                <td>{unavailable.unavailable_description}</td>
+								<td>{moment(unavailable.start_time).format("HH:mm A")}</td>
+								<td>{moment(unavailable.end_time).format("HH:mm A")}</td>
+								<td>{unavailable.duration_in_minutes}</td>
+								<td>{unavailable.unavailable_name}</td>
+								<td>{unavailable.status}</td>
                 <td>
                   <img
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
+                    onClick={() => this.showEditShift(unavailable.unavailable_id)}
                   />
                 </td>
               </tr>
-            ))} */}
+            ))}
 					</tbody>
 				</Table>
 			</div>
@@ -132,7 +130,7 @@ class Break extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(ShiftActions, dispatch),
+		actions: bindActionCreators(BreakActions, dispatch),
 	};
 };
 
