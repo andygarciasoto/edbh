@@ -52,6 +52,7 @@ class AddWorkcell extends Component {
 				site_id: this.props.user.site,
 			}).then(
 				() => {
+					this.props.Refresh();
 					this.setState({
 						show: true,
 					});

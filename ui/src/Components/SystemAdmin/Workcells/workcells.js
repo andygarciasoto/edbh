@@ -6,8 +6,7 @@ import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddWorkcell from './addWorkcell';
 import EditWorkcell from './editWorkcell';
-import EditIcon from "../../../resources/u668.svg";
-
+import EditIcon from '../../../resources/u668.svg';
 
 class Workcells extends Component {
 	constructor(props) {
@@ -21,6 +20,10 @@ class Workcells extends Component {
 	}
 
 	componentDidMount() {
+		this.loadData();
+	}
+
+	loadData = () => {
 		const { actions } = this.props;
 
 		return actions.getWorkcells(this.props.user.site).then((response) => {
@@ -28,7 +31,7 @@ class Workcells extends Component {
 				WorkcellData: response,
 			});
 		});
-	}
+	};
 
 	showAddWorkcell = () => {
 		this.setState({
@@ -42,18 +45,18 @@ class Workcells extends Component {
 		});
 	};
 
-	  showEditShift = (workcell_id) => {
-	    this.setState({
-	      editWorkcell: true,
-	      workcell_id: workcell_id
-	    });
-	  };
+	showEditShift = (workcell_id) => {
+		this.setState({
+			editWorkcell: true,
+			workcell_id: workcell_id,
+		});
+	};
 
-	  closeEditShift = () => {
-	    this.setState({
-				editWorkcell: false,
-	    });
-	  };
+	closeEditShift = () => {
+		this.setState({
+			editWorkcell: false,
+		});
+	};
 
 	render() {
 		const t = this.props.t;
@@ -79,16 +82,20 @@ class Workcells extends Component {
 						user={this.props.user}
 						showForm={this.state.addWorkcell}
 						closeForm={this.closeAddWorkcell}
+						Refresh={this.loadData}
+						t={t}
 					/>
 				)}
 				{this.state.editWorkcell === true && (
-          <EditWorkcell
-            user={this.props.user}
-            showForm={this.state.editWorkcell}
-            closeForm={this.closeEditShift}
-            workcell_id={this.state.workcell_id}
-          />
-        )}
+					<EditWorkcell
+						user={this.props.user}
+						showForm={this.state.editWorkcell}
+						closeForm={this.closeEditShift}
+						workcell_id={this.state.workcell_id}
+						Refresh={this.loadData}
+						t={t}
+					/>
+				)}
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>

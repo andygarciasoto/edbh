@@ -54,6 +54,7 @@ class AddDisplay extends Component {
         status: status
 			}).then(
 				() => {
+					this.props.Refresh();
 					this.setState({
 						show: true,
 					});

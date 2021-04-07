@@ -20,6 +20,10 @@ class UOM extends Component {
 	}
 
 	componentDidMount() {
+		this.loadData();
+	}
+
+	loadData = () => {
 		const { actions } = this.props;
 
 		return actions.getUOM(this.props.user.site).then((response) => {
@@ -27,7 +31,7 @@ class UOM extends Component {
 				UOMData: response,
 			});
 		});
-	}
+	};
 
 	showAddUOM = () => {
 		this.setState({
@@ -72,7 +76,13 @@ class UOM extends Component {
 					t={t}
 				></Filter>
 				{this.state.addUOM === true && (
-					<AddUOM user={this.props.user} showForm={this.state.addUOM} closeForm={this.closeAddUOM} t={t} />
+					<AddUOM
+						user={this.props.user}
+						Refresh={this.loadData}
+						showForm={this.state.addUOM}
+						closeForm={this.closeAddUOM}
+						t={t}
+					/>
 				)}
 				{this.state.editUOM === true && (
 					<EditUOM
@@ -80,6 +90,7 @@ class UOM extends Component {
 						showForm={this.state.editUOM}
 						closeForm={this.closeEditUOM}
 						shift_id={this.state.uom_id}
+						Refresh={this.loadData}
 						t={t}
 					/>
 				)}
