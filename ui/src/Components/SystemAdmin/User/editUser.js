@@ -42,7 +42,7 @@ class EditUser extends Component {
         lastname: response[0].Last_Name,
         role: response[0].name,
         role_id: response[0].role_id,
-        escalation_id: response[0].escalation_level,
+        escalation_id: response[0].escalation_level || '',
         status: response[0].status,
         rolesArray: response[1],
         escalationArray: response[2],
