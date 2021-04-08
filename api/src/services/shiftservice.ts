@@ -33,11 +33,11 @@ export class ShiftService {
         const shift_name = req.body.shift_name ? req.body.shift_name : undefined;
         const shift_description = req.body.shift_description ? req.body.shift_description : null;
         const shift_sequence = req.body.shift_sequence ? req.body.shift_sequence : undefined;
-        const start_time = req.body.start_time ? moment(new Date(req.body.start_time)).format('HH:mm') : undefined;
+        const start_time = req.body.start_time ? req.body.start_time : undefined;
         const start_time_offset_days = req.body.start_time_offset_days ? parseInt(req.body.start_time_offset_days) : 0;
-        const end_time = req.body.end_time ? moment(new Date(req.body.end_time)).format('HH:mm') : undefined;
+        const end_time = req.body.end_time ? req.body.end_time : undefined;
         const end_time_offset_days = req.body.end_time_offset_days ? parseInt(req.body.end_time_offset_days) : 0;
-        const duration_in_minutes = req.body.duration_in_minutes ? req.body.duration_in_minutes : null;
+        const duration_in_minutes = req.body.duration_in_minutes || req.body.duration_in_minutes === 0 ? req.body.duration_in_minutes : null;
         const valid_from = req.body.valid_from ? moment(new Date(req.body.valid_from)).format(this.format) : undefined;
         const is_first_shift_of_day = req.body.is_first_shift_of_day ? req.body.is_first_shift_of_day : 0;
         const status = req.body.status ? req.body.status : 'Active';

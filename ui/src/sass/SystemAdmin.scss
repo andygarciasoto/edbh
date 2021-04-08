@@ -1,5 +1,11 @@
+@import "./colors";
+
 #administrator {
 	margin: 30px 30px;
+}
+
+.validation{
+	color: $color-red;
 }
 
 .fix-form {

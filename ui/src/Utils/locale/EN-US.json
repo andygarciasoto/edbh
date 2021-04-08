@@ -163,5 +163,16 @@
     "Actions": "Actions",
     "Add User": "Add User",
     "Confirm": "Confirm",
-    "Edit User": "Edit User"
+    "Edit User": "Edit User",
+    "Shift": "Shift",
+    "Name": "Name",
+    "Sequence": "Sequence",
+    "Start Time": "Start Time",
+    "Start Day": "Start Day",
+    "End Time": "End Time",
+    "End Day": "End Day",
+    "Duration (minutes)": "Duration (minutes)",
+    "Is First Shift": "Is First Shift",
+    "Add Shift": "Add Shift",
+    "Edit Shift": "Edit Shift"
 }

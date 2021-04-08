@@ -19,17 +19,34 @@ class Shifts extends Component {
       addShift: false,
       editShift: false,
       shift_id: 0,
+      statusFilter: 'All'
     };
   }
 
   componentDidMount() {
-    const { actions } = this.props;
+    this.loadData();
+  }
 
-    return actions.getShifts(this.props.user.site).then((response) => {
+  loadData = () => {
+    const { actions } = this.props;
+    const { statusFilter } = this.state;
+
+    const params = {
+      site_id: this.props.user.site,
+      status: statusFilter
+    }
+
+    actions.getShiftsFilter(params).then((response) => {
       this.setState({
-        ShiftData: response,
+        ShiftData: response
       });
     });
+  }
+
+  applyFilter = (statusFilter) => {
+    this.setState({ statusFilter }, () => {
+      this.loadData();
+    })
   }
 
   showAddShift = () => {
@@ -63,10 +80,12 @@ class Shifts extends Component {
       <div>
         <Filter
           className="filter-user"
-          buttonName={"+ Shift"}
-          buttonFilter={"Search"}
+          buttonName={'+ ' + t('Shift')}
+          buttonFilter={t('Search')}
           role={false}
           onClick={() => this.showAddShift()}
+          onClickFilter={this.applyFilter}
+          view={'Shift'}
           t={t}
         ></Filter>
         {this.state.addShift === true && (
@@ -74,6 +93,8 @@ class Shifts extends Component {
             user={this.props.user}
             showForm={this.state.addShift}
             closeForm={this.closeAddShift}
+            Refresh={this.loadData}
+            t={t}
           />
         )}
         {this.state.editShift === true && (
@@ -82,22 +103,24 @@ class Shifts extends Component {
             showForm={this.state.editShift}
             closeForm={this.closeEditShift}
             shift_id={this.state.shift_id}
+            Refresh={this.loadData}
+            t={t}
           />
         )}
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Sequence</th>
-              <th>Start Time</th>
-              <th>Start Day</th>
-              <th>End Time</th>
-              <th>End Day</th>
-              <th>Duration (minutes)</th>
-              <th>Is First Shift ?</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t('Name')}</th>
+              <th>{t('Description')}</th>
+              <th>{t('Sequence')}</th>
+              <th>{t('Start Time')}</th>
+              <th>{t('Start Day')}</th>
+              <th>{t('End Time')}</th>
+              <th>{t('End Day')}</th>
+              <th>{t('Duration (minutes)')}</th>
+              <th>{t('Is First Shift')}?</th>
+              <th>{t('Status')}</th>
+              <th>{t('Actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -106,9 +129,9 @@ class Shifts extends Component {
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
                 <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
+                <td>{moment('1970-01-01 ' + shift.start_time).format("HH:mm A")}</td>
                 <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
+                <td>{moment('1970-01-01 ' + shift.end_time).format("HH:mm A")}</td>
                 <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
                 <td>{shift.duration_in_minutes}</td>
                 <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>

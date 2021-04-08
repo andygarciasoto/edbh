@@ -152,5 +152,16 @@
     "Actions": "Azioni",
     "Add User": "Aggiungi utente",
     "Confirm": "Confermare",
-    "Edit User": "Modifica utente"
+    "Edit User": "Modifica utente",
+    "Shift": "Turno",
+    "Name": "Nome",
+    "Sequence": "Sequenza",
+    "Start Time": "Ora di Inizio",
+    "Start Day": "Giorno di Inizio",
+    "End Time": "Tempo Scaduto",
+    "End Day": "Fine Giornata",
+    "Duration (minutes)": "Durata (minuti)",
+    "Is First Shift": "È il Primo Turno",
+    "Add Shift": "Aggiungi Turno",
+    "Edit Shift": "Modifica Turno"
 }
