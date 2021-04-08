@@ -302,6 +302,15 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_tag', 'put', async (req: Request, res: Response) => {
             await tagService.putTags(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_asset', 'put', async (req: Request, res: Response) => {
+            await assetService.putAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/unavailable_by_asset', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getUnavailableByAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/tag_by_asset', 'get', async (req: Request, res: Response) => {
+            await tagService.getTagByAsset(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),
