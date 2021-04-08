@@ -20,14 +20,18 @@ class ConfigurationTab extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            availableListTabs: nextProps.availableListTabs,
-            selectedListTabs: nextProps.selectedListTabs,
-            selectedAction: nextProps.selectedAction,
-            allTabsCheckBox: nextProps.selectedAction === 'Export' ? true : (nextProps.selectedAction === 'Import' && _.isEmpty(nextProps.selectedListTabs) ? false : this.state.allTabsCheckBox),
-            height: (nextProps.height !== null ? nextProps.height : '350px')
-        });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.availableListTabs, prevState.availableListTabs) ||
+            !_.isEqual(nextProps.selectedListTabs, prevState.selectedListTabs) || !_.isEqual(nextProps.selectedAction, prevState.selectedAction)) {
+            return {
+                availableListTabs: nextProps.availableListTabs,
+                selectedListTabs: nextProps.selectedListTabs,
+                selectedAction: nextProps.selectedAction,
+                allTabsCheckBox: nextProps.selectedAction === 'Export' ? true : (nextProps.selectedAction === 'Import' && _.isEmpty(nextProps.selectedListTabs) ? false : prevState.allTabsCheckBox),
+                height: (nextProps.height !== null ? nextProps.height : '350px')
+            }
+        }
+        else return null
     }
 
     onDragEnd = (result) => {

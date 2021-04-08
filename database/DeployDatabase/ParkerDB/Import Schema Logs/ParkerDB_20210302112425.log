@@ -1,0 +1,81 @@
+2/3/2021 17:24:25	This log contains information about the import schema operation into project 'ParkerDB' on computer 'CR2234087W1' by user 'JX254ZR'.
+2/3/2021 17:24:25	Import of database schema has started.
+2/3/2021 17:24:43	Gathering database credentials
+2/3/2021 17:24:43	Gathering database options
+2/3/2021 17:24:43	Gathering generic database scoped configuration option
+2/3/2021 17:24:43	Gathering users
+2/3/2021 17:24:44	Gathering roles
+2/3/2021 17:24:44	Gathering application roles
+2/3/2021 17:24:44	Gathering role memberships
+2/3/2021 17:24:44	Gathering filegroups
+2/3/2021 17:24:44	Gathering full-text catalogs
+2/3/2021 17:24:44	Gathering assemblies
+2/3/2021 17:24:44	Gathering certificates
+2/3/2021 17:24:44	Gathering symmetric keys
+2/3/2021 17:24:44	Gathering encrypted symmetric keys
+2/3/2021 17:24:44	Gathering schemas
+2/3/2021 17:24:44	Gathering XML schema collections
+2/3/2021 17:24:44	Gathering user-defined data types
+2/3/2021 17:24:44	Gathering user-defined types
+2/3/2021 17:24:44	Gathering table types
+2/3/2021 17:24:44	Gathering unique keys for table types
+2/3/2021 17:24:44	Gathering primary keys for table types
+2/3/2021 17:24:44	Gathering indexes for table types
+2/3/2021 17:24:44	Gathering check constraints for table types
+2/3/2021 17:24:44	Gathering default constraints for table types
+2/3/2021 17:24:44	Gathering partition functions
+2/3/2021 17:24:44	Gathering partition schemes
+2/3/2021 17:24:44	Gathering functions
+2/3/2021 17:24:44	Gathering encrypted functions
+2/3/2021 17:24:44	Gathering aggregates
+2/3/2021 17:24:44	Gathering procedures
+2/3/2021 17:24:46	Gathering encrypted procedures
+2/3/2021 17:24:46	Gathering tables
+2/3/2021 17:24:46	Gathering primary keys
+2/3/2021 17:24:46	Gathering unique constraints
+2/3/2021 17:24:46	Gathering foreign keys
+2/3/2021 17:24:46	Gathering default constraints
+2/3/2021 17:24:46	Gathering check constraints
+2/3/2021 17:24:46	Gathering views
+2/3/2021 17:24:46	Gathering encrypted views
+2/3/2021 17:24:46	Gathering indexes
+2/3/2021 17:24:46	Gathering statistics
+2/3/2021 17:24:46	Gathering full-text index stoplists
+2/3/2021 17:24:46	Gathering search property lists
+2/3/2021 17:24:46	Gathering search properties
+2/3/2021 17:24:46	Gathering full-text indexes
+2/3/2021 17:24:46	Gathering column store indexes
+2/3/2021 17:24:46	Gathering spatial indexes
+2/3/2021 17:24:46	Gathering XML indexes
+2/3/2021 17:24:46	Gathering Selective XML indexes
+2/3/2021 17:24:46	Gathering encrypted triggers
+2/3/2021 17:24:46	Gathering triggers
+2/3/2021 17:24:46	Gathering encrypted and clr ddl triggers
+2/3/2021 17:24:46	Gathering ddl triggers
+2/3/2021 17:24:46	Creating edge constraints
+2/3/2021 17:24:46	Gathering synonyms
+2/3/2021 17:24:46	Gathering defaults
+2/3/2021 17:24:46	Gathering data constraint uddt bindings
+2/3/2021 17:24:46	Gathering rules
+2/3/2021 17:24:46	Gathering data constraint uddt bindings
+2/3/2021 17:24:46	Gathering message types
+2/3/2021 17:24:46	Gathering queues
+2/3/2021 17:24:46	Gathering contracts
+2/3/2021 17:24:46	Gathering services
+2/3/2021 17:24:46	Gathering event notifications
+2/3/2021 17:24:46	Gathering remote service bindings
+2/3/2021 17:24:46	Gathering broker priorities
+2/3/2021 17:24:46	Gathering signatures
+2/3/2021 17:24:46	Gathering data compression options
+2/3/2021 17:24:46	Gathering sequence types
+2/3/2021 17:24:46	Gathering security policies
+2/3/2021 17:24:46	Gather column encryption keys
+2/3/2021 17:24:46	Gathering column master keys
+2/3/2021 17:24:46	Gathering external data sources
+2/3/2021 17:24:46	Gathering external tables
+2/3/2021 17:24:46	Gathering extended properties
+2/3/2021 17:24:50	Scanning project for duplicate elements
+2/3/2021 17:24:50	Finished duplicate element processing
+2/3/2021 17:24:51	Finished importing database.
+2/3/2021 17:24:51	A summary of the import was saved to the following location: C:\Users\JX254ZR\Documents\Projects\Business%20Technologies%20-%20eDBH\database\DeployDatabase\ParkerDB\Import Schema Logs\ParkerDB_20210302112425.log
+2/3/2021 17:24:51	Click Finish to continue...

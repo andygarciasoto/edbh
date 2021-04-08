@@ -1,25 +1,23 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Scan]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
--- Exec spLocal_EY_DxH_Put_Scan 'EYAdministrator', 'Administrator', 'EY', 228, '2020-12-31 10:50:28.220', 'lunch', 'Active', 225, 15, 30
+-- Exec spLocal_EY_DxH_Put_Scan 'EYAdministrator', 'EYSupervisor', 'Administrator', 'EY', 228, '2020-12-31 10:50:28.220', 'lunch', 'Active', 225, 15, 30
 
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Scan] 
-	@badge					as VARCHAR(100),			
-	@first_name				as VARCHAR(100),	
-	@last_name				as VARCHAR(100),	
+	@badge					as NVARCHAR(100),
+	@closed_by				as NVARCHAR(100),			
+	@first_name				as NVARCHAR(100),	
+	@last_name				as NVARCHAR(100),	
 	@asset_id				as INT,	
 	@timestamp				as DATETIME,
-	@reason					as VARCHAR(100),
-	@status					as VARCHAR(100),
+	@reason					as NVARCHAR(100),
+	@status					as NVARCHAR(100),
 	@site_id				as INT,
 	@break_minutes			as FLOAT,
 	@lunch_minutes			as FLOAT
  AS  BEGIN 
  DECLARE
- @initials as VARCHAR(100),
  @possible_end_time as DATETIME
-
-SELECT @initials = CONVERT(VARCHAR, LEFT(@first_name, 1)) + CONVERT(VARCHAR, LEFT(@last_name, 1));
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 WHERE
@@ -46,7 +44,7 @@ BEGIN
 			UPDATE [dbo].[Scan]
 			SET [end_time] = @timestamp
 			  ,[is_current_scan] = 0
-			  ,[last_modified_by] = @initials
+			  ,[last_modified_by] = @closed_by
 			  ,[last_modified_on] = GETDATE()
 			WHERE badge = @badge 
 			AND is_current_scan = 1
@@ -74,9 +72,9 @@ BEGIN
            ,1
 		   ,@reason
 		   ,@status
-           ,@initials
+           ,@closed_by
            ,GETDATE()
-           ,@initials
+           ,@closed_by
            ,GETDATE())
 
 	END

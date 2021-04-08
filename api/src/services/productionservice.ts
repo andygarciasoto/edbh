@@ -4,7 +4,6 @@ import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import moment from 'moment';
 import { DTReasonRepository } from '../repositories/dtreason-repository';
-import { time, timeStamp } from 'console';
 
 export class ProductionDataService {
 
@@ -85,6 +84,7 @@ export class ProductionDataService {
         const update = req.body.dtdata_id ? parseInt(req.body.dtdata_id) : 0;
         const timestamp = moment(new Date(req.body.timestamp)).format(this.format);
         let asset_code = req.body.asset_code ? req.body.asset_code : undefined;
+        const responsible = req.body.responsible ? req.body.responsible : null;
 
         if (dxh_data_id === undefined || productiondata_id === undefined || (quantity >= 0 && dt_reason_id === undefined) || asset_code === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
@@ -97,10 +97,10 @@ export class ProductionDataService {
         try {
             if (clocknumber) {
                 await this.productiondatarepository.putScrapValuesByClockNumber(dxh_data_id, productiondata_id, setup_scrap, other_scrap, clocknumber);
-                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, clocknumber, timestamp, update);
+                await this.dtreasonrepository.putDtDataByClockNumber(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, clocknumber, timestamp, update);
             } else {
                 await this.productiondatarepository.putScrapValuesByUsername(dxh_data_id, productiondata_id, setup_scrap, other_scrap, first_name, last_name);
-                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, first_name, last_name, timestamp, update);
+                await this.dtreasonrepository.putDtDataByName(dxh_data_id, productiondata_id, dt_reason_id, dt_minutes, quantity, responsible, first_name, last_name, timestamp, update);
             }
             return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
@@ -132,6 +132,26 @@ export class ProductionDataService {
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
+    }
+
+    public async getDigitalCups(req: Request, res: Response) {
+        const params = req.query;
+        if (params.start_time === undefined || params.end_time === undefined || params.asset_id === undefined || params.aggregation === undefined || params.production_day === undefined) {
+            return res.status(400).send("Missing parameters");
+        }
+        let start_time = moment(new Date(params.start_time)).format(this.format);
+        let end_time = moment(new Date(params.end_time)).format(this.format);
+        let production_day = moment(params.production_day, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        let asset_id = params.asset_id;
+        let aggregation = params.aggregation;
+
+        let digitalcups: any;
+        try {
+            digitalcups = await this.productiondatarepository.getDigitalCups(start_time, end_time, asset_id, aggregation, production_day);
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+        return res.status(200).json(digitalcups);
     }
 }
 

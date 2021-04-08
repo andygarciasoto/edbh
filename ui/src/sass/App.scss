@@ -1,26 +1,86 @@
 @import "_colors";
 
-.App {
-  text-align: center;
+
+.btnYellow {
+  color           : $color-orange;
+  background-color: transparent;
+  border-color    : $color-orange;
 }
 
-.app-wrapper {background-image: linear-gradient(to bottom, #000000, #171717, #272727, #373737, #494949);}
-
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear; */
-  height: 20vmin;
-  pointer-events: none;
+.btnYellow:hover {
+  color           : $color-white;
+  background-color: $color-orange;
+  border-color    : $color-orange;
 }
 
-.App-link {
-  color: #61dafb;
+.btnGreen {
+  color           : $color-green;
+  background-color: transparent;
+  border-color    : $color-green;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.btnGreen:hover {
+  color           : $color-white;
+  background-color: $color-green;
+  border-color    : $color-green;
+}
+
+.btnRed {
+  color           : $color-red;
+  background-color: transparent;
+  border-color    : $color-red;
+}
+
+.btnRed:hover {
+  color           : $color-white;
+  background-color: $color-red;
+  border-color    : $color-red;
+}
+
+.escalation_inital {
+  color: $color-link;
+}
+
+.escalation_warning {
+  color: $color-warning;
+}
+
+.escalation_danger {
+  color: $color-red;
+}
+
+.escalation_icon_inital,
+.escalation_icon_warning {
+  animation: blinker 1s step-end infinite alternate;
+}
+
+.escalation_icon_danger {
+  animation: blinker .5s step-end infinite alternate;
+}
+
+@keyframes blinker {
+  50% {
+    color: $color-white;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+.border_escalation_inital {
+  border   : 8px solid $color-link;
+  animation: blinker2 1s step-end infinite alternate;
+}
+
+.border_escalation_warning {
+  border   : 8px solid $color-warning;
+  animation: blinker2 1s step-end infinite alternate;
+}
+
+.border_escalation_danger {
+  border   : 8px solid $color-red;
+  animation: blinker2 .5s step-end infinite alternate;
+}
+
+@keyframes blinker2 {
+  50% {
+    border-color: $color-white;
   }
 }

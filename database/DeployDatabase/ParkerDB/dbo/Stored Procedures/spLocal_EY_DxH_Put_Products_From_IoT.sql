@@ -1,4 +1,4 @@
-﻿CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_Products_From_IoT]
+﻿CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Products_From_IoT]
 (@product_code AS        VARCHAR(100), 
  @product_name AS        VARCHAR(200), 
  @product_description AS VARCHAR(256), 

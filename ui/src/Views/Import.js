@@ -5,6 +5,7 @@ import { saveAs } from 'file-saver';
 import ConfigurationTab from '../Components/Import/ConfigurationTab';
 import * as axios from 'axios';
 import '../sass/Import.scss';
+import _ from 'lodash';
 const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
 
 class Import extends React.Component {
@@ -17,6 +18,7 @@ class Import extends React.Component {
         return {
             file: {},
             selectedAction: 'Import',
+            currentLanguage: props.search.ln || props.user.language,
             completeListTabs: [],
             availableListTabs: [],
             selectedListTabs: [],
@@ -54,6 +56,22 @@ class Import extends React.Component {
         this.fetchData();
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const currentLanguage = nextProps.search.ln || nextProps.user.language;
+        if (!_.isEqual(currentLanguage, prevState.currentLanguage)) {
+            return {
+                currentLanguage
+            };
+        }
+        return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage)) {
+            this.setState(this.getTranslations(this.props));
+        }
+    }
+
     fetchData() {
         let actualTabs = [];
 
@@ -72,10 +90,6 @@ class Import extends React.Component {
             completeListTabs: actualTabs,
             availableListTabs: actualTabs
         })
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(this.getTranslations(nextProps));
     }
 
     handleInputChange = (changeEvent) => {
@@ -126,8 +140,7 @@ class Import extends React.Component {
                 axios(request_config).then(response => {
                     _this.setState({ isLoading: false, showActionMessage: true, error: false });
                 }).catch(e => {
-                    console.log(e);
-                    let errorMessage = e.response.data.message;
+                    let errorMessage = e.response && e.response.data ? e.response.data.message : 'Please try again';
                     _this.setState({
                         isLoading: false,
                         showActionMessage: true,
@@ -186,7 +199,7 @@ class Import extends React.Component {
                         </Col>
                         <Col md={1}>
                             <label>
-                                <input type="radio" value="Export" checked={this.state.selectedAction === 'Export'}
+                                <input id='exportRadioButton' type="radio" value="Export" checked={this.state.selectedAction === 'Export'}
                                     onChange={(e) => this.handleInputChange(e)} />
                                 {' ' + this.state.exportText}
                             </label>
@@ -202,6 +215,8 @@ class Import extends React.Component {
                                 <li>If the site is being configured for the first time, make sure to import the Assets table individually, then the TFDUsers table individually and finally proceed with the rest of the tables.</li>
                                     <li>If the Excel sheet does not have data, do not include it in the import.</li>
                                     <li>This configuration will not delete data. It will only insert and update.</li>
+                                    <li>If you will update/insert into the DT Reasons table, please try to include only the reasons needed and not all of them.</li>
+                                    <li>If you are updating/inserting into the DT Reasons by Area, please do not include the children for that Area or you will get a Merge error.</li>
                                     <li>If an error shows up, try again importing the tables individually. Then, check the Excel sheet that is failing and if the error persists, contact the EY Team.</li>
                                 </p>
                             </Col>
@@ -223,7 +238,7 @@ class Import extends React.Component {
                             {this.state.isLoading ? this.state.importingText : this.state.importText}
                         </button>
                         :
-                        <button onClick={this.exportEvent} disabled={this.state.isExporting} style={{ marginTop: "25px", marginRight: "-15px", width: "150px", height: "40px", fontSize: "16px" }}>
+                        <button id='exportButton' onClick={this.exportEvent} disabled={this.state.isExporting} style={{ marginTop: "25px", marginRight: "-15px", width: "150px", height: "40px", fontSize: "16px" }}>
                             {this.state.isExporting ? this.state.exportingText : this.state.exportText}
                         </button>
                     }

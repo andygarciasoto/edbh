@@ -7,14 +7,19 @@ import MachinePickerCustom from './MachinePicker';
 import DatePickerCustom from './DatePicker';
 import ShiftPickerCustom from './ShiftPicker';
 import LanguagePickerCustom from './LanguagePicker';
+import GenericSelect from './GenericSelect';
 import QueryButton from './QueryButton';
 import * as qs from 'query-string';
 import moment from 'moment';
 import i18next from 'i18next';
 import _ from 'lodash';
-import { getCurrentShift, getResponseFromGeneric, assignValuesToUser, getCurrentTime, validPermission } from '../../Utils/Requests';
-import { API } from '../../Utils/Constants';
-import $ from 'jquery';
+import { getCurrentTime, validPermission, validMenuOption } from '../../Utils/Requests';
+import {
+    getLevelOptions,
+    getAreaAssetOptionsDC,
+    getWorkcellOptionsDC,
+    getWorkcellValueOptionsDC
+} from '../../Utils/Utils';
 import configuration from '../../config.json';
 import '../../sass/Header.scss';
 
@@ -23,23 +28,48 @@ class Header extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = Object.assign(this.getInitialState(props));
+        this.state = Object.assign(this.getInitialState(props), this.getDCFilters(props));
         if (this.state.ln) {
             this.changeLanguageBrowser();
         }
     }
 
     getInitialState(props) {
-        let search = qs.parse(props.history.location.search);
+        const search = qs.parse(props.history.location.search);
         return {
+            search,
             megaMenuToggle: 'dropdown-content',
             mc: search.mc || props.machineData.asset_code,
             tp: search.tp || props.machineData.automation_level,
             dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (props.user.date_of_shift ? new Date(props.user.date_of_shift) : new Date(getCurrentTime(props.user.timezone))),
             sf: search.sf || props.user.current_shift,
             ln: search.ln || props.user.language,
-            cs: search.cs || props.user.site
+            cs: search.cs || props.user.site,
+            sldc: search.sldc || 'Site',
+            sadc: search.sadc || ''
         };
+    }
+
+    getDCFilters(props) {
+        const search = qs.parse(props.history.location.search);
+        const sldc = search.sldc || 'Site';
+        const levelOptionsDC = getLevelOptions();
+        const assetOptionsDC = getAreaAssetOptionsDC(props.user);
+        const workcellOptionsDC = getWorkcellOptionsDC(props.user);
+        const valueStreamOptionsDC = getWorkcellValueOptionsDC('value_stream', props.user);
+        const sadc = search.sadc || '';
+        const selectedAssetDC = sadc !== '' ?
+            (_.find(sldc === 'Area' ? assetOptionsDC : (sldc === 'workcell_name' ? workcellOptionsDC : valueStreamOptionsDC),
+                item => { return String(item.value) === sadc; }))
+            : { label: 'No Data', value: 'No Data' };
+        return {
+            selectedLevelDC: _.find(levelOptionsDC, { value: sldc }),
+            levelOptionsDC,
+            selectedAssetDC,
+            assetOptionsDC,
+            workcellOptionsDC,
+            valueStreamOptionsDC
+        }
     }
 
     componentDidMount() {
@@ -50,33 +80,37 @@ class Header extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        let search = qs.parse(nextProps.history.location.search);
-        this.setState({
-            mc: search.mc || nextProps.machineData.asset_code,
-            tp: search.tp || nextProps.machineData.automation_level,
-            dt: search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) : (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) : new Date(getCurrentTime(nextProps.user.timezone))),
-            sf: search.sf || nextProps.user.current_shift,
-            ln: search.ln || nextProps.user.language,
-            cs: search.cs || nextProps.user.site
-        });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const search = qs.parse(nextProps.history.location.search);
+        const mc = search.mc || nextProps.machineData.asset_code;
+        const tp = search.tp || nextProps.machineData.automation_level;
+        const dt = search.dt ? new Date(moment(search.dt).format('YYYY/MM/DD HH:mm')) :
+            (nextProps.user.date_of_shift ? new Date(nextProps.user.date_of_shift) :
+                new Date(getCurrentTime(nextProps.user.timezone)));
+        const sf = search.sf || nextProps.user.current_shift;
+        const ln = search.ln || nextProps.user.language;
+        const cs = search.cs || nextProps.user.site;
+        if (!_.isEqual(search, prevState.search)) {
+            return {
+                search,
+                mc,
+                tp,
+                dt,
+                sf,
+                ln,
+                cs
+            };
+        }
+        return null;
     }
 
     redirectTo = (page) => {
-        let { search } = qs.parse(this.props.history.location.search);
-        let queryItem = Object.assign({}, search);
+        let search = this.props.history.location.search;
         if (page !== 'dashboard' || page !== 'summary') {
-            const newUrl = configuration['root'] + `/${page}${this.props.history.location.search}`;
+            const newUrl = configuration['root'] + `/${page}${search}`;
             window.location.href = newUrl;
         } else {
-            queryItem["mc"] = this.state.mc;
-            queryItem["dt"] = moment(this.state.dt).format('YYYY/MM/DD HH:mm');
-            queryItem["sf"] = this.state.sf;
-            queryItem["ln"] = this.state.ln;
-            queryItem["tp"] = this.state.tp;
-            queryItem["cs"] = this.state.cs;
-            let parameters = $.param(queryItem);
-            this.props.history.push(`${page}?${parameters}`);
+            this.props.history.push(`${page}?${search}`);
         }
     }
 
@@ -95,6 +129,13 @@ class Header extends React.Component {
         this.setState({ [type]: value });
     }
 
+    collectLevelChange = (value, type) => {
+        this.setState({
+            [type]: value,
+            selectedAssetDC: { label: 'No Data', value: 'No Data' }
+        });
+    }
+
     changeLanguageBrowser = () => {
         let currentLanguage = this.state.ln.toLowerCase();
         currentLanguage = currentLanguage.replace('-', '_');
@@ -106,81 +147,33 @@ class Header extends React.Component {
         _.forEach(this.props.user.sites, site => {
             options.push(<Dropdown.Item onClick={() => this.changeSite(site)} key={site.Site}>{site.asset_name}</Dropdown.Item>);
         });
-
         return options;
     }
 
     changeSite(site) {
         if (Number(this.state.cs) !== Number(site.asset_id)) {
-            this.setState({ cs: site.asset_id }, () => { this.changeUserInformation(site) });
+            const search = qs.parse(this.props.history.location.search);
+            const ln = search.ln || this.props.user.language;
+            const newUrl = configuration['root'] + `${this.props.history.location.pathname}?cs=${site.asset_id}${ln ? ('&ln=' + ln) : ''}`;
+            window.location.href = newUrl;
 
         }
     }
 
-    async changeUserInformation(newSite) {
-        let user = this.props.user;
-
-        const parameters = {
-            site_id: newSite.Site,
-            badge: newSite.Badge,
-            site: newSite.Site,
-            clock_number: newSite.Badge
-        };
-
-        let res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
-        let newUserValues = res[0] || {};
-        user = assignValuesToUser(user, newUserValues);
-
-        user.shifts = await getResponseFromGeneric('get', API, '/shifts', {}, parameters, {}) || [];
-        user.machines = await getResponseFromGeneric('get', API, '/machine', {}, parameters, {}) || [];
-        user.uoms = await getResponseFromGeneric('get', API, '/uom_by_site', {}, parameters, {}) || [];
-
-        if (!user.shift_id) {
-            let currentShiftInfo = getCurrentShift(user.shifts, user.current_date_time);
-            user.date_of_shift = currentShiftInfo.date_of_shift;
-            user.current_shift = currentShiftInfo.current_shift;
-            user.shift_id = currentShiftInfo.shift_id;
-        }
-
-        let search = qs.parse(this.props.history.location.search);
-        let ln = search.ln;
-
-        this.props.changeCurrentUser(user);
-        await this.props.history.push(`${this.props.history.location.pathname}?cs=${newSite.asset_id}${ln ? ('&&ln=' + ln) : ''}`);
-    }
-
-    logOff = async () => {
+    logOff = () => {
 
         const user = this.props.user;
+        const asset = _.find(user.machines, { asset_code: this.state.mc });
 
-        if (user.role === 'Operator') {
+        if (user.role === 'Operator' && asset.is_multiple) {
             this.props.displayModalLogOff(true);
         } else {
-
-            const data = {
-                badge: user.clock_number,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                asset_id: 230,
-                timestamp: getCurrentTime(user.timezone),
-                reason: 'Check-Out',
-                status: 'Inactive',
-                site_id: user.site,
-                break_minutes: 0,
-                lunch_minutes: 0
-            };
-
-            let res = await getResponseFromGeneric('put', API, '/new_scan', {}, {}, data);
-            if (res.status !== 200) {
-                console.log('Error when try to logOff');
-            } else {
-                console.log('Success LogOff');
-                // remove stored data
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('st');
-                // Redirect to login
-                window.location.replace(configuration['root']);
-            }
+            console.log('Success LogOff');
+            // remove stored data
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('st');
+            // Redirect to login
+            window.location.replace(configuration['root']);
         }
     }
 
@@ -193,6 +186,11 @@ class Header extends React.Component {
         const customToogleSite = React.forwardRef(({ children, onClick }, ref) => (
             <a className='nav-link' href='/' ref={ref} onClick={e => { e.preventDefault(); onClick(e); }}>{children}&nbsp;<FontAwesome name="building" /></a>
         ));
+
+        const actualView = this.props.history.location.pathname;
+        const selectionValue = this.state.selectedLevelDC.value;
+        const selectedAssetOptions = selectionValue === 'Area' ? this.state.assetOptionsDC :
+            (selectionValue === 'workcell_name' ? this.state.workcellOptionsDC : this.state.valueStreamOptionsDC);
 
         return (
             <Navbar expand="lg">
@@ -211,44 +209,65 @@ class Header extends React.Component {
                                 : null}
                         </Dropdown>
                         : null}
-                    {validPermission(this.props.user, 'megamenu', 'read') && this.props.history.location.pathname !== '/digitalcups'
-                        && this.props.history.location.pathname !== '/import' ?
+                    {validPermission(this.props.user, 'megamenu', 'read') ?
                         <span>
                             <Nav.Link onClick={(e) => this.openMenu(e)}>{this.props.t('Parameters')} <FontAwesome name="filter" />
                             </Nav.Link>
-                            <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history}>
-                                {validPermission(this.props.user, 'megamenu-machine-option', 'read') ?
+                            <MegaMenu toggle={this.state.megaMenuToggle} t={this.props.t} history={this.props.history} selectedLevelDC={this.state.selectedLevelDC}>
+                                {validMenuOption('megamenu-level-option', actualView) ?
+                                    <GenericSelect
+                                        selectedOption={this.state.selectedLevelDC}
+                                        collectInput={this.collectLevelChange}
+                                        t={this.props.t}
+                                        value={'selectedLevelDC'}
+                                        prop={'value'}
+                                        prop_name={'label'}
+                                        options={this.state.levelOptionsDC}
+                                        key={0} />
+                                    : null}
+                                {validPermission(this.props.user, 'megamenu-machine-option', 'read') && validMenuOption('megamenu-machine-option', actualView) ?
                                     <MachinePickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         user={this.props.user}
                                         value={this.state.mc}
                                         history={this.props.history}
-                                        key={0} />
+                                        key={1} />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-date-option', 'read') ?
+                                {validPermission(this.props.user, 'megamenu-date-option', 'read') && validMenuOption('megamenu-date-option', actualView) ?
                                     <DatePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.dt}
-                                        key={1}
+                                        key={2}
                                     />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-shift-option', 'read') && this.props.history.location.pathname !== '/summary' ?
+                                {validPermission(this.props.user, 'megamenu-shift-option', 'read') && validMenuOption('megamenu-shift-option', actualView) ?
                                     <ShiftPickerCustom
                                         collectInput={this.collectInputs}
                                         t={this.props.t}
                                         value={this.state.sf}
                                         date={this.state.dt}
                                         user={this.props.user}
-                                        key={2}
+                                        key={3}
                                     />
                                     : null}
-                                {validPermission(this.props.user, 'megamenu-language-option', 'read') ?
+                                {validPermission(this.props.user, 'megamenu-language-option', 'read') && validMenuOption('megamenu-language-option', actualView) ?
                                     <LanguagePickerCustom
                                         collectInput={this.collectInputs}
                                         value={this.state.ln}
-                                        key={3}
+                                        key={4}
                                     />
+                                    : null}
+                                {validMenuOption('megamenu-area-option', actualView) && selectionValue !== 'Site' ?
+                                    <GenericSelect
+                                        selectedOption={this.state.selectedAssetDC}
+                                        collectInput={this.collectInputs}
+                                        t={this.props.t}
+                                        value={'selectedAssetDC'}
+                                        prop={'value'}
+                                        prop_name={'label'}
+                                        options={selectedAssetOptions}
+                                        key={5} />
                                     : null}
                                 <QueryButton
                                     machine={this.state.mc}
@@ -257,6 +276,8 @@ class Header extends React.Component {
                                     machine_type={this.state.tp}
                                     language={this.state.ln}
                                     site={this.state.cs}
+                                    selectedLevelDC={validMenuOption('megamenu-level-option', actualView) ? selectionValue : null}
+                                    selectedAssetDC={this.state.selectedAssetDC}
                                     openMenu={this.openMenu}
                                     history={this.props.history}
                                     t={this.props.t}
@@ -267,7 +288,7 @@ class Header extends React.Component {
                         : null}
                     {validPermission(this.props.user, 'neworder', 'read') ?
                         ((this.state.tp) && (this.state.tp) !== '' && (this.state.tp === 'Manual' || this.state.tp === 'Partially_Manual_Scan_Order')) ?
-                            <Nav.Link onClick={() => this.props.openModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
+                            <Nav.Link onClick={() => this.props.displayOrderModal(true)}>{this.props.t('New Order')} <FontAwesome name="file-text" />
                             </Nav.Link>
                             : null : null
                     }
@@ -284,7 +305,7 @@ class Header extends React.Component {
                             </Dropdown.Menu>
                         </Dropdown>
                         : null}
-                    <Nav.Link onClick={() => this.props.displayModalLogOff(true)}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
+                    <Nav.Link onClick={() => this.logOff()}>{this.props.t('Sign Out')} <FontAwesome name="sign-out" /></Nav.Link>
                 </Navbar.Collapse>
             </Navbar>
         )

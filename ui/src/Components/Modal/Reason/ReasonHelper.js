@@ -3,7 +3,7 @@ import { Nav } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome';
 import ReactSelect from 'react-select';
 import { formatNumber } from '../../../Utils/Requests';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 const helpers = {
     getTextTranslations(props) {
@@ -13,13 +13,16 @@ const helpers = {
                 scrapCountText: props.t('Scrap Count'),
                 scraptCodeText: props.t('Scrap Code'),
                 scrapDefinitionText: props.t('Scrap Definition'),
-                scrapLevelText: props.t('Level')
+                scrapLevelText: props.t('Level'),
+                responsibleText: props.t('Responsible')
             };
         } else {
             return {
                 timeText: props.t('Time'),
                 timeLostCodeText: props.t('Time Lost Code'),
-                reasonText: props.t('Reason')
+                reasonText: props.t('Reason'),
+                responsibleText: props.t('Responsible')
+
             };
         }
     },
@@ -36,6 +39,7 @@ const helpers = {
                     onChange={(e) => this.changeInputValue(e, prop)}></input>
             } else if (prop === 'dtreason_code') {
                 return <ReactSelect
+                    maxMenuHeight={100}
                     value={_.find(this.state.allReasonOptions, { dtreason_id: this.state.newReason.dtreason_id })}
                     onChange={(e) => this.changeSelectTable(e)}
                     options={
@@ -48,9 +52,18 @@ const helpers = {
                 />
             } else if (prop === 'level') {
                 return <ReactSelect
+                    maxMenuHeight={100}
                     value={{ value: this.state.newReason[prop], label: this.state.newReason[prop] }}
-                    onChange={(e) => this.changeSelectLevel(e, 'levelOption')}
+                    onChange={(e) => this.changeSelectLevel(e)}
                     options={this.state.levelOptions}
+                />
+            } else if (prop === 'responsible') {
+                let assetOption = _.find(this.state.responsibleOptions, { asset_code: this.state.newReason[prop] });
+                return <ReactSelect
+                    maxMenuHeight={100}
+                    value={assetOption}
+                    onChange={(e) => this.changeSelectGenericProp(e, 'responsible')}
+                    options={this.state.responsibleOptions}
                 />
             } else {
                 return <span className={'wordwrap left-align'}>{this.state.newReason[prop]}</span>
@@ -86,6 +99,13 @@ const helpers = {
         newReason.level = e.level;
         this.setState({ newReason });
     },
+    changeSelectGenericProp(e, prop) {
+        let newReason = this.state.newReason;
+        newReason[prop] = e.asset_code;
+        this.setState({
+            newReason
+        });
+    },
     editReasonRow(row) {
         this.setState({
             editReason: true,
@@ -118,12 +138,18 @@ const helpers = {
                 {
                     Header: this.getHeader(this.state.scrapCountText),
                     accessor: 'quantity',
+                    style: {
+                        overflow: this.state.editReason ? 'visible' : 'hidden'
+                    },
                     maxWidth: 256,
                     Cell: c => this.renderCell(c.original, 'quantity')
                 },
                 {
                     Header: this.getHeader(this.state.scraptCodeText),
                     accessor: 'dtreason_code',
+                    style: {
+                        overflow: this.state.editReason ? 'visible' : 'hidden'
+                    },
                     maxWidth: 256,
                     Cell: c => this.renderCell(c.original, 'dtreason_code')
                 },
@@ -136,6 +162,9 @@ const helpers = {
                 {
                     Header: this.getHeader(this.state.scrapLevelText),
                     accessor: 'level',
+                    style: {
+                        overflow: this.state.editReason ? 'visible' : 'hidden'
+                    },
                     maxWidth: 256,
                     Cell: c => this.renderCell(c.original, 'level')
                 }
@@ -151,6 +180,9 @@ const helpers = {
                 {
                     Header: this.getHeader(this.state.timeLostCodeText),
                     accessor: 'dtreason_code',
+                    style: {
+                        overflow: this.state.editReason ? 'visible' : 'hidden'
+                    },
                     maxWidth: 256,
                     Cell: c => this.renderCell(c.original, 'dtreason_code')
                 },
@@ -162,6 +194,18 @@ const helpers = {
                 }
             ];
         }
+
+        columns.push(
+            {
+                Header: this.getHeader(this.state.responsibleText),
+                accessor: 'responsible',
+                style: {
+                    overflow: this.state.editReason ? 'visible' : 'hidden'
+                },
+                maxWidth: 514,
+                Cell: c => this.renderCell(c.original, 'responsible')
+            }
+        )
 
         if (this.state.editReason) {
             columns.push(

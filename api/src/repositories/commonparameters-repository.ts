@@ -14,8 +14,13 @@ export class CommonParametersRepository {
         [CommonParameters].[default_target_percent_of_ideal],[CommonParameters].[default_setup_minutes],[CommonParameters].[default_routed_cycle_time],
         [CommonParameters].[setup_lookback_minutes],[CommonParameters].[language],[CommonParameters].[status],
         [CommonParameters].[entered_by],[CommonParameters].[entered_on],[CommonParameters].[last_modified_by],[CommonParameters].[last_modified_on],
-        [CommonParameters].[summary_timeout],[CommonParameters].[break_minutes],[CommonParameters].[lunch_minutes]
+        [CommonParameters].[summary_timeout],[CommonParameters].[break_minutes],[CommonParameters].[lunch_minutes],[CommonParameters].[site_prefix],
+        [CommonParameters].[assembly_url]
         FROM [dbo].[CommonParameters] JOIN [dbo].[Asset] ON [CommonParameters].[site_id] = [Asset].[asset_id] AND [CommonParameters].[site_id] = ${site_id}`);
     }
-
+    public async getAssemblyUrl(asset_code: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT assembly_url FROM dbo.CommonParameters CP 
+        JOIN dbo.Asset A ON A.asset_code = '${asset_code}'
+        AND A.site_code = CP.site_name`);
+    }
 }

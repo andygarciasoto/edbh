@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import _ from 'lodash';
 import moment from 'moment';
 
 class ShiftPickerCustom extends React.Component {
@@ -13,12 +14,13 @@ class ShiftPickerCustom extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    let newShifts = nextProps.user.shifts;
-    this.setState({
-      value: nextProps.value,
-      shifts: newShifts
-    })
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!_.isEqual(nextProps.user.shifts, prevState.shifts) || !_.isEqual(nextProps.value, prevState.value)) {
+      return {
+        value: nextProps.value,
+        shifts: nextProps.user.shifts
+      };
+    } else return null;
   }
 
   onSelect = (shift) => {

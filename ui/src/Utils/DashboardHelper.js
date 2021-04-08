@@ -6,9 +6,11 @@ import {
     getCurrentTime,
     isFieldAllowed,
     formatNumber,
-    convertNumber,
     validPermission
 } from '../Utils/Requests';
+import FontAwesome from 'react-fontawesome';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 
 const helpers = {
 
@@ -37,39 +39,30 @@ const helpers = {
             }
         }
 
-        if (rowValid && (rowValid.hour_interval.includes('Shift'))) {
+        if (rowValid && (rowValid.hour_interval.toLowerCase().includes('shift'))) {
             style.textAlign = 'center';
             style.borderRight = 'solid 1px rgb(219, 219, 219)';
             style.borderTop = 'solid 1px rgb(219, 219, 219)';
             style.backgroundColor = 'white';
         } else if (rowValid && column.id === 'actual' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
             if (useIndividualValues) {
-                style.backgroundColor = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
-                style.backgroundImage = (convertNumber(rowValid.ideal, this.state.uom_asset) === 0 && convertNumber(rowValid.target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
-                    'url("../arabesque.png")';
+                style.backgroundColor = rowValid._original.background_color === 'red' ? '#b80600' : 'green';
+                style.backgroundImage = rowValid._original.background_color === 'red' ? 'url("../dark-circles.png")' : 'url("../arabesque.png")';
             } else {
-                style.backgroundColor = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
-                style.backgroundImage = (convertNumber(rowValid._original.summary_ideal, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) === 0 && convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target') === 0) ||
-                    (convertNumber(rowValid._original.summary_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.summary_target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
-                    'url("../arabesque.png")';
+                style.backgroundColor = rowValid._original.summary_background_color === 'red' ? '#b80600' : 'green';
+                style.backgroundImage = rowValid._original.summary_background_color === 'red' ? 'url("../dark-circles.png")' : 'url("../arabesque.png")';
             }
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'cumulative_actual' && rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
-            style.backgroundColor = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset, 'target')) ? '#b80600' : 'green';
-            style.backgroundImage = (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) === 0) || (convertNumber(rowValid._original.cumulative_adjusted_actual, this.state.uom_asset) < convertNumber(rowValid._original.cumulative_target, this.state.uom_asset, 'target')) ? 'url("../dark-circles.png")' :
+        } else if (rowValid && column.id === 'cumulative_actual' &&
+            rowInfo.subRows && !moment(rowInfo.subRows[0]._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone))) {
+            style.backgroundColor = (rowValid._original.cumulative_adjusted_actual === 0) || (rowValid._original.cumulative_adjusted_actual < rowValid._original.cumulative_target) ? '#b80600' : 'green';
+            style.backgroundImage = (rowValid._original.cumulative_adjusted_actual === 0) || (rowValid._original.cumulative_adjusted_actual < rowValid._original.cumulative_target) ? 'url("../dark-circles.png")' :
                 'url("../arabesque.png")';
             style.color = 'white';
 
-        } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) && rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
-
+        } else if (rowValid && column.id === 'timelost_summary' && !moment(rowValid._original.started_on_chunck).isAfter(getCurrentTime(this.props.user.timezone)) &&
+            rowInfo.subRows && rowInfo.row._subRows[0]._original.allocated_time !== 0) {
             style.backgroundColor = '#b80600';
             style.backgroundImage = 'url("../dark-circles.png")';
             style.color = 'white';
@@ -83,12 +76,12 @@ const helpers = {
     renderCell(row, prop, defaultValue) {
         if (row) {
             //validation for timelost and latest comment, don't work on render the value of each one only the text in the vertical view
-            prop = !row.hour_interval.includes('Shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
+            prop = !row.hour_interval.toLowerCase().toLowerCase().includes('shift') ? (prop === 'timelost_summary' || prop === 'latest_comment' ? '' : prop) : prop;
             let valueToDisplay = (row[prop] ?
-                (isNaN(row[prop]) ? row[prop] : convertNumber(row[prop], this.state.uom_asset, prop))
+                (isNaN(row[prop]) ? row[prop] : row[prop])
                 : defaultValue);
             return valueToDisplay || valueToDisplay === 0 ?
-                <span className={row.hour_interval.includes('Shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
+                <span className={row.hour_interval.toLowerCase().includes('shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span> :
                 <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
         } else {
             return <span style={{ paddingRight: '90%', cursor: 'pointer' }} className={'empty-field'}></span>;
@@ -96,12 +89,40 @@ const helpers = {
     },
 
     getTimeLostToSet(row) {
-        return moment(getCurrentTime(this.props.user.timezone)).isSame(moment(row.started_on_chunck), 'hours') ||
-            !moment(getCurrentTime(this.props.user.timezone)).isBefore(moment(row.started_on_chunck), 'hours') ? formatNumber(row.unallocated_time) : null;
+        const tz = this.props.user.timezone;
+        return moment.tz(tz).isSame(moment.tz(row.started_on_chunck, tz), 'hours') ||
+            !moment.tz(tz).isBefore(moment.tz(row.started_on_chunck, tz), 'hours') ? formatNumber(row.unallocated_time) : null;
     },
 
     getCommentsToSet(row) {
         return row.comment ? row.total_comments > 1 ? row.comment + ` (${(row.total_comments - 1)}+ more)` : row.comment : '';
+    },
+
+    renderSupervisorSignOffCell(state, row, prop, defaultValue) {
+        const actualEscalation = state.actualEscalation || {};
+        const classType = actualEscalation.escalation_level === 1 ? 'inital' : (actualEscalation.escalation_level === 2 ? 'warning' : 'danger');
+        const tz = this.props.user.timezone;
+        let valueToDisplay = (row[prop] ?
+            (isNaN(row[prop]) ? row[prop] : row[prop])
+            : defaultValue);
+        if (!row[prop] && !_.isEmpty(actualEscalation) && moment.tz(tz).add(-1, 'hours').isSame(moment.tz(row.started_on_chunck, tz), 'hours')) {
+            const renderTooltip = (props) => (
+                <Tooltip id="button-tooltip" {...props} className={'escalation_' + classType}>
+                    The {actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible
+                </Tooltip>
+            );
+            return (
+                <OverlayTrigger
+                    placement='left'
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderTooltip}
+                >
+                    <FontAwesome className={'icon escalation_' + classType + ' escalation_icon_' + classType} name='exclamation-triangle' />
+                </OverlayTrigger>
+            );
+        } else {
+            return (<span className={row.hour_interval.toLowerCase().includes('shift') ? 'wordwrap' : 'react-table-click-text table-click'} data-tip={valueToDisplay}>{valueToDisplay}</span>);
+        }
     },
 
     getExpandClick(state, rowInfo, column) {
@@ -147,8 +168,7 @@ const helpers = {
                 resizable: false,
                 sortable: false,
                 Aggregated: cellInfo => {
-                    const needsExpander =
-                        cellInfo.subRows && cellInfo.subRows.length > 1 ? true : false;
+                    const needsExpander = cellInfo.subRows && cellInfo.subRows.length > 1;
                     const expanderEnabled = !cellInfo.column.disableExpander;
                     return needsExpander && expanderEnabled ? (
                         <div
@@ -167,15 +187,14 @@ const helpers = {
                 minWidth: 130,
                 Pivot: (row) => {
                     let rowValid = row ? (row.subRows ? row.subRows[0] : row.row) : null;
-                    if (rowValid && (rowValid.hour_interval.includes('Shift'))) {
+                    if (rowValid && (rowValid.hour_interval.toLowerCase().includes('shift'))) {
                         return <span className={'wordwrap'} data-tip={row.value}>{row.value}</span>
                     } else {
                         return <span>{moment(row.subRows[0]._original.started_on_chunck).isSame(moment(getCurrentTime(props.user.timezone)), 'hours') ? row.value + '*' : row.value}</span>
                     }
                 },
                 disableExpander: false,
-                filterMethod: (filter, rows) =>
-                    matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
+                filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ["hour_interval"] }),
                 filterAll: true,
                 getProps: (state, rowInfo, column) => {
                     let style = this.getStyle(true, 'left', rowInfo, column);
@@ -278,8 +297,8 @@ const helpers = {
             Header: this.getHeader(state.supervisorText),
             accessor: 'supervisor_signoff',
             minWidth: 90,
-            Cell: c => this.renderCell(c.original, '', ''),
-            Aggregated: a => this.renderCell(a.subRows[0]._original, 'supervisor_signoff', ''),
+            Cell: c => this.renderSupervisorSignOffCell(state, c.original, '', ''),
+            Aggregated: a => this.renderSupervisorSignOffCell(state, a.subRows[0]._original, 'supervisor_signoff', ''),
             getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
         });
 
@@ -290,7 +309,7 @@ const helpers = {
         let openModal = false;
         let modalType = '';
         let row = {};
-        if ((rowInfo.level === 0 && !rowInfo.subRows[0]._original.hour_interval.includes('Shift')) || rowInfo.level === 1) {
+        if ((rowInfo.level === 0 && !rowInfo.subRows[0]._original.hour_interval.toLowerCase().includes('shift')) || rowInfo.level === 1) {
             switch (column.id) {
                 case 'product_code':
                 case 'timelost_summary':
@@ -300,7 +319,7 @@ const helpers = {
                     if (rowInfo.level === 0) {
                         modalType = column.id === 'product_code' ? 'manualentry' : (column.id === 'timelost_summary' ? 'timelost' : (column.id === 'latest_comment' ? 'comments' : column.id));
                         row = rowInfo.subRows[0]._original;
-                        openModal = true;
+                        openModal = modalType === 'operator_signoff' || modalType === 'supervisor_signoff' ? !row[modalType] : true;
                     }
                     break;
                 case 'actual':
@@ -353,9 +372,23 @@ const helpers = {
                         break;
                 }
 
-                newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') && isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone);
+                newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') &&
+                    isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone) &&
+                    currentRow.current_order_id;
 
-                this.setState(Object.assign(newModalProps));
+                if (modalType === 'supervisor_signoff' && !_.isEmpty(this.state.actualEscalation)) {
+                    if (this.props.user.escalation_level !== this.state.actualEscalation.escalation_level) {
+                        this.setState({
+                            modal_message_Is_Open: true,
+                            modal_type: 'Error',
+                            modal_message: 'Escalation level not reached. Please add ' + this.state.actualEscalation.escalation_name + ' signoff.'
+                        });
+                    } else {
+                        this.setState(Object.assign(newModalProps));
+                    }
+                } else {
+                    this.setState(Object.assign(newModalProps));
+                }
 
             }
 

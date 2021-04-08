@@ -20,17 +20,8 @@
     margin-left  : 1%;
     margin-bottom: 1%;
     padding      : 1%;
-}
-
-.escalateBlink {
-    border   : 2px solid $color-link;
-    animation: blink2 .5s step-end infinite alternate;
-}
-
-@keyframes blink2 {
-    50% {
-        border-color: $color-red;
-    }
+    font-weight  : bold;
+    font-size    : large;
 }
 
 .previousHours .col {
@@ -56,10 +47,15 @@
     align-items    : center;
     justify-content: center;
     overflow       : hidden;
+    color          : $color-white;
 }
 
 .currentInformation {
     display        : flex;
     align-items    : center;
     justify-content: center;
+}
+
+.childrenCupDiv:hover{
+    cursor: pointer;
 }

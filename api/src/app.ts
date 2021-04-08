@@ -38,6 +38,12 @@ import { ScanRepository } from './repositories/scan-repository';
 import { ScanService } from './services/scanservice';
 import { RoleRepository } from './repositories/role-repository';
 import { RoleService } from './services/roleservice';
+import { SiteRepository } from './repositories/site-repository';
+import { SiteService } from './services/siteservice';
+import { EscalationRepository } from './repositories/escalation-repository';
+import { EscalationService } from './services/escalationservice';
+
+
 
 
 //INITIALIZE CONFIGURATION OF NODE JS//
@@ -63,9 +69,12 @@ const unavailableRepository = new UnavailableRepository(sqlServerStore);
 const assetdisplaysystemRepository = new AssetDisplaySystemRepository(sqlServerStore);
 const scanRepository = new ScanRepository(sqlServerStore);
 const roleRepository = new RoleRepository(sqlServerStore);
+const siteRepository = new SiteRepository(sqlServerStore);
+const escalationRepository = new EscalationRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
+const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository, roleRepository);
@@ -75,11 +84,12 @@ const dtreasonService = new DTReasonService(dtreasonRepository, assetRepository,
 const intershiftdataService = new InterShiftDataService(intershiftdataRespository, assetRepository, dxhdataRepository);
 const commentdataService = new CommentDataService(commentDataRepository, assetRepository, dxhdataRepository);
 const productiondataService = new ProductionDataService(productionDataRepository, dxhdataRepository, assetRepository, dtreasonRepository);
-const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository);
+const orderdataService = new OrderDataService(orderDataRepository, assetRepository, productRepository, commonparametersRepository);
 const dataToolService = new DataToolService(workcellRepository, assetRepository, dtreasonRepository, shiftsRepository,
     tagRepository, commonparametersRepository, uomRepository, unavailableRepository, userRepository, assetdisplaysystemRepository, dxhdataRepository);
 const scanService = new ScanService(scanRepository);
 const roleService = new RoleService(roleRepository);
+const escalationService = new EscalationService(escalationRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -104,11 +114,14 @@ const appConfig = {
         new http.RestEndpoint('/auth/', 'post', async (req: Request, res: Response) => {
             await authService.loginWithUsername(req, res);
         }, false),
-        new http.RestEndpoint('/api/me', 'get', async (req: Request, res: Response) => {
+        new http.RestEndpoint('/auth/me', 'get', async (req: Request, res: Response) => {
             await authService.extractInformationFromToken(req, res);
         }, true),
         new http.RestEndpoint('/auth/assignRoleToken', 'get', async (req: Request, res: Response) => {
             await authService.assignRoleToken(req, res);
+        }, true),
+        new http.RestEndpoint('/api/loadSiteConfiguration', 'get', async (req: Request, res: Response) => {
+            await siteService.loadSiteConfiguration(req, res);
         }, true),
         new http.RestEndpoint('/api/asset_display_system', 'get', async (req: Request, res: Response) => {
             await assetService.getAssetByAssetDisplaySystem(req, res);
@@ -199,6 +212,30 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/production_any_order', 'put', async (req: Request, res: Response) => {
             await productiondataService.putProductionForAnyOrder(req, res);
+        }, true),
+        new http.RestEndpoint('/api/digital_cups', 'get', async (req: Request, res: Response) => {
+            await productiondataService.getDigitalCups(req, res);
+        }, true),
+        new http.RestEndpoint('/api/total_rows', 'get', async (req: Request, res: Response) => {
+            await siteService.getRowsBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/users', 'get', async (req: Request, res: Response) => {
+            await userService.getUsersBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/roles', 'get', async (req: Request, res: Response) => {
+            await roleService.getRoles(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_user', 'put', async (req: Request, res: Response) => {
+            await userService.putUser(req, res);
+        }, true),
+        new http.RestEndpoint('/api/escalation', 'get', async (req: Request, res: Response) => {
+            await escalationService.getEscalation(req, res);
+        }, true),
+        new http.RestEndpoint('/api/sites', 'get', async (req: Request, res: Response) => {
+            await siteService.getParkerSites(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
+            await shiftService.putShifts(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

@@ -42,14 +42,14 @@
 --	20210122		C00V00 - Intial code create
 --		
 -- Example Call:
---  EXEC [dbo].[spLocal_EY_DxH_Get_User_Information] '47132', '0', 0, 1 --Search by badge and site
+--  EXEC [dbo].[spLocal_EY_DxH_Get_User_Information] 'Administratoreaton', '0', 0, 1 --Search by badge and site
 --  EXEC [dbo].[spLocal_EY_DxH_Get_User_Information] '47132', '0', 40, 0 --Search by badge and asset_id
 --  EXEC [dbo].[spLocal_EY_DxH_Get_User_Information] '47132', 'CR2080435W1', 0, 0 --Search by badge and station
 --  EXEC [dbo].[spLocal_EY_DxH_Get_User_Information] '47132', '0', 0, 0 --Search by badge
 --
 
 CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_User_Information] (
-	@badge AS VARCHAR(100),
+	@badge AS NVARCHAR(100),
 	@machine AS VARCHAR(100),
 	@asset_id AS INT,
 	@site_id AS INT
@@ -108,8 +108,11 @@ BEGIN
 		TFDU.Username AS username,
 		TFDU.First_Name AS first_name,
 		TFDU.Last_Name AS last_name,
-		TFDU.Role AS role,
+		R.name AS role,
 		TFDU.role_id as role_id,
+		E.escalation_name as escalation_name,
+		E.escalation_level as escalation_level,
+		E.escalation_hours as escalation_hours,
 		TFDU.Site AS site,
 		@site_code AS site_code,
 		CP.site_name,
@@ -117,6 +120,7 @@ BEGIN
 		CP.language,
 		CP.break_minutes,
 		CP.lunch_minutes,
+		CP.site_prefix,
 		FORMAT(GSPFunction.ProductionDay,'yyyy-MM-dd HH:mm') AS date_of_shift,
 		GSPFunction.ShiftId AS shift_id,
 		GSPFunction.ShiftName AS shift_name,
@@ -130,11 +134,15 @@ BEGIN
 		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@site, NULL) AS GSPFunction
 		INNER JOIN dbo.TFDUsers AS TFDU
 			ON TFDU.Site = @site AND TFDU.Badge = @badge
+		INNER JOIN dbo.Role AS R
+			ON TFDU.role_id = R.role_id
 		INNER JOIN dbo.CommonParameters AS CP
 			ON CP.site_id = @site
 		LEFT JOIN dbo.Shift AS SF
 			ON SF.asset_id = @site AND SF.status = @vert_sf_status AND SF.shift_name = @vert_sf_name
 		LEFT JOIN dbo.GlobalParameters AS GP
-			ON 1 = 1;
+			ON 1 = 1
+		LEFT JOIN dbo.Escalation AS E
+			ON TFDU.escalation_id = E.escalation_id;
 
 END

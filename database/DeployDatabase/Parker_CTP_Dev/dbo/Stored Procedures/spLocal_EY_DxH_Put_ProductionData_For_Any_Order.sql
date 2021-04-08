@@ -45,7 +45,7 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData_For_Any_Order]
 @DxHData_Id				INT, -- the hour Id
 @ProductionData_Id      INT, -- the productionData Id
 @Actual					FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override
-@Clock_Number			VARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
+@Clock_Number			NVARCHAR(100), -- used to look up First and Last, leave blank if you have first and last
 @Timestamp				DATETIME 
 AS
     BEGIN
@@ -54,7 +54,7 @@ AS
         SET NOCOUNT ON;
         DECLARE
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000);
+		@ReturnMessage NVARCHAR(1000);
 
         IF NOT EXISTS
         (
@@ -64,7 +64,7 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
+                       @ReturnMessage = 'Invalid DxHData_Id' + CONVERT(NVARCHAR, ISNULL(@DxHData_Id, ''));
                 GOTO ErrExit;
         END;
 		IF @ProductionData_Id IS NULL
@@ -83,7 +83,7 @@ AS
         )
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid ProductionData_Id' + CONVERT(VARCHAR, ISNULL(@ProductionData_Id, ''));
+                       @ReturnMessage = 'Invalid ProductionData_Id' + CONVERT(NVARCHAR, ISNULL(@ProductionData_Id, ''));
                 GOTO ErrExit;
 			END;
 			ELSE
@@ -91,12 +91,12 @@ AS
 		UPDATE dbo.ProductionData
                         SET 
 							actual = @Actual,
-							last_modified_by = @Clock_Number,
+							last_modified_by = @Clock_Number, 
 							last_modified_on = GETDATE()
                         FROM dbo.ProductionData pd
                         WHERE pd.productiondata_id = @ProductionData_Id AND pd.dxhdata_id = @DxHData_Id;
                         SELECT @ReturnStatus = 0, 
-                               @ReturnMessage = 'Override ' + CONVERT(VARCHAR, @ProductionData_Id) + ' ' + CONVERT(VARCHAR, @DxHData_Id);
+                               @ReturnMessage = 'Override ' + CONVERT(NVARCHAR, @ProductionData_Id) + ' ' + CONVERT(NVARCHAR, @DxHData_Id);
 					END
 					END
 

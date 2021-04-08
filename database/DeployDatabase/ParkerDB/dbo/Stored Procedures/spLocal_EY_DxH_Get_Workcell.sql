@@ -1,7 +1,7 @@
 ﻿
 --exec [dbo].[spLocal_EY_DxH_Get_Workcell] 'CR2080435W1', 1
 
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as VARCHAR(100),
+CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Get_Workcell] (@station as VARCHAR(100),
 @site_id as INT)
 
 AS  BEGIN 
@@ -36,36 +36,17 @@ FROM dbo.Asset
 WHERE grouping1 = @workcell_id
 AND asset_level = 'Cell'
 AND status = 'Active'
-ORDER BY asset_name;
+ORDER BY asset_name
 END
 
 ELSE
 BEGIN
 
-	SELECT 
-		A.asset_code,
-		A.asset_name,
-		A.asset_id,
-		CASE WHEN AD.assetdisplaysystem_id IS NULL
-			THEN 'No Station'
-			ELSE AD.displaysystem_name
-		END AS displaysystem_name,
-		CASE WHEN W.workcell_id IS NULL
-			THEN 'No Workcell'
-			ELSE W.workcell_name
-		END AS workcell_name,
-		CASE WHEN W.workcell_id IS NULL
-			THEN 'No Workcell'
-			ELSE W.workcell_description
-		END AS workcell_description,
-		W.workcell_id
-	FROM dbo.Asset A
-		LEFT JOIN dbo.AssetDisplaySystem AD ON A.asset_id = AD.asset_id
-		LEFT JOIN dbo.Workcell W ON A.grouping1 = W.workcell_id
-	WHERE A.site_code = 'Eaton'
-		AND A.asset_level = 'Cell'
-		AND A.status = 'Active'
-	ORDER BY asset_name;
-
+SELECT asset_code, asset_name, asset_id, 'No Station' as displaysystem_name, 'No Workcell' as workcell_name, 'No Workcell' as workcell_description
+FROM dbo.Asset
+WHERE site_code = @site
+AND asset_level = 'Cell'
+AND status = 'Active'
+ORDER BY asset_name
 END
 END

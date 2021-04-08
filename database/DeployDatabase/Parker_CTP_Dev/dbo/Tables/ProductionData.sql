@@ -1,36 +1,36 @@
 ﻿CREATE TABLE [dbo].[ProductionData] (
-    [productiondata_id] INT           IDENTITY (1, 1) NOT NULL,
-    [dxhdata_id]        INT           NOT NULL,
-    [product_code]      VARCHAR (100) NOT NULL,
-    [ideal]             FLOAT (53)    NULL,
-    [target]            FLOAT (53)    NULL,
-    [actual]            FLOAT (53)    NULL,
-    [UOM_code]          VARCHAR (100) NULL,
-    [order_id]          INT           NULL,
-    [order_number]      VARCHAR (100) NULL,
-    [start_time]        DATETIME      NULL,
-    [end_time]          DATETIME      NULL,
-    [entered_by]        VARCHAR (100) NOT NULL,
-    [entered_on]        DATETIME      NOT NULL,
-    [last_modified_by]  VARCHAR (100) NOT NULL,
-    [last_modified_on]  DATETIME      NOT NULL,
-    [setup_scrap]       FLOAT (53)    NULL,
-    [other_scrap]       FLOAT (53)    NULL,
-    [name]              VARCHAR (100) NULL,
+    [productiondata_id] INT            IDENTITY (1, 1) NOT NULL,
+    [dxhdata_id]        INT            NOT NULL,
+    [product_code]      NVARCHAR (100) NOT NULL,
+    [ideal]             FLOAT (53)     NULL,
+    [target]            FLOAT (53)     NULL,
+    [actual]            FLOAT (53)     NOT NULL,
+    [UOM_code]          NVARCHAR (100) NOT NULL,
+    [order_id]          INT            NOT NULL,
+    [order_number]      NVARCHAR (100) NOT NULL,
+    [start_time]        DATETIME       NOT NULL,
+    [end_time]          DATETIME       NULL,
+    [entered_by]        NVARCHAR (100) CONSTRAINT [DF_ProductionData_entered_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
+    [entered_on]        DATETIME       CONSTRAINT [DF_ProductionData_entered_on] DEFAULT (getdate()) NOT NULL,
+    [last_modified_by]  NVARCHAR (100) CONSTRAINT [DF_ProductionData_last_modified_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
+    [last_modified_on]  DATETIME       CONSTRAINT [DF_ProductionData_last_modified_on] DEFAULT (getdate()) NOT NULL,
+    [setup_scrap]       FLOAT (53)     NOT NULL,
+    [other_scrap]       FLOAT (53)     NOT NULL,
+    [name]              NVARCHAR (100) NOT NULL,
     CONSTRAINT [PK_ProductionData_ProductionData_Id] PRIMARY KEY CLUSTERED ([productiondata_id] ASC),
     CONSTRAINT [FK_ProductionData_DxHData_ID] FOREIGN KEY ([dxhdata_id]) REFERENCES [dbo].[DxHData] ([dxhdata_id])
 );
 
 
 GO
-CREATE NONCLUSTERED INDEX [NCI_ProductionData_DxHData_Id]
-    ON [dbo].[ProductionData]([dxhdata_id] ASC)
-    INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Id]
+    ON [dbo].[ProductionData]([order_id] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Id]
-    ON [dbo].[ProductionData]([order_id] ASC);
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_DxHData_Id]
+    ON [dbo].[ProductionData]([dxhdata_id] ASC)
+    INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
 
 
 GO

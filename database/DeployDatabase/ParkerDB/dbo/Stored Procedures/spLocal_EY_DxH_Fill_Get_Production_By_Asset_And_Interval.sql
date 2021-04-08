@@ -39,7 +39,7 @@
 -- Example Call:
 -- exec dbo.spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval 6, '2020-03-28 14:00:00','2020-03-28 21:00:00'
 --
-CREATE      PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
+CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval] @Asset_Id   INT, 
                                                                                  @start_time DATETIME, 
                                                                                  @end_time   DATETIME
 AS
@@ -60,10 +60,9 @@ AS
                         --DHD.dxhdata_id, 
                         SUM(PD.actual - PD.setup_scrap - PD.other_scrap) OVER(PARTITION BY OD.product_code) AS production,
                         CASE
-                            WHEN (OD.end_time IS NOT NULL
+                            WHEN OD.end_time IS NOT NULL
                                  AND OD.end_time >= BD.started_on_chunck
-                                 AND OD.end_time < BD.ended_on_chunck)
-                                 OR OD.end_time IS NULL
+                                 AND OD.end_time < BD.ended_on_chunck
                             THEN 1
                             ELSE 0
                         END AS finish_order_hour

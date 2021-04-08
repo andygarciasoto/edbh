@@ -54,7 +54,7 @@
 -- Example Call:
 -- Exec spLocal_EY_DxH_Put_DTData 3, 4, 5, '3276', Null, Null, '2019-08-09 15:08:28.220', Null
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_DTData]
 --Declare
 @DxHData_Id   INT, -- the hour Id
 @DTReason_Id  INT, 

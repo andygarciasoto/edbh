@@ -73,7 +73,7 @@ export class AuthService {
                 let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                 assetInformation = assetInformation[0];
                 if (assetInformation.is_multiple) {
-                    this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                    this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
                         'Check-In', 'Active', responseUser.site, 0, 0);
                 }
             }
@@ -180,8 +180,10 @@ export class AuthService {
                 if (machine) {
                     let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                     assetInformation = assetInformation[0];
-                    this.scanrepository.putScan(responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
-                        'login', 'Active', responseUser.site, 0, 0);
+                    if (assetInformation.is_multiple && role === 'Operator') {
+                        this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                            'Check-In', 'Active', responseUser.site, 0, 0);
+                    }
                 } else {
                     claimsList.user.assign_role = role;
                 }
@@ -217,14 +219,18 @@ export class AuthService {
                 });
             }
             if (payload.body.sub) {
+                req.query.station = req.query.station && req.query.station !== 'null' ? req.query.station : null;
                 let badge = payload.body.user_badge;
-                let machine = payload.body.user_machine;
+                let machine = payload.body.user_machine || req.query.station || 0;
+                let site = req.query.site_id || 0;
                 let responseUser: any;
                 try {
-                    responseUser = await this.userrepository.findUserInformation(badge, machine, 0, 0);
+                    responseUser = await this.userrepository.findUserInformation(badge, machine, 0, site);
+                    const differentRole = payload.body.assign_role && responseUser[0].role !== payload.body.assign_role;
                     responseUser[0].role = payload.body.assign_role || responseUser[0].role;
                     responseUser[0].assing_role = payload.body.assign_role;
-                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole(responseUser[0].role_id);
+                    responseUser[0].permissions = await this.rolerepository.getComponentsByRole((differentRole ? 0 : responseUser[0].role_id), payload.body.assign_role);
+                    responseUser[0].sites = await this.userrepository.findSitesByUser(badge);
                     return res.status(200).json(responseUser);
                 } catch (err) {
                     console.log(err);

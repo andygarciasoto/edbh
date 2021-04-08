@@ -1,7 +1,7 @@
 import { Request } from 'tedious';
 import ConnectionPool from 'tedious-connection-pool';
 import moment from 'moment';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 const poolConfig = {
     min: 60,

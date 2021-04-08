@@ -8,7 +8,7 @@ import ReactSelect from 'react-select';
 import { validateScrapSubmit } from '../../../Utils/FormValidations';
 import { API } from '../../../Utils/Constants';
 import '../../../sass/ReasonModal.scss';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import ReasonTable from './ReasonTable'
 const axios = require('axios');
 
@@ -21,7 +21,6 @@ class ScrapModal extends React.Component {
 
     getInitialState(props) {
         return {
-            isOpen: props.isOpen,
             modal_loading_IsOpen: false,
             modal_message_IsOpen: false,
             modal_type: '',
@@ -47,22 +46,32 @@ class ScrapModal extends React.Component {
             insert: false,
             modal_validate_IsOpen: false,
             currentReason: {},
-            newReason: {}
+            newReason: {},
+            selectedResponsible: null,
+            responsibleOptions: []
         }
     }
 
+    async componentDidMount() {
+        const asset = {
+            site: this.props.user.site,
+            level: 'Area',
+            automation_level: 'All'
+        };
+        let responsibleOptions = await getResponseFromGeneric('get', API, '/machine', {}, asset, {}) || [];
+        responsibleOptions = _.map(responsibleOptions, asset => {
+            asset.label = asset.asset_code + ' - ' + asset.asset_name;
+            asset.value = asset.asset_id;
+            return asset;
+        });
+        const selectedResponsible = _.find(responsibleOptions, { asset_code: this.props.selectedAssetOption.parent_asset_code });
+        this.setState({ responsibleOptions, selectedResponsible });
+    }
+
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (!nextProps.isOpen) {
+        if (nextProps.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow) && nextProps.currentRow &&
+            nextProps.currentRow.dxhdata_id && nextProps.currentRow.productiondata_id) {
             return {
-                isOpen: nextProps.isOpen
-            };
-        }
-        if ((nextProps.isOpen && nextProps.isOpen !== prevState.isOpen && nextProps.currentRow && nextProps.currentRow.dxhdata_id && nextProps.currentRow.productiondata_id) ||
-            (nextProps.isOpen && nextProps.isOpen === prevState.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow))) {
-            console.log('modal open');
-            console.log('prev state', prevState);
-            return {
-                isOpen: nextProps.isOpen,
                 currentRow: nextProps.currentRow,
                 adjusted_actual: parseInt(nextProps.currentRow.adjusted_actual),
                 adjustedActualValue: parseInt(nextProps.currentRow.adjusted_actual),
@@ -73,7 +82,8 @@ class ScrapModal extends React.Component {
                 setupReasonsOptions: prevState.setupReasonsOptions,
                 productionReasonsOptions: prevState.productionReasonsOptions,
                 allReasonOptions: prevState.allReasonOptions,
-                scrapTableList: prevState.scrapTableList
+                scrapTableList: prevState.scrapTableList,
+                selectedResponsible: null
             };
         }
         return null;
@@ -81,11 +91,16 @@ class ScrapModal extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (!_.isEqual(this.state.currentRow, prevState.currentRow)) {
-            console.log('load data call');
             this.setState({ modal_loading_IsOpen: true }, () => {
+                this.loadResponsables(this.props);
                 this.loadData(this.props);
             });
         }
+    }
+
+    loadResponsables(props) {
+        const selectedResponsible = _.find(this.state.responsibleOptions, { asset_code: this.props.selectedAssetOption.parent_asset_code });
+        this.setState({ selectedResponsible });
     }
 
     onChangeInput = (e, field) => {
@@ -114,9 +129,15 @@ class ScrapModal extends React.Component {
         });
     }
 
+    onChangeSelectGeneric = (e, field) => {
+        this.setState({
+            [field]: e
+        });
+    }
+
     loadData(props) {
 
-        let asset_code = props.parentData[0] === 'No Data' ? null : props.parentData[0];
+        let asset_code = props.selectedAssetOption.asset_code === 'No Data' ? null : props.selectedAssetOption.asset_code;
         const param1 = {
             mc: asset_code,
             type: 'scrap',
@@ -172,13 +193,14 @@ class ScrapModal extends React.Component {
                 this.submitScrap(props.activeOperators[0].badge);
             }
         } else {
-            this.submitScrap(props.user.clock_number);
+            this.submitScrap(props.user.badge);
         }
     }
 
     acceptNewScrap = (currentReason, newReason) => {
         if ((currentReason.quantity !== newReason.quantity) ||
-            (currentReason.dtreason_id !== newReason.dtreason_id)) {
+            (currentReason.dtreason_id !== newReason.dtreason_id) ||
+            (currentReason.responsible !== newReason.responsible)) {
             const props = this.props;
             if (props.selectedAssetOption.is_multiple && props.user.role === 'Operator') {
                 if (props.activeOperators.length > 1) {
@@ -187,7 +209,7 @@ class ScrapModal extends React.Component {
                     this.submitNewScrapUpdate(props.activeOperators[0].badge, currentReason, newReason);
                 }
             } else {
-                this.submitNewScrapUpdate(props.user.clock_number, currentReason, newReason);
+                this.submitNewScrapUpdate(props.user.badge, currentReason, newReason);
             }
         } else {
             this.setState({
@@ -239,9 +261,10 @@ class ScrapModal extends React.Component {
                 (parseInt(this.state.currentRow.other_scrap) + parseInt(this.state.quantityValue)) :
                 parseInt(this.state.currentRow.other_scrap),
             clocknumber: badge,
+            responsible: this.state.selectedResponsible.asset_code,
             quantity: parseInt(this.state.quantityValue),
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: this.props.parentData[0]
+            asset_code: this.props.selectedAssetOption.asset_code
         };
 
         const scrap = _.find(this.state.scrapTableList, { dtreason_id: data.dt_reason_id }) || {};
@@ -273,9 +296,10 @@ class ScrapModal extends React.Component {
                 parseInt(this.state.currentRow.other_scrap),
             clocknumber: badge,
             quantity: parseInt(newReason.quantity),
+            responsible: newReason.responsible,
             dtdata_id: parseInt(currentReason.dtdata_id),
             timestamp: getCurrentTime(this.props.user.timezone),
-            asset_code: this.props.parentData[0]
+            asset_code: this.props.selectedAssetOption.asset_code
         }
 
         this.setState({ modal_loading_IsOpen: true }, async () => {
@@ -319,7 +343,6 @@ class ScrapModal extends React.Component {
     }
 
     render() {
-        console.log('render state scrap modal', this.state);
         const selectStyles = {
             control: base => ({
                 ...base,
@@ -330,183 +353,197 @@ class ScrapModal extends React.Component {
         const props = this.props;
         const t = props.t;
         return (
-            this.state.isOpen ?
-                <React.Fragment>
-                    <Modal
-                        size="xl"
-                        aria-labelledby="example-modal-sizes-title-xl"
-                        className='scrapModal'
-                        centered
-                        show={this.state.isOpen}
-                        onHide={props.onRequestClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                {t('Scrap')}
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
+            <React.Fragment>
+                <Modal
+                    size="xl"
+                    aria-labelledby="example-modal-sizes-title-xl"
+                    className='scrapModal'
+                    centered
+                    show={props.isOpen}
+                    onHide={props.onRequestClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            {t('Scrap')}
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row className="new-timeloss-data" style={{ marginBottom: '5px' }}>
+                            <Col sm={4} md={4}>
+                                <span className="dashboard-modal-field-group">
+                                    <p>{this.props.t('Part Number')}:</p>
+                                    <Form.Control
+                                        style={{ paddingTop: '5px' }}
+                                        disabled={true}
+                                        value={this.state.currentRow.product_code}>
+                                    </Form.Control>
+                                </span>
+                            </Col>
+                            <Col sm={4} md={4}>
+                                <span className="dashboard-modal-field-group">
+                                    <p>{this.props.t('Recorded Actual')}:</p>
+                                    <Form.Control
+                                        style={{ paddingTop: '5px' }}
+                                        type={this.props.formType}
+                                        disabled={true}
+                                        value={this.state.currentRow.actual || 0}>
+                                    </Form.Control>
+                                </span>
+                            </Col>
+                        </Row>
+
+                        <ReasonTable
+                            t={t}
+                            productionRow={this.state.currentRow}
+                            user={this.props.user}
+                            Refresh={this.props.Refresh}
+                            type={'Scrap'}
+                            dxhdataList={this.state.scrapTableList}
+                            base={this.state.adjustedActualValue}
+                            setupReasonsOptions={this.state.setupReasonsOptions}
+                            productionReasonsOptions={this.state.productionReasonsOptions}
+                            allReasonOptions={this.state.allReasonOptions}
+                            levelOptions={this.state.scrapTypeOptions}
+                            responsibleOptions={this.state.responsibleOptions}
+                            acceptNewReason={this.acceptNewScrap}
+                            parentData={this.props.parentData}
+                            isEditable={this.props.isEditable}
+                        />
+
+                        <span className={"new-timelost-label"}>{t('New ' + this.state.scrapType.value + ' Scrap Entry')}</span>
+                        <div className="new-timeloss">
+                            <Row style={{ marginBottom: '1px' }}>
                                 <Col sm={4} md={4}>
-                                    <span className="dashboard-modal-field-group">
-                                        <p>{this.props.t('Part Number')}:</p>
-                                        <Form.Control
+                                    <span className="dashboard-modal-field-group"><p>{this.props.t('Scrap Quantity')}:</p>
+                                        <input
+                                            value={this.state.quantityValue}
+                                            type="number"
+                                            onChange={e => this.onChangeInput(e, 'quantityValue')}
+                                            className="form-control"
                                             style={{ paddingTop: '5px' }}
-                                            disabled={true}
-                                            value={this.state.currentRow.product_code}>
-                                        </Form.Control>
+                                            min='0'
+                                            max={this.state.currentRow.adjusted_actual}
+                                            disabled={!this.props.isEditable} />
                                     </span>
                                 </Col>
-                                <Col sm={4} md={4}>
-                                    <span className="dashboard-modal-field-group">
-                                        <p>{this.props.t('Recorded Actual')}:</p>
-                                        <Form.Control
-                                            style={{ paddingTop: '5px' }}
-                                            type={this.props.formType}
-                                            disabled={true}
-                                            value={this.state.currentRow.actual || 0}>
-                                        </Form.Control>
-                                    </span>
+                                <Col sm={6} md={6}>
+                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Scrap Type')}:</p>
+                                    <Form.Group controlId="formGridState1">
+                                        <ReactSelect
+                                            value={this.state.scrapType}
+                                            onChange={(e) => this.onChangeSelectType(e, 'scrapType')}
+                                            options={this.state.scrapTypeOptions}
+                                            className={"react-select-container"}
+                                            styles={selectStyles}
+                                            isDisabled={!this.props.isEditable}
+                                        />
+                                    </Form.Group>
                                 </Col>
-                            </Row>
-
-                            <ReasonTable
-                                t={t}
-                                productionRow={this.state.currentRow}
-                                user={this.props.user}
-                                Refresh={this.props.Refresh}
-                                type={'Scrap'}
-                                dxhdataList={this.state.scrapTableList}
-                                base={this.state.adjustedActualValue}
-                                setupReasonsOptions={this.state.setupReasonsOptions}
-                                productionReasonsOptions={this.state.productionReasonsOptions}
-                                allReasonOptions={this.state.allReasonOptions}
-                                levelOptions={this.state.scrapTypeOptions}
-                                acceptNewReason={this.acceptNewScrap}
-                                parentData={this.props.parentData}
-                                isEditable={this.props.isEditable}
-                            />
-
-                            <span className={"new-timelost-label"}>{t('New ' + this.state.scrapType.value + ' Scrap Entry')}</span>
-                            <div className="new-timeloss">
-                                <Row style={{ marginBottom: '1px' }}>
-                                    <Col sm={4} md={4}>
-                                        <span className="dashboard-modal-field-group"><p>{this.props.t('Scrap Quantity')}:</p>
+                                <Col sm={4} md={4}>
+                                    {this.state.reasonVisible ?
+                                        <span className="dashboard-modal-field-group"><p>{this.props.t('Existing Quantity')}:</p>
                                             <input
-                                                value={this.state.quantityValue}
+                                                value={this.state.actualReasonValue}
                                                 type="number"
-                                                onChange={e => this.onChangeInput(e, 'quantityValue')}
+                                                onChange={e => this.onChangeInput(e, 'actualReasonValue')}
                                                 className="form-control"
                                                 style={{ paddingTop: '5px' }}
                                                 min='0'
                                                 max={this.state.currentRow.adjusted_actual}
-                                                disabled={!this.props.isEditable} />
-                                        </span>
-                                    </Col>
-                                    <Col sm={6} md={6}>
-                                        <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Scrap Type')}:</p>
-                                        <Form.Group controlId="formGridState1">
-                                            <ReactSelect
-                                                value={this.state.scrapType}
-                                                onChange={(e) => this.onChangeSelectType(e, 'scrapType')}
-                                                options={this.state.scrapTypeOptions}
-                                                className={"react-select-container"}
-                                                styles={selectStyles}
-                                                isDisabled={!this.props.isEditable}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={4} md={4}>
-                                        {this.state.reasonVisible ?
-                                            <span className="dashboard-modal-field-group"><p>{this.props.t('Existing Quantity')}:</p>
-                                                <input
-                                                    value={this.state.actualReasonValue}
-                                                    type="number"
-                                                    onChange={e => this.onChangeInput(e, 'actualReasonValue')}
-                                                    className="form-control"
-                                                    style={{ paddingTop: '5px' }}
-                                                    disabled={true} />
-                                            </span> :
-                                            null
-                                        }
-                                    </Col>
-                                    <Col sm={6} md={6}>
-                                        <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select ' + this.state.scrapType.value + ' Code')}:</p>
-                                        <Form.Group controlId="formGridState">
-                                            <ReactSelect
-                                                value={this.state.selectedReason}
-                                                onChange={(e) => this.onChangeSelect(e, 'selectedReason')}
-                                                options={this.state.scrapType.value === 'Setup' ? this.state.setupReasonsOptions : this.state.productionReasonsOptions}
-                                                className={"react-select-container"}
-                                                styles={selectStyles}
-                                                isDisabled={!this.props.isEditable}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={4} md={4}>
-                                        {this.state.reasonVisible ?
-                                            <span className="dashboard-modal-field-group"><p>{this.props.t('New Scrap Quantity')}:</p>
-                                                <input
-                                                    value={this.state.actualReasonValue + this.state.quantityValue}
-                                                    type="number"
-                                                    className="form-control"
-                                                    style={{ paddingTop: '5px' }}
-                                                    disabled={true} />
-                                            </span> :
-                                            null
-                                        }
-                                    </Col>
-                                </Row>
-                                <div className={'new-timeloss-button'}>
-                                    <Button
-                                        variant="outline-info"
-                                        style={{ marginTop: '10px' }}
-                                        disabled={!this.props.isEditable}
-                                        onClick={() => this.submitReason()}>{this.props.t('Submit')}</Button>
-                                    {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
-                                </div>
-                                <Col sm={4} md={4}>
-                                    <span className="dashboard-modal-field-group"><p>{this.props.t('Adjusted Actual')}:</p>
-                                        <input
-                                            value={this.state.adjustedActualValue || 0}
-                                            type="number"
-                                            className="form-control"
-                                            style={{ paddingTop: '5px' }}
-                                            disabled={true} />
-                                    </span>
+                                                disabled={true} />
+                                        </span> :
+                                        null
+                                    }
                                 </Col>
+                                <Col sm={6} md={6}>
+                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select ' + this.state.scrapType.value + ' Code')}:</p>
+                                    <Form.Group controlId="formGridState">
+                                        <ReactSelect
+                                            value={this.state.selectedReason}
+                                            onChange={(e) => this.onChangeSelect(e, 'selectedReason')}
+                                            options={this.state.scrapType.value === 'Setup' ? this.state.setupReasonsOptions : this.state.productionReasonsOptions}
+                                            className={"react-select-container"}
+                                            styles={selectStyles}
+                                            isDisabled={!this.props.isEditable}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col sm={4} md={4}>
+                                    {this.state.reasonVisible ?
+                                        <span className="dashboard-modal-field-group"><p>{this.props.t('New Scrap Quantity')}:</p>
+                                            <input
+                                                value={this.state.actualReasonValue + this.state.quantityValue}
+                                                type="number"
+                                                className="form-control"
+                                                style={{ paddingTop: '5px' }}
+                                                disabled={true} />
+                                        </span> :
+                                        null
+                                    }
+                                </Col>
+                                <Col sm={6} md={6}>
+                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select Responsable Area')}:</p>
+                                    <Form.Group controlId="formGridState">
+                                        <ReactSelect
+                                            value={this.state.selectedResponsible}
+                                            onChange={(e) => this.onChangeSelectGeneric(e, 'selectedResponsible')}
+                                            options={this.state.responsibleOptions}
+                                            className={"react-select-container"}
+                                            styles={selectStyles}
+                                            isDisabled={!this.props.isEditable}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <div className={'new-timeloss-button'}>
+                                <Button
+                                    variant="outline-primary"
+                                    style={{ marginTop: '10px' }}
+                                    disabled={!this.props.isEditable}
+                                    onClick={() => this.submitReason()}>{this.props.t('Submit')}</Button>
+                                {this.props.readOnly ? <div><span style={{ color: 'grey' }}>{this.props.t('Read-Only')}</span></div> : null}
                             </div>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <div className={'new-timeloss-close'}>
-                                <Button variant="outline-secondary"
-                                    style={{ marginTop: '10px', marginLeft: '10px' }}
-                                    onClick={this.props.onRequestClose}>{t('Close')}</Button>
-                            </div>
-                        </Modal.Footer>
-                    </Modal>
-                    <MessageModal
-                        isOpen={this.state.modal_message_IsOpen}
-                        onRequestClose={this.closeModal}
-                        type={this.state.modal_type}
-                        message={this.state.modal_message}
-                        t={this.props.t}
-                    />
-                    <LoadingModal
-                        isOpen={this.state.modal_loading_IsOpen}
-                        onRequestClose={this.closeModal}
-                        contentLabel="Example Modal"
-                        t={this.props.t}
-                    />
-                    <BarcodeScannerModal
-                        isOpen={this.state.modal_validate_IsOpen}
-                        modalTitle={'Operator Scan'}
-                        inputText={'Please scan badge to proceed'}
-                        onRequestClose={this.closeModal}
-                        t={t}
-                        responseScan={this.handleScan}
-                    />
-                </React.Fragment>
-                : null
+                            <Col sm={4} md={4}>
+                                <span className="dashboard-modal-field-group"><p>{this.props.t('Adjusted Actual')}:</p>
+                                    <input
+                                        value={this.state.adjustedActualValue || 0}
+                                        type="number"
+                                        className="form-control"
+                                        style={{ paddingTop: '5px' }}
+                                        disabled={true} />
+                                </span>
+                            </Col>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <div className={'new-timeloss-close'}>
+                            <Button variant="outline-secondary"
+                                style={{ marginTop: '10px', marginLeft: '10px' }}
+                                onClick={this.props.onRequestClose}>{t('Close')}</Button>
+                        </div>
+                    </Modal.Footer>
+                </Modal>
+                <MessageModal
+                    isOpen={this.state.modal_message_IsOpen}
+                    onRequestClose={this.closeModal}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
+                    t={this.props.t}
+                />
+                <LoadingModal
+                    isOpen={this.state.modal_loading_IsOpen}
+                    onRequestClose={this.closeModal}
+                    contentLabel="Example Modal"
+                    t={this.props.t}
+                />
+                <BarcodeScannerModal
+                    isOpen={this.state.modal_validate_IsOpen}
+                    modalTitle={'Operator Scan'}
+                    inputText={'Please scan badge to proceed'}
+                    onRequestClose={this.closeModal}
+                    t={t}
+                    responseScan={this.handleScan}
+                />
+            </React.Fragment>
         )
     }
 }

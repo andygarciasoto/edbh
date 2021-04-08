@@ -43,7 +43,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset_By_Code '34002'
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
 --Declare
 	@Asset_Code				VARCHAR(100)				--Asset_Code of the Site
 AS

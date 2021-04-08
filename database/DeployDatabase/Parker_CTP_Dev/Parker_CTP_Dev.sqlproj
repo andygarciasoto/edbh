@@ -125,10 +125,6 @@
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\ExampleJTraxData_.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Tables\InterShiftData.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -145,15 +141,15 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Tables\SupervisorAsset.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Tables\Tag.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Tables\DTData.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\Escalation.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
@@ -197,8 +193,18 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Tables\RoleComponent.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="dbo\Tables\parker_site_access.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\Component.sql">
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\Role.sql">
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Tables\Shift.sql">
@@ -363,15 +369,20 @@
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Active_Sites.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_Information.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Labor_Hours.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff.sql">
@@ -392,6 +403,7 @@
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_DTData.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommentData.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -406,18 +418,20 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql">
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Product.sql">
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrderData.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_InterShiftData.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DxHDataId.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -425,12 +439,21 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Sites_By_User.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTData_By_DxHData_Id.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommentData_By_DxHData_Id.sql">
       <AnsiNulls>On</AnsiNulls>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Digital_Cups.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_AssetDisplaySystem.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -445,38 +468,19 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Edit_ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Create_OrderData.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval.sql">
       <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data_new_2.sql">
-      <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrdersToCreateProduction.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_ProductionData_By_Interval_And_OrderId.sql">
-      <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shifts.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Username_Machine.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Sites_By_User.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
@@ -498,14 +502,15 @@
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
       <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Tables\Component.sql" />
-    <Build Include="dbo\Tables\Role.sql" />
-    <Build Include="dbo\Tables\RoleComponent.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="Parker_CTP_Dev.refactorlog" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Users.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Shifts.sql" />
   </ItemGroup>
 </Project>

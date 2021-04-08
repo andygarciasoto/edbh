@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactTable from 'react-table';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
     getRowsFromShifts,
     formatDate,
     getResponseFromGeneric,
-    mapShift,
     genericRequest
 } from '../../Utils/Requests';
+import { getStartEndDateTime } from '../../Utils/Utils';
 import { API } from '../../Utils/Constants';
 import Spinner from '../Common/Spinner';
 import dashboardHelper from '../../Utils/DashboardHelper';
@@ -19,7 +19,9 @@ import TimelostModal from '../Modal/Reason/TimelostModal';
 import CommentModal from '../Modal/CommentModal';
 import SignoffModal from '../Modal/SignoffModal';
 import OrderModal from '../Modal/OrderModal';
-import ActiveOperatorsModal from '../Modal/ActiveOperatorsModal';
+import ActiveOperatorsModal from '../Modal/OperatorComponent/ActiveOperatorsModal';
+import MessageModal from '../Common/MessageModal';
+import EscalationModal from '../Common/EscalationModal';
 import 'react-table/react-table.css';
 import '../../sass/DashboardTable.scss';
 const axios = require('axios');
@@ -37,13 +39,10 @@ class DashboardTable extends React.Component {
         return {
             data: [],
             columns: [],
-            summary: props.summary,
-            selectedMachine: props.selectedMachine,
+            selectedAssetOption: props.selectedAssetOption,
             selectedDate: props.selectedDate,
             selectedShift: props.selectedShift,
-            selectedMachineType: props.selectedMachineType,
-            currentLanguage: props.search.ln || props.user.language,
-            uom_asset: null,
+            currentLanguage: props.currentLanguage,
             expanded: {},
             currentRow: {},
             modal_manualentry_IsOpen: false,
@@ -54,13 +53,19 @@ class DashboardTable extends React.Component {
             modal_signoff_IsOpen: false,
             signOffModalType: '',
             modal_order_IsOpen: false,
-            modal_active_operators_IsOpen: false
+            modal_active_operators_IsOpen: false,
+            actualEscalation: {},
+            modal_escalation_IsOpen: false,
+            modal_escalation_message: '',
+            modal_message_Is_Open: false,
+            modal_type: '',
+            modal_message: ''
         };
     }
 
     getTextTranslations(props) {
         return {
-            shiftText: props.search.sf ? props.t(props.search.sf) : props.user.current_shift,
+            shiftText: props.t(props.selectedShift),
             partNumberText: props.t('Part Number'),
             idealText: props.t('Ideal'),
             targetText: props.t('Target'),
@@ -77,30 +82,46 @@ class DashboardTable extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData([this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift], this.props);
+        this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+        try {
+            this.props.socket.on('message', response => {
+                if (response.message) {
+                    this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+                }
+            });
+        } catch (e) { console.log(e) }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.modal_order_IsOpen !== this.state.modal_order_IsOpen) {
-            this.setState({ modal_order_IsOpen: nextProps.modal_order_IsOpen })
-        }
-        if ((nextProps.search.ln && this.state.currentLanguage !== nextProps.search.ln) ||
-            (nextProps.search.sf && this.state.selectedShift !== nextProps.search.sf)) {
-            let temporalState = Object.assign(this.getTextTranslations(nextProps));
-            temporalState.currentLanguage = nextProps.search.ln || this.state.currentLanguage;
-            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, nextProps), { expanded: {} }));
-        }
-        this.setState(Object.assign(this.getTableColumns(this.state, nextProps)));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(nextProps.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(nextProps.selectedShift, prevState.selectedShift) || !_.isEqual(nextProps.currentLanguage, prevState.currentLanguage)) {
+            const expanded = !_.isEqual(nextProps.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(nextProps.selectedDate, prevState.selectedDate) ||
+                !_.isEqual(nextProps.selectedShift, prevState.selectedShift) ? {} : prevState.expanded
+            return {
+                selectedAssetOption: nextProps.selectedAssetOption,
+                selectedDate: nextProps.selectedDate,
+                selectedShift: nextProps.selectedShift,
+                currentLanguage: nextProps.currentLanguage,
+                expanded
+            }
+        } else return null;
+    }
 
-        const selectedMachine = nextProps.selectedMachine || this.state.selectedMachine;
-        const selectedDate = nextProps.selectedDate || this.state.selectedDate;
-        const selectedShift = nextProps.selectedShift || this.state.selectedShift;
-        this.fetchData([selectedMachine, selectedDate, selectedShift], nextProps);
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.currentLanguage, prevState.currentLanguage) || !_.isEqual(this.state.selectedShift, prevState.selectedShift) ||
+            !_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption)) {
+            let temporalState = Object.assign(this.getTextTranslations(this.props));
+            this.setState(Object.assign(temporalState, this.getTableColumns(temporalState, this.props)));
+        }
+        if (!_.isEqual(this.state.selectedAssetOption, prevState.selectedAssetOption) || !_.isEqual(this.state.selectedDate, prevState.selectedDate) ||
+            !_.isEqual(this.state.selectedShift, prevState.selectedShift)) {
+            this.fetchData([this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift], this.props);
+        }
     }
 
     fetchData = (data, props) => {
         props = props ? props : this.props;
-        if (this.state.summary) {
+        if (props.summary) {
             this.loadDataAllShift(data, props);
         } else {
             this.loadDataCurrentShift(data, props);
@@ -111,8 +132,10 @@ class DashboardTable extends React.Component {
 
         if (filter && filter[0]) {
 
-            let hr = moment().tz(props.user.timezone).hours();
-            let responseArray = [];
+            const { start_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[0].shift_name, this.props.user);
+            const { end_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[this.props.user.shifts.length - 1].shift_name, this.props.user);
+
+
 
             if (verticalToken !== null) {
                 verticalToken.cancel('Previous request canceled, new request is send');
@@ -120,28 +143,18 @@ class DashboardTable extends React.Component {
             verticalToken = axios.CancelToken.source();
 
             const parameters2 = {
-                mc: filter[0],
+                mc: filter[0].asset_code,
                 dt: formatDate(filter[1]).split("-").join(""),
-                sf: props.user.vertical_shift_id,
-                hr: 23,
+                start_date_time: start_date_time,
+                end_date_time: end_date_time,
                 st: props.user.site
             };
-            responseArray.push(getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token));
 
-            const parameters = {
-                mc: filter[0],
-                dt: formatDate(filter[1]).split("-").join(""),
-                sf: mapShift(filter[2]),
-                hr: hr
-            };
-
-            responseArray.push(getResponseFromGeneric('get', API, '/uom_asset', null, parameters, {}, verticalToken.token));
-
-            Promise.all(responseArray).then(responses => {
+            getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token).then(response => {
                 let data = [];
                 let current_shift = null;
                 let startShift = 0;
-                _.forEach(responses[0], (value) => {
+                _.forEach(response, (value) => {
                     if (current_shift && (current_shift.shift_code === value.shift_code || value.shift_code === null)) {
                         data = _.concat(data, [value]);
                     } else {
@@ -163,18 +176,18 @@ class DashboardTable extends React.Component {
 
                 let currentRow = this.state.currentRow;
                 if (currentRow) {
-                    currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    if (currentRow.productiondata_id) {
+                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id });
+                    } else if (currentRow.dxhdata_id) {
+                        currentRow = _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    } else {
+                        currentRow = _.find(data, { started_on_chunck: currentRow.started_on_chunck, ended_on_chunck: currentRow.ended_on_chunck });
+                    }
                 }
-
-                let uom_asset = responses[1] || [];
 
                 this.setState({
                     data,
-                    uom_asset,
-                    currentRow,
-                    selectedMachine: filter[0],
-                    selectedDate: filter[1],
-                    selectedShift: filter[2]
+                    currentRow
                 });
             }, error => {
                 console.log(error);
@@ -186,22 +199,14 @@ class DashboardTable extends React.Component {
 
         if (filter && filter[0]) {
 
-            let tz = this.state.commonParams ? this.state.commonParams.value : props.user.timezone;
-
-            let sf = {};
-
-            _.forEach(props.user.shifts, shift => {
-                if (shift.shift_name === filter[2]) {
-                    sf = shift;
-                }
-            });
+            const { start_date_time, end_date_time } = getStartEndDateTime(formatDate(filter[1]), filter[2], this.props.user);
 
             const parameters = {
-                mc: filter[0],
-                dt: formatDate(filter[1]).split("-").join(""),
-                sf: sf.shift_id || props.user.shift_id,
-                hr: moment().tz(props.user.timezone).hours(),
-                st: props.user.site
+                mc: filter[0].asset_code,
+                start_date_time: start_date_time,
+                end_date_time: end_date_time,
+                st: props.user.site,
+                dt: formatDate(filter[1]).split("-").join("")
             }
 
             if (dashOneToken !== null) {
@@ -209,43 +214,85 @@ class DashboardTable extends React.Component {
             }
             dashOneToken = axios.CancelToken.source();
 
-            let requestArray = [
-                genericRequest('get', API, '/data', null, parameters, {}, dashOneToken.token),
-                genericRequest('get', API, '/uom_asset', null, parameters, {}, dashOneToken.token),
-            ];
+            genericRequest('get', API, '/data', null, parameters, {}, dashOneToken.token).then(response => {
+                dashOneToken = null;
+                let data = response.data;
+                let alertModalOverProd = false;
+                let alertMessageOverProd = '';
+                const currentDatetime = moment().tz(props.user.timezone);
+                if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && currentDatetime.minutes() === 0 &&
+                    (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
+                    alertModalOverProd = true;
+                    alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+                }
 
-            axios.all(requestArray).then(
-                axios.spread((...responses) => {
-                    dashOneToken = null;
-                    let data = responses[0].data;
-                    let uom_asset = responses[1].data;
-                    let alertModalOverProd = false;
-                    let alertMessageOverProd = '';
-                    if (data[0] && data[0].order_quantity < data[0].summary_actual_quantity && moment().tz(tz).minutes() === 0 &&
-                        (props.user.role === 'Supervisor' || props.user.role === 'Operator')) {
-                        alertModalOverProd = true;
-                        alertMessageOverProd = `Day by Hour has calculated the Order for Part ${data[0].product_code_order} is complete.  Please start a new Order when available. `;
+                let currentRow = this.state.currentRow;
+                if (currentRow) {
+                    if (currentRow.productiondata_id) {
+                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id });
+                    } else if (currentRow.dxhdata_id) {
+                        currentRow = _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                    } else {
+                        currentRow = _.find(data, { started_on_chunck: currentRow.started_on_chunck, ended_on_chunck: currentRow.ended_on_chunck });
                     }
+                }
 
-                    let currentRow = this.state.currentRow;
-                    if (currentRow) {
-                        currentRow = _.find(data, { productiondata_id: currentRow.productiondata_id }) || _.find(data, { dxhdata_id: currentRow.dxhdata_id });
+                let sequentialRed = 0;
+                let actualEscalation = {};
+                let modal_escalation_IsOpen = false;
+                let modal_escalation_message = '';
+
+                if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
+                    _.chain(data)
+                        .groupBy('hour_interval')
+                        .map((value) => {
+                            const row = value[0];
+                            if (currentDatetime.isAfter(moment.tz(row.ended_on_chunck, props.user.timezone))) {
+                                sequentialRed = row.summary_background_color === 'red' ? sequentialRed + 1 : 0;
+                            }
+                            return {
+                                started_on_chunck: moment.tz(row.started_on_chunck, props.user.timezone),
+                                ended_on_chunck: moment.tz(row.ended_on_chunck, props.user.timezone),
+                                summary_background_color: row.summary_background_color
+                            };
+                        })
+                        .value();
+                    if (sequentialRed > 0) {
+                        _.forEach(props.user.escalations, escalation => {
+                            if (Number(escalation.escalation_hours) <= sequentialRed) {
+                                actualEscalation = escalation;
+                            }
+                        });
+
+                        const escalation = Number(localStorage.getItem('escalation'));
+                        const escalation_hour = Number(localStorage.getItem('escalation_hour'));
+                        const escalation_asset = localStorage.getItem('escalation_asset');
+                        if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour || escalation_asset !== filter[0].asset_code)) {
+                            modal_escalation_IsOpen = true;
+                            modal_escalation_message = `The ${actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible`;
+                            localStorage.setItem('escalation', actualEscalation.escalation_level);
+                            localStorage.setItem('escalation_hour', currentDatetime.hour());
+                            localStorage.setItem('escalation_asset', filter[0].asset_code);
+                        }
                     }
+                }
 
-                    this.setState({
-                        data,
-                        uom_asset,
-                        alertModalOverProd,
-                        alertMessageOverProd,
-                        currentRow,
-                        selectedMachine: filter[0],
-                        selectedDate: filter[1],
-                        selectedShift: filter[2]
-                    });
-                })
-                , (error) => {
-                    console.log(error);
+                const previousEscalation = this.state.actualEscalation;
+
+                this.setState({
+                    data,
+                    alertModalOverProd,
+                    alertMessageOverProd,
+                    currentRow,
+                    actualEscalation,
+                    modal_escalation_IsOpen,
+                    modal_escalation_message
+                }, () => {
+                    if (!_.isEmpty(actualEscalation) || (_.isEmpty(actualEscalation) && !_.isEmpty(previousEscalation))) {
+                        this.setState(this.getTableColumns(this.state, this.props));
+                    }
                 });
+            });
         }
     }
 
@@ -263,14 +310,19 @@ class DashboardTable extends React.Component {
             modal_signoff_IsOpen: false,
             signOffModalType: '',
             modal_order_IsOpen: false,
-            modal_active_operators_IsOpen: false
+            modal_active_operators_IsOpen: false,
+            modal_escalation_IsOpen: false,
+            modal_escalation_message: '',
+            modal_message_Is_Open: false,
+            modal_type: '',
+            modal_message: ''
         });
     }
 
     render() {
 
         const { data, columns } = this.state;
-        const num_rows = getRowsFromShifts(this.props, this.state.summary);
+        const num_rows = getRowsFromShifts(this.props, this.props.summary);
         const t = this.props.t;
         const back = t('Back');
         const next = t('Next');
@@ -283,7 +335,7 @@ class DashboardTable extends React.Component {
                 {!_.isEmpty(data) ?
                     <ReactTable
                         getTheadThProps={(state, rowInfo, column) => {
-                            return this.state.summary ?
+                            return this.props.summary ?
                                 {
                                     style: { display: 'none' } // override style for 'myHeaderTitle'.
                                 }
@@ -300,6 +352,7 @@ class DashboardTable extends React.Component {
                             }
                         }}
                         sortable={false}
+                        sorted={[{ id: 'productiondata_id', desc: true }]}
                         data={data}
                         columns={columns}
                         showPaginationBottom={false}
@@ -321,7 +374,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_manualentry_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -333,7 +386,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_actual_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -345,7 +398,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_scrap_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -357,7 +410,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_timelost_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -369,7 +422,7 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_comments_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -382,7 +435,7 @@ class DashboardTable extends React.Component {
                     signOffModalType={this.state.signOffModalType}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
                     Refresh={this.fetchData}
                     user={this.props.user}
                     t={t}
@@ -391,9 +444,10 @@ class DashboardTable extends React.Component {
                     isEditable={this.state.isEditable}
                 />
                 <OrderModal
-                    isOpen={this.state.modal_order_IsOpen}
-                    onRequestClose={() => this.props.closeOrderModal(false)}
-                    parentData={[this.state.selectedMachine, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    isOpen={this.props.modal_order_IsOpen}
+                    onRequestClose={() => this.props.displayOrderModal(false)}
+                    parentData={[this.state.selectedAssetOption, this.state.selectedDate, this.state.selectedShift, this.state.selectedHour]}
+                    selectedAssetOption={this.props.selectedAssetOption}
                     modalTitle={'New Order'}
                     inputText={'Please scan the new order code...'}
                     user={this.props.user}
@@ -403,8 +457,22 @@ class DashboardTable extends React.Component {
                     isOpen={this.state.modal_active_operators_IsOpen}
                     onRequestClose={this.closeModal}
                     currentRow={this.state.currentRow}
-                    selectedAssetOption={this.props.selectedAssetOption}
+                    selectedAssetOption={this.state.selectedAssetOption}
                     t={t}
+                />
+                <MessageModal
+                    isOpen={this.state.modal_message_Is_Open}
+                    onRequestClose={this.closeModal}
+                    type={this.state.modal_type}
+                    message={this.state.modal_message}
+                    t={this.props.t}
+                />
+                <EscalationModal
+                    isOpen={this.state.modal_escalation_IsOpen}
+                    onRequestClose={this.closeModal}
+                    message={this.state.modal_escalation_message}
+                    escalation={this.state.actualEscalation}
+                    t={this.props.t}
                 />
             </React.Fragment>
         );

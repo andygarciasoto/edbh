@@ -5,6 +5,7 @@ import LoadingModal from '../Common/LoadingModal';
 import MessageModal from '../Common/MessageModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
 import { getCurrentTime, formatDateWithTime, getResponseFromGeneric } from '../../Utils/Requests';
+import _ from 'lodash';
 import '../../sass/CommentModal.scss';
 
 
@@ -14,7 +15,7 @@ class CommentsModal extends React.Component {
         this.state = {
             value: '',
             comments: [],
-            actualDxH_Id: null,
+            currentRow: {},
             modal_loading_IsOpen: false,
             modal_message_IsOpen: false,
             modal_type: '',
@@ -23,18 +24,34 @@ class CommentsModal extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.currentRow && nextProps.isOpen) {
-            this.loadData(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.isOpen && !_.isEqual(prevState.currentRow, nextProps.currentRow)) {
+            return {
+                currentRow: nextProps.currentRow,
+                modal_loading_IsOpen: false,
+                modal_message_IsOpen: false,
+                modal_type: '',
+                modal_message: ''
+            };
+        }
+        return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.isOpen && !_.isEqual(this.state.currentRow, prevState.currentRow)) {
+            this.setState({ modal_loading_IsOpen: true }, () => {
+                this.loadData(this.props);
+            });
         }
     }
 
     async loadData(props) {
         const parameters = {
-            dxh_data_id: props.currentRow.dxhdata_id
+            dxh_data_id: this.state.currentRow.dxhdata_id,
+            site_id: props.user.site
         }
         let res = await getResponseFromGeneric('get', API, '/comments_dxh_data', {}, parameters, {}) || [];
-        this.setState({ comments: res, modal_loading_IsOpen: false, actualDxH_Id: props.currentRow.dxhdata_id });
+        this.setState({ comments: res, modal_loading_IsOpen: false, actualDxH_Id: this.state.currentRow.dxhdata_id });
     }
 
     submitComment = () => {
@@ -46,7 +63,7 @@ class CommentsModal extends React.Component {
                 this.submitNewComment(props.activeOperators[0].badge);
             }
         } else {
-            this.submitNewComment(props.user.clock_number);
+            this.submitNewComment(props.user.badge);
         }
     }
 
@@ -78,10 +95,10 @@ class CommentsModal extends React.Component {
             const data = {
                 clocknumber: badge,
                 comment: this.state.value,
-                dxh_data_id: this.props.currentRow ? this.props.currentRow.dxhdata_id : undefined,
-                row_timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
+                dxh_data_id: this.state.currentRow ? this.state.currentRow.dxhdata_id : undefined,
+                row_timestamp: formatDateWithTime(this.state.currentRow.started_on_chunck),
                 timestamp: getCurrentTime(this.props.user.timezone),
-                asset_code: this.props.parentData[0]
+                asset_code: this.props.selectedAssetOption.asset_code
             };
 
             let res = await getResponseFromGeneric('post', API, '/dxh_new_comment', {}, {}, data);

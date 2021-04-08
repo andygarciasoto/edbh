@@ -9,8 +9,9 @@ export class WorkcellRepository {
     }
 
     public async getWorkcellBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT DISTINCT W.[workcell_name], W.[workcell_description], W.[entered_by], W.[entered_on], W.[last_modified_by], W.[last_modified_on] 
-        FROM dbo.Asset A1 JOIN dbo.Asset A2 ON A1.site_code = A2.asset_code AND A2.asset_id = ${site_id} JOIN dbo.Workcell W ON A1.grouping1 = W.workcell_id`);
+        return await this.sqlServerStore.ExecuteQuery(`SELECT W.[workcell_name], W.[workcell_description], A.[asset_code] as site_code
+        FROM dbo.Workcell W 
+        INNER JOIN dbo.Asset A ON A.asset_id = W.site_id
+        WHERE W.site_id = ${site_id}`);
     }
-
 }

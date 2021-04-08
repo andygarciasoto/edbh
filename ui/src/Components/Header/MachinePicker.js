@@ -5,25 +5,46 @@ import _ from 'lodash';
 class MachinePickerCustom extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            machines: this.getMachineArray(props),
-            value: {},
+        this.state = Object.assign(this.getInitialState(props));
+    }
+
+    getInitialState(props) {
+        let machineSelected = {};
+        const machineArray = this.getMachineArray(props);
+        machineSelected = _.find(machineArray, ['asset_code', props.value]);
+        machineSelected = machineSelected ? machineSelected : {};
+        return {
+            mc: props.value,
+            value: machineSelected,
+            machines: machineArray,
             site: props.user.site
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.value) {
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (!_.isEqual(nextProps.value, prevState.mc)) {
+            return {
+                mc: nextProps.value,
+                site: nextProps.user.site
+            };
+        } else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(this.state.mc, prevState.mc)) {
             let machineSelected = {};
-            const machineArray = this.getMachineArray(nextProps);
-            machineSelected = _.find(machineArray, ['asset_code', nextProps.value]);
+            const machineArray = this.getMachineArray(this.props);
+            machineSelected = _.find(machineArray, ['asset_code', this.state.mc]);
             machineSelected = machineSelected ? machineSelected : {};
-            this.setState({ value: machineSelected, machines: machineArray, site: nextProps.user.site });
+            this.setState({
+                value: machineSelected,
+                machines: machineArray
+            })
         }
     }
 
     getMachineArray(props) {
-        let machines = props.history.location.pathname === '/summary' ? props.user.workcell : props.user.machines;
+        let machines = props.history.location.pathname === '/summary' ? props.user.assets_workcell : props.user.machines;
         let machineArray = [];
         _.forEach(machines, item => {
             machineArray.push({ asset_name: item.asset_name, asset_code: item.asset_code, automation_level: item.automation_level })

@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Shift_Data]    Script Date: 22/2/2021 20:22:31 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -51,19 +51,23 @@
 --	20201103		C00V14 - Update logic to check start and end time for each shift including the shift for the vertical dashboard
 --	20201212		C00V15 - Add new shift logic in the main join sentence
 --	20201221		C00V16 - Add join with Product table to return product name instead of product code
+--	20210218		C00V17 - Change variables type from varchar to nvarchar
+--	20210222		C00V18 - Change Shift id for starttime and endtime parameters (add fexibiltiy in the logic to search the data)
+--	20210318		C00V19 - Include dynamic target to get the current color hour
+--	20210324		C00V20 - Include current active order to know if the asset have at least one active order
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Shift_Data_new_1 40,'2020-02-12',2
--- exec spLocal_EY_DxH_Get_Shift_Data 230,'2021-01-26',47,225
+-- exec spLocal_EY_DxH_Get_Shift_Data 35,'2021-02-22','2021-02-22 15:00', '2021-02-22 23:00', 1
 --
 --52,7586221694946
 --23,9655113220215
 
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Shift_Data]
 --Declare
-@Asset_Id        INT, 
-@Production_date DATETIME, 
-@Shift_id        INT, 
+@Asset_Id        INT,
+@Production_date DATETIME,
+@Start_DateTime		DATETIME,
+@End_DateTime		DATETIME,
 @Site            INT
 AS
     --exec spLocal_EY_DXH_GET_SHIFT_dATA 0, '20191111', 8
@@ -74,11 +78,13 @@ AS
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
 
-        DECLARE @timezone VARCHAR(50);
-		SELECT @timezone = site_timezone FROM dbo.CommonParameters where site_id = @Site;
+        DECLARE
+        @current_time DATETIME,
+        @Active_Status NVARCHAR(100) = 'Active';
 
-        DECLARE @current_time   DATETIME = SYSDATETIME() at time zone 'UTC' at time zone @timezone,
-		@Active_Status VARCHAR(50) = 'Active';
+        SELECT
+            @current_time = GSP.CurrentDateTime
+        FROM dbo.GetShiftProductionDayFromSiteAndDate(@Site,NULL) GSP;
 
         WITH CTE
              AS (SELECT CONVERT(VARCHAR, BD.started_on_chunck, 20) AS started_on_chunck, 
@@ -93,17 +99,17 @@ AS
                         PD.start_time, 
                         PD.productiondata_id, 
                         P.product_name, 
-                        PD.ideal, 
-                        PD.target, 
-                        PD.actual, 
+                        CONVERT(INT, PD.ideal) AS ideal,
+                        CONVERT(INT, PD.target) AS target,
+                        PD.actual,
                         (PD.setup_scrap + PD.other_scrap) AS scrap, 
                         PD.setup_scrap,
                         PD.other_scrap,
-                        SUM(PD.ideal) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
-                        SUM(PD.ideal) OVER(
+                        SUM(CONVERT(INT, PD.ideal)) OVER(PARTITION BY PD.dxhdata_id) AS summary_ideal, 
+                        SUM(CONVERT(INT, PD.ideal)) OVER(
                         ORDER BY PD.dxhdata_id) AS cumulative_ideal, 
-                        SUM(PD.target) OVER(PARTITION BY PD.dxhdata_id) AS summary_target, 
-                        SUM(PD.target) OVER(
+                        SUM(CONVERT(INT, PD.target)) OVER(PARTITION BY PD.dxhdata_id) AS summary_target,
+                        SUM(CONVERT(INT, PD.target)) OVER(
                         ORDER BY BD.started_on_chunck) AS cumulative_target, 
                         SUM(PD.actual) OVER(PARTITION BY PD.dxhdata_id) AS summary_actual, 
                         SUM(PD.actual) OVER(
@@ -174,12 +180,9 @@ AS
                         END AS new_target, 
                         PD1.summary_actual_quantity, 
                         ROW_NUMBER() OVER(PARTITION BY OD.order_id
-                        ORDER BY BD.started_on_chunck) AS Row#
-                 FROM [dbo].[GetRangesBetweenDates](DATEADD(DAY, -1, @Production_date), DATEADD(DAY, 2, @Production_date), 60, 1) AS BD
-						--VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
-					  INNER JOIN dbo.Shift SF1 ON SF1.shift_id = @Shift_Id AND
-													BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF1.start_time), DATEADD(DAY, SF1.start_time_offset_days, @Production_date))
-													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF1.end_time), DATEADD(DAY, SF1.end_time_offset_days, @Production_date))
+                        ORDER BY BD.started_on_chunck) AS Row#,
+                        ODActive.order_id AS current_order_id
+                 FROM [dbo].[GetRangesBetweenDates](@Start_DateTime, @End_DateTime, 60, 1) AS BD
 					  --VALIDATE SELECTED DATES AGAINST THE SHIFT TABLE
 					  INNER JOIN dbo.Shift SF ON BD.started_on_chunck >= DATEADD(HOUR, DATEPART(HOUR, SF.start_time), DATEADD(DAY, SF.start_time_offset_days, @Production_date))
 													AND BD.started_on_chunck <	DATEADD(HOUR, DATEPART(HOUR, SF.end_time), DATEADD(DAY, SF.end_time_offset_days, @Production_date))
@@ -206,59 +209,72 @@ AS
                       LEFT JOIN dbo.Product P ON PD.product_code = P.product_code
 					  --GET ACTIVE OPERATORS WITH MULTIPLE ASSETS
 					  OUTER APPLY
-				(
-					SELECT COUNT (DISTINCT S.badge) as active_operators
-					FROM dbo.Scan S
-					WHERE S.asset_id = @Asset_Id
-							AND S.status = 'Active'
-							AND S.start_time < BD.ended_on_chunck
-							AND (S.end_time IS NULL OR S.end_time > BD.started_on_chunck)
-				) S
-					   --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
+                      (
+					    SELECT COUNT (DISTINCT S.badge) as active_operators
+					    FROM dbo.Scan S
+					    WHERE S.asset_id = @Asset_Id
+							    AND S.status = 'Active'
+							    AND S.start_time < BD.ended_on_chunck
+							    AND (S.end_time IS NULL OR S.end_time > BD.started_on_chunck)
+                      ) S
+					  --GET ALL BREAKS/SETUP TIME OF THE CURRENT HOUR
                       OUTER APPLY
-                 (
-                     SELECT SUM(U.duration_in_minutes) AS summary_breakandlunch_minutes
-                     FROM dbo.Unavailable U
-                     WHERE U.asset_id = @Asset_Id
-                           AND U.STATUS = 'Active'
-                           AND BD.started_on_chunck <= CONCAT(FORMAT(BD.started_on_chunck, 'yyyy-MM-dd'), ' ', U.start_time)
-                           AND BD.ended_on_chunck >= CONCAT(FORMAT(BD.ended_on_chunck, 'yyyy-MM-dd'), ' ', U.end_time)
-                     GROUP BY u.asset_id
-                 ) U
+                      (
+                         SELECT SUM(U.duration_in_minutes) AS summary_breakandlunch_minutes
+                         FROM dbo.Unavailable U
+                         WHERE U.asset_id = @Asset_Id
+                               AND U.STATUS = 'Active'
+                               AND BD.started_on_chunck <= CONCAT(FORMAT(BD.started_on_chunck, 'yyyy-MM-dd'), ' ', U.start_time)
+                               AND BD.ended_on_chunck >= CONCAT(FORMAT(BD.ended_on_chunck, 'yyyy-MM-dd'), ' ', U.end_time)
+                         GROUP BY u.asset_id
+                      ) U
                       --GET THE TOTAL PRODUCTION DATA OF THE CURRENT ORDER ACCORDING TO THE PRODUCTION DATA
                       OUTER APPLY
-                 (
-                     SELECT SUM(CASE
-                                    WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH')
-                                         AND PD1.target > (PD1.actual - PD1.setup_scrap - PD1.other_scrap)
-                                    THEN PD1.target
-                                    ELSE PD1.actual - PD1.setup_scrap - PD1.other_scrap
-                                END) AS summary_actual_quantity
-                     FROM dbo.ProductionData PD1
-                     WHERE PD1.order_id = OD.order_id
-                     GROUP BY PD1.order_id
-                 ) PD1
+                      (
+                        SELECT SUM(CASE
+                            WHEN FORMAT(PD1.start_time, 'yyyy-MM-dd HH') = FORMAT(@current_time, 'yyyy-MM-dd HH') AND
+                                CONVERT(INT, PD1.target) > (CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap)
+                                    THEN CONVERT(INT, PD1.target)
+                                    ELSE CONVERT(INT, PD1.actual) - PD1.setup_scrap - PD1.other_scrap
+                            END) AS summary_actual_quantity
+                        FROM dbo.ProductionData PD1
+                        WHERE PD1.order_id = OD.order_id
+                        GROUP BY PD1.order_id
+                      ) PD1
                       --GET THE QUANTITY OF INSERTED COMMENTS FOR THE ROWS AND THE LAST COMMENT
                       OUTER APPLY
-                 (
-                     SELECT TOP 1 C.commentdata_id, 
+                      (
+                        SELECT TOP 1 C.commentdata_id, 
                                   C.comment, 
                                   C.first_name, 
                                   C.last_name, 
                                   COUNT(*) OVER(PARTITION BY C.dxhdata_id) AS total_comments
-                     FROM dbo.CommentData C
-                     WHERE C.dxhdata_id = DH.dxhdata_id
-                     ORDER BY last_modified_on DESC
-                 ) CD
+                         FROM dbo.CommentData C
+                         WHERE C.dxhdata_id = DH.dxhdata_id
+                         ORDER BY last_modified_on DESC
+                      ) CD
                       --GET THE DT REASON MINUTES OF EACH ROW
                       OUTER APPLY
-                 (
-                     SELECT TOP 1 SUM(DT.dtminutes) OVER(PARTITION BY DT.dxhdata_id) AS summary_minutes
-                     FROM dbo.DTData DT
-                     WHERE DT.dxhdata_id = DH.dxhdata_id
-                 ) DTD),
+                      (
+                         SELECT TOP 1 SUM(DT.dtminutes) OVER(PARTITION BY DT.dxhdata_id) AS summary_minutes
+                         FROM dbo.DTData DT
+                         WHERE DT.dxhdata_id = DH.dxhdata_id
+                      ) DTD
+                      --GET THE ACTIVE ORDER
+                      OUTER APPLY
+                      (
+                         SELECT TOP 1 order_id
+                         FROM dbo.OrderData OD2
+                         WHERE OD2.asset_id = @Asset_Id AND OD2.end_time IS NULL
+                      ) ODActive
+                 ),
              CTE2
-             AS (SELECT CTE.*, 
+             AS (SELECT CTE.*,
+						actual - scrap AS adjusted_actual,
+						summary_actual - summary_scrap AS summary_adjusted_actual,
+						(cumulative_actual - cumulative_setup_scrap - cumulative_other_scrap) AS cumulative_adjusted_actual,
+						(DATEPART(minute, @current_time) * ISNULL(CTE.target,0) / 60) AS dynamic_target,
+						(DATEPART(minute, @current_time) * ISNULL(CTE.summary_target,0) / 60) AS dynamic_summary_target,
                         SUM(CASE
                                 WHEN ISNULL(CTE.order_id, 0) > 0
                                      AND CTE.Row# = 1
@@ -278,25 +294,25 @@ AS
                             ELSE 0
                         END AS result_final
                  FROM CTE2)
-             SELECT started_on_chunck, 
-                    ended_on_chunck, 
-                    hour_interval, 
+             SELECT started_on_chunck,
+                    ended_on_chunck,
+                    hour_interval,
 					shift_code,
-                    dxhdata_id, 
-                    operator_signoff, 
-                    operator_signoff_timestamp, 
-                    supervisor_signoff, 
-                    supervisor_signoff_timestamp, 
-                    start_time, 
-                    productiondata_id, 
-                    product_name AS product_code, 
-                    ideal, 
-                    target, 
-                    actual, 
-                    actual - scrap AS adjusted_actual, 
-                    scrap, 
-                    summary_scrap, 
-                    setup_scrap, 
+                    dxhdata_id,
+                    operator_signoff,
+                    operator_signoff_timestamp,
+                    supervisor_signoff,
+                    supervisor_signoff_timestamp,
+                    start_time,
+                    productiondata_id,
+                    product_name AS product_code,
+                    ideal,
+                    target,
+                    actual,
+                    adjusted_actual,
+                    scrap,
+                    summary_scrap,
+                    setup_scrap,
                     other_scrap,
                     CASE
                         WHEN productiondata_id IS NOT NULL
@@ -323,7 +339,7 @@ AS
                              AND result_final = 1
                         THEN new_ideal
                         ELSE NULL
-                    END AS summary_ideal, 
+                    END AS summary_ideal,
                     cumulative_ideal,
                     CASE
                         WHEN productiondata_id IS NOT NULL
@@ -337,24 +353,24 @@ AS
                              AND result_final = 1
                         THEN new_target
                         ELSE NULL
-                    END AS summary_target, 
-                    cumulative_target, 
-                    summary_actual, 
-                    summary_actual - summary_scrap AS summary_adjusted_actual, 
-                    cumulative_actual, 
-                    (cumulative_actual - cumulative_setup_scrap - cumulative_other_scrap) AS cumulative_adjusted_actual, 
-                    summary_setup_scrap, 
-                    cumulative_setup_scrap, 
-                    summary_other_scrap, 
-                    cumulative_other_scrap, 
-                    summary_product_code, 
-                    order_id, 
-                    order_number, 
-                    order_quantity, 
-                    routed_cycle_time, 
-                    target_percent_of_ideal, 
-                    setup_start_time, 
-                    setup_end_time, 
+                    END AS summary_target,
+                    cumulative_target,
+                    summary_actual,
+                    summary_adjusted_actual,
+                    cumulative_actual,
+                    cumulative_adjusted_actual,
+                    summary_setup_scrap,
+                    cumulative_setup_scrap,
+                    summary_other_scrap,
+                    cumulative_other_scrap,
+                    summary_product_code,
+                    order_id,
+                    order_number,
+                    order_quantity,
+                    routed_cycle_time,
+                    target_percent_of_ideal,
+                    setup_start_time,
+                    setup_end_time,
                     product_code_order,
                     CASE
                         WHEN summary_setup_minutes < 0
@@ -362,18 +378,39 @@ AS
                         WHEN summary_setup_minutes > 60
                         THEN 60
                         ELSE summary_setup_minutes
-                    END AS summary_setup_minutes, 
-                    default_routed_cycle_time, 
-                    default_target_percent_of_ideal, 
-                    summary_breakandlunch_minutes, 
-                    commentdata_id, 
-                    comment, 
-                    first_name, 
-                    last_name, 
-                    total_comments, 
+                    END AS summary_setup_minutes,
+                    default_routed_cycle_time,
+                    default_target_percent_of_ideal,
+                    summary_breakandlunch_minutes,
+                    commentdata_id,
+                    comment,
+                    first_name,
+                    last_name,
+                    total_comments,
                     timelost_summary,
                     summary_actual_quantity,
-					active_operators
+					active_operators,
+					CASE
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.adjusted_actual < dynamic_target THEN 'red'
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.adjusted_actual >= dynamic_target THEN 'green'
+                        WHEN (CTE3.ideal = 0 AND CTE3.target = 0) OR
+                            (CTE3.adjusted_actual = 0 AND CTE3.target = 0) OR
+                            (CTE3.adjusted_actual < CTE3.target)
+                        THEN 'red'
+                        ELSE 'green'
+                    END AS background_color,
+					dynamic_target,
+                    CASE
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.summary_adjusted_actual < dynamic_summary_target THEN 'red'
+						WHEN @current_time >= started_on_chunck AND @current_time < ended_on_chunck AND CTE3.summary_adjusted_actual >= dynamic_summary_target THEN 'green'
+                        WHEN (CTE3.summary_ideal = 0 AND CTE3.summary_target = 0) OR
+                            (CTE3.summary_adjusted_actual = 0 AND CTE3.summary_target = 0) OR
+                            (CTE3.summary_adjusted_actual < CTE3.summary_target)
+                        THEN 'red'
+                        ELSE 'green'
+                    END AS summary_background_color,
+					dynamic_summary_target,
+                    current_order_id
              FROM CTE3
              ORDER BY started_on_chunck ASC, 
                       start_time DESC;

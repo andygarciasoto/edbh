@@ -5,6 +5,7 @@ import { API } from '../../Utils/Constants';
 import LoadingModal from '../Common/LoadingModal';
 import MessageModal from '../Common/MessageModal';
 import BarcodeScannerModal from '../Common/BarcodeScannerModal';
+import * as _ from 'lodash';
 import '../../sass/ActualModal.scss';
 
 class ActualModal extends React.Component {
@@ -12,7 +13,6 @@ class ActualModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             currentRow: props.currentRow,
             newActual: 0,
             modal_loading_IsOpen: false,
@@ -24,15 +24,10 @@ class ActualModal extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen !== prevState.isOpen) {
+        if (nextProps.isOpen && !_.isEqual(nextProps.currentRow, prevState.currentRow)) {
             return {
-                isOpen: nextProps.isOpen,
                 currentRow: nextProps.currentRow,
-                newActual: 0,
-                modal_loading_IsOpen: false,
-                modal_message_IsOpen: false,
-                modal_type: '',
-                modal_message: ''
+                newActual: 0
             };
         }
         return null;
@@ -53,7 +48,7 @@ class ActualModal extends React.Component {
                 this.submitActual(props.activeOperators[0].badge);
             }
         } else {
-            this.submitActual(props.user.clock_number);
+            this.submitActual(props.user.badge);
         }
     }
 
@@ -87,7 +82,7 @@ class ActualModal extends React.Component {
             actual: this.state.newActual ? this.state.newActual : null,
             clocknumber: badge,
             timestamp: formatDateWithTime(this.props.currentRow.started_on_chunck),
-            asset_code: this.props.parentData[0]
+            asset_code: this.props.selectedAssetOption.asset_code
         }
         if (!data.actual) {
             this.setState({ modal_message_IsOpen: true, modal_type: 'Error', modal_message: 'You have not entered a value' });
@@ -125,7 +120,7 @@ class ActualModal extends React.Component {
                     size="sm"
                     aria-labelledby="example-modal-sizes-title-sm"
                     centered
-                    show={this.state.isOpen}
+                    show={props.isOpen}
                     className='actualModal'
                     onHide={props.onRequestClose}
                 >
