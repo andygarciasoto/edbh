@@ -21,20 +21,22 @@ class EditUOM extends Component {
 		};
 	}
 
-  componentDidMount() {
+	componentDidMount() {
 		this.loadData();
 	}
 
-  loadData=()=>{
-    const { actions } = this.props;
+	loadData = () => {
+		const { actions } = this.props;
 
 		return actions.getUOMById(this.props.user.site, this.props.uom_id).then((response) => {
 			this.setState({
-				// name: response[0].workcell_name,
-				// description: response[0].workcell_description,
+				name: response[0].UOM_name,
+				description: response[0].UOM_description,
+				decimals: response[0].decimals,
+        // status: response[0].status
 			});
 		});
-  }
+	};
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -52,7 +54,7 @@ class EditUOM extends Component {
 
 		if (name !== '' && this.props.user.site_prefix !== null) {
 			genericRequest('put', API, '/insert_uom', null, null, {
-        umo_id: this.props.uom_id,
+				umo_id: this.props.uom_id,
 				uom_code: `${this.props.user.site_prefix}-${name}`,
 				uom_name: name,
 				uom_description: description === '' ? null : description,
@@ -105,7 +107,7 @@ class EditUOM extends Component {
 									type="text"
 									name="name"
 									className="input-uom-name"
-									value={this.state.username}
+									value={this.state.name}
 									autoComplete={'false'}
 									onChange={this.handleChange}
 								/>
@@ -113,6 +115,7 @@ class EditUOM extends Component {
 							<label>
 								Description:
 								<textarea
+									value={this.state.description}
 									className="text-uom-description"
 									name="description"
 									onChange={this.handleChange}
@@ -120,9 +123,14 @@ class EditUOM extends Component {
 							</label>
 							<label>
 								Decimals:
-								<select className="select-uom-decimals" name="decimals" onChange={this.handleChange}>
-									<option value={0}>No</option>
-									<option value={1}>Yes</option>
+								<select
+									value={this.state.decimals}
+									className="select-uom-decimals"
+									name="decimals"
+									onChange={this.handleChange}
+								>
+									<option value={false}>No</option>
+									<option value={true}>Yes</option>
 								</select>
 							</label>
 							<label>
