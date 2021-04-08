@@ -140,5 +140,16 @@
     "Actions": "행위",
     "Add User": "사용자 추가",
     "Confirm": "확인",
-    "Edit User": "사용자 편집"
+    "Edit User": "사용자 편집",
+    "Shift": "시프트",
+    "Name": "이름",
+    "Sequence": "순서",
+    "Start Time": "시작 시간",
+    "Start Day": "시작일",
+    "End Time": "종료 시간",
+    "End Day": "종료일",
+    "Duration (minutes)": "지속 (의사록)",
+    "Is First Shift": "첫 번째 교대",
+    "Add Shift": "시프트 추가",
+    "Edit Shift": "교대 편집"
 }

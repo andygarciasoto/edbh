@@ -1,17 +1,20 @@
 import Axios from "axios";
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Moment from "moment";
+import moment from "moment";
 import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
 import { API } from "../../../Utils/Constants";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { validateShiftsForm } from '../../../Utils/FormValidations';
 import "../../../sass/SystemAdmin.scss";
+import _ from "lodash";
 
 class EditShift extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      shift_id: props.shift_id,
       shift_name: "",
       shift_description: "",
       shift_sequence: 0,
@@ -23,27 +26,32 @@ class EditShift extends Component {
       status: "",
       show: false,
       modalError: false,
+      shiftsArray: [],
+      validation: {}
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
 
-    return actions
-      .getShiftInfo(this.props.user.site, this.props.shift_id)
-      .then((response) => {
-        this.setState({
-          shift_name: response[0].shift_name,
-          shift_description: response[0].shift_description,
-          shift_sequence: response[0].shift_sequence,
-          start_time: response[0].start_time,
-          start_day: response[0].start_time_offset_days,
-          end_time: response[0].end_time,
-          end_day: response[0].end_time_offset_days,
-          is_first_shift_of_day: response[0].is_first_shift_of_day,
-          status: response[0].status,
-        });
+    return Promise.all([
+      actions.getShiftInfo(this.props.user.site, this.props.shift_id),
+      actions.getShifts(this.props.user.site)
+    ]).then((response) => {
+      this.setState({
+        shift_id: response[0][0].shift_id,
+        shift_name: response[0][0].shift_name,
+        shift_description: response[0][0].shift_description,
+        shift_sequence: response[0][0].shift_sequence,
+        start_time: moment('1970-01-01 ' + response[0][0].start_time).format('HH:mm'),
+        start_day: response[0][0].start_time_offset_days,
+        end_time: moment('1970-01-01 ' + response[0][0].end_time).format('HH:mm'),
+        end_day: response[0][0].end_time_offset_days,
+        is_first_shift_of_day: response[0][0].is_first_shift_of_day,
+        status: response[0][0].status,
+        shiftsArray: response[1]
       });
+    });
   }
 
   handleChange = (event) => {
@@ -69,19 +77,17 @@ class EditShift extends Component {
       is_first_shift_of_day,
       status,
     } = this.state;
+    let url = `${API}/insert_shift`;
+    const date = moment().tz(this.props.user.timezone).format("YYYY-MM-DD") + ' 00:00';
 
-    var url = `${API}/insert_shift`;
-    const date = Moment().format("YYYY-MM-DD");
+    let startTime1 = moment(moment(date).add(start_day, 'days').format('YYYY-MM-DD') + ' ' + start_time);
+    let endTime1 = moment(moment(date).add(end_day, 'days').format('YYYY-MM-DD') + ' ' + end_time);
+    let difference = endTime1.diff(startTime1, 'minutes');
 
-    var startTime1 = new Date(`${date} ${Moment(start_time).format("H:mm")}`);
-    var endTime1 = new Date(`${date} ${Moment(end_time).format("H:mm")}`);
-    var difference = endTime1.getTime() - startTime1.getTime(); // This will give difference in milliseconds
-    var resultInMinutes = Math.round(difference / 60000);
+    const validation = validateShiftsForm(this.state);
 
     if (
-      shift_name !== "" &&
-      shift_description !== "" &&
-      shift_sequence === 0 
+      _.isEmpty(validation)
     ) {
       Axios.put(url, {
         shift_id: this.props.shift_id,
@@ -89,19 +95,21 @@ class EditShift extends Component {
         shift_name: shift_name,
         shift_description: shift_description,
         shift_sequence: parseInt(shift_sequence, 10),
-        start_time: `${date}T${start_time}:00.000Z`,
+        start_time: start_time,
         start_time_offset_days: parseInt(start_day, 10),
-        end_time: `${date}T${end_time}:00.000Z`,
+        end_time: end_time,
         end_time_offset_days: parseInt(end_day, 10),
-        duration_in_minutes: resultInMinutes,
-        valid_from: Moment(),
+        duration_in_minutes: difference,
+        valid_from: moment().tz(this.props.user.timezone),
         is_first_shift_of_day: is_first_shift_of_day,
         status: status,
         site_id: this.props.user.site,
       }).then(
         () => {
+          this.props.Refresh();
           this.setState({
             show: true,
+            validation: {}
           });
         },
         (error) => {
@@ -109,9 +117,7 @@ class EditShift extends Component {
         }
       );
     } else {
-      this.setState({
-        modalError: true,
-      });
+      this.setState({ validation });
     }
   };
 
@@ -122,6 +128,18 @@ class EditShift extends Component {
   handleClose = () => {
     this.props.closeForm();
   };
+
+  handleChangeActive = (e) => {
+    this.setState({
+      is_first_shift_of_day: e.target.value === 'true' ? true : false,
+    });
+  }
+
+  handleHour = (e) => {
+    this.setState({
+      [e.target.name]: moment('1970-01-01 ' + e.target.value).format('HH:') + '00'
+    })
+  }
 
   render() {
     const {
@@ -134,173 +152,142 @@ class EditShift extends Component {
       end_day,
       is_first_shift_of_day,
       status,
+      validation
     } = this.state;
-
+    const t = this.props.t;
     return (
       <div>
         <Modal show={this.props.showForm} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit Shift</Modal.Title>
+            <Modal.Title>{t('Edit Shift')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form>
-              <label>
-                Name:
-                <input
-                  type="text"
-                  name="shift_name"
-                  className="input-name"
-                  value={shift_name}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                Description:
-                <textarea
-                  className="text-description"
-                  name="shift_description"
-                  onChange={this.handleChange}
-                  value={shift_description}
-                ></textarea>
-              </label>
-              <label>
-                Sequence:
-                <input
-                  type="text"
-                  name="shift_sequence"
-                  className="input-sequence"
-                  value={shift_sequence}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                Start Time:
-                <select
-                  className="input-start"
-                  name="start_time"
-                  onChange={this.handleChange}
-                  value={Moment(start_time).format("H:mm")}
-                >
-                  <option value="1:00">1:00</option>
-                  <option value="2:00">2:00</option>
-                  <option value="3:00">3:00</option>
-                  <option value="4:00">4:00</option>
-                  <option value="5:00">5:00</option>
-                  <option value="6:00">6:00</option>
-                  <option value="7:00">7:00</option>
-                  <option value="8:00">8:00</option>
-                  <option value="9:00">9:00</option>
-                  <option value="10:00">10:00</option>
-                  <option value="11:00">11:00</option>
-                  <option value="12:00">12:00</option>
-                  <option value="13:00">13:00</option>
-                  <option value="14:00">14:00</option>
-                  <option value="15:00">15:00</option>
-                  <option value="16:00">16:00</option>
-                  <option value="17:00">17:00</option>
-                  <option value="18:00">18:00</option>
-                  <option value="19:00">19:00</option>
-                  <option value="20:00">20:00</option>
-                  <option value="21:00">21:00</option>
-                  <option value="22:00">22:00</option>
-                  <option value="23:00">23:00</option>
-                  <option value="00:00">00:00</option>
-                </select>
-              </label>
-              <label className="label-startoff">
-                Start Day:
-                <select
-                  name="start_day"
-                  className="input-startoff"
-                  onChange={this.handleChange}
-                  value={start_day}
-                >
-                  <option value={-1}>Yesterday</option>
-                  <option value={0}>Today</option>
-                  <option value={1}>Tomorrow</option>
-                </select>
-              </label>
-              <label>
-                End Time:
-                <select
-                  className="input-end"
-                  name="end_time"
-                  onChange={this.handleChange}
-                  value={Moment(end_time).format("H:mm")}
-                >
-                  <option value="1:00">1:00</option>
-                  <option value="2:00">2:00</option>
-                  <option value="3:00">3:00</option>
-                  <option value="4:00">4:00</option>
-                  <option value="5:00">5:00</option>
-                  <option value="6:00">6:00</option>
-                  <option value="7:00">7:00</option>
-                  <option value="8:00">8:00</option>
-                  <option value="9:00">9:00</option>
-                  <option value="10:00">10:00</option>
-                  <option value="11:00">11:00</option>
-                  <option value="12:00">12:00</option>
-                  <option value="13:00">13:00</option>
-                  <option value="14:00">14:00</option>
-                  <option value="15:00">15:00</option>
-                  <option value="16:00">16:00</option>
-                  <option value="17:00">17:00</option>
-                  <option value="18:00">18:00</option>
-                  <option value="19:00">19:00</option>
-                  <option value="20:00">20:00</option>
-                  <option value="21:00">21:00</option>
-                  <option value="22:00">22:00</option>
-                  <option value="23:00">23:00</option>
-                  <option value="00:00">00:00</option>
-                </select>
-              </label>
-              <label className="label-endoff">
-                End Day:
-                <select
-                  name="end_day"
-                  className="input-endoff"
-                  onChange={this.handleChange}
-                  value={end_day}
-                >
-                  <option value={-1}>Yesterday</option>
-                  <option value={0}>Today</option>
-                  <option value={1}>Tomorrow</option>
-                </select>
-              </label>
-              <label>
-                Is First Shift?:
-                <select
-                  name="is_first_shift_of_day"
-                  className="input-fShift"
-                  onChange={this.handleChange}
-                  value={is_first_shift_of_day}
-                >
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
-                </select>
-              </label>
-              <label>
-                Status:
-                <select
-                  name="status"
-                  className="input-status shift"
-                  onChange={this.handleChange}
-                  value={status}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </label>
-            </form>
+            <Form>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Name')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="shift_name"
+                    value={shift_name}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.shift_name}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Description')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="textarea"
+                    name="shift_description"
+                    onChange={this.handleChange}
+                    value={shift_description}
+                    rows={3} />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Sequence')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="number"
+                    name="shift_sequence"
+                    value={shift_sequence}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                    min={1}
+                  />
+                  <Form.Text className='validation'>{validation.shift_sequence}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Start Time')}:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    type='time'
+                    name="start_time"
+                    onChange={this.handleHour}
+                    value={start_time}
+                  />
+                  <Form.Text className='validation'>{validation.start_time}</Form.Text>
+                </Col>
+                <Form.Label column sm={2}>{t('Start Day')}:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    as='select'
+                    name='start_day'
+                    onChange={this.handleChange}
+                    value={start_day}
+                  >
+                    <option value={-1}>Yesterday</option>
+                    <option value={0}>Today</option>
+                    <option value={1}>Tomorrow</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('End Time')}:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    type='time'
+                    name="end_time"
+                    onChange={this.handleHour}
+                    value={end_time}
+                  />
+                  <Form.Text className='validation'>{validation.end_time}</Form.Text>
+                </Col>
+                <Form.Label column sm={2}>{t('End Day')}:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    as='select'
+                    name='end_day'
+                    onChange={this.handleChange}
+                    value={end_day}
+                  >
+                    <option value={-1}>Yesterday</option>
+                    <option value={0}>Today</option>
+                    <option value={1}>Tomorrow</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Is First Shift')}?:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    as="select"
+                    name="is_first_shift_of_day"
+                    onChange={this.handleChangeActive}
+                    value={is_first_shift_of_day}
+                  >
+                    <option value={true}>Yes</option>
+                    <option value={false}>No</option>
+                  </Form.Control>
+                  <Form.Text className='validation'>{validation.is_first_shift_of_day}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Status')}:</Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    as="select"
+                    name="status"
+                    onChange={this.handleChange}
+                    value={status}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.updateShift(e)}>
-              Confirm
+              {t('Confirm')}
             </Button>
             <Button variant="secondary" onClick={this.handleClose}>
-              Close
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>

@@ -150,6 +150,17 @@
     "Last Name": "Vorname",
     "Actions": "Aktionen",
     "Add User": "Nutzer Hinzufügen",
-    "Confirm": "estätigen",
-    "Edit User": "Benutzer Bearbeiten"
+    "Confirm": "Estätigen",
+    "Edit User": "Benutzer Bearbeiten",
+    "Shift": "Verschiebung",
+    "Name": "Name",
+    "Sequence": "Reihenfolge",
+    "Start Time": "Startzeit",
+    "Start Day": "Tag Beginnen",
+    "End Time": "Endzeit",
+    "End Day": "Endtag",
+    "Duration (minutes)": "Dauer (Protokoll)",
+    "Is First Shift": "Ist Erste Schicht",
+    "Add Shift": "Schicht Hinzufügen",
+    "Edit Shift": "Schicht Bearbeiten"
 }
