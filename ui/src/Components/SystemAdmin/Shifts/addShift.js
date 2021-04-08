@@ -23,6 +23,7 @@ export class AddShift extends Component {
       first_shift: true,
       status: "Active",
       show: false,
+      showForm: true,
       modalError: false,
       isRepeated: false,
       shiftsArray: [],
