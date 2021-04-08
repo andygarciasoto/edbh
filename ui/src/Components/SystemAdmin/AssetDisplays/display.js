@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../redux/actions/displayActions';
 import Table from 'react-bootstrap/Table';
+import EditDisplay from './editDisplay';
 import Filter from '../../CustomComponents/filter';
 import AddDisplay from './addDisplay';
 import EditIcon from '../../../resources/u668.svg';
@@ -14,7 +15,7 @@ class Display extends Component {
 			DisplayData: [],
 			addDisplay: false,
 			editDisplay: false,
-			shift_id: 0,
+			display_id: 0,
 		};
 	}
 
@@ -44,18 +45,18 @@ class Display extends Component {
 		});
 	};
 
-	//   showEditShift = (shift_id) => {
-	//     this.setState({
-	//       editShift: true,
-	//       shift_id: shift_id
-	//     });
-	//   };
+	showEditDisplay = (display_id) => {
+		this.setState({
+			editDisplay: true,
+			display_id: display_id,
+		});
+	};
 
-	//   closeEditShift = () => {
-	//     this.setState({
-	//         editShift: false,
-	//     });
-	//   };
+	closeEditDisplay = () => {
+		this.setState({
+			editDisplay: false,
+		});
+	};
 
 	render() {
 		const t = this.props.t;
@@ -82,17 +83,19 @@ class Display extends Component {
 						showForm={this.state.addDisplay}
 						t={t}
 						closeForm={this.closeAddDisplay}
-            Refresh={this.loadData}
+						Refresh={this.loadData}
 					/>
 				)}
-				{/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
+				{this.state.editDisplay === true && (
+					<EditDisplay
+						user={this.props.user}
+						showForm={this.state.editDisplay}
+						closeForm={this.closeEditDisplay}
+						display_id={this.state.display_id}
+						Refresh={this.loadData}
+						t={t}
+					/>
+				)}
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -113,7 +116,7 @@ class Display extends Component {
 										src={EditIcon}
 										alt={`edit-icon`}
 										className="icon"
-										onClick={() => this.showEditShift(display.assetdisplaysystem_id)}
+										onClick={() => this.showEditDisplay(display.assetdisplaysystem_id)}
 									/>
 								</td>
 							</tr>

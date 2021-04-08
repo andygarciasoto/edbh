@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as AssetActions from '../../../redux/actions/assetActions';
-import { API } from "../../../Utils/Constants";
+import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
 import { Modal, Button } from 'react-bootstrap';
 import '../../../sass/SystemAdmin.scss';
@@ -24,10 +24,16 @@ class AddDisplay extends Component {
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return actions.getAssets(this.props.user.site).then((response) => {
+		return Promise.all([
+			actions.getDisplayById(this.props.user.site, this.props.display_id),
+			actions.getAssets(this.props.user.site),
+		]).then((response) => {
+			console.log(response);
 			this.setState({
-				AssetsData: response,
-				asset: response[0].asset_id,
+				AssetsData: response[1],
+				asset: response[0].assetdisplaysystem_id,
+				name: response[0].displaysystem_name,
+				status: response[0].status,
 			});
 		});
 	}
@@ -47,11 +53,12 @@ class AddDisplay extends Component {
 		const { name, asset, status } = this.state;
 
 		if (name !== '') {
-      genericRequest('put', API, '/insert_displaysystem', null, null, {
+			genericRequest('put', API, '/insert_displaysystem', null, null, {
+				assetdisplaysystem_id: this.props.display_id,
 				asset_id: parseInt(asset, 10),
-        displaysystem_name: name,
+				displaysystem_name: name,
 				site_id: this.props.user.site,
-        status: status
+				status: status,
 			}).then(
 				() => {
 					this.props.Refresh();
@@ -92,11 +99,12 @@ class AddDisplay extends Component {
 	};
 
 	render() {
+    console.log(this.state);
 		return (
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Display</Modal.Title>
+						<Modal.Title>Update Display</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
@@ -106,20 +114,30 @@ class AddDisplay extends Component {
 									className="input-display-name"
 									type="text"
 									name="name"
-									value={this.state.badge}
+									value={this.state.name}
 									autoComplete={'false'}
 									onChange={this.handleChange}
 								/>
 							</label>
 							<label>
 								Asset:
-								<select className="input-display-asset" name="asset" onChange={this.handleChange}>
+								<select
+									value={this.state.asset}
+									className="input-display-asset"
+									name="asset"
+									onChange={this.handleChange}
+								>
 									{this.state.AssetsData.map(this.renderAssets)}
 								</select>
 							</label>
 							<label>
 								Status:
-								<select className="select-display-status" name="status" onChange={this.handleChange}>
+								<select
+									value={this.state.status}
+									className="select-display-status"
+									name="status"
+									onChange={this.handleChange}
+								>
 									<option value="Active">Active</option>
 									<option value="Inactive">Inactive</option>
 								</select>
@@ -139,7 +157,7 @@ class AddDisplay extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Display has been added</Modal.Body>
+					<Modal.Body>Display has been Updated</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close

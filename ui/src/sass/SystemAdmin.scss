@@ -1,10 +1,17 @@
-@import "./colors";
+@import './colors';
 
 #administrator {
 	margin: 30px 30px;
 }
 
-.validation{
+.flex-modules {
+	width: auto;
+	height: auto;
+	max-width: 145px;
+	min-width: 145px;
+}
+
+.validation {
 	color: $color-red;
 }
 
@@ -139,7 +146,7 @@
 	float: left;
 }
 
-.col-fix-reason{
+.col-fix-reason {
 	margin-top: 31px;
 }
 
@@ -160,7 +167,7 @@
 	height: 500px;
 	margin-left: -169px;
 
-	&.reasons{
+	&.reasons {
 		height: 618px;
 	}
 }
@@ -301,7 +308,7 @@
 		margin-left: 74px;
 	}
 
-	&.uom-code{
+	&.uom-code {
 		margin-left: 24px;
 	}
 }
@@ -368,7 +375,7 @@
 .select-display-status {
 	margin-left: 58px;
 
-	&.uom-status{
+	&.uom-status {
 		margin-left: 53px;
 	}
 }
@@ -499,22 +506,22 @@
 }
 .button-edit-2 {
 	width: auto;
-    height: auto;
-    background-color: #49b5f3;
-    border-style: groove;
-    border-radius: 5px;
-    border: none;
-    padding-left: 20px;
-    padding-right: 25px;
-    color: white;
-    cursor: pointer;
-    margin-top: -65px;
-    margin-left: 815px;
-    position: absolute;
+	height: auto;
+	background-color: #49b5f3;
+	border-style: groove;
+	border-radius: 5px;
+	border: none;
+	padding-left: 20px;
+	padding-right: 25px;
+	color: white;
+	cursor: pointer;
+	margin-top: -65px;
+	margin-left: 815px;
+	position: absolute;
 
-		&.fix{
-			margin-left: 950px;
-		}
+	&.fix {
+		margin-left: 950px;
+	}
 }
 
 .common1 {

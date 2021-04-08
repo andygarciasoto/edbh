@@ -209,7 +209,7 @@ export class Administrator extends Component {
 		return (
 			<div id="administrator">
 				<CardComponent
-					className={'card-component'}
+					className={'card-component flex-modules'}
 					icon={UserIcon}
 					number={panelData.Users}
 					name={'Users'}
@@ -217,7 +217,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component common'}
+					className={'card-component common flex-modules'}
 					icon={AssetsIcon}
 					number={panelData.Assets}
 					name={'Assets'}
@@ -225,7 +225,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component assets'}
+					className={'card-component assets flex-modules'}
 					icon={ShiftsIcon}
 					number={panelData.Shifts}
 					name={'Shifts'}
@@ -233,7 +233,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component reason'}
+					className={'card-component reason flex-modules'}
 					icon={ReasonIcon}
 					number={panelData.DTReasons}
 					name={'Reason Codes'}
@@ -241,7 +241,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component device'}
+					className={'card-component device flex-modules'}
 					icon={DeviceIcon}
 					number={panelData.Tags}
 					name={'Device Tags'}
@@ -249,7 +249,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component shifts'}
+					className={'card-component shifts flex-modules'}
 					icon={WorkIcon}
 					number={panelData.Workcells}
 					name={'Workcells'}
@@ -257,7 +257,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component uom'}
+					className={'card-component uom flex-modules'}
 					icon={UOMIcon}
 					number={panelData.UOM}
 					name={'UOM'}
@@ -265,7 +265,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component break'}
+					className={'card-component break flex-modules'}
 					icon={BreakIcon}
 					number={panelData.Unavailable}
 					name={'Break Schedule'}
@@ -273,7 +273,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component display'}
+					className={'card-component display flex-modules'}
 					icon={DisplayIcon}
 					number={panelData.AssetDisplaySystems}
 					name={'Asset Displays'}
@@ -281,7 +281,7 @@ export class Administrator extends Component {
 					t={t}
 				/>
 				<CardComponent
-					className={'card-component work'}
+					className={'card-component work flex-modules'}
 					icon={CommonIcon}
 					number={null}
 					name={'Common Parameters'}

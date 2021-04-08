@@ -90,7 +90,7 @@ class EditWorkcell extends Component {
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
-						<Modal.Title>Edit Workcell</Modal.Title>
+						<Modal.Title>Update Workcell</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>

@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { GET_ASSETS } from '../constants/constants';
+import { GET_ASSETS, GET_DISPLAY } from '../constants/constants';
 import { API } from '../../Utils/Constants';
 
 export const getAssets = (siteId) => {
@@ -13,4 +13,17 @@ export const getAssets = (siteId) => {
 			return response.data;
 		});
 	};
+};
+
+export const getDisplayById = (siteId, display_id) => {
+  var url = `${API}/display_by_site?site=${siteId}&assetdisplaysystem_id=${display_id}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_DISPLAY,
+        display: response.data[0],
+      });
+      return response.data[0];
+    });
+  };
 };

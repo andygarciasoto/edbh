@@ -33,7 +33,7 @@ class EditUOM extends Component {
 				name: response[0].UOM_name,
 				description: response[0].UOM_description,
 				decimals: response[0].decimals,
-        // status: response[0].status
+				status: response[0].status,
 			});
 		});
 	};
@@ -97,7 +97,7 @@ class EditUOM extends Component {
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
-						<Modal.Title>Add UOM</Modal.Title>
+						<Modal.Title>Update UOM</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
@@ -136,6 +136,7 @@ class EditUOM extends Component {
 							<label>
 								Status:
 								<select
+									value={this.state.status}
 									className="select-display-status uom-status"
 									name="status"
 									onChange={this.handleChange}
@@ -159,7 +160,7 @@ class EditUOM extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>UOM has been added</Modal.Body>
+					<Modal.Body>UOM has been updated</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close
