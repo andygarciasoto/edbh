@@ -22,4 +22,10 @@ export class UomRepository {
     public async putUOM(uom_id: number, uom_code: string, uom_name: string, uom_description: string, status: string, site_id: number, decimals: boolean): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_UOM ${uom_id}, '${uom_code}', '${uom_name}', '${uom_description}', '${status}', ${site_id}, ${decimals}`);
      }
+     public async getUOMById(uom_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT U.UOM_id, U.UOM_code, U.UOM_name, U.UOM_description, U.site_id, U.decimals
+        FROM dbo.UOM
+        WHERE U.UOM_id = ${uom_id}`);
+     }
+
 }

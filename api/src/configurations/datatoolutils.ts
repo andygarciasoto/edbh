@@ -123,6 +123,31 @@ export let headers = {
     ]
 };
 
+export function getColumns(tableName) {
+    let column = [];
+    let cont = 0;
+    switch (tableName) {
+        case 'DTReason':
+            for (let val of headers.DTReason) {
+                column.push(headers.DTReason[cont].header);
+                cont++;
+            }
+            return column;
+        case 'Tag':
+            for (let val of headers.Tag) {
+                column.push(headers.Tag[cont].header);
+                cont++;
+            }
+            return column;
+        case 'Unavailable':
+            for (let val of headers.Tag) {
+                column.push(headers.Unavailable[cont].header);
+                cont++;
+            }
+            return column;
+    }
+}
+
 export function getParametersOfTable(tableName, siteId) {
     let parametersObject = {
         extraColumns: '',

@@ -82,7 +82,7 @@ const timezoneRepository = new TimezoneRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
-const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository);
+const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository, dxhdataRepository);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository, roleRepository);
@@ -299,7 +299,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/dragndrop', 'put', async (req: Request, res: Response) => {
             await siteService.dragAndDropAdminTool(req, res);
-        }, false)
+        }, true)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)

@@ -96,7 +96,6 @@ export class DataToolService {
                                         if (row.getCell(colNumber + 1).value === 'NULL') return res.status(400).json({ message: "Bad Request - Please review that the all the columns have names" });
                                     } else {
                                         if (row.getCell(colNumber + 1).value !== 'NULL') validRow = true;
-
                                         updateRow += getValuesFromHeaderTable(headers[worksheet.name], headers[worksheet.name][colNumber], row.getCell(colNumber + 1).value);
                                     }
                                 });

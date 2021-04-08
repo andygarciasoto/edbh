@@ -13,13 +13,18 @@ export class UomService {
     }
 
     public async getUomBySite(req: Request, res: Response) {
+        let uom_id = req.query.uom_id;
         let site = req.query.site;
         if (!site) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let uoms: any;
         try {
-            uoms = await this.uomrepository.getUomBySite(site);
+            if (!uom_id) {
+                uoms = await this.uomrepository.getUomBySite(site);
+            } else {
+                uoms = await this.uomrepository.getUOMById(uom_id);
+            }
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
