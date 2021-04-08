@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ShiftRepository } from '../repositories/shift-repository';
 import moment from 'moment';
+import { getShiftParameters } from '../validators/shiftValidator';
 
 export class ShiftService {
 
@@ -12,18 +13,13 @@ export class ShiftService {
     }
 
     public async getShiftBySite(req: Request, res: Response) {
-        const site = req.query.site;
-        const shift_id = req.query.shift_id ? req.query.shift_id : undefined;
-        if (!site) {
+        const site_id = req.query.site_id;
+        if (!site_id) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
         let shifts: any;
         try {
-            if (shift_id === undefined || !shift_id || shift_id === null) {
-                shifts = await this.shiftrepository.getShiftBySiteExport(site);
-            } else {
-                shifts = await this.shiftrepository.getShiftById(shift_id);
-            }
+            shifts = await this.shiftrepository.findShiftByFilter(getShiftParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

@@ -11,12 +11,17 @@ export class WorkcellService {
 
     public async getWorkcellBySite(req: Request, res: Response) {
         let site = req.query.site;
+        let workcell_id = req.query.workcell_id;
         if (!site) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let workcell: any;
         try {
-            workcell = await this.workcellrepository.getWorkcellBySite(site);
+            if (!workcell_id) {
+                workcell = await this.workcellrepository.getWorkcellBySite(site);
+            } else {
+                workcell = await this.workcellrepository.getWorkcellById(workcell_id);
+            }
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

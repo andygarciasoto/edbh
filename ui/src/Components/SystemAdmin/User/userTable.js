@@ -74,7 +74,7 @@ class UserTable extends Component {
 			edit: false,
 		});
 	};
-	
+
 	render() {
 		const t = this.props.t;
 		return (
@@ -87,6 +87,7 @@ class UserTable extends Component {
 					buttonFilter={t('Search')}
 					onClick={() => this.showAddUser()}
 					onClickFilter={this.applyFilter}
+					view={'User'}
 					t={t}
 				></Filter>
 				{this.state.user === true && (
