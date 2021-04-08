@@ -47,14 +47,14 @@ class UOM extends Component {
 
 	showEditUOM = (uom_id) => {
 		this.setState({
-			editShift: true,
+			editUOM: true,
 			uom_id: uom_id,
 		});
 	};
 
 	closeEditUOM = () => {
 		this.setState({
-			editShift: false,
+			editUOM: false,
 		});
 	};
 
@@ -89,7 +89,7 @@ class UOM extends Component {
 						user={this.props.user}
 						showForm={this.state.editUOM}
 						closeForm={this.closeEditUOM}
-						shift_id={this.state.uom_id}
+						uom_id={this.state.uom_id}
 						Refresh={this.loadData}
 						t={t}
 					/>
@@ -118,7 +118,7 @@ class UOM extends Component {
 										src={EditIcon}
 										alt={`edit-icon`}
 										className="icon"
-										onClick={() => this.showEditShift(uom.UOM_id)}
+										onClick={() => this.showEditUOM(uom.UOM_id)}
 									/>
 								</td>
 							</tr>

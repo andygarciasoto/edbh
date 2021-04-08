@@ -23,18 +23,11 @@ class EditWorkcell extends Component {
 		const { actions } = this.props;
 
 		return actions.getWorkcellById(this.props.user.site, this.props.workcell_id).then((response) => {
-			// this.setState({
-			//   badge: response[0].Badge,
-			//   username: response[0].Username,
-			//   firstname: response[0].First_Name,
-			//   lastname: response[0].Last_Name,
-			//   role: response[0].name,
-			//   role_id: response[0].role_id,
-			//   escalation_id: response[0].escalation_level,
-			//   status: response[0].status,
-			//   rolesArray: response[1],
-			//   escalationArray: response[2],
-			// });
+			console.log(response);
+			this.setState({
+				name: response[0].workcell_name,
+				description: response[0].workcell_description,
+			});
 		});
 	}
 
@@ -51,6 +44,10 @@ class EditWorkcell extends Component {
 	handleClose = () => {
 		this.setState({ showForm: false });
 	};
+	
+	handle=()=>{
+		this.props.closeForm();
+	}
 
 	closeModalError = () => {
 		this.setState({ modalError: false });
@@ -66,6 +63,7 @@ class EditWorkcell extends Component {
 
 		if (name !== '' && description !== '') {
 			genericRequest('put', API, '/insert_workcell', null, null, {
+				workcell_id: this.props.workcell_id,
 				workcell_name: name,
 				workcell_description: description,
 				site_id: this.props.user.site,
@@ -92,7 +90,7 @@ class EditWorkcell extends Component {
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Workcell</Modal.Title>
+						<Modal.Title>Edit Workcell</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
@@ -102,7 +100,7 @@ class EditWorkcell extends Component {
 									className="input-display-name"
 									type="text"
 									name="name"
-									value={this.state.badge}
+									value={this.state.name}
 									autoComplete={'false'}
 									onChange={this.handleChange}
 								/>
@@ -110,6 +108,7 @@ class EditWorkcell extends Component {
 							<label>
 								Description:
 								<textarea
+									value={this.state.description}
 									className="text-workcell-description"
 									name="description"
 									onChange={this.handleChange}
@@ -121,7 +120,7 @@ class EditWorkcell extends Component {
 						<Button variant="Primary" onClick={(e) => this.createWorkcell(e)}>
 							Confirm
 						</Button>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.handle}>
 							Close
 						</Button>
 					</Modal.Footer>
@@ -130,7 +129,7 @@ class EditWorkcell extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Workcell has been added</Modal.Body>
+					<Modal.Body>Workcell has been Updated</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close

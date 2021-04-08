@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as UOMActions from '../../../redux/actions/uomActions';
-import { API } from '../../../Utils/Constants';
+import * as AssetActions from '../../../redux/actions/assetActions';
+import { API } from "../../../Utils/Constants";
 import { genericRequest } from '../../../Utils/Requests';
 import { Modal, Button } from 'react-bootstrap';
 import '../../../sass/SystemAdmin.scss';
 
-class EditUOM extends Component {
+class AddDisplay extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			AssetsData: [],
 			name: '',
-			description: '',
-			decimals: false,
+			asset: 0,
 			status: 'Active',
 			show: false,
 			showForm: true,
@@ -21,20 +21,16 @@ class EditUOM extends Component {
 		};
 	}
 
-  componentDidMount() {
-		this.loadData();
-	}
+	componentDidMount() {
+		const { actions } = this.props;
 
-  loadData=()=>{
-    const { actions } = this.props;
-
-		return actions.getUOMById(this.props.user.site, this.props.uom_id).then((response) => {
+		return actions.getAssets(this.props.user.site).then((response) => {
 			this.setState({
-				// name: response[0].workcell_name,
-				// description: response[0].workcell_description,
+				AssetsData: response,
+				asset: response[0].asset_id,
 			});
 		});
-  }
+	}
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -46,19 +42,16 @@ class EditUOM extends Component {
 		});
 	};
 
-	createUOM = (e) => {
+	createDisplay = (e) => {
 		e.preventDefault();
-		const { name, description, status, decimals } = this.state;
+		const { name, asset, status } = this.state;
 
-		if (name !== '' && this.props.user.site_prefix !== null) {
-			genericRequest('put', API, '/insert_uom', null, null, {
-        umo_id: this.props.uom_id,
-				uom_code: `${this.props.user.site_prefix}-${name}`,
-				uom_name: name,
-				uom_description: description === '' ? null : description,
-				status: status,
-				decimals: parseInt(decimals, 10),
+		if (name !== '') {
+      genericRequest('put', API, '/insert_displaysystem', null, null, {
+				asset_id: parseInt(asset, 10),
+        displaysystem_name: name,
 				site_id: this.props.user.site,
+        status: status
 			}).then(
 				() => {
 					this.props.Refresh();
@@ -78,6 +71,14 @@ class EditUOM extends Component {
 		}
 	};
 
+	renderAssets(assets, index) {
+		return (
+			<option value={assets.asset_id} key={index}>
+				{assets.asset_name}
+			</option>
+		);
+	}
+
 	handleClose = () => {
 		this.setState({ showForm: false });
 	};
@@ -95,43 +96,30 @@ class EditUOM extends Component {
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
 					<Modal.Header closeButton>
-						<Modal.Title>Add UOM</Modal.Title>
+						<Modal.Title>Add Display</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
 								Name:
 								<input
+									className="input-display-name"
 									type="text"
 									name="name"
-									className="input-uom-name"
-									value={this.state.username}
+									value={this.state.badge}
 									autoComplete={'false'}
 									onChange={this.handleChange}
 								/>
 							</label>
 							<label>
-								Description:
-								<textarea
-									className="text-uom-description"
-									name="description"
-									onChange={this.handleChange}
-								></textarea>
-							</label>
-							<label>
-								Decimals:
-								<select className="select-uom-decimals" name="decimals" onChange={this.handleChange}>
-									<option value={0}>No</option>
-									<option value={1}>Yes</option>
+								Asset:
+								<select className="input-display-asset" name="asset" onChange={this.handleChange}>
+									{this.state.AssetsData.map(this.renderAssets)}
 								</select>
 							</label>
 							<label>
 								Status:
-								<select
-									className="select-display-status uom-status"
-									name="status"
-									onChange={this.handleChange}
-								>
+								<select className="select-display-status" name="status" onChange={this.handleChange}>
 									<option value="Active">Active</option>
 									<option value="Inactive">Inactive</option>
 								</select>
@@ -139,7 +127,7 @@ class EditUOM extends Component {
 						</form>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
+						<Button variant="Primary" onClick={(e) => this.createDisplay(e)}>
 							Confirm
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
@@ -151,7 +139,7 @@ class EditUOM extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>UOM has been added</Modal.Body>
+					<Modal.Body>Display has been added</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close
@@ -162,11 +150,7 @@ class EditUOM extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Warning</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>
-						{this.props.user.site_prefix === null
-							? 'Please add a prefix for your site in the Common Parameters module'
-							: 'All inputs must be filled'}
-					</Modal.Body>
+					<Modal.Body>All inputs must be filled</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>
 							Close
@@ -180,8 +164,8 @@ class EditUOM extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(UOMActions, dispatch),
+		actions: bindActionCreators(AssetActions, dispatch),
 	};
 };
 
-export default connect(null, mapDispatch)(EditUOM);
+export default connect(null, mapDispatch)(AddDisplay);
