@@ -9,7 +9,7 @@ export class CommentDataRepository {
     }
 
     public async getCommentDataByDxHDataId(dxhdata_id: number, site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_CommentData_By_DxHData_Id ${dxhdata_id}, ${site_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_CommentData_By_DxHData_Id ${dxhdata_id}`);
     }
 
     public async putCommentDataByClocknumber(dxhdata_id: number, comment: string, clocknumber: string, timestamp: string, update: number): Promise<any> {
