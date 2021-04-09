@@ -140,12 +140,13 @@ export class DTReasonService {
 
     public async getUniqueReasonBySite(req: Request, res: Response) {
         let site = req.query.site;
-        if (!site || site === null || site === undefined) {
+        let asset_id = req.query.asset_id ? req.query.asset_id : undefined;
+        if (!site || site === null || site === undefined || asset_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let reasons: any;
         try {
-            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site);
+            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site, asset_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -155,12 +156,17 @@ export class DTReasonService {
 
     public async getReasonsBySite(req: Request, res: Response) {
         let site = req.query.site;
+        let dtreason_id = req.query.dtreason_id ? req.query.dtreason_id : null;
         if (!site || site === null || site === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let reasons: any;
         try {
-            reasons = await this.dtreasonrepository.getDTReasonBySite(site);
+            if (!dtreason_id) {
+                reasons = await this.dtreasonrepository.getDTReasonBySite(site);
+            } else {
+                reasons = await this.dtreasonrepository.getDTReasonById(site, dtreason_id);
+            }   
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
