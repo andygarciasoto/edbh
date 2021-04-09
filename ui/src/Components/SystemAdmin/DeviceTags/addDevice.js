@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as UserActions from '../../../redux/actions/userActions';
+import * as UOMActions from '../../../redux/actions/uomActions';
 //import { API } from "../../../Utils/Constants";
 import { Modal, Button, Form, Col } from 'react-bootstrap';
 import '../../../sass/SystemAdmin.scss';
@@ -11,38 +11,37 @@ class AddDevice extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			badge: '',
-			username: '',
-			firstname: '',
-			lastname: '',
-			role: 1,
-			status: 'Active',
-			escalation_id: 1,
-			site: '',
-			roles: [],
+			code: "",
+			status: "Active",
+			name: "",
+			uom_code: 0,
+			description: "",
+			rollover: 0,
+			data_type: "Integer",
+			max_change: 0,
+			asset: 0,
+			uomData: [],
 			show: false,
 			showForm: true,
-			escalation: [],
 			sites: [],
 			modalError: false,
 		};
 	}
 
-	//   componentDidMount() {
-	//     const { actions } = this.props;
+	componentDidMount() {
+		const { actions } = this.props;
 
-	//     return Promise.all([
-	//       actions.getRoles(),
-	//       actions.getEscalation(),
-	//       actions.getSites(),
-	//     ]).then((response) => {
-	//       this.setState({
-	//         roles: response[0],
-	//         escalation: response[1],
-	//         sites: response[2],
-	//       });
-	//     });
-	//   }
+		return Promise.all([actions.getUOM(this.props.user.site), actions.getAssets(this.props.user.site)]).then(
+			(response) => {
+				this.setState({
+					uomData: response[0],
+					uom_code: response[0][0].UOM_id,
+					sites: response[1],
+					asset:response[1][1].asset_id
+				});
+			}
+		);
+	}
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -102,29 +101,21 @@ class AddDevice extends Component {
 	//     }
 	//   };
 
-	//   renderRoles(roles, index) {
-	//     return (
-	//       <option value={roles.role_id} key={index}>
-	//         {roles.name}
-	//       </option>
-	//     );
-	//   }
+	renderAssets(assets, index) {
+		return (
+			<option value={assets.asset_id} key={index}>
+				{assets.asset_name}
+			</option>
+		);
+	}
 
-	//   renderEscalation(escalation, index) {
-	//     return (
-	//       <option value={escalation.escalation_id} key={index}>
-	//         {escalation.escalation_name}
-	//       </option>
-	//     );
-	//   }
-
-	//   renderSites(sites, index) {
-	//     return (
-	//       <option value={sites.asset_id} key={index}>
-	//         {sites.asset_name}
-	//       </option>
-	//     );
-	//   }
+	renderUOM(uom, index) {
+		return (
+			<option value={uom.UOM_id} key={index}>
+				{uom.UOM_code}
+			</option>
+		);
+	}
 
 	handleClose = () => {
 		this.setState({ showForm: false });
@@ -162,15 +153,15 @@ class AddDevice extends Component {
 									</label>
 								</Col>
 								<Col>
-									<label className="label-tag-category">
-										Tag Type:
+									<label>
+										Status:
 										<select
-											className="select-tag-category"
-											name="decimals"
+											className="select-display-status uom-status"
+											name="status"
 											onChange={this.handleChange}
 										>
-											<option value="Active">Cost</option>
-											<option value="Inactive">Cost</option>
+											<option value="Active">Active</option>
+											<option value="Inactive">Inactive</option>
 										</select>
 									</label>
 								</Col>
@@ -192,9 +183,12 @@ class AddDevice extends Component {
 								<Col>
 									<label className="label-tag-category">
 										UOM Code:
-										<select className="select-tag-type" name="type" onChange={this.handleChange}>
-											<option value="Active">Downtime</option>
-											<option value="Inactive">Cost</option>
+										<select
+											className="select-tag-type"
+											name="uom_code"
+											onChange={this.handleChange}
+										>
+											{this.state.uomData.map(this.renderUOM)}
 										</select>
 									</label>
 								</Col>
@@ -206,49 +200,23 @@ class AddDevice extends Component {
 										<textarea
 											className="input-tag-description"
 											type="text"
-											name="name"
+											name="description"
 											value={this.state.badge}
 											autoComplete={'false'}
 											onChange={this.handleChange}
 										/>
 									</label>
 								</Col>
+
 								<Col>
 									<label className="label-tag-category">
 										Rollover Point:
 										<input
 											className="input-reason-name"
-											type="text"
-											name="name"
-											value={this.state.badge}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
-								</Col>
-							</Form.Row>
-							<Form.Row>
-								<Col>
-									<label>
-										Tag Group:
-										<input
-											className="input-tag-tag"
-											type="text"
-											name="name"
-											value={this.state.badge}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
-								</Col>
-								<Col>
-									<label className="label-tag-category">
-										Aggregation:
-										<input
-											className="input-tag-aggregation"
-											type="text"
-											name="name"
-											value={this.state.badge}
+											type="number"
+											name="rollover"
+											min={0}
+											value={this.state.rollover}
 											autoComplete={'false'}
 											onChange={this.handleChange}
 										/>
@@ -259,9 +227,13 @@ class AddDevice extends Component {
 								<Col>
 									<label>
 										Data Type:
-										<select className="select-tag-type" name="type" onChange={this.handleChange}>
-											<option value="Active">Downtime</option>
-											<option value="Inactive">Cost</option>
+										<select
+											className="select-tag-type"
+											name="data_type"
+											onChange={this.handleChange}
+										>
+											<option value="Integer">Integer</option>
+											<option value="Float">Decimals</option>
 										</select>
 									</label>
 								</Col>
@@ -270,12 +242,27 @@ class AddDevice extends Component {
 										Max Change:
 										<input
 											className="input-tag-aggregation"
-											type="text"
-											name="name"
-											value={this.state.badge}
+											type="number"
+											min={0}
+											name="max_change"
+											value={this.state.max_change}
 											autoComplete={'false'}
 											onChange={this.handleChange}
 										/>
+									</label>
+								</Col>
+							</Form.Row>
+							<Form.Row>
+								<Col>
+									<label>
+										Asset:
+										<select
+											className="select-display-status uom-status"
+											name="asset"
+											onChange={this.handleChange}
+										>
+											{this.state.sites.map(this.renderAssets)}
+										</select>
 									</label>
 								</Col>
 							</Form.Row>
@@ -319,7 +306,7 @@ class AddDevice extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(UserActions, dispatch),
+		actions: bindActionCreators(UOMActions, dispatch),
 	};
 };
 

@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { GET_UOM } from "../constants/constants";
+import { GET_UOM, GET_ASSETS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getUOM = (siteId) => {
@@ -26,4 +26,17 @@ export const getUOMById = (siteId, uom_id) => {
       return response.data;
     });
   };
+};
+
+export const getAssets = (siteId) => {
+	var url = `${API}/asset_by_site?site=${siteId}`;
+	return (dispatch) => {
+		return Axios.get(url).then((response) => {
+			dispatch({
+				type: GET_ASSETS,
+				assets: response.data,
+			});
+			return response.data;
+		});
+	};
 };
