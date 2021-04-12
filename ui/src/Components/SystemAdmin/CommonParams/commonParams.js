@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 import * as CommonActions from '../../../redux/actions/commonActions';
 import Axios from 'axios';
 import { API } from '../../../Utils/Constants';
-import { Form, Col, Modal, Button } from 'react-bootstrap';
+import { Form, Col, Modal, Button, Row, InputGroup } from 'react-bootstrap';
+import { validateCommonParametersForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 
 class CommonParams extends Component {
 	constructor(props) {
@@ -30,13 +32,18 @@ class CommonParams extends Component {
 			modalError: false,
 			show: false,
 			readOnly: true,
+			validation: {}
 		};
 	}
 
 	componentDidMount() {
+		this.loadData();
+	}
+
+	loadData = () => {
 		const { actions } = this.props;
 
-		return Promise.all([
+		Promise.all([
 			actions.getParams(this.props.user.site),
 			actions.getTimezones(),
 			actions.getLanguages(),
@@ -50,10 +57,10 @@ class CommonParams extends Component {
 				defaultBreak: response[0].break_minutes,
 				timezone: response[0].ui_timezone,
 				timezone_id: response[0].timezone_id,
-				inactiveTimeout: response[0].summary_timeout,
-				assembly_url: response[0].assembly_url,
-				defaultPercent: response[0].default_target_percent_of_ideal,
-				verticalDashboard: response[0].inactive_timeout_minutes,
+				inactiveTimeout: response[0].inactive_timeout_minutes,
+				assembly_url: response[0].assembly_url || '',
+				defaultPercent: response[0].default_target_percent_of_ideal * 100,
+				verticalDashboard: response[0].summary_timeout,
 				defaultMinutes: response[0].default_setup_minutes,
 				siteCode: response[0].site_code,
 				status: response[0].status,
@@ -71,6 +78,26 @@ class CommonParams extends Component {
 		this.setState({
 			[name]: value,
 		});
+	};
+
+	handleChangeNumbers = (event) => {
+		const target = event.target;
+
+		if (parseInt(target.value, 10) >= 0) {
+			this.setState({
+				[target.name]: target.value,
+			});
+		}
+	};
+
+	handleChangePercentage = (event) => {
+		const target = event.target;
+		console.log(target.value);
+		if (parseInt(target.value, 10) >= 0 && parseInt(target.value, 10) <= 100 && !target.value.includes('.')) {
+			this.setState({
+				[target.name]: target.value,
+			});
+		}
 	};
 
 	renderTimezones(timezones, index) {
@@ -107,21 +134,13 @@ class CommonParams extends Component {
 			status,
 		} = this.state;
 
-		var url = `${API}/insert_commonparameter`;
+		let url = `${API}/insert_commonparameter`;
 		const newPercent = defaultPercent / 100;
-		console.log(newPercent);
+
+		const validation = validateCommonParametersForm(this.state);
+
 		if (
-			defaultRouted !== '' &&
-			defaultLunch !== '' &&
-			productionOffset != '' &&
-			language_id !== null &&
-			defaultBreak !== 0 &&
-			timezone_id !== null &&
-			inactiveTimeout !== 0 &&
-			assembly_url !== '' &&
-			verticalDashboard !== 0 &&
-			defaultMinutes !== 0 &&
-			siteCode !== ''
+			_.isEmpty(validation)
 		) {
 			Axios.put(url, {
 				site_id: this.props.user.site,
@@ -144,7 +163,7 @@ class CommonParams extends Component {
 					this.setState({
 						show: true,
 					});
-					this.componentDidMount();
+					this.loadData();
 				},
 				(error) => {
 					console.log(error);
@@ -152,7 +171,7 @@ class CommonParams extends Component {
 			);
 		} else {
 			this.setState({
-				modalError: true,
+				validation
 			});
 		}
 	};
@@ -164,204 +183,179 @@ class CommonParams extends Component {
 
 	render() {
 		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
 			<div className="common-params">
-				<Form>
-					<Form.Row>
-						<Col>
-							<label className="common1">
-								Site Name:
-								<input
-									type="text"
-									name="siteName"
-									className="input site-name"
-									value={this.props.user.site_name}
-									autoComplete={'false'}
-									readOnly={true}
-								/>
-							</label>
+				<Form className='commonParametersForm'>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Site Name')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="text"
+								name="siteName"
+								value={this.props.user.site_name}
+								autoComplete={"false"}
+								readOnly={true}
+							/>
 						</Col>
-						<Col>
-							<label className="common1">
-								Default Routed Cycle Time:
-								<input
-									type="number"
-									name="defaultRouted"
-									className="input"
-									value={this.state.defaultRouted}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Routed Cycle Time')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="defaultRouted"
+								value={this.state.defaultRouted}
+								min={1}
+								autoComplete={"false"}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-						<Col>
-							<label className="common1">
-								{' '}
-								Default Lunch Allowed:
-								<input
-									type="number"
-									name="defaultLunch"
-									className="input"
-									value={this.state.defaultLunch}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Lunch Minutes')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="defaultLunch"
+								value={this.state.defaultLunch}
+								min={0}
+								autoComplete={"false"}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label className="common1">
-								{' '}
-								Production Day Offset Minutes:
-								<input
-									type="number"
-									name="productionOffset"
-									className="input"
-									value={this.state.productionOffset}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Production Day Offset Minutes')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="productionOffset"
+								value={this.state.productionOffset}
+								autoComplete={"false"}
+								onChange={this.handleChange}
+							/>
 						</Col>
-						<Col>
-							<label className="common1 label-language">
-								Default Language:
-								<select
-									className="input select-language"
-									name="language_id"
-									onChange={this.handleChange}
-									value={this.state.language_id}
-								>
-									{this.state.languagesData.map(this.renderLanguages)}
-								</select>
-							</label>
+						<Form.Label column sm={1}>{t('Language')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								as="select"
+								name="language_id"
+								value={this.state.language_id}
+								autoComplete={"false"}
+								onChange={this.handleChange}
+							>
+								{this.state.languagesData.map(this.renderLanguages)}
+							</Form.Control>
+							<Form.Text className='validation'>{validation.language_id}</Form.Text>
 						</Col>
-						<Col>
-							<label className="common1 label-default-break">
-								{' '}
-								Default Break Allowed:
-								<input
-									type="number"
-									name="defaultBreak"
-									className="input"
-									value={this.state.defaultBreak}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Break Minutes')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="defaultBreak"
+								value={this.state.defaultBreak}
+								min={0}
+								autoComplete={"false"}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label className="common1">
-								{' '}
-								Timezone:
-								<select
-									className="input timezone"
-									name="timezone_id"
-									value={this.state.timezone_id}
-									onChange={this.handleChange}
-								>
-									{this.state.timezonesData.map(this.renderTimezones)}
-								</select>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Timezone')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								as="select"
+								name="timezone_id"
+								value={this.state.timezone_id}
+								autoComplete={"false"}
+								onChange={this.handleChange}
+							>
+								{this.state.timezonesData.map(this.renderTimezones)}
+							</Form.Control>
+							<Form.Text className='validation'>{validation.timezone_id}</Form.Text>
 						</Col>
-						<Col>
-							<label className="common1  label-ito">
-								{' '}
-								Dashboard Token Timeout:
-								<input
-									type="number"
-									name="inactiveTimeout"
-									className="input inactive-timeout"
-									value={this.state.inactiveTimeout}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Operator Session Timeout')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="inactiveTimeout"
+								value={this.state.inactiveTimeout}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-						<Col>
-							<label className="common1  label-ito">
-								{' '}
-								Assembly URL:
-								<input
-									type="text"
-									name="assembly_url"
-									className="input assembly-url"
-									value={this.state.assembly_url}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Assembly URL')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="url"
+								name="assembly_url"
+								value={this.state.assembly_url || ' '}
+								autoComplete={"false"}
+								onChange={this.handleChange}
+							/>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label className="common1">
-								{' '}
-								Default Target Percent of Ideal:
-								<input
-									type="number"
-									name="defaultPercent"
-									className="input default-target"
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Target Percent of Ideal')}:</Form.Label>
+						<Col sm={2}>
+							<InputGroup className="mb-2">
+								<Form.Control
+									type='number'
+									name='defaultPercent'
 									value={this.state.defaultPercent}
-									autoComplete={'false'}
-									onChange={this.handleChange}
+									autoComplete={"false"}
+									min={0}
+									max={100}
+									step={1}
+									onChange={this.handleChangePercentage}
 								/>
-							</label>
+								<InputGroup.Prepend>
+									<InputGroup.Text>%</InputGroup.Text>
+								</InputGroup.Prepend>
+							</InputGroup>
 						</Col>
-						<Col>
-							<label className="common1 label-vertical-dashboard">
-								{' '}
-								Vertical Token Timeout:
-								<input
-									type="number"
-									name="verticalDashboard"
-									className="input input-vertical-dashboard"
-									value={this.state.verticalDashboard}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Vertical Dashboard Timeout')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="verticalDashboard"
+								value={this.state.verticalDashboard}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label className="common1 label-default-setup">
-								Default Setup Minutes:
-								<input
-									type="number"
-									name="defaultMinutes"
-									className="input input-default-setup"
-									value={this.state.defaultMinutes}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+						<Form.Label column sm={1}>{t('Setup Minutes')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="defaultMinutes"
+								value={this.state.defaultMinutes}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
 						</Col>
-						<Col>
-							<label className="common1 label-site-code">
-								Site Identifier:
-								<input
-									type="text"
-									name="siteCode"
-									className="input input-site-code"
-									value={this.state.siteCode}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Site Identifier')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="text"
+								name="siteCode"
+								value={this.state.siteCode}
+								autoComplete={"false"}
+								onChange={this.handleChange}
+							/>
+							<Form.Text className='validation'>{validation.siteCode}</Form.Text>
 						</Col>
-					</Form.Row>
-					<div>
-						<button onClick={(e) => this.updateParams(e)} className="button-edit-2">
-							Confirm
-						</button>
-						<button className="button-edit-2 fix">
-							Cancel
-						</button>
-					</div>
+						<Col md={{ span: 4, offset: 3 }}>
+							<Button variant="outline-primary" className='commonParamBtn' onClick={(e) => this.updateParams(e)}>
+								{t('Confirm')}
+							</Button>
+							<Button variant="outline-danger" className='commonParamBtn' onClick={() => this.loadData()}>
+								{t('Cancel')}
+							</Button>
+						</Col>
+					</Form.Group>
 				</Form>
 				<Modal show={this.state.show} onHide={this.handleClose}>
 					<Modal.Header closeButton>

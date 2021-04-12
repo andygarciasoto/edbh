@@ -3,7 +3,7 @@
         "user": "parkeradmin",
         "password": "VFM9rqSkunX4pFPm",
         "server": "parker-ctpdev-test.database.windows.net",
-        "database": "FCGFOTF"
+        "database": "FCGFOTF_Dev"
     },
     "app_section": {
         "port": 8080,
