@@ -175,5 +175,8 @@
     "Target Percent of Ideal": "Zielprozentsatz des Ideals",
     "Vertical Dashboard Timeout": "Zeitlimit für vertikales Dashboard",
     "Setup Minutes": "Einrichtungsprotokolle",
-    "Site Identifier": "Site-ID"
+    "Site Identifier": "Site-ID",
+    "Workcell": "Arbeitszelle",
+    "Add Workcell": "Arbeitszelle Hinzufügen",
+    "Update Workcell": "Arbeitszelle Aktualisieren"
 }

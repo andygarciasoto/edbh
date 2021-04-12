@@ -13,6 +13,7 @@ import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { headers, getParametersOfTable, getValuesFromHeaderTable, getBatchCount } from '../configurations/datatoolutils';
 import { getUserParameters } from '../validators/userValidator';
 import { getShiftParameters } from '../validators/shiftValidator';
+import { getWorkcellParameters } from '../validators/workcellValidator';
 import Excel from 'exceljs';
 import _ from 'lodash';
 
@@ -165,7 +166,7 @@ export class DataToolService {
         let results: any[] = [];
         try {
             //create array of results
-            results.push({ result: await this.workcellrepository.getWorkcellBySite(site_id), table: 'Workcell' });
+            results.push({ result: await this.workcellrepository.findWorkByFilter(getWorkcellParameters(req.query)), table: 'Workcell' });
             results.push({ result: await this.assetrepository.getAssetBySiteExport(site_id), table: 'Asset' });
             results.push({ result: await this.dtreasonrepository.getDTReasonBySite(site_id), table: 'DTReason' });
             results.push({ result: await this.shiftrepository.findShiftByFilter(getShiftParameters(req.query)), table: 'Shift' });

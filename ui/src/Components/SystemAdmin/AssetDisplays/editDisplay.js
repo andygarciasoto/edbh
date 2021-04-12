@@ -28,7 +28,6 @@ class AddDisplay extends Component {
 			actions.getDisplayById(this.props.user.site, this.props.display_id),
 			actions.getAssets(this.props.user.site),
 		]).then((response) => {
-			console.log(response);
 			this.setState({
 				AssetsData: response[1],
 				asset: response[0].assetdisplaysystem_id,
@@ -99,7 +98,6 @@ class AddDisplay extends Component {
 	};
 
 	render() {
-    console.log(this.state);
 		return (
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose}>
