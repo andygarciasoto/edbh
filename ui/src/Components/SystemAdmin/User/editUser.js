@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as UserActions from "../../../redux/actions/userActions";
 import { API } from "../../../Utils/Constants";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { validateUserForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 import "../../../sass/SystemAdmin.scss";
 
 class EditUser extends Component {
@@ -24,6 +26,7 @@ class EditUser extends Component {
       escalation_id: 0,
       escalationArray: [],
       modalError: false,
+      validation: {}
     };
   }
 
@@ -76,18 +79,6 @@ class EditUser extends Component {
     });
   };
 
-  handleChangeRole = (event) => {
-    this.setState({ role_id: event.target.value });
-  };
-
-  handleChangeStatus = (event) => {
-    this.setState({ status: event.target.value });
-  };
-
-  handleChangeEscalation = (event) => {
-    this.setState({ escalation_id: event.target.value });
-  };
-
   createUser = (e) => {
     e.preventDefault();
     const {
@@ -99,9 +90,10 @@ class EditUser extends Component {
       escalation_id,
     } = this.state;
 
-    var url = `${API}/insert_user`;
+    let url = `${API}/insert_user`;
+    let validation = validateUserForm(this.state);
 
-    if (username !== "" && firstname !== "" && lastname !== "") {
+    if (_.isEmpty(validation)) {
       Axios.put(url, {
         badge: this.props.badge,
         username: username,
@@ -124,7 +116,7 @@ class EditUser extends Component {
       );
     } else {
       this.setState({
-        modalError: true,
+        validation
       });
     }
   };
@@ -146,96 +138,116 @@ class EditUser extends Component {
       role_id,
       status,
       escalation_id,
+      validation
     } = this.state;
 
     const t = this.props.t;
 
     return (
       <div>
-        <Modal show={this.props.showForm} onHide={this.handleClose}>
+        <Modal show={this.state.showForm} onHide={this.handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('Edit User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form>
-              <label>
-                {t('Badge')}:
-                <input
-                  className="input-badge"
-                  type="text"
-                  name="badge"
-                  value={badge}
-                  autoComplete={"false"}
-                  readOnly={true}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Username')}:
-                <input
-                  type="text"
-                  name="username"
-                  className="input-username"
-                  value={username}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('First Name')}:
-                <input
-                  type="text"
-                  name="firstname"
-                  className="input-firstname"
-                  value={firstname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Last Name')}:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  value={lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Escalation')}:
-                <select
-                  value={escalation_id}
-                  className="input-escalation"
-                  onChange={this.handleChangeEscalation}
-                >
-                  {this.state.escalationArray.map(this.renderEscalation)}
-                  <option value="">None</option>
-                </select>
-              </label>
-              <label>
-                {t('Role')}:
-                <select
-                  value={role_id}
-                  className="input-role"
-                  onChange={this.handleChangeRole}
-                >
-                  {this.state.rolesArray.map(this.renderRoles)}
-                </select>
-              </label>
-              <label>
-                {t('Status')}:
-                <select
-                  value={status}
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </label>
-            </form>
+            <Form>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Badge')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="badge"
+                    value={badge}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.badge}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Username')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    value={username}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.username}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('First Name')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="firstname"
+                    value={firstname}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.firstname}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Last Name')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="lastname"
+                    value={lastname}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.lastname}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Escalation')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={escalation_id}
+                    name='escalation_id'
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    {this.state.escalationArray.map(this.renderEscalation)}
+                    <option value="">None</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Role')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={role_id}
+                    autoComplete={"false"}
+                    name='role_id'
+                    onChange={this.handleChange}
+                  >
+                    {this.state.rolesArray.map(this.renderRoles)}
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Status')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={status}
+                    name='status'
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>

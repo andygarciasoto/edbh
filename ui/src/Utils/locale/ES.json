@@ -174,5 +174,18 @@
     "Duration (minutes)": "Duración (minutos)",
     "Is First Shift": "Primer Turno",
     "Add Shift": "Agregar Turno",
-    "Edit Shift": "Editar Turno"
+    "Edit Shift": "Editar Turno",
+    "Site Name": "Nombre de la Planta",
+    "Routed Cycle Time": "Tiempo de Ciclo Enrutado",
+    "Lunch Minutes": "Tiempo de Almuerzo",
+    "Production Day Offset Minutes": "Production Day Offset Minutes",
+    "Language": "Lenguje",
+    "Break Minutes": "Tiempo de Receso",
+    "Timezone": "Zona Horaria",
+    "Operator Session Timeout": "Tiempo de Expiración de la Sesion del Operador",
+    "Assembly URL": "URL del Ensamblado",
+    "Target Percent of Ideal": "Porcentaje Objetivo de Ideal ",
+    "Vertical Dashboard Timeout": "Tiempo de Expiración del Panel Vertical",
+    "Setup Minutes": "Tiempo de Configuración",
+    "Site Identifier": "Indentificador de la Planta"
 }

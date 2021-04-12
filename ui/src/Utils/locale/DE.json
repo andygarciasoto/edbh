@@ -162,5 +162,18 @@
     "Duration (minutes)": "Dauer (Protokoll)",
     "Is First Shift": "Ist Erste Schicht",
     "Add Shift": "Schicht Hinzufügen",
-    "Edit Shift": "Schicht Bearbeiten"
+    "Edit Shift": "Schicht Bearbeiten",
+    "Site Name": "Site-Name",
+    "Routed Cycle Time": "Routing-Zykluszeit",
+    "Lunch Minutes": "Minuten des Mittagessens",
+    "Production Day Offset Minutes": "Minuten des Produktionstagesversatzes",
+    "Language": "Sprache",
+    "Break Minutes": "Minuten Brechen",
+    "Timezone": "Zeitzone",
+    "Operator Session Timeout": "Zeitlimit für Bedienersitzung",
+    "Assembly URL": "Baugruppen-URL",
+    "Target Percent of Ideal": "Zielprozentsatz des Ideals",
+    "Vertical Dashboard Timeout": "Zeitlimit für vertikales Dashboard",
+    "Setup Minutes": "Einrichtungsprotokolle",
+    "Site Identifier": "Site-ID"
 }
