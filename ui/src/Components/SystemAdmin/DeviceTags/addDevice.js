@@ -1,9 +1,9 @@
-//import Axios from "axios";
+import Axios from "axios";
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UOMActions from '../../../redux/actions/uomActions';
-//import { API } from "../../../Utils/Constants";
+import { API } from "../../../Utils/Constants";
 import { Modal, Button, Form, Col } from 'react-bootstrap';
 import '../../../sass/SystemAdmin.scss';
 
@@ -11,13 +11,13 @@ class AddDevice extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			code: "",
-			status: "Active",
-			name: "",
+			code: '',
+			status: 'Active',
+			name: '',
 			uom_code: 0,
-			description: "",
+			description: '',
 			rollover: 0,
-			data_type: "Integer",
+			data_type: 'Integer',
 			max_change: 0,
 			asset: 0,
 			uomData: [],
@@ -37,7 +37,7 @@ class AddDevice extends Component {
 					uomData: response[0],
 					uom_code: response[0][0].UOM_id,
 					sites: response[1],
-					asset:response[1][1].asset_id
+					asset: response[1][1].asset_id,
 				});
 			}
 		);
@@ -53,53 +53,42 @@ class AddDevice extends Component {
 		});
 	};
 
-	//   createUser = (e) => {
-	//     e.preventDefault();
-	//     const {
-	//       badge,
-	//       username,
-	//       firstname,
-	//       lastname,
-	//       role,
-	//       status,
-	//       escalation_id,
-	//       site,
-	//     } = this.state;
+	createTag = (e) => {
+		e.preventDefault();
+		const { code, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
 
-	//     var url = `${API}/insert_user`;
-	//     if (
-	//       badge !== "" &&
-	//       username !== "" &&
-	//       firstname !== "" &&
-	//       lastname !== ""
-	//     ) {
-	//       Axios.put(url, {
-	//         badge: badge,
-	//         username: username,
-	//         first_name: firstname,
-	//         last_name: lastname,
-	//         role_id: role,
-	//         site_id: this.props.user.site,
-	//         escalation_id: parseInt(escalation_id, 10),
-	//         site: site,
-	//         status: status,
-	//       }).then(
-	//         () => {
-	//           this.setState({
-	//             show: true,
-	//           });
-	//           					this.handleClose();
-	//         },
-	//         (error) => {
-	//           console.log(error);
-	//         }
-	//       );
-	//     } else {
-	//       this.setState({
-	//         modalError: true,
-	//       });
-	//     }
-	//   };
+		var url = `${API}/insert_tag`;
+		if (code !== '' && name !== '' && description !== '') {
+			Axios.put(url, {
+				tag_code: code,
+				tag_name: name,
+				tag_description: description,
+				datatype: data_type,
+				UOM_code: parseInt(uom_code, 10),
+				site_id: this.props.user.site,
+				rollover_point: parseInt(rollover, 10),
+				aggregation: 'SUM',
+				asset_id: parseInt(asset, 10),
+				max_change: parseInt(max_change, 10),
+				status: status,
+			}).then(
+				() => {
+					this.props.Refresh();
+					this.setState({
+						show: true,
+					});
+					this.handleClose();
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+		} else {
+			this.setState({
+				modalError: true,
+			});
+		}
+	};
 
 	renderAssets(assets, index) {
 		return (
@@ -269,7 +258,7 @@ class AddDevice extends Component {
 						</form>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button variant="Primary" onClick={(e) => this.createUser(e)}>
+						<Button variant="Primary" onClick={(e) => this.createTag(e)}>
 							Confirm
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
