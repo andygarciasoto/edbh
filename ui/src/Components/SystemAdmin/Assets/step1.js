@@ -24,7 +24,7 @@ export class Step1 extends Component {
                 Automation Level:
                 <select
                   className="select-tag-category asset-automation"
-                  name="decimals"
+                  name="automation_level"
                   onChange={this.handleChange}
                 >
                   <option value="Active">Cost</option>
@@ -51,7 +51,7 @@ export class Step1 extends Component {
                 Asset Display:
                 <select
                   className="select-tag-type asset-asset"
-                  name="type"
+                  name="asset_display"
                   onChange={this.handleChange}
                 >
                   <option value="Active">Downtime</option>
@@ -67,7 +67,7 @@ export class Step1 extends Component {
                 <textarea
                   className="input-tag-description asset-description"
                   type="text"
-                  name="name"
+                  name="description"
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
@@ -78,7 +78,7 @@ export class Step1 extends Component {
                 Workcell:
                 <select
                   className="select-tag-type asset-workcell"
-                  name="type"
+                  name="workcell"
                   onChange={this.handleChange}
                 >
                   <option value="Active">Downtime</option>
@@ -93,7 +93,7 @@ export class Step1 extends Component {
                 Level:
                 <select
                   className="select-tag-type asset-level"
-                  name="type"
+                  name="level"
                   onChange={this.handleChange}
                 >
                   <option value="Active">Downtime</option>
@@ -107,7 +107,7 @@ export class Step1 extends Component {
                 <input
                   className="input-tag-aggregation asset-site-code"
                   type="text"
-                  name="name"
+                  name="site_code"
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />
@@ -120,7 +120,7 @@ export class Step1 extends Component {
                 Parent Code:
                 <select
                   className="select-tag-type asset-parent"
-                  name="type"
+                  name="parent_code"
                   onChange={this.handleChange}
                 >
                   <option value="Active">Downtime</option>
@@ -134,7 +134,7 @@ export class Step1 extends Component {
                 <input
                   className="input-tag-aggregation asset-escalation"
                   type="text"
-                  name="name"
+                  name="escalation"
                   autoComplete={"false"}
                   onChange={this.handleChange}
                 />

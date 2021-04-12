@@ -5,6 +5,7 @@ import * as TagActions from '../../../redux/actions/tagActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddTag from './addDevice';
+import EditTag from './editTags';
 import EditIcon from '../../../resources/u668.svg';
 
 class Device extends Component {
@@ -13,8 +14,8 @@ class Device extends Component {
 		this.state = {
 			TagsData: [],
 			addTag: false,
-			editShift: false,
-			shift_id: 0,
+			editTag: false,
+			tag_id: 0,
 		};
 	}
 
@@ -44,18 +45,18 @@ class Device extends Component {
 		});
 	};
 
-	//   showEditShift = (shift_id) => {
-	//     this.setState({
-	//       editShift: true,
-	//       shift_id: shift_id
-	//     });
-	//   };
+	showEditTag = (tag_id) => {
+		this.setState({
+			editTag: true,
+			tag_id: tag_id,
+		});
+	};
 
-	//   closeEditShift = () => {
-	//     this.setState({
-	//         editShift: false,
-	//     });
-	//   };
+	closeEditTag = () => {
+		this.setState({
+			editTag: false,
+		});
+	};
 
 	render() {
 		const t = this.props.t;
@@ -80,16 +81,19 @@ class Device extends Component {
 						showForm={this.state.addTag}
 						closeForm={this.closeAddTag}
 						Refresh={this.loadData}
+						t={t}
 					/>
 				)}
-				{/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
+				{this.state.editTag === true && (
+					<EditTag
+						user={this.props.user}
+						showForm={this.state.editTag}
+						closeForm={this.closeEditTag}
+						tag_id={this.state.tag_id}
+						Refresh={this.loadData}
+						t={t}
+					/>
+				)}
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -124,7 +128,7 @@ class Device extends Component {
 										src={EditIcon}
 										alt={`edit-icon`}
 										className="icon"
-										onClick={() => this.showEditShift(tag.tag_id)}
+										onClick={() => this.showEditTag(tag.tag_id)}
 									/>
 								</td>
 							</tr>

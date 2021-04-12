@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { GET_UOM, GET_ASSETS } from "../constants/constants";
+import { GET_UOM, GET_ASSETS, GET_TAGS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getUOM = (siteId) => {
@@ -35,6 +35,19 @@ export const getAssets = (siteId) => {
 			dispatch({
 				type: GET_ASSETS,
 				assets: response.data,
+			});
+			return response.data;
+		});
+	};
+};
+
+export const getTagById = (siteId, tag_id) => {
+	var url = `${API}/tags?site=${siteId}&tag_id=${tag_id}`;
+	return (dispatch) => {
+		return Axios.get(url).then((response) => {
+			dispatch({
+				type: GET_TAGS,
+				tags: response.data,
 			});
 			return response.data;
 		});
