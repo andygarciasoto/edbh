@@ -16,9 +16,9 @@ class AddDevice extends Component {
 			name: '',
 			uom_code: 0,
 			description: '',
-			rollover: 0,
+			rollover: 999999,
 			data_type: 'Integer',
-			max_change: 0,
+			max_change: 10,
 			asset: 0,
 			uomData: [],
 			show: false,
@@ -35,7 +35,7 @@ class AddDevice extends Component {
 			(response) => {
 				this.setState({
 					uomData: response[0],
-					uom_code: response[0][0].UOM_id,
+					uom_code: response[0][0].UOM_code,
 					sites: response[1],
 					asset: response[1][1].asset_id,
 				});
@@ -64,7 +64,7 @@ class AddDevice extends Component {
 				tag_name: name,
 				tag_description: description,
 				datatype: data_type,
-				UOM_code: parseInt(uom_code, 10),
+				UOM_code: uom_code,
 				site_id: this.props.user.site,
 				rollover_point: parseInt(rollover, 10),
 				aggregation: 'SUM',
@@ -100,7 +100,7 @@ class AddDevice extends Component {
 
 	renderUOM(uom, index) {
 		return (
-			<option value={uom.UOM_id} key={index}>
+			<option value={uom.UOM_code} key={index}>
 				{uom.UOM_code}
 			</option>
 		);
@@ -119,6 +119,7 @@ class AddDevice extends Component {
 	};
 
 	render() {
+		console.log(this.state);
 		return (
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose} contentClassName="modal-reason">
@@ -204,7 +205,7 @@ class AddDevice extends Component {
 											className="input-reason-name"
 											type="number"
 											name="rollover"
-											min={0}
+											min={999999}
 											value={this.state.rollover}
 											autoComplete={'false'}
 											onChange={this.handleChange}
@@ -232,7 +233,7 @@ class AddDevice extends Component {
 										<input
 											className="input-tag-aggregation"
 											type="number"
-											min={0}
+											min={10}
 											name="max_change"
 											value={this.state.max_change}
 											autoComplete={'false'}

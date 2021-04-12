@@ -96,9 +96,7 @@ class Device extends Component {
 							<th>Code</th>
 							<th>Name</th>
 							<th>Description</th>
-							<th>Tag Group</th>
 							<th>Data Type</th>
-							<th>Tag Type</th>
 							<th>UOM code</th>
 							<th>Rollover Point</th>
 							<th>Aggregation</th>
@@ -114,9 +112,7 @@ class Device extends Component {
 								<td>{tag.tag_code}</td>
 								<td>{tag.tag_name}</td>
 								<td>{tag.tag_description}</td>
-								<td>{tag.tag_group}</td>
 								<td>{tag.datatype}</td>
-								<td>{tag.tag_type}</td>
 								<td>{tag.UOM_code}</td>
 								<td>{tag.rollover_point}</td>
 								<td>{tag.aggregation}</td>
