@@ -4,27 +4,30 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as UserActions from "../../../redux/actions/userActions";
 import { API } from "../../../Utils/Constants";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { validateUserForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 import "../../../sass/SystemAdmin.scss";
 
 class AddUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      badge: "",
-      username: "",
-      firstname: "",
-      lastname: "",
+      badge: '',
+      username: '',
+      firstname: '',
+      lastname: '',
       role: 1,
       status: "Active",
       escalation_id: 1,
-      site: "",
+      site: props.user.site,
       roles: [],
       show: false,
       showForm: true,
       escalation: [],
       sites: [],
       modalError: false,
+      validation: {}
     };
   }
 
@@ -54,22 +57,6 @@ class AddUser extends Component {
     });
   };
 
-  handleChangeRole = (event) => {
-    this.setState({ role: event.target.value });
-  };
-
-  handleChangeEscalation = (event) => {
-    this.setState({ escalation_id: event.target.value });
-  };
-
-  handleChangeStatus = (event) => {
-    this.setState({ status: event.target.value });
-  };
-
-  handleChangeSite = (event) => {
-    this.setState({ site: event.target.value });
-  };
-
   createUser = (e) => {
     e.preventDefault();
     const {
@@ -83,12 +70,12 @@ class AddUser extends Component {
       site,
     } = this.state;
 
-    var url = `${API}/insert_user`;
+    let url = `${API}/insert_user`;
+
+    let validation = validateUserForm(this.state);
+
     if (
-      badge !== "" &&
-      username !== "" &&
-      firstname !== "" &&
-      lastname !== ""
+      _.isEmpty(validation)
     ) {
       Axios.put(url, {
         badge: badge,
@@ -114,7 +101,7 @@ class AddUser extends Component {
       );
     } else {
       this.setState({
-        modalError: true,
+        validation
       });
     }
   };
@@ -144,7 +131,7 @@ class AddUser extends Component {
   }
 
   handleClose = () => {
-		this.setState({ showForm: false });
+    this.setState({ showForm: false });
   };
 
   closeModalError = () => {
@@ -152,95 +139,130 @@ class AddUser extends Component {
   };
 
   closeSuccessModal = () => {
-		this.setState({ show: false });
-	};
+    this.setState({ show: false });
+  };
 
   render() {
     const t = this.props.t;
+    const validation = this.state.validation;
     return (
       <div>
-        <Modal show={this.state.showForm} onHide={this.handleClose}>
+        <Modal show={this.state.showForm} onHide={this.handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('Add User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form>
-              <label>
-                {t('Badge')}:
-                <input
-                  className="input-badge"
-                  type="text"
-                  name="badge"
-                  value={this.state.badge}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Username')}:
-                <input
-                  type="text"
-                  name="username"
-                  className="input-username"
-                  value={this.state.username}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('First Name')}:
-                <input
-                  type="text"
-                  name="firstname"
-                  className="input-firstname"
-                  value={this.state.firstname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Last Name')}:
-                <input
-                  type="text"
-                  name="lastname"
-                  className="input-lastname"
-                  value={this.state.lastname}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                {t('Escalation')}:
-                <select
-                  className="input-escalation"
-                  onChange={this.handleChangeEscalation}
-                >
-                  {this.state.escalation.map(this.renderEscalation)}
-                </select>
-              </label>
-              <label>
-                {t('Role')}:
-                <select className="input-role" onChange={this.handleChangeRole}>
-                  {this.state.roles.map(this.renderRoles)}
-                </select>
-              </label>
-              <label>
-                {t('Status')}:
-                <select
-                  className="input-status"
-                  onChange={this.handleChangeStatus}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </label>
-              <label>
-                {t('Site')}:
-                <select className="input-role" onChange={this.handleChangeSite}>
-                  {this.state.sites.map(this.renderSites)}
-                </select>
-              </label>
-            </form>
+            <Form>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Badge')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="badge"
+                    value={this.state.badge}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.badge}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Username')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    value={this.state.username}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.username}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('First Name')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="firstname"
+                    value={this.state.firstname}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.firstname}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Last Name')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    type="text"
+                    name="lastname"
+                    value={this.state.lastname}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Text className='validation'>{validation.lastname}</Form.Text>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Escalation')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={this.state.escalation_id}
+                    name='escalation_id'
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    {this.state.escalation.map(this.renderEscalation)}
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Role')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={this.state.role}
+                    autoComplete={"false"}
+                    name='role'
+                    onChange={this.handleChange}
+                  >
+                    {this.state.roles.map(this.renderRoles)}
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Status')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as="select"
+                    value={this.state.status}
+                    name='status'
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Form.Label column sm={2}>{t('Site')}:</Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    as='select'
+                    name='site'
+                    value={this.state.site}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    {this.state.sites.map(this.renderSites)}
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>

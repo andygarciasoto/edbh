@@ -141,7 +141,7 @@ export class AddShift extends Component {
     const t = this.props.t;
     return (
       <div>
-        <Modal show={this.state.showForm} onHide={this.handleClose}>
+        <Modal show={this.state.showForm} onHide={this.handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('Add Shift')}</Modal.Title>
           </Modal.Header>

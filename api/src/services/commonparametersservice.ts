@@ -22,9 +22,9 @@ export class CommonParametersService {
         const lunch_minutes = req.body.lunch_minutes ? req.body.lunch_minutes : 0;
         const site_prefix = req.body.site_prefix ? req.body.site_prefix : null;
         const status = req.body.status ? req.body.status : 'Active';
-        const assembly_url = req.body.assembly_url ? req.body.assembly_url : null;
+        const assembly_url = req.body.assembly_url;
         const timezone_id = req.body.timezone_id ? req.body.timezone_id : null;
-        const language_id  = req.body.language_id ? req.body.language_id : null;
+        const language_id = req.body.language_id ? req.body.language_id : null;
 
         if (site_id === undefined || site_name === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });

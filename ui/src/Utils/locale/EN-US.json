@@ -174,5 +174,18 @@
     "Duration (minutes)": "Duration (minutes)",
     "Is First Shift": "Is First Shift",
     "Add Shift": "Add Shift",
-    "Edit Shift": "Edit Shift"
+    "Edit Shift": "Edit Shift",
+    "Site Name": "Site Name",
+    "Routed Cycle Time": "Routed Cycle Time",
+    "Lunch Minutes": "Lunch Minutes",
+    "Production Day Offset Minutes": "Production Day Offset Minutes",
+    "Language": "Language",
+    "Break Minutes": "Break Minutes",
+    "Timezone": "Timezone",
+    "Operator Session Timeout": "Operator Session Timeout",
+    "Assembly URL": "Assembly URL",
+    "Target Percent of Ideal": "Target Percent of Ideal",
+    "Vertical Dashboard Timeout": "Vertical Dashboard Timeout",
+    "Setup Minutes": "Setup Minutes",
+    "Site Identifier": "Site Identifier"
 }
