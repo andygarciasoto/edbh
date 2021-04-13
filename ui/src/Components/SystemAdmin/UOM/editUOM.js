@@ -54,7 +54,7 @@ class EditUOM extends Component {
 
 		if (name !== '' && this.props.user.site_prefix !== null) {
 			genericRequest('put', API, '/insert_uom', null, null, {
-				umo_id: this.props.uom_id,
+				uom_id: this.props.uom_id,
 				uom_code: `${this.props.user.site_prefix}-${name}`,
 				uom_name: name,
 				uom_description: description === '' ? null : description,
@@ -93,16 +93,17 @@ class EditUOM extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose}  centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Update UOM</Modal.Title>
+						<Modal.Title>{t('Update UOM')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									type="text"
 									name="name"
@@ -113,7 +114,7 @@ class EditUOM extends Component {
 								/>
 							</label>
 							<label>
-								Description:
+								{t('Description')}:
 								<textarea
 									value={this.state.description}
 									className="text-uom-description"
@@ -122,7 +123,7 @@ class EditUOM extends Component {
 								></textarea>
 							</label>
 							<label>
-								Decimals:
+								{t('Decimals')}:
 								<select
 									value={this.state.decimals}
 									className="select-uom-decimals"
@@ -134,7 +135,7 @@ class EditUOM extends Component {
 								</select>
 							</label>
 							<label>
-								Status:
+								{t('Status')}:
 								<select
 									value={this.state.status}
 									className="select-display-status uom-status"
@@ -149,10 +150,10 @@ class EditUOM extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

@@ -47,11 +47,11 @@ class AddDisplay extends Component {
 		const { name, asset, status } = this.state;
 
 		if (name !== '') {
-      genericRequest('put', API, '/insert_displaysystem', null, null, {
+			genericRequest('put', API, '/insert_displaysystem', null, null, {
 				asset_id: parseInt(asset, 10),
-        displaysystem_name: name,
+				displaysystem_name: name,
 				site_id: this.props.user.site,
-        status: status
+				status: status
 			}).then(
 				() => {
 					this.props.Refresh();
@@ -92,16 +92,17 @@ class AddDisplay extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Display</Modal.Title>
+						<Modal.Title>{t('Add Display')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									className="input-display-name"
 									type="text"
@@ -112,13 +113,13 @@ class AddDisplay extends Component {
 								/>
 							</label>
 							<label>
-								Asset:
+								{t('Asset')}:
 								<select className="input-display-asset" name="asset" onChange={this.handleChange}>
 									{this.state.AssetsData.map(this.renderAssets)}
 								</select>
 							</label>
 							<label>
-								Status:
+								{t('Status')}:
 								<select className="select-display-status" name="status" onChange={this.handleChange}>
 									<option value="Active">Active</option>
 									<option value="Inactive">Inactive</option>
@@ -128,10 +129,10 @@ class AddDisplay extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createDisplay(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

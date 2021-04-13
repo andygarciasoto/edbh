@@ -1,26 +1,22 @@
 import { Request, Response } from 'express';
 import { AssetDisplaySystemRepository } from '../repositories/assetdisplaysystem-repository';
+import { getDisplaysParameters } from '../validators/displaysValidator';
 
 export class AssetDisplaySystemService {
-    private readonly assetdisplaysystemrepository : AssetDisplaySystemRepository;
+    private readonly assetdisplaysystemrepository: AssetDisplaySystemRepository;
 
     public constructor(assetdisplaysystemrepository: AssetDisplaySystemRepository) {
         this.assetdisplaysystemrepository = assetdisplaysystemrepository;
     }
 
     public async getAssetDisplayBySite(req: Request, res: Response) {
-        let site = req.query.site;
-        let assetdisplaysystem_id = req.query.assetdisplaysystem_id;
+        let site = req.query.site_id;
         if (!site || site === null || site === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let assetdisplay: any;
         try {
-            if (!assetdisplaysystem_id) {
-                assetdisplay = await this.assetdisplaysystemrepository.getAssetDisplaySystemBySite(site);
-            } else {
-                assetdisplay = await this.assetdisplaysystemrepository.getAssetDisplaySystemById(assetdisplaysystem_id);
-            }
+            assetdisplay = await this.assetdisplaysystemrepository.findDisplaysByFilter(getDisplaysParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

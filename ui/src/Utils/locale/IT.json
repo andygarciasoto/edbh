@@ -176,5 +176,16 @@
     "Target Percent of Ideal": "Percentuale Target dell'Ideale",
     "Vertical Dashboard Timeout": "Timeout Cruscotto Verticale",
     "Setup Minutes": "Minuti di Installazione",
-    "Site Identifier": "Identificatore del Sito"
+    "Site Identifier": "Identificatore del Sito",
+    "Workcell": "Cella di Lavoro",
+    "Add Workcell": "Aggiungi Cella di Lavoro",
+    "Update Workcell": "Aggiorna la Cella di Lavoro",
+    "Code": "Codice",
+    "Decimals": "Decimali",
+    "Add UOM": "Inserisci UOM",
+    "Update UOM": "Aggiornare UOM",
+    "Asset": "Macchina",
+    "Asset Display": "Display della macchina",
+    "Add Display": "Aggiungi Display",
+    "Update Display": "Aggiorna Visualizzazione"
 }

@@ -92,7 +92,6 @@ class CommonParams extends Component {
 
 	handleChangePercentage = (event) => {
 		const target = event.target;
-		console.log(target.value);
 		if (parseInt(target.value, 10) >= 0 && parseInt(target.value, 10) <= 100 && !target.value.includes('.')) {
 			this.setState({
 				[target.name]: target.value,

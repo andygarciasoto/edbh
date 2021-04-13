@@ -13,6 +13,9 @@ import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { headers, getParametersOfTable, getValuesFromHeaderTable, getBatchCount } from '../configurations/datatoolutils';
 import { getUserParameters } from '../validators/userValidator';
 import { getShiftParameters } from '../validators/shiftValidator';
+import { getWorkcellParameters } from '../validators/workcellValidator';
+import { getUOMParameters } from '../validators/uomValidator';
+import { getDisplaysParameters } from '../validators/displaysValidator';
 import Excel from 'exceljs';
 import _ from 'lodash';
 
@@ -165,16 +168,16 @@ export class DataToolService {
         let results: any[] = [];
         try {
             //create array of results
-            results.push({ result: await this.workcellrepository.getWorkcellBySite(site_id), table: 'Workcell' });
+            results.push({ result: await this.workcellrepository.findWorkByFilter(getWorkcellParameters(req.query)), table: 'Workcell' });
             results.push({ result: await this.assetrepository.getAssetBySiteExport(site_id), table: 'Asset' });
             results.push({ result: await this.dtreasonrepository.getDTReasonBySite(site_id), table: 'DTReason' });
             results.push({ result: await this.shiftrepository.findShiftByFilter(getShiftParameters(req.query)), table: 'Shift' });
             results.push({ result: await this.tagrepository.getTagBySite(site_id), table: 'Tag' });
             results.push({ result: await this.commonparametersrepository.getCommonParametersBySite(site_id), table: 'CommonParameters' });
-            results.push({ result: await this.uomrepository.getUomBySite(site_id), table: 'UOM' });
+            results.push({ result: await this.uomrepository.findUomByFilter(getUOMParameters(req.query)), table: 'UOM' });
             results.push({ result: await this.unavailablerepository.getUnavailableBySite(site_id), table: 'Unavailable' });
             results.push({ result: await this.userrepository.findUserByFilter(getUserParameters(req.query)), table: 'TFDUsers' });
-            results.push({ result: await this.assetdisplaysystemrepository.getAssetDisplaySystemBySite(site_id), table: 'AssetDisplaySystem' });
+            results.push({ result: await this.assetdisplaysystemrepository.findDisplaysByFilter(getDisplaysParameters(req.query)), table: 'AssetDisplaySystem' });
 
             _.forEach(results, response => {
                 let worksheet = workbook.addWorksheet(response.table);

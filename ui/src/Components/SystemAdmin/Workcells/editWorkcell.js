@@ -23,7 +23,6 @@ class EditWorkcell extends Component {
 		const { actions } = this.props;
 
 		return actions.getWorkcellById(this.props.user.site, this.props.workcell_id).then((response) => {
-			console.log(response);
 			this.setState({
 				name: response[0].workcell_name,
 				description: response[0].workcell_description,
@@ -44,8 +43,8 @@ class EditWorkcell extends Component {
 	handleClose = () => {
 		this.setState({ showForm: false });
 	};
-	
-	handle=()=>{
+
+	handle = () => {
 		this.props.closeForm();
 	}
 
@@ -61,7 +60,7 @@ class EditWorkcell extends Component {
 		e.preventDefault();
 		const { name, description } = this.state;
 
-		if (name !== '' && description !== '') {
+		if (name !== '') {
 			genericRequest('put', API, '/insert_workcell', null, null, {
 				workcell_id: this.props.workcell_id,
 				workcell_name: name,
@@ -69,6 +68,7 @@ class EditWorkcell extends Component {
 				site_id: this.props.user.site,
 			}).then(
 				() => {
+					this.props.Refresh();
 					this.setState({
 						show: true,
 					});
@@ -86,16 +86,17 @@ class EditWorkcell extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose}  centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Update Workcell</Modal.Title>
+						<Modal.Title>{t('Update Workcell')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									className="input-display-name"
 									type="text"
@@ -106,7 +107,7 @@ class EditWorkcell extends Component {
 								/>
 							</label>
 							<label>
-								Description:
+								{t('Description')}:
 								<textarea
 									value={this.state.description}
 									className="text-workcell-description"
@@ -118,10 +119,10 @@ class EditWorkcell extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createWorkcell(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handle}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

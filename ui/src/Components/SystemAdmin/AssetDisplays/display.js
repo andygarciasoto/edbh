@@ -16,6 +16,7 @@ class Display extends Component {
 			addDisplay: false,
 			editDisplay: false,
 			display_id: 0,
+			statusFilter: 'All'
 		};
 	}
 
@@ -25,13 +26,25 @@ class Display extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-		return actions.getDisplay(this.props.user.site).then((response) => {
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
+
+		return actions.getDisplayFilter(params).then((response) => {
 			this.setState({
 				DisplayData: response,
 			});
 		});
 	};
+
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
 	showAddDisplay = () => {
 		this.setState({
@@ -60,13 +73,12 @@ class Display extends Component {
 
 	render() {
 		const t = this.props.t;
-
 		return (
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Asset Display'}
-					buttonFilter={'Search'}
+					buttonName={'+ ' + t('Asset Display')}
+					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -75,8 +87,10 @@ class Display extends Component {
 					type={false}
 					shifts={false}
 					onClick={() => this.showAddDisplay()}
+					onClickFilter={this.applyFilter}
+					view={'Display'}
 					t={t}
-				></Filter>
+				/>
 				{this.state.addDisplay === true && (
 					<AddDisplay
 						user={this.props.user}
@@ -99,10 +113,10 @@ class Display extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Asset</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<th>{t('Name')}</th>
+							<th>{t('Asset')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>

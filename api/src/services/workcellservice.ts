@@ -1,27 +1,23 @@
 import { Request, Response } from 'express';
 import { WorkcellRepository } from '../repositories/workcell-repository';
+import { getWorkcellParameters } from '../validators/workcellValidator';
 
 export class WorkcellService {
 
-    private readonly workcellrepository : WorkcellRepository;
+    private readonly workcellrepository: WorkcellRepository;
 
     public constructor(workcellrepository: WorkcellRepository) {
         this.workcellrepository = workcellrepository;
     }
 
     public async getWorkcellBySite(req: Request, res: Response) {
-        let site = req.query.site;
-        let workcell_id = req.query.workcell_id;
-        if (!site) {
+        let site_id = req.query.site_id;
+        if (!site_id) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let workcell: any;
         try {
-            if (!workcell_id) {
-                workcell = await this.workcellrepository.getWorkcellBySite(site);
-            } else {
-                workcell = await this.workcellrepository.getWorkcellById(workcell_id);
-            }
+            workcell = await this.workcellrepository.findWorkByFilter(getWorkcellParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -32,10 +28,10 @@ export class WorkcellService {
     public async putWorkcell(req: Request, res: Response) {
         const workcell_id = req.body.workcell_id ? req.body.workcell_id : null;
         const workcell_name = req.body.workcell_name ? req.body.workcell_name : undefined;
-        const workcell_description = req.body.workcell_description ? req.body.workcell_description : null;
+        const workcell_description = req.body.workcell_description;
         const site_id = req.body.site_id ? req.body.site_id : undefined;
 
-        if (workcell_name === undefined ||site_id === undefined) {
+        if (workcell_name === undefined || site_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let workcell: any;
