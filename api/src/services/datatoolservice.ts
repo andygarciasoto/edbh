@@ -15,6 +15,7 @@ import { getUserParameters } from '../validators/userValidator';
 import { getShiftParameters } from '../validators/shiftValidator';
 import { getWorkcellParameters } from '../validators/workcellValidator';
 import { getUOMParameters } from '../validators/uomValidator';
+import { getDisplaysParameters } from '../validators/displaysValidator';
 import Excel from 'exceljs';
 import _ from 'lodash';
 
@@ -176,7 +177,7 @@ export class DataToolService {
             results.push({ result: await this.uomrepository.findUomByFilter(getUOMParameters(req.query)), table: 'UOM' });
             results.push({ result: await this.unavailablerepository.getUnavailableBySite(site_id), table: 'Unavailable' });
             results.push({ result: await this.userrepository.findUserByFilter(getUserParameters(req.query)), table: 'TFDUsers' });
-            results.push({ result: await this.assetdisplaysystemrepository.getAssetDisplaySystemBySite(site_id), table: 'AssetDisplaySystem' });
+            results.push({ result: await this.assetdisplaysystemrepository.findDisplaysByFilter(getDisplaysParameters(req.query)), table: 'AssetDisplaySystem' });
 
             _.forEach(results, response => {
                 let worksheet = workbook.addWorksheet(response.table);

@@ -194,5 +194,9 @@
     "Code": "Code",
     "Decimals": "Decimals",
     "Add UOM": "Add UOM",
-    "Update UOM": "Update UOM"
+    "Update UOM": "Update UOM",
+    "Asset": "Asset",
+    "Asset Display": "Asset Display",
+    "Add Display": "Add Display",
+    "Update Display": "Update Display"
 }

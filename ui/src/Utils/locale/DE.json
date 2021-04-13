@@ -182,5 +182,9 @@
     "Code": "Code",
     "Decimals": "Dezimalstellen",
     "Add UOM": "UOM Hinzufügen",
-    "Update UOM": "UOM Aktualisieren"
+    "Update UOM": "UOM Aktualisieren",
+    "Asset": "Maschine",
+    "Asset Display": "Maschinenanzeige",
+    "Add Display": "Anzeige Hinzufügen",
+    "Update Display": "Anzeige Aktualisieren"
 }

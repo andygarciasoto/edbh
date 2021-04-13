@@ -171,5 +171,9 @@
     "Code": "암호",
     "Decimals": "소수",
     "Add UOM": "UOM 추가",
-    "Update UOM": "UOM 업데이트"
+    "Update UOM": "UOM 업데이트",
+    "Asset": "기계",
+    "Asset Display": "기계 디스플레이",
+    "Add Display": "디스플레이 추가",
+    "Update Display": "업데이트 디스플레이"
 }

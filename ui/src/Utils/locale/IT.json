@@ -183,5 +183,9 @@
     "Code": "Codice",
     "Decimals": "Decimali",
     "Add UOM": "Inserisci UOM",
-    "Update UOM": "Aggiornare UOM"
+    "Update UOM": "Aggiornare UOM",
+    "Asset": "Macchina",
+    "Asset Display": "Display della macchina",
+    "Add Display": "Aggiungi Display",
+    "Update Display": "Aggiorna Visualizzazione"
 }

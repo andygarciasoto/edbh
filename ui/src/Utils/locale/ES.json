@@ -194,5 +194,9 @@
     "Code": "Código",
     "Decimals": "Decimales",
     "Add UOM": "Agregar UOM",
-    "Update UOM": "Actualizar UOM"
+    "Update UOM": "Actualizar UOM",
+    "Asset": "Máquina",
+    "Asset Display": "Pantalla de Máquina",
+    "Add Display": "Agregar Pantalla de Máquina",
+    "Update Display": "Actualizar Pantalla de Máquina"
 }

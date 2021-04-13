@@ -18,7 +18,6 @@ export class UomRepository {
         join orderdata o on a.asset_id = ${asset_id} and a.asset_id = o.asset_id join uom u on o.uom_code = u.uom_code`);
     }
     public async putUOM(uom_id: number, uom_code: string, uom_name: string, uom_description: string, status: string, site_id: number, decimals: boolean): Promise<any> {
-        console.log(`exec dbo.spLocal_EY_DxH_Put_UOM ${uom_id}, N'${uom_code}', N'${uom_name}', N'${uom_description}', '${status}', ${site_id}, ${decimals}`);
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_UOM ${uom_id}, N'${uom_code}', N'${uom_name}', N'${uom_description}', '${status}', ${site_id}, ${decimals}`);
     }
     public async findUomByFilter(parameters: any[]): Promise<any> {
