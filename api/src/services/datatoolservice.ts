@@ -14,6 +14,7 @@ import { headers, getParametersOfTable, getValuesFromHeaderTable, getBatchCount 
 import { getUserParameters } from '../validators/userValidator';
 import { getShiftParameters } from '../validators/shiftValidator';
 import { getWorkcellParameters } from '../validators/workcellValidator';
+import { getUOMParameters } from '../validators/uomValidator';
 import Excel from 'exceljs';
 import _ from 'lodash';
 
@@ -172,7 +173,7 @@ export class DataToolService {
             results.push({ result: await this.shiftrepository.findShiftByFilter(getShiftParameters(req.query)), table: 'Shift' });
             results.push({ result: await this.tagrepository.getTagBySite(site_id), table: 'Tag' });
             results.push({ result: await this.commonparametersrepository.getCommonParametersBySite(site_id), table: 'CommonParameters' });
-            results.push({ result: await this.uomrepository.getUomBySite(site_id), table: 'UOM' });
+            results.push({ result: await this.uomrepository.findUomByFilter(getUOMParameters(req.query)), table: 'UOM' });
             results.push({ result: await this.unavailablerepository.getUnavailableBySite(site_id), table: 'Unavailable' });
             results.push({ result: await this.userrepository.findUserByFilter(getUserParameters(req.query)), table: 'TFDUsers' });
             results.push({ result: await this.assetdisplaysystemrepository.getAssetDisplaySystemBySite(site_id), table: 'AssetDisplaySystem' });

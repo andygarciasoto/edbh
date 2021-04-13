@@ -73,7 +73,7 @@ class AddWorkcell extends Component {
 		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
 						<Modal.Title>{t('Add Workcell')}</Modal.Title>
 					</Modal.Header>

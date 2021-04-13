@@ -167,5 +167,9 @@
     "Site Identifier": "사이트 식별자",
     "Workcell": "작업 셀",
     "Add Workcell": "작업 셀 추가",
-    "Update Workcell": "작업 셀 업데이트"
+    "Update Workcell": "작업 셀 업데이트",
+    "Code": "암호",
+    "Decimals": "소수",
+    "Add UOM": "UOM 추가",
+    "Update UOM": "UOM 업데이트"
 }

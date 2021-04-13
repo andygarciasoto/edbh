@@ -190,5 +190,9 @@
     "Site Identifier": "Site Identifier",
     "Workcell": "Workcell",
     "Add Workcell": "Add Workcell",
-    "Update Workcell": "Update Workcell"
+    "Update Workcell": "Update Workcell",
+    "Code": "Code",
+    "Decimals": "Decimals",
+    "Add UOM": "Add UOM",
+    "Update UOM": "Update UOM"
 }

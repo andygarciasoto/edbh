@@ -178,5 +178,9 @@
     "Site Identifier": "Site-ID",
     "Workcell": "Arbeitszelle",
     "Add Workcell": "Arbeitszelle Hinzufügen",
-    "Update Workcell": "Arbeitszelle Aktualisieren"
+    "Update Workcell": "Arbeitszelle Aktualisieren",
+    "Code": "Code",
+    "Decimals": "Dezimalstellen",
+    "Add UOM": "UOM Hinzufügen",
+    "Update UOM": "UOM Aktualisieren"
 }

@@ -159,7 +159,7 @@ const Filter = ({
         onClick={() => {
           if (view === 'User')
             onClickFilter(statusFilter, roleFilter, escalationFilter);
-          if (view === 'Shift')
+          if (view === 'Shift' || view === 'Workcell' || view === 'UOM')
             onClickFilter(statusFilter);
         }}
       >

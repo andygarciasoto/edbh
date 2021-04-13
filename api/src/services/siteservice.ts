@@ -8,6 +8,7 @@ import { WorkcellRepository } from '../repositories/workcell-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { headers, getParametersOfTable, getValuesFromHeaderTable, getColumns } from '../configurations/datatoolutils';
 import { getWorkcellParameters } from '../validators/workcellValidator';
+import { getUOMParameters } from '../validators/uomValidator';
 import _ from 'lodash';
 
 export class SiteService {
@@ -49,7 +50,7 @@ export class SiteService {
             siteInformation.shifts = await this.shiftsrepository.getShiftBySite(site_id);
             siteInformation.site_assets = await this.assetrepository.getAssetBySite(site_id, 'All', 'All');
             siteInformation.machines = _.filter(siteInformation.site_assets, { asset_level: 'Cell' });
-            siteInformation.uoms = await this.uomrepository.getUomBySite(site_id);
+            siteInformation.uoms = await this.uomrepository.findUomByFilter(getUOMParameters(req.query));
             siteInformation.workcell = await this.workcellrepository.findWorkByFilter(getWorkcellParameters(req.query));
             siteInformation.assets_workcell = await this.assetrepository.getAssetByWorkcell(station || 'Null', site_id);
             siteInformation.escalations = await this.escalationrepository.getEscalationBySite(site_id);

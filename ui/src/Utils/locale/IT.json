@@ -179,5 +179,9 @@
     "Site Identifier": "Identificatore del Sito",
     "Workcell": "Cella di Lavoro",
     "Add Workcell": "Aggiungi Cella di Lavoro",
-    "Update Workcell": "Aggiorna la Cella di Lavoro"
+    "Update Workcell": "Aggiorna la Cella di Lavoro",
+    "Code": "Codice",
+    "Decimals": "Decimali",
+    "Add UOM": "Inserisci UOM",
+    "Update UOM": "Aggiornare UOM"
 }

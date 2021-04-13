@@ -1,9 +1,10 @@
 import Axios from "axios";
 import { GET_UOM, GET_ASSETS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
+import { genericRequest } from '../../Utils/Requests';
 
 export const getUOM = (siteId) => {
-  var url = `${API}/uom_by_site?site=${siteId}`;
+  var url = `${API}/uom_by_site?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
@@ -16,7 +17,7 @@ export const getUOM = (siteId) => {
 };
 
 export const getUOMById = (siteId, uom_id) => {
-  var url = `${API}/uom_by_site?site=${siteId}&uom_id=${uom_id}`;
+  var url = `${API}/uom_by_site?site_id=${siteId}&uom_id=${uom_id}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
@@ -29,14 +30,26 @@ export const getUOMById = (siteId, uom_id) => {
 };
 
 export const getAssets = (siteId) => {
-	var url = `${API}/asset_by_site?site=${siteId}`;
-	return (dispatch) => {
-		return Axios.get(url).then((response) => {
-			dispatch({
-				type: GET_ASSETS,
-				assets: response.data,
-			});
-			return response.data;
-		});
-	};
+  var url = `${API}/asset_by_site?site=${siteId}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_ASSETS,
+        assets: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getUOMFilter = (params) => {
+  return (dispatch) => {
+    return genericRequest('get', API, '/uom_by_site', null, params).then((response) => {
+      dispatch({
+        type: GET_UOM,
+        users: response.data,
+      });
+      return response.data;
+    });
+  };
 };

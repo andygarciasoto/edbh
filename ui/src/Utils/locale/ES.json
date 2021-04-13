@@ -190,5 +190,9 @@
     "Site Identifier": "Indentificador de la Planta",
     "Workcell": "Celda de Trabajo",
     "Add Workcell": "Agregar Celda de Trabajo",
-    "Update Workcell": "Actualizar Celda de Trabajo"
+    "Update Workcell": "Actualizar Celda de Trabajo",
+    "Code": "Código",
+    "Decimals": "Decimales",
+    "Add UOM": "Agregar UOM",
+    "Update UOM": "Actualizar UOM"
 }
