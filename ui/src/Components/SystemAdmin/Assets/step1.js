@@ -27,8 +27,10 @@ export class Step1 extends Component {
                   name="automation_level"
                   onChange={this.handleChange}
                 >
-                  <option value="Active">Cost</option>
-                  <option value="Inactive">Cost</option>
+                  <option value="Automated">Automated</option>
+                  <option value="Partially_Manual_Scan_Order">Partially_Manual_Scan_Order</option>
+                  <option value="Manuak">Manual</option>
+
                 </select>
               </label>
             </Col>
