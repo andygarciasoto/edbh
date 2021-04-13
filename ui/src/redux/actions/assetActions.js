@@ -16,7 +16,7 @@ export const getAssets = (siteId) => {
 };
 
 export const getDisplayById = (siteId, display_id) => {
-  var url = `${API}/display_by_site?site=${siteId}&assetdisplaysystem_id=${display_id}`;
+  var url = `${API}/display_by_site?site_id=${siteId}&assetdisplaysystem_id=${display_id}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({

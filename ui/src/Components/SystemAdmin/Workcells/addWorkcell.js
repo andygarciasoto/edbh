@@ -45,7 +45,7 @@ class AddWorkcell extends Component {
 		e.preventDefault();
 		const { name, description } = this.state;
 
-		if (name !== '' && description !== '') {
+		if (name !== '') {
 			genericRequest('put', API, '/insert_workcell', null, null, {
 				workcell_name: name,
 				workcell_description: description,
@@ -70,16 +70,17 @@ class AddWorkcell extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Workcell</Modal.Title>
+						<Modal.Title>{t('Add Workcell')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									className="input-display-name"
 									type="text"
@@ -90,7 +91,7 @@ class AddWorkcell extends Component {
 								/>
 							</label>
 							<label>
-								Description:
+								{t('Description')}:
 								<textarea
 									className="text-workcell-description"
 									name="description"
@@ -101,10 +102,10 @@ class AddWorkcell extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createWorkcell(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

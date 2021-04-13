@@ -75,16 +75,17 @@ class AddUOM extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose}  centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Add UOM</Modal.Title>
+						<Modal.Title>{t('Add UOM')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									type="text"
 									name="name"
@@ -95,7 +96,7 @@ class AddUOM extends Component {
 								/>
 							</label>
 							<label>
-								Description:
+								{t('Description')}:
 								<textarea
 									className="text-uom-description"
 									name="description"
@@ -103,14 +104,14 @@ class AddUOM extends Component {
 								></textarea>
 							</label>
 							<label>
-								Decimals:
+								{t('Decimals')}:
 								<select className="select-uom-decimals" name="decimals" onChange={this.handleChange}>
 									<option value={0}>No</option>
 									<option value={1}>Yes</option>
 								</select>
 							</label>
 							<label>
-								Status:
+								{t('Status')}:
 								<select
 									className="select-display-status uom-status"
 									name="status"
@@ -124,10 +125,10 @@ class AddUOM extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

@@ -1,6 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_UOM]    Script Date: 6/4/2021 09:10:47 ******/
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_UOM]    Script Date: 31/12/2020 09:35:04 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_UOM]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
 -- exec spLocal_EY_DxH_Put_UOM 1, 'PCS', 'PCS', 'Pieces', 'Active', 1, 1
@@ -22,7 +20,6 @@ AS  BEGIN
 		BEGIN
 			UPDATE dbo.UOM
 			SET 
-			uom_code = @uom_code,
 			uom_name = @uom_name,
 			uom_description = @uom_description,
 			status = @status,

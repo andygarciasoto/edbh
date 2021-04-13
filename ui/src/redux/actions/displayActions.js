@@ -1,11 +1,11 @@
 import Axios from "axios";
 import { GET_DISPLAY, GET_WORKCELLS, GET_ASSETS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
+import { genericRequest } from '../../Utils/Requests';
 
-export const getDisplay = (siteId) => {
-  var url = `${API}/display_by_site?site=${siteId}`;
+export const getDisplayFilter = (params) => {
   return (dispatch) => {
-    return Axios.get(url).then((response) => {
+    return genericRequest('get', API, '/display_by_site', null, params).then((response) => {
       dispatch({
         type: GET_DISPLAY,
         display: response.data,

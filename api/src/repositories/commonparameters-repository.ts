@@ -25,6 +25,6 @@ export class CommonParametersRepository {
         AND A.site_code = CP.site_name`);
     }
     public async putCommonParameter(site_id: number, site_name: string, production_day_offset_minutes: number, default_target_percent_of_ideal: number, default_setup_minutes: number, default_routed_cycle_time: number, inactive_timeout_minutes: number, status: string, summary_timeout: number, break_minutes: number, lunch_minutes: number, site_prefix: string, assembly_url: string, timezone_id: number, language_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommonParameters ${site_id}, '${site_name}', ${production_day_offset_minutes}, ${default_target_percent_of_ideal}, ${default_setup_minutes}, ${default_routed_cycle_time}, ${inactive_timeout_minutes}, '${status}', ${summary_timeout}, ${break_minutes}, ${lunch_minutes}, '${site_prefix}', '${assembly_url}', ${timezone_id}, ${language_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_CommonParameters ${site_id}, N'${site_name}', ${production_day_offset_minutes}, ${default_target_percent_of_ideal}, ${default_setup_minutes}, ${default_routed_cycle_time}, ${inactive_timeout_minutes}, '${status}', ${summary_timeout}, ${break_minutes}, ${lunch_minutes}, N'${site_prefix}', N'${assembly_url}', ${timezone_id}, ${language_id}`);
      }
 }

@@ -28,7 +28,6 @@ class AddDisplay extends Component {
 			actions.getDisplayById(this.props.user.site, this.props.display_id),
 			actions.getAssets(this.props.user.site),
 		]).then((response) => {
-			console.log(response);
 			this.setState({
 				AssetsData: response[1],
 				asset: response[0].assetdisplaysystem_id,
@@ -99,17 +98,17 @@ class AddDisplay extends Component {
 	};
 
 	render() {
-    console.log(this.state);
+		const t = this.props.t;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Update Display</Modal.Title>
+						<Modal.Title>{t('Update Display')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<form>
 							<label>
-								Name:
+								{t('Name')}:
 								<input
 									className="input-display-name"
 									type="text"
@@ -120,7 +119,7 @@ class AddDisplay extends Component {
 								/>
 							</label>
 							<label>
-								Asset:
+								{t('Asset')}:
 								<select
 									value={this.state.asset}
 									className="input-display-asset"
@@ -131,7 +130,7 @@ class AddDisplay extends Component {
 								</select>
 							</label>
 							<label>
-								Status:
+								{t('Status')}:
 								<select
 									value={this.state.status}
 									className="select-display-status"
@@ -146,10 +145,10 @@ class AddDisplay extends Component {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createDisplay(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

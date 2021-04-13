@@ -164,5 +164,16 @@
     "Target Percent of Ideal": "이상적인 목표 비율",
     "Vertical Dashboard Timeout": "수직 대시 보드 시간 초과",
     "Setup Minutes": "설정 시간",
-    "Site Identifier": "사이트 식별자"
+    "Site Identifier": "사이트 식별자",
+    "Workcell": "작업 셀",
+    "Add Workcell": "작업 셀 추가",
+    "Update Workcell": "작업 셀 업데이트",
+    "Code": "암호",
+    "Decimals": "소수",
+    "Add UOM": "UOM 추가",
+    "Update UOM": "UOM 업데이트",
+    "Asset": "기계",
+    "Asset Display": "기계 디스플레이",
+    "Add Display": "디스플레이 추가",
+    "Update Display": "업데이트 디스플레이"
 }

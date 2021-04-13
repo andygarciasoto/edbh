@@ -187,5 +187,16 @@
     "Target Percent of Ideal": "Target Percent of Ideal",
     "Vertical Dashboard Timeout": "Vertical Dashboard Timeout",
     "Setup Minutes": "Setup Minutes",
-    "Site Identifier": "Site Identifier"
+    "Site Identifier": "Site Identifier",
+    "Workcell": "Workcell",
+    "Add Workcell": "Add Workcell",
+    "Update Workcell": "Update Workcell",
+    "Code": "Code",
+    "Decimals": "Decimals",
+    "Add UOM": "Add UOM",
+    "Update UOM": "Update UOM",
+    "Asset": "Asset",
+    "Asset Display": "Asset Display",
+    "Add Display": "Add Display",
+    "Update Display": "Update Display"
 }

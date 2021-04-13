@@ -16,6 +16,7 @@ class Workcells extends Component {
 			addWorkcell: false,
 			editWorkcell: false,
 			workcell_id: 0,
+			statusFilter: 'All'
 		};
 	}
 
@@ -25,8 +26,14 @@ class Workcells extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-		return actions.getWorkcells(this.props.user.site).then((response) => {
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
+
+		return actions.getWorkcellsFilter(params).then((response) => {
 			this.setState({
 				WorkcellData: response,
 			});
@@ -58,14 +65,20 @@ class Workcells extends Component {
 		});
 	};
 
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
+
 	render() {
 		const t = this.props.t;
 		return (
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Workcell'}
-					buttonFilter={'Search'}
+					buttonName={'+ ' + t('Workcell')}
+					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -74,11 +87,12 @@ class Workcells extends Component {
 					type={false}
 					shifts={false}
 					onClick={() => this.showAddWorkcell()}
+					onClickFilter={this.applyFilter}
+					view={'Workcell'}
 					t={t}
 				></Filter>
 				{this.state.addWorkcell === true && (
 					<AddWorkcell
-						t={t}
 						user={this.props.user}
 						showForm={this.state.addWorkcell}
 						closeForm={this.closeAddWorkcell}
@@ -99,9 +113,9 @@ class Workcells extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Actions</th>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>

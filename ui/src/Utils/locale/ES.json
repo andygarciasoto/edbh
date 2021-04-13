@@ -187,5 +187,16 @@
     "Target Percent of Ideal": "Porcentaje Objetivo de Ideal ",
     "Vertical Dashboard Timeout": "Tiempo de Expiración del Panel Vertical",
     "Setup Minutes": "Tiempo de Configuración",
-    "Site Identifier": "Indentificador de la Planta"
+    "Site Identifier": "Indentificador de la Planta",
+    "Workcell": "Celda de Trabajo",
+    "Add Workcell": "Agregar Celda de Trabajo",
+    "Update Workcell": "Actualizar Celda de Trabajo",
+    "Code": "Código",
+    "Decimals": "Decimales",
+    "Add UOM": "Agregar UOM",
+    "Update UOM": "Actualizar UOM",
+    "Asset": "Máquina",
+    "Asset Display": "Pantalla de Máquina",
+    "Add Display": "Agregar Pantalla de Máquina",
+    "Update Display": "Actualizar Pantalla de Máquina"
 }

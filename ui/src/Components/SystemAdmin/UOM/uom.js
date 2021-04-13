@@ -16,6 +16,7 @@ class UOM extends Component {
 			addUOM: false,
 			editUOM: false,
 			uom_id: 0,
+			statusFilter: 'All'
 		};
 	}
 
@@ -25,13 +26,25 @@ class UOM extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-		return actions.getUOM(this.props.user.site).then((response) => {
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
+
+		return actions.getUOMFilter(params).then((response) => {
 			this.setState({
 				UOMData: response,
 			});
 		});
 	};
+
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
 	showAddUOM = () => {
 		this.setState({
@@ -64,8 +77,8 @@ class UOM extends Component {
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ UOM'}
-					buttonFilter={'Search'}
+					buttonName={'+ ' + t('UOM')}
+					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -73,8 +86,10 @@ class UOM extends Component {
 					category={false}
 					type={false}
 					onClick={() => this.showAddUOM()}
+					onClickFilter={this.applyFilter}
+					view={'UOM'}
 					t={t}
-				></Filter>
+				/>
 				{this.state.addUOM === true && (
 					<AddUOM
 						user={this.props.user}
@@ -97,12 +112,12 @@ class UOM extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Code</th>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Decimals</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<th>{t('Code')}</th>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Decimals')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>
