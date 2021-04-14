@@ -38,7 +38,7 @@ BEGIN
 
 	SELECT 
 		@timezone = T.sql_timezone
-	FROM dbo.CommonParameters CP LEFT JOIN dbo.Timezone T
+	FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
 	ON CP.timezone_id = T.timezone_id AND
 	site_id = @site_id;
 
