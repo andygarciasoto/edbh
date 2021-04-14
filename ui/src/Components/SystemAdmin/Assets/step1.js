@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../redux/actions/displayActions';
-//import Axios from "axios";
-//import { API } from "../../../Utils/Constants";
+import { genericRequest } from '../../../Utils/Requests';
+import { API } from '../../../Utils/Constants';
 
 import { Form, Col } from 'react-bootstrap';
 
@@ -14,13 +14,15 @@ export class Step1 extends Component {
 			code: '',
 			automation_level: 'Automated',
 			name: '',
-			asset_display: 0,
 			description: '',
 			workcell: 0,
 			level: 'Site',
 			site_code: '',
+			defaultPercent: 0,
 			parent_code: '',
-			escalation: true,
+			escalation: false,
+			status: 'Active',
+			multiple: false,
 			displayData: [],
 			workcellData: [],
 			parentData: [],
@@ -36,32 +38,101 @@ export class Step1 extends Component {
 		const value = target.value;
 		const name = target.name;
 
+		if (value === 'Cell') {
+			this.props.showFooter(true, false);
+		} else if (value === 'Site') {
+			this.props.showFooter(false, true);
+		} else if (value === 'Area') {
+			this.props.showFooter(false, true);
+		}
+
 		this.setState({
 			[name]: value,
 		});
 	};
 
+	handleChangePercentage = (event) => {
+		const target = event.target;
+		if (parseInt(target.value, 10) >= 0 && parseInt(target.value, 10) <= 100 && !target.value.includes('.')) {
+			this.setState({
+				[target.name]: target.value,
+			});
+		}
+	};
+
 	loadData = () => {
 		const { actions } = this.props;
 
-    const params = {
-      site_id: this.props.user.site,
-    }
+		const params = {
+			site_id: this.props.user.site,
+		};
 
 		return Promise.all([
-			actions.getDisplayFilter(params),
 			actions.getWorkcells(this.props.user.site),
 			actions.getAssetsLevel(this.props.user.site),
 		]).then((response) => {
 			this.setState({
-				displayData: response[0],
-				asset_display: response[0][0].assetdisplaysystem_id,
-				workcellData: response[1],
-				workcell: response[1][0].workcell_id,
-				parentData: response[2],
-				parent_code: response[2][0].asset_code,
+				workcellData: response[0],
+				workcell: response[0][0].workcell_id,
+				parentData: response[1],
+				parent_code: response[1][0].asset_code,
 			});
 		});
+	};
+
+	createAsset = (e) => {
+		e.preventDefault();
+		const {
+			code,
+			automation_level,
+			name,
+			description,
+			workcell,
+			level,
+			parent_code,
+			escalation,
+			status,
+			defaultPercent,
+			multiple,
+		} = this.state;
+
+		const newPercent = defaultPercent / 100;
+
+		if (name !== '' && code !== '' && description !== '') {
+			genericRequest('put', API, '/insert_asset', null, null, {
+				site_id: this.props.user.site,
+				asset_code: code,
+				asset_name: name,
+				asset_description: description,
+				asset_level: level,
+				site_code: this.props.user.site_code,
+				parent_asset_code: level === 'Site' ? '' : level === 'Area' ? this.props.user.site_code : parent_code,
+				automation_level: automation_level,
+				include_in_escalation: escalation,
+				grouping1: parseInt(workcell, 10),
+				grouping2: '',
+				grouping3: '',
+				grouping4: '',
+				grouping5: '',
+				status: status,
+				target_percent_of_ideal: newPercent,
+				is_multiple: multiple,
+			}).then(
+				() => {
+					this.setState({
+						show: true,
+					});
+					this.props.nextStep(e);
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+		} else {
+			this.setState({
+				modalError: true,
+			});
+		}
 	};
 
 	renderDisplay(display, index) {
@@ -89,7 +160,6 @@ export class Step1 extends Component {
 	}
 
 	render() {
-		console.log(this.state);
 		return (
 			<div>
 				<form>
@@ -116,7 +186,7 @@ export class Step1 extends Component {
 								>
 									<option value="Automated">Automated</option>
 									<option value="Partially_Manual_Scan_Order">Partially_Manual_Scan_Order</option>
-									<option value="Manuak">Manual</option>
+									<option value="Manual">Manual</option>
 								</select>
 							</label>
 						</Col>
@@ -136,13 +206,14 @@ export class Step1 extends Component {
 						</Col>
 						<Col>
 							<label className="label-tag-category">
-								Asset Display:
+								Status:
 								<select
 									className="select-tag-type asset-asset"
-									name="asset_display"
+									name="status"
 									onChange={this.handleChange}
 								>
-									{this.state.displayData.map(this.renderDisplay)}
+									<option value="Active">Active</option>
+									<option value="Inactive">Inactive</option>
 								</select>
 							</label>
 						</Col>
@@ -190,13 +261,16 @@ export class Step1 extends Component {
 						</Col>
 						<Col>
 							<label className="label-tag-category">
-								Site Code:
+								Target Percent of Ideal:
 								<input
 									className="input-tag-aggregation asset-site-code"
-									type="text"
-									name="site_code"
-									autoComplete={'false'}
-									onChange={this.handleChange}
+									type="number"
+									name="defaultPercent"
+									min={0}
+									max={100}
+									step={1}
+									value={this.state.defaultPercent}
+									onChange={this.handleChangePercentage}
 								/>
 							</label>
 						</Col>
@@ -223,14 +297,29 @@ export class Step1 extends Component {
 									name="escalation"
 									onChange={this.handleChange}
 								>
-									<option value={true}>Yes</option>
 									<option value={false}>No</option>
+									<option value={true}>Yes</option>
+								</select>
+							</label>
+						</Col>
+					</Form.Row>
+					<Form.Row>
+						<Col>
+							<label className="label-tag-category">
+								Is Multiple:
+								<select
+									className="input-tag-aggregation asset-escalation"
+									name="multiple"
+									onChange={this.handleChange}
+								>
+									<option value={false}>No</option>
+									<option value={true}>Yes</option>
 								</select>
 							</label>
 						</Col>
 					</Form.Row>
 				</form>
-				<button className="button-next" onClick={(e) => this.props.nextStep(e)}>
+				<button className="button-next" onClick={(e) => this.createAsset(e)}>
 					{'Next Step>>'}
 				</button>
 			</div>

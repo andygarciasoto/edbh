@@ -20,6 +20,8 @@ class AddAsset extends Component {
 			step3: false,
 			step4: false,
 			showForm: true,
+			showFooter: false,
+			showConfirm: true,
 		};
 	}
 
@@ -63,21 +65,12 @@ class AddAsset extends Component {
 		}
 	};
 
-	//   componentDidMount() {
-	//     const { actions } = this.props;
-
-	//     return Promise.all([
-	//       actions.getRoles(),
-	//       actions.getEscalation(),
-	//       actions.getSites(),
-	//     ]).then((response) => {
-	//       this.setState({
-	//         roles: response[0],
-	//         escalation: response[1],
-	//         sites: response[2],
-	//       });
-	//     });
-	//   }
+	hideSteps = (showFooter, showConfirm) => {
+		this.setState({
+			showFooter,
+			showConfirm,
+		});
+	};
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -88,77 +81,6 @@ class AddAsset extends Component {
 			[name]: value,
 		});
 	};
-
-	//   createUser = (e) => {
-	//     e.preventDefault();
-	//     const {
-	//       badge,
-	//       username,
-	//       firstname,
-	//       lastname,
-	//       role,
-	//       status,
-	//       escalation_id,
-	//       site,
-	//     } = this.state;
-
-	//     var url = `${API}/insert_user`;
-	//     if (
-	//       badge !== "" &&
-	//       username !== "" &&
-	//       firstname !== "" &&
-	//       lastname !== ""
-	//     ) {
-	//       Axios.put(url, {
-	//         badge: badge,
-	//         username: username,
-	//         first_name: firstname,
-	//         last_name: lastname,
-	//         role_id: role,
-	//         site_id: this.props.user.site,
-	//         escalation_id: parseInt(escalation_id, 10),
-	//         site: site,
-	//         status: status,
-	//       }).then(
-	//         () => {
-	//           this.setState({
-	//             show: true,
-	//           });
-	//         },
-	//         (error) => {
-	//           console.log(error);
-	//         }
-	//       );
-	//     } else {
-	//       this.setState({
-	//         modalError: true,
-	//       });
-	//     }
-	//   };
-
-	//   renderRoles(roles, index) {
-	//     return (
-	//       <option value={roles.role_id} key={index}>
-	//         {roles.name}
-	//       </option>
-	//     );
-	//   }
-
-	//   renderEscalation(escalation, index) {
-	//     return (
-	//       <option value={escalation.escalation_id} key={index}>
-	//         {escalation.escalation_name}
-	//       </option>
-	//     );
-	//   }
-
-	//   renderSites(sites, index) {
-	//     return (
-	//       <option value={sites.asset_id} key={index}>
-	//         {sites.asset_name}
-	//       </option>
-	//     );
-	//   }
 
 	handleClose = () => {
 		this.setState({ showForm: false });
@@ -190,9 +112,19 @@ class AddAsset extends Component {
 						<Modal.Title>Add Asset</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						{this.state.step1 === true && <Step1 nextStep={(e) => this.assetSteps(2, e)} user={this.props.user}/>}
+						{this.state.step1 === true && (
+							<Step1
+								nextStep={(e) => this.assetSteps(2, e)}
+								user={this.props.user}
+								showFooter={this.hideSteps}
+							/>
+						)}
 						{this.state.step2 === true && (
-							<Step2 nextStep={(e) => this.assetSteps(3, e)} back={(e) => this.assetSteps(1, e)} user={this.props.user}/>
+							<Step2
+								nextStep={(e) => this.assetSteps(3, e)}
+								back={(e) => this.assetSteps(1, e)}
+								user={this.props.user}
+							/>
 						)}
 						{this.state.step3 === true && (
 							<Step3
@@ -205,40 +137,46 @@ class AddAsset extends Component {
 							<Step4 user={this.props.user} back={(e) => this.assetSteps(3, e)} />
 						)}
 					</Modal.Body>
-					<Modal.Footer>
-						<div className="step-bar">
-							<div className={this.state.step1 === true ? 'step1 active' : 'step1'}>
-								<p className="step-number">1</p>
-								<p className="step-name">Step 1</p>
-								<p className="step-description">Define Asset</p>
-								<i className="arrow right step-1"></i>
+					{this.state.showFooter === true && (
+						<Modal.Footer>
+							<div className="step-bar">
+								<div className={this.state.step1 === true ? 'step1 active' : 'step1'}>
+									<p className="step-number">1</p>
+									<p className="step-name">Step 1</p>
+									<p className="step-description">Define Asset</p>
+									<i className="arrow right step-1"></i>
+								</div>
+								<div className={this.state.step2 === true ? 'step2 active' : 'step2'}>
+									<p className="step-number-2">2</p>
+									<p className="step-name-2">Step 2</p>
+									<p className="step-description-2">Define Tag</p>
+									<i className="arrow right step-2"></i>
+								</div>
+								<div className={this.state.step3 === true ? 'step3 active' : 'step3'}>
+									<p className="step-number-3">3</p>
+									<p className="step-name-3">Step 3</p>
+									<p className="step-description-3">Define Reason</p>
+									<i className="arrow right step-3"></i>
+								</div>
+								<div className={this.state.step4 === true ? 'step4 active' : 'step4'}>
+									<p className="step-number-4">4</p>
+									<p className="step-name-4">Step 4</p>
+									<p className="step-description-4">Define Break</p>
+									<i className="arrow right step-4"></i>
+								</div>
 							</div>
-							<div className={this.state.step2 === true ? 'step2 active' : 'step2'}>
-								<p className="step-number-2">2</p>
-								<p className="step-name-2">Step 2</p>
-								<p className="step-description-2">Define Tag</p>
-								<i className="arrow right step-2"></i>
-							</div>
-							<div className={this.state.step3 === true ? 'step3 active' : 'step3'}>
-								<p className="step-number-3">3</p>
-								<p className="step-name-3">Step 3</p>
-								<p className="step-description-3">Define Reason</p>
-								<i className="arrow right step-3"></i>
-							</div>
-							<div className={this.state.step4 === true ? 'step4 active' : 'step4'}>
-								<p className="step-number-4">4</p>
-								<p className="step-name-4">Step 4</p>
-								<p className="step-description-4">Define Break</p>
-								<i className="arrow right step-4"></i>
-							</div>
-						</div>
-						<Button variant="Primary" onClick={(e) => this.createUser(e)}>
-							Confirm
-						</Button>
-						<Button variant="secondary" onClick={this.handleClose}>
-							Close
-						</Button>
-					</Modal.Footer>
+						</Modal.Footer>
+					)}
+					{this.state.showConfirm === true && (
+						<Modal.Footer>
+							<Button variant="Primary" onClick={(e) => this.createUser(e)}>
+								Confirm
+							</Button>
+							<Button variant="secondary" onClick={this.handleClose}>
+								Close
+							</Button>
+						</Modal.Footer>
+					)}
 				</Modal>
 				<Modal show={this.state.show} onHide={this.handleClose}>
 					<Modal.Header closeButton>
