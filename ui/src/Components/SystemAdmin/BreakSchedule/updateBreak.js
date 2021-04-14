@@ -1,3 +1,4 @@
+import Axios from "axios";
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,16 +8,14 @@ import { API } from '../../../Utils/Constants';
 import { validateBreakForm } from '../../../Utils/FormValidations';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import ConfigurationTabGeneric from '../../Common/ConfigurationTabGeneric';
-import { getResponseFromGeneric } from '../../../Utils/Requests';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
-class BreakForm extends Component {
+class UpdateBreak extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: props.isOpen,
       unavailable: props.unavailable,
       unavailable_name: '',
       unavailable_description: '',
@@ -26,28 +25,22 @@ class BreakForm extends Component {
       status: 'Active',
       show: false,
       modalError: false,
+      action: props.action,
       validation: {},
       assetsOptions: [],
+      assetsAreaOptions: [],
+      asset_area: 0,
       completeListTabs: [],
       availableListTabs: [],
       selectedListTabs: []
     };
   }
 
-
-  componentDidMount() {
-    const { actions } = this.props;
-    actions.getAssets(this.props.user.site).then(response => {
-      this.setState({
-        assetsOptions: response
-      });
-    });
-  }
-
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isOpen !== prevState.isOpen) {
+    if (nextProps.action !== prevState.action || !_.isEqual(nextProps.unavailable, prevState.unavailable)) {
       return {
-        isOpen: nextProps.isOpen,
+        action: nextProps.action,
+        modalTitle: nextProps.action === 'create' ? nextProps.t('Add Break') : nextProps.t('Update Break'),
         unavailable: nextProps.unavailable,
         unavailable_name: '',
         unavailable_description: '',
@@ -56,6 +49,7 @@ class BreakForm extends Component {
         asset_level: 'Site',
         status: 'Active',
         validation: {},
+        asset_area: 0,
         completeListTabs: [],
         availableListTabs: [],
         selectedListTabs: []
@@ -65,21 +59,39 @@ class BreakForm extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.isOpen && this.state.isOpen !== prevState.isOpen) {
+    if (this.props.isOpen && (!_.isEqual(this.state.unavailable, prevState.unavailable) || !_.isEqual(this.state.action, prevState.action))) {
       this.fetchData();
     }
   }
 
-  fetchData() {
-    let options = [];
-    _.forEach(_.filter(this.state.assetsOptions, { asset_level: this.state.asset_level }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+  componentDidMount() {
+    const { actions } = this.props;
+    actions.getAssets(this.props.user.site).then(response => {
+      this.setState({
+        assetsOptions: response,
+        assetsAreaOptions: _.filter(response, { asset_level: 'Area' })
+      });
     });
-    this.setState((state) => ({
-      availableListTabs: state.asset_level === 'Site' ? [] : options,
-      completeListTabs: options,
-      selectedListTabs: state.asset_level === 'Site' ? options : []
-    }));
+  }
+
+  fetchData() {
+    console.log('call fetch data');
+    if (this.state.action === 'create') {
+      this.loadDataCreate();
+    } else {
+      this.loadDataUpdate();
+    }
+  }
+
+  loadDataCreate() {
+    let availableListTabs = [];
+    _.forEach(_.filter(this.state.assetsOptions, { asset_level: this.state.asset_level }), asset => {
+      availableListTabs.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+    });
+    this.setState({
+      availableListTabs,
+      completeListTabs: availableListTabs
+    });
   }
 
   loadDataUpdate() {
@@ -111,15 +123,15 @@ class BreakForm extends Component {
   };
 
   handleChangeAssetLevel = (event) => {
-    let options = [];
+    let availableListTabs = [];
     _.forEach(_.filter(this.state.assetsOptions, { asset_level: event.target.value }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
-    });
+      availableListTabs.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+    });;
     this.setState({
       [event.target.name]: event.target.value,
-      availableListTabs: event.target.value === 'Site' ? [] : options,
-      completeListTabs: options,
-      selectedListTabs: event.target.value === 'Site' ? options : []
+      availableListTabs,
+      completeListTabs: availableListTabs,
+      selectedListTabs: []
     });
   };
 
@@ -133,9 +145,18 @@ class BreakForm extends Component {
 
   submitUnavailable = (e) => {
     e.preventDefault();
+    const {
+      unavailable_name,
+      unavailable_description,
+      start_time,
+      end_time,
+      asset_id,
+      status
+    } = this.state;
+    let url = `${API}/insert_unavailable`;
 
-    let startTime1 = moment('1970-01-01 ' + this.state.start_time);
-    let endTime1 = moment('1970-01-01 ' + this.state.end_time);
+    let startTime1 = moment('1970-01-01 ' + start_time);
+    let endTime1 = moment('1970-01-01 ' + end_time);
     let difference = endTime1.diff(startTime1, 'minutes');
 
     const validation = validateBreakForm(this.state);
@@ -143,38 +164,31 @@ class BreakForm extends Component {
     if (
       _.isEmpty(validation)
     ) {
-      let message = [];
-      _.forEach(this.state.selectedListTabs, async (selected, index) => {
-        const data = {
-          unavailable_code: `${this.props.user.site_prefix} - ${this.state.unavailable_name}`,
-          unavailable_name: this.state.unavailable_name,
-          unavailable_description: this.state.unavailable_description,
-          start_time: this.state.start_time,
-          end_time: this.state.end_time,
-          duration_in_minutes: difference,
-          valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
-          status: this.state.status,
-          asset_level: this.state.asset_level,
-          asset_id: parseInt(selected.id, 10),
-          site_id: this.props.user.site
-        };
-        let res = await getResponseFromGeneric('put', API, '/insert_unavailable', {}, {}, data);
-        if (res.status !== 200) {
-          message.push(selected);
-        }
-        if (index === (this.state.selectedListTabs.length - 1)) {
+      Axios.put(url, {
+        unavailable_code: `${this.props.user.site_prefix} - ${unavailable_name}`,
+        unavailable_id: this.props.unavailable_id,
+        unavailable_name: unavailable_name,
+        unavailable_description: unavailable_description,
+        start_time: start_time,
+        end_time: end_time,
+        duration_in_minutes: difference,
+        valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
+        status: status,
+        asset_id: asset_id,
+        site_id: this.props.user.site
+      }).then(
+        () => {
           this.props.Refresh();
-          if (_.isEmpty(message)) {
-            this.props.onRequestClose();
-            this.setState({
-              show: true,
-              validation: {}
-            });
-          } else {
-            console.log('Error', _.map(message, 'content').join(', '));
-          }
+          this.props.onRequestClose();
+          this.setState({
+            show: true,
+            validation: {}
+          });
+        },
+        (error) => {
+          console.log(error);
         }
-      });
+      );
     } else {
       this.setState({ validation });
     }
@@ -192,7 +206,7 @@ class BreakForm extends Component {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('Add Break')}</Modal.Title>
+            <Modal.Title>{this.state.modalTitle}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -267,22 +281,35 @@ class BreakForm extends Component {
                   </Form.Control>
                 </Col>
               </Form.Group>
-              <Form.Group as={Row}>
-                <Col sm={12}>
-                  <ConfigurationTabGeneric
-                    availableListTabs={this.state.availableListTabs}
-                    selectedListTabs={this.state.selectedListTabs}
-                    selectedAction={this.state.selectedAction}
-                    onUpdateTabsImported={this.updateTabsImported}
-                    importAllTabs={this.importAllTabs}
-                    resetTabs={this.resetTabs}
-                    height={'350px'}
-                    t={t}
-                    genericTitle='Assets'
-                  />
-                </Col>
-                <Form.Text className='validation'>{validation.selectedListTabs}</Form.Text>
-              </Form.Group>
+              {this.state.asset_level === 'Area' ?
+                <Form.Group as={Row}>
+                  <Form.Label column sm={2}>{t('Select Area')}:</Form.Label>
+                  <Col sm={2}>
+                    <Form.Control
+                      as="select"
+                      name="asset_area"
+                      onChange={this.handleChangeAssetArea}
+                      value={this.state.asset_area}
+                    >
+                      <option value='0'>None</option>
+                      {_.map(this.state.assetsAreaOptions, asset => { return (<option value={asset.asset_id}>{asset.asset_name}</option>) })}
+                    </Form.Control>
+                  </Col>
+                </Form.Group>
+                : null}
+              <Col md='12'>
+                <ConfigurationTabGeneric
+                  availableListTabs={this.state.availableListTabs}
+                  selectedListTabs={this.state.selectedListTabs}
+                  selectedAction={this.state.selectedAction}
+                  onUpdateTabsImported={this.updateTabsImported}
+                  importAllTabs={this.importAllTabs}
+                  resetTabs={this.resetTabs}
+                  height={'350px'}
+                  t={t}
+                  genericTitle='Assets'
+                />
+              </Col>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -327,4 +354,4 @@ export const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(BreakForm);
+export default connect(null, mapDispatch)(UpdateBreak);

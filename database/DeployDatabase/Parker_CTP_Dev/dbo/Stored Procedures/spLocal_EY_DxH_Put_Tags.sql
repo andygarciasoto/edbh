@@ -38,7 +38,7 @@ AS  BEGIN
 			last_modified_by = 'Administration Tool',
 			last_modified_on = GETDATE()
 			WHERE
-			site_id = @site_id AND tag_code = @tag_code
+			site_id = @site_id AND tag_id = @tag_id
 		END
 	ELSE
 		BEGIN

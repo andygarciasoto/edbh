@@ -100,8 +100,8 @@ function validateBreakForm(state) {
     if (state.end_time.trim() === '') {
         validation.end_time = 'End Time is required';
     }
-    if (parseInt(state.asset_id, 10) === 0) {
-        validation.asset_id = 'Asset is required';
+    if (_.isEmpty(state.selectedListTabs)) {
+        validation.selectedListTabs = 'Asset is required';
     }
     let startTime = moment('1970-01-01 ' + state.start_time);
     let endTime = moment('1970-01-01 ' + state.end_time);
