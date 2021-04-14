@@ -82,7 +82,7 @@ export class AssetService {
         const asset_description = req.body.asset_description ? req.body.asset_description : null;
         const asset_level = req.body.asset_level ? req.body.asset_level : undefined;
         const site_code = req.body.site_code ? req.body.site_code : undefined;
-        const parent_asset_code = req.body.parent_asset_code ? req.body.parent_asset_code : undefined;
+        const parent_asset_code = req.body.parent_asset_code ? req.body.parent_asset_code : '';
         const automation_level = req.body.automation_level ? req.body.automation_level : 'Automated';
         const include_in_escalation = req.body.include_in_escalation ? req.body.include_in_escalation : 0;
         const grouping1 = req.body.grouping1 ? req.body.grouping1 : null;
