@@ -16,7 +16,7 @@ export const getDisplayFilter = (params) => {
 };
 
 export const getWorkcells = (siteId) => {
-  var url = `${API}/workcell_by_site?site=${siteId}`;
+  var url = `${API}/workcell_by_site?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({

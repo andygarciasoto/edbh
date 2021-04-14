@@ -44,8 +44,12 @@ export class Step1 extends Component {
 	loadData = () => {
 		const { actions } = this.props;
 
+    const params = {
+      site_id: this.props.user.site,
+    }
+
 		return Promise.all([
-			actions.getDisplay(this.props.user.site),
+			actions.getDisplayFilter(params),
 			actions.getWorkcells(this.props.user.site),
 			actions.getAssetsLevel(this.props.user.site),
 		]).then((response) => {
