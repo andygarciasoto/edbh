@@ -58,7 +58,6 @@ export class UnavailableService {
     }
     public async putUnavailable(req: Request, res: Response) {
         let unavailable_code = req.body.unavailable_code;
-        let unavailable_id = req.body.unavailable_id ? req.body.unavailable_id : 0;
         let unavailable_name = req.body.unavailable_name ? req.body.unavailable_name : undefined;
         let unavailable_description = req.body.unavailable_description;
         let start_time = req.body.start_time ? req.body.start_time : undefined;
@@ -66,16 +65,17 @@ export class UnavailableService {
         let duration_in_minutes = req.body.duration_in_minutes ? req.body.duration_in_minutes : undefined;
         let valid_from = req.body.valid_from ? req.body.valid_from : undefined;
         let status = req.body.status ? req.body.status : undefined;
+        let asset_level = req.body.asset_level ? req.body.asset_level : undefined;
         let asset_id = req.body.asset_id !== 0 ? req.body.asset_id : undefined;
         let site_id = req.body.site_id !== 0 ? req.body.site_id : undefined;
         if (unavailable_name === undefined || start_time === undefined || end_time === undefined || duration_in_minutes === undefined || valid_from === undefined ||
-            status === undefined || asset_id === undefined || site_id === undefined) {
+            status === undefined || asset_level === undefined || asset_id === undefined || site_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let unavailable: any;
         try {
-            unavailable = await this.unavailablerepository.putUnavailable(unavailable_code, unavailable_id, unavailable_name, unavailable_description, start_time, end_time,
-                duration_in_minutes, valid_from, status, asset_id, site_id);
+            unavailable = await this.unavailablerepository.putUnavailable(unavailable_code, unavailable_name, unavailable_description, start_time, end_time, duration_in_minutes,
+                valid_from, status, asset_level, asset_id, site_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

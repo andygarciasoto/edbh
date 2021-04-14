@@ -31,7 +31,7 @@ export class AssetRepository {
 		WHERE A.site_code = A2.asset_code
         ORDER BY A.asset_id`);
     }
-    public async putAsset(asset_id: number, asset_code: number, asset_name: string, asset_description: string, asset_level: string, site_code: string, parent_asset_code: string, automation_level: string, include_in_escalation: boolean, grouping1: string, grouping2: string, grouping3: string, grouping4: string, grouping5: string, status: string, target_percent_of_ideal: number, is_multiple: boolean): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Asset ${asset_id}, '${asset_code}', '${asset_name}', '${asset_description}', '${asset_level}', '${site_code}', '${parent_asset_code}', '${automation_level}', ${include_in_escalation}, '${grouping1}', '${grouping2}', '${grouping3}, '${grouping4}', '${grouping5}', '${status}', ${target_percent_of_ideal}, ${is_multiple}`);
+    public async putAsset(asset_id: number, asset_code: string, asset_name: string, asset_description: string, asset_level: string, site_code: string, parent_asset_code: string, automation_level: string, include_in_escalation: boolean, grouping1: string, grouping2: string, grouping3: string, grouping4: string, grouping5: string, status: string, target_percent_of_ideal: number, is_multiple: boolean): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Asset ${asset_id}, '${asset_code}', N'${asset_name}', N'${asset_description}', '${asset_level}', '${site_code}', '${parent_asset_code}', '${automation_level}', ${include_in_escalation}, '${grouping1}', '${grouping2}', '${grouping3}', '${grouping4}', '${grouping5}', '${status}', ${target_percent_of_ideal}, ${is_multiple}`);
      }
 }

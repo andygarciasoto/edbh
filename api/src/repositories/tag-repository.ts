@@ -27,6 +27,7 @@ export class TagRepository {
         FROM [dbo].[Tag] JOIN [dbo].[Asset] ON [Tag].[asset_id] = [Asset].[asset_id] AND [Tag].[asset_id] = ${asset_id}`);
     }
     public async putTags(tag_id: number, tag_code: string, tag_name: string, tag_description: string, datatype: string, UOM_code: string, rollover_point: number, aggregation: string, status: string, site_id: number, asset_id: number, max_change: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Tags ${tag_id}, '${tag_code}', '${tag_name}', '${tag_description}', '${datatype}', '${UOM_code}', ${rollover_point}, '${aggregation}', '${status}', ${site_id}, ${asset_id}, ${max_change}`);
+        console.log(`exec dbo.spLocal_EY_DxH_Put_Tags ${tag_id}, N'${tag_code}', N'${tag_name}', N'${tag_description}', '${datatype}', N'${UOM_code}', ${rollover_point}, '${aggregation}', '${status}', ${site_id}, ${asset_id}, ${max_change}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Tags ${tag_id}, N'${tag_code}', N'${tag_name}', N'${tag_description}', '${datatype}', N'${UOM_code}', ${rollover_point}, '${aggregation}', '${status}', ${site_id}, ${asset_id}, ${max_change}`);
     }
 }

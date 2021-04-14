@@ -22,7 +22,7 @@ const Filter = ({
   t
 }) => {
   // Declare multiple state variables
-  const [statusFilter, setStatus] = useState('All');
+  const [statusFilter, setStatus] = useState('Active');
   const [roleFilter, setRole] = useState('All');
   const [escalationFilter, setEscalation] = useState('All');
   const [shiftFilter, setShift] = useState('All');
@@ -38,10 +38,10 @@ const Filter = ({
             controlId="exampleForm.SelectCustomSizeSm"
             className="drop-status"
           >
-            <Form.Control as="select" size="sm" onChange={(event) => setStatus(event.target.value)} custom>
-              <option>All</option>
-              <option>Active</option>
-              <option>Inactive</option>
+            <Form.Control as="select" size="sm" value={statusFilter} onChange={(event) => setStatus(event.target.value)} custom>
+              <option value='All'>All</option>
+              <option value='Active'>Active</option>
+              <option value='Inactive'>Inactive</option>
             </Form.Control>
           </Form.Group>
         </Form>

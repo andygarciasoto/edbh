@@ -15,8 +15,8 @@ class Break extends Component {
 			shifts: [],
 			showBreakForm: false,
 			action: '',
-			unavailable_id: 0,
-			statusFilter: 'All',
+			unavailable: {},
+			statusFilter: 'Active',
 			shiftsFilter: 'All'
 		};
 	}
@@ -50,11 +50,11 @@ class Break extends Component {
 		});
 	}
 
-	openBreakModal = (action, unavailable_id) => {
+	openBreakModal = (action, unavailable) => {
 		this.setState({
 			showBreakForm: true,
 			action,
-			unavailable_id
+			unavailable
 		});
 	};
 
@@ -62,7 +62,7 @@ class Break extends Component {
 		this.setState({
 			showBreakForm: false,
 			action: '',
-			unavailable_id: 0
+			unavailable: {}
 		});
 	};
 
@@ -92,7 +92,7 @@ class Break extends Component {
 					user={this.props.user}
 					isOpen={this.state.showBreakForm}
 					action={this.state.action}
-					unavailable_id={this.state.unavailable_id}
+					unavailable={this.state.unavailable}
 					Refresh={this.loadData}
 					onRequestClose={this.closeBreakModal}
 				/>
@@ -117,14 +117,14 @@ class Break extends Component {
 								<td>{unavailable.start_time}</td>
 								<td>{unavailable.end_time}</td>
 								<td>{unavailable.duration_in_minutes}</td>
-								<td>{unavailable.unavailable_name}</td>
+								<td>{unavailable.asset_count}</td>
 								<td>{unavailable.status}</td>
 								<td>
 									<img
 										src={EditIcon}
 										alt={`edit-icon`}
 										className="icon"
-										onClick={() => this.openBreakModal('update', unavailable.unavailable_id)}
+										onClick={() => this.openBreakModal('update', unavailable)}
 									/>
 								</td>
 							</tr>

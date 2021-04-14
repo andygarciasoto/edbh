@@ -82,7 +82,7 @@ export class AssetService {
         const asset_description = req.body.asset_description ? req.body.asset_description : null;
         const asset_level = req.body.asset_level ? req.body.asset_level : undefined;
         const site_code = req.body.site_code ? req.body.site_code : undefined;
-        const parent_asset_code = req.body.parent_asset_code ? req.body.parent_asset_code : undefined;
+        const parent_asset_code = req.body.parent_asset_code ? req.body.parent_asset_code : '';
         const automation_level = req.body.automation_level ? req.body.automation_level : 'Automated';
         const include_in_escalation = req.body.include_in_escalation ? req.body.include_in_escalation : 0;
         const grouping1 = req.body.grouping1 ? req.body.grouping1 : null;
@@ -99,7 +99,7 @@ export class AssetService {
         }
         let asset: any;
         try {
-            asset = await this.assetrepository.putAsset(asset_id, asset_code, asset_name, asset_description, asset_level, site_code, parent_asset_code, automation_level, include_in_escalation, grouping1, grouping2, grouping3, grouping4, grouping5, status, target_percent_of_ideal, is_multiple);;
+            asset = await this.assetrepository.putAsset(asset_id, asset_code, asset_name, asset_description, asset_level, site_code, parent_asset_code, automation_level, include_in_escalation, grouping1, grouping2, grouping3, grouping4, grouping5, status, target_percent_of_ideal, is_multiple);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
