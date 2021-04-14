@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment-timezone';
 
 function validateScrapSubmit(state, type) {
 
@@ -88,10 +89,34 @@ function validateUserForm(state) {
     return validation;
 }
 
+function validateBreakForm(state) {
+    let validation = {};
+    if (state.unavailable_name.trim() === '') {
+        validation.unavailable_name = 'Name is required';
+    }
+    if (state.start_time.trim() === '') {
+        validation.start_time = 'Start Time is required';
+    }
+    if (state.end_time.trim() === '') {
+        validation.end_time = 'End Time is required';
+    }
+    if (parseInt(state.asset_id, 10) === 0) {
+        validation.asset_id = 'Asset is required';
+    }
+    let startTime = moment('1970-01-01 ' + state.start_time);
+    let endTime = moment('1970-01-01 ' + state.end_time);
+    if (startTime.isAfter(endTime)) {
+        validation.start_time = 'Start Time needs to be greater than End Time';
+    }
+
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
     validateShiftsForm,
     validateCommonParametersForm,
-    validateUserForm
+    validateUserForm,
+    validateBreakForm
 }

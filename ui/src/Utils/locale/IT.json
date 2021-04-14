@@ -187,5 +187,8 @@
     "Asset": "Macchina",
     "Asset Display": "Display della macchina",
     "Add Display": "Aggiungi Display",
-    "Update Display": "Aggiorna Visualizzazione"
+    "Update Display": "Aggiorna Visualizzazione",
+    "Break": "Rompere",
+    "Add Break": "Aggiungi Pausa",
+    "Update Break": "Aggiorna Pausa"
 }

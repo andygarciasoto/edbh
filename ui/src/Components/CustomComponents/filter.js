@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../sass/SystemAdmin.scss";
 import Form from "react-bootstrap/Form";
+import _ from 'lodash';
 
 const Filter = ({
   className,
@@ -15,6 +16,7 @@ const Filter = ({
   automatedLevel,
   category,
   type,
+  shiftsOptions,
   shifts,
   view,
   t
@@ -23,6 +25,7 @@ const Filter = ({
   const [statusFilter, setStatus] = useState('All');
   const [roleFilter, setRole] = useState('All');
   const [escalationFilter, setEscalation] = useState('All');
+  const [shiftFilter, setShift] = useState('All');
 
 
   return (
@@ -64,12 +67,10 @@ const Filter = ({
         <div>
           <p className="p-status role">{t('Shifts')}:</p>
           <Form>
-            <Form.Group controlId="role" className="drop-status">
-              <Form.Control as="select" size="sm" custom>
-                <option>All</option>
-                <option>Administrator</option>
-                <option>Operator</option>
-                <option>Supervisor</option>
+            <Form.Group controlId="shift" className="drop-status">
+              <Form.Control as="select" size="sm" custom value={shiftFilter} onChange={(e) => setShift(e.target.value)}>
+                <option value='All'>All</option>
+                {_.map(shiftsOptions, shift => { return (<option value={shift.shift_id} key={shift.shift_id + '_key'}>{shift.shift_name}</option>) })}
               </Form.Control>
             </Form.Group>
           </Form>
@@ -161,6 +162,8 @@ const Filter = ({
             onClickFilter(statusFilter, roleFilter, escalationFilter);
           if (view === 'Shift' || view === 'Workcell' || view === 'UOM' || view === 'Display')
             onClickFilter(statusFilter);
+          if (view === 'Break')
+            onClickFilter(statusFilter, shiftFilter);
         }}
       >
         {buttonFilter}
