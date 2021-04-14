@@ -175,5 +175,8 @@
     "Asset": "기계",
     "Asset Display": "기계 디스플레이",
     "Add Display": "디스플레이 추가",
-    "Update Display": "업데이트 디스플레이"
+    "Update Display": "업데이트 디스플레이",
+    "Break": "단절",
+    "Add Break": "휴식 추가",
+    "Update Break": "업데이트 중단"
 }

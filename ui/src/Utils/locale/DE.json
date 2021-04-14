@@ -186,5 +186,8 @@
     "Asset": "Maschine",
     "Asset Display": "Maschinenanzeige",
     "Add Display": "Anzeige Hinzufügen",
-    "Update Display": "Anzeige Aktualisieren"
+    "Update Display": "Anzeige Aktualisieren",
+    "Break": "Unterbrechung",
+    "Add Break": "Pause Hinzufügen",
+    "Update Break": "Update-Pause"
 }

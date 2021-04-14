@@ -198,5 +198,8 @@
     "Asset": "Máquina",
     "Asset Display": "Pantalla de Máquina",
     "Add Display": "Agregar Pantalla de Máquina",
-    "Update Display": "Actualizar Pantalla de Máquina"
+    "Update Display": "Actualizar Pantalla de Máquina",
+    "Break": "Descanso",
+    "Add Break": "Agregar Descanso",
+    "Update Break": "Actualizar Descanso"
 }

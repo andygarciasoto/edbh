@@ -198,5 +198,8 @@
     "Asset": "Asset",
     "Asset Display": "Asset Display",
     "Add Display": "Add Display",
-    "Update Display": "Update Display"
+    "Update Display": "Update Display",
+    "Break": "Break",
+    "Add Break": "Add Break",
+    "Update Break": "Update Break"
 }
