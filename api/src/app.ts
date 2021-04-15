@@ -270,6 +270,9 @@ const appConfig = {
         new http.RestEndpoint('/api/unique_unavailable', 'get', async (req: Request, res: Response) => {
             await unavailableService.getUniqueUnavailableBySite(req, res);
         }, true),
+        new http.RestEndpoint('/api/asset_by_unavailable', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getAssetsUnavailableCode(req, res);
+        }, true),
         new http.RestEndpoint('/api/display_by_site', 'get', async (req: Request, res: Response) => {
             await assetdisplaysystemService.getAssetDisplayBySite(req, res);
         }, true),

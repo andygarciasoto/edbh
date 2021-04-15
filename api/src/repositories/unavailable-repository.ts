@@ -30,16 +30,6 @@ export class UnavailableRepository {
         [Unavailable].[last_modified_by],[Unavailable].[last_modified_on]
         FROM [dbo].[Unavailable] JOIN [dbo].[Asset] ON [Unavailable].[asset_id] = [Asset].[asset_id] AND [Unavailable].[unavailable_id] = ${unavailable_id}`);
     }
-    public async getUniqueUnavailableBySite(site_id: number, asset_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT unavailable_code, MIN(unavailable_name) as unavailable_name, MIN(unavailable_description) as unavailable_description, MIN(start_time) as start_time,
-        MIN(end_time) as end_time, MIN(duration_in_minutes) as duration_in_minutes, MIN(status) as status,
-		SUM(CASE WHEN asset_id = ${asset_id} THEN 1 ELSE 0 END) as COUNT
-        FROM dbo.Unavailable
-        WHERE site_id = ${site_id}
-        GROUP BY unavailable_code
-        HAVING SUM(CASE WHEN asset_id = ${asset_id} THEN 1 ELSE 0 END) = 0
-        ORDER BY unavailable_code`);
-    }
     public async findUnavailableByFilter(parameters: any[]): Promise<any> {
         const query: string = `SELECT [U].[unavailable_code], [U].[unavailable_name], [U].[unavailable_description], CONVERT(NVARCHAR, [U].[start_time]) AS [start_time], 
         CONVERT(NVARCHAR, [U].[end_time]) AS [end_time], [U].[duration_in_minutes], [U].[status], COUNT([U].[asset_id]) AS asset_count
@@ -49,6 +39,9 @@ export class UnavailableRepository {
             }
         GROUP BY U.unavailable_code, U.unavailable_name, U.unavailable_description, U.start_time, U.end_time, U.duration_in_minutes, U.status`;
         return await this.sqlServerStore.ExecuteQuery(query);
+    }
+    public async getAssetsUnavailableCode(unavailable_code: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_UnavailableCode N'${unavailable_code}'`);
     }
     public async putUnavailable(unavailable_code: string, unavailable_name: string, unavailable_description: string, start_time: string, end_time: string,
         duration_in_minutes: number, valid_from: string, status: string, asset_level: string, asset_id: number, site_id: number): Promise<any> {

@@ -1,4 +1,3 @@
-import Axios from "axios";
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -8,6 +7,7 @@ import { API } from '../../../Utils/Constants';
 import { validateBreakForm } from '../../../Utils/FormValidations';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import ConfigurationTabGeneric from '../../Common/ConfigurationTabGeneric';
+import { getResponseFromGeneric } from '../../../Utils/Requests';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
@@ -16,6 +16,7 @@ class UpdateBreak extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: props.isOpen,
       unavailable: props.unavailable,
       unavailable_name: '',
       unavailable_description: '',
@@ -25,41 +26,47 @@ class UpdateBreak extends Component {
       status: 'Active',
       show: false,
       modalError: false,
-      action: props.action,
       validation: {},
       assetsOptions: [],
       assetsAreaOptions: [],
-      asset_area: 0,
-      completeListTabs: [],
+      asset_area: '',
+      originalUnAssets: [],
+      activeUnAssets: [],
+      unselectedAssetsUn: [],
       availableListTabs: [],
-      selectedListTabs: []
+      completeListTabs: [],
+      selectedListTabs: [],
+      originalSelectedListTabs: []
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.action !== prevState.action || !_.isEqual(nextProps.unavailable, prevState.unavailable)) {
+    if (nextProps.isOpen !== prevState.isOpen) {
       return {
-        action: nextProps.action,
-        modalTitle: nextProps.action === 'create' ? nextProps.t('Add Break') : nextProps.t('Update Break'),
+        isOpen: nextProps.isOpen,
         unavailable: nextProps.unavailable,
-        unavailable_name: '',
-        unavailable_description: '',
-        start_time: '',
-        end_time: '',
+        unavailable_name: nextProps.unavailable.unavailable_name,
+        unavailable_description: nextProps.unavailable.unavailable_description,
+        start_time: nextProps.unavailable.start_time,
+        end_time: nextProps.unavailable.end_time,
         asset_level: 'Site',
-        status: 'Active',
+        status: nextProps.unavailable.status,
         validation: {},
-        asset_area: 0,
-        completeListTabs: [],
+        asset_area: '',
+        originalUnAssets: [],
+        activeUnAssets: [],
+        unselectedAssetsUn: [],
         availableListTabs: [],
-        selectedListTabs: []
+        completeListTabs: [],
+        selectedListTabs: [],
+        originalSelectedListTabs: []
       };
     }
     return null;
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.isOpen && (!_.isEqual(this.state.unavailable, prevState.unavailable) || !_.isEqual(this.state.action, prevState.action))) {
+    if (this.props.isOpen && !_.isEqual(this.state.unavailable, prevState.unavailable)) {
       this.fetchData();
     }
   }
@@ -67,53 +74,53 @@ class UpdateBreak extends Component {
   componentDidMount() {
     const { actions } = this.props;
     actions.getAssets(this.props.user.site).then(response => {
+      const assetsOptions = _.filter(response, { status: 'Active' });
       this.setState({
-        assetsOptions: response,
-        assetsAreaOptions: _.filter(response, { asset_level: 'Area' })
+        assetsOptions,
+        assetsAreaOptions: _.filter(assetsOptions, { asset_level: 'Area' })
       });
     });
   }
 
   fetchData() {
-    console.log('call fetch data');
-    if (this.state.action === 'create') {
-      this.loadDataCreate();
-    } else {
-      this.loadDataUpdate();
-    }
+    const { actions } = this.props;
+    const params = {
+      unavailable_code: this.state.unavailable.unavailable_code
+    };
+    actions.getAssetsUnavailable(params).then((response) => {
+      const originalUnAssets = response;
+      const activeUnAssets = _.filter(originalUnAssets, { status: 'Active' });
+      const unselectedAssetsUn = _.filter(_.differenceWith(this.state.assetsOptions, activeUnAssets, _.isEqual), { asset_level: 'Cell' });
+      let availableListTabs = _.map(unselectedAssetsUn, asset => {
+        return { id: asset.asset_id.toString(), content: asset.asset_name };
+      });
+      let selectedListTabs = _.map(activeUnAssets, asset => {
+        return { id: asset.asset_id.toString(), content: asset.asset_name };
+      });
+      this.setState({
+        originalUnAssets,
+        activeUnAssets,
+        unselectedAssetsUn,
+        availableListTabs,
+        completeListTabs: availableListTabs,
+        selectedListTabs,
+        originalSelectedListTabs: selectedListTabs
+      });
+    });
   }
 
-  loadDataCreate() {
-    let availableListTabs = [];
-    _.forEach(_.filter(this.state.assetsOptions, { asset_level: this.state.asset_level }), asset => {
-      availableListTabs.push({ id: asset.asset_id.toString(), content: asset.asset_name });
-    });
-    this.setState({
-      availableListTabs,
-      completeListTabs: availableListTabs
-    });
-  }
 
-  loadDataUpdate() {
-    this.setState((state) => ({
-      unavailable_name: state.unavailable.unavailable_name,
-      unavailable_description: state.unavailable.unavailable_description,
-      start_time: state.unavailable.start_time,
-      end_time: state.unavailable.end_time,
-      status: state.unavailable.status
-    }));
-  }
 
   updateTabsImported = (availableListTabs, selectedListTabs) => {
     this.setState({ availableListTabs, selectedListTabs });
   }
 
   importAllTabs = () => {
-    this.updateTabsImported([], this.state.completeListTabs);
+    this.updateTabsImported([], _.concat(this.state.completeListTabs, this.state.originalSelectedListTabs));
   };
 
   resetTabs = () => {
-    this.updateTabsImported(this.state.completeListTabs, []);
+    this.updateTabsImported(this.state.completeListTabs, this.state.originalSelectedListTabs);
   }
 
   handleChange = (event) => {
@@ -123,15 +130,25 @@ class UpdateBreak extends Component {
   };
 
   handleChangeAssetLevel = (event) => {
-    let availableListTabs = [];
-    _.forEach(_.filter(this.state.assetsOptions, { asset_level: event.target.value }), asset => {
-      availableListTabs.push({ id: asset.asset_id.toString(), content: asset.asset_name });
-    });;
+    const { completeListTabs, originalSelectedListTabs } = this.state;
     this.setState({
       [event.target.name]: event.target.value,
-      availableListTabs,
-      completeListTabs: availableListTabs,
-      selectedListTabs: []
+      availableListTabs: completeListTabs,
+      selectedListTabs: originalSelectedListTabs,
+      asset_area: ''
+    });
+  };
+
+  handleChangeArea = (event) => {
+    const { completeListTabs, originalSelectedListTabs, unselectedAssetsUn } = this.state;
+    let newAvailable = event.target.value !== '' ?
+      _.map(_.filter(unselectedAssetsUn, { parent_asset_code: event.target.value }), asset => {
+        return { id: asset.asset_id.toString(), content: asset.asset_name };
+      }) : completeListTabs;
+    this.setState({
+      [event.target.name]: event.target.value,
+      availableListTabs: newAvailable,
+      selectedListTabs: originalSelectedListTabs
     });
   };
 
@@ -144,51 +161,58 @@ class UpdateBreak extends Component {
   };
 
   submitUnavailable = (e) => {
-    e.preventDefault();
-    const {
-      unavailable_name,
-      unavailable_description,
-      start_time,
-      end_time,
-      asset_id,
-      status
-    } = this.state;
-    let url = `${API}/insert_unavailable`;
+    const { activeUnAssets, selectedListTabs } = this.state;
 
-    let startTime1 = moment('1970-01-01 ' + start_time);
-    let endTime1 = moment('1970-01-01 ' + end_time);
+    const orginalActivateTabs = _.map(activeUnAssets, asset => {
+      return { id: asset.asset_id.toString(), content: asset.asset_name };
+    });
+    //primero tenemos que sacar los que si siguen activos de los orginales
+    const stillActive = _.intersectionWith(orginalActivateTabs, selectedListTabs, _.isEqual);
+    //y luego esa lista compararla con la total de activos originales y la diferencia no están son los que tenemos que pasar a Inactive
+    const changeToInactive = _.map(_.differenceWith(orginalActivateTabs, stillActive, _.isEqual), tab => {
+      tab.status = 'Inactive';
+      return tab;
+    });
+    const tabsToInsert = _.concat(selectedListTabs, changeToInactive);
+
+    let startTime1 = moment('1970-01-01 ' + this.state.start_time);
+    let endTime1 = moment('1970-01-01 ' + this.state.end_time);
     let difference = endTime1.diff(startTime1, 'minutes');
 
     const validation = validateBreakForm(this.state);
-
-    if (
-      _.isEmpty(validation)
-    ) {
-      Axios.put(url, {
-        unavailable_code: `${this.props.user.site_prefix} - ${unavailable_name}`,
-        unavailable_id: this.props.unavailable_id,
-        unavailable_name: unavailable_name,
-        unavailable_description: unavailable_description,
-        start_time: start_time,
-        end_time: end_time,
-        duration_in_minutes: difference,
-        valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
-        status: status,
-        asset_id: asset_id,
-        site_id: this.props.user.site
-      }).then(
-        () => {
-          this.props.Refresh();
-          this.props.onRequestClose();
-          this.setState({
-            show: true,
-            validation: {}
-          });
-        },
-        (error) => {
-          console.log(error);
+    if (_.isEmpty(validation)) {
+      let message = [];
+      _.forEach(tabsToInsert, async (selected, index) => {
+        const data = {
+          unavailable_code: this.state.unavailable.unavailable_code,
+          unavailable_name: this.state.unavailable_name,
+          unavailable_description: this.state.unavailable_description,
+          start_time: this.state.start_time,
+          end_time: this.state.end_time,
+          duration_in_minutes: difference,
+          valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
+          status: selected.status || this.state.status,
+          asset_level: 'Cell',
+          asset_id: parseInt(selected.id, 10),
+          site_id: this.props.user.site
+        };
+        let res = await getResponseFromGeneric('put', API, '/insert_unavailable', {}, {}, data);
+        if (res.status !== 200) {
+          message.push(selected);
         }
-      );
+        if (index === (this.state.selectedListTabs.length - 1)) {
+          this.props.Refresh();
+          if (_.isEmpty(message)) {
+            this.props.onRequestClose();
+            this.setState({
+              show: true,
+              validation: {}
+            });
+          } else {
+            console.log('Error', _.map(message, 'content').join(', '));
+          }
+        }
+      });
     } else {
       this.setState({ validation });
     }
@@ -206,7 +230,7 @@ class UpdateBreak extends Component {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{this.state.modalTitle}</Modal.Title>
+            <Modal.Title>{t('Update Break')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -288,11 +312,11 @@ class UpdateBreak extends Component {
                     <Form.Control
                       as="select"
                       name="asset_area"
-                      onChange={this.handleChangeAssetArea}
+                      onChange={this.handleChangeArea}
                       value={this.state.asset_area}
                     >
-                      <option value='0'>None</option>
-                      {_.map(this.state.assetsAreaOptions, asset => { return (<option value={asset.asset_id}>{asset.asset_name}</option>) })}
+                      <option value=''>None</option>
+                      {_.map(this.state.assetsAreaOptions, asset => { return (<option value={asset.asset_code} key={'option_' + asset.asset_code}>{asset.asset_name}</option>) })}
                     </Form.Control>
                   </Col>
                 </Form.Group>

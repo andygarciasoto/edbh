@@ -201,5 +201,10 @@
     "Update Display": "Update Display",
     "Break": "Break",
     "Add Break": "Add Break",
-    "Update Break": "Update Break"
+    "Update Break": "Update Break",
+    "Asset Count": "Asset Count",
+    "Asset Level": "Asset Level",
+    "All Assets": "All Assets",
+    "Available Assets": "Available Assets",
+    "Selected Assets": "Selected Assets"
 }

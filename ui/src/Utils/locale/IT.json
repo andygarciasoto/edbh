@@ -190,5 +190,10 @@
     "Update Display": "Aggiorna Visualizzazione",
     "Break": "Rompere",
     "Add Break": "Aggiungi Pausa",
-    "Update Break": "Aggiorna Pausa"
+    "Update Break": "Aggiorna Pausa",
+    "Asset Count": "Macchine Associate",
+    "Asset Level": "Livello Macchina",
+    "All Assets": "Tutte le Macchine",
+    "Available Assets": "Macchine Disponibili",
+    "Selected Assets": "Macchine Selezionate"
 }
