@@ -17,7 +17,6 @@ class BreakForm extends Component {
     super(props);
     this.state = {
       isOpen: props.isOpen,
-      unavailable: props.unavailable,
       unavailable_name: '',
       unavailable_description: '',
       start_time: '',
@@ -39,7 +38,7 @@ class BreakForm extends Component {
     const { actions } = this.props;
     actions.getAssets(this.props.user.site).then(response => {
       this.setState({
-        assetsOptions: response
+        assetsOptions: _.filter(response, { status: 'Active' })
       });
     });
   }
@@ -48,7 +47,6 @@ class BreakForm extends Component {
     if (nextProps.isOpen !== prevState.isOpen) {
       return {
         isOpen: nextProps.isOpen,
-        unavailable: nextProps.unavailable,
         unavailable_name: '',
         unavailable_description: '',
         start_time: '',
@@ -79,16 +77,6 @@ class BreakForm extends Component {
       availableListTabs: state.asset_level === 'Site' ? [] : options,
       completeListTabs: options,
       selectedListTabs: state.asset_level === 'Site' ? options : []
-    }));
-  }
-
-  loadDataUpdate() {
-    this.setState((state) => ({
-      unavailable_name: state.unavailable.unavailable_name,
-      unavailable_description: state.unavailable.unavailable_description,
-      start_time: state.unavailable.start_time,
-      end_time: state.unavailable.end_time,
-      status: state.unavailable.status
     }));
   }
 

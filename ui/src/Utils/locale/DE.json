@@ -189,5 +189,10 @@
     "Update Display": "Anzeige Aktualisieren",
     "Break": "Unterbrechung",
     "Add Break": "Pause Hinzufügen",
-    "Update Break": "Update-Pause"
+    "Update Break": "Update-Pause",
+    "Asset Count": "Maschinen zuordnen",
+    "Asset Level": "Maschinenebene",
+    "All Assets": "Alle Maschinen",
+    "Available Assets": "Verfügbare Maschinen",
+    "Selected Assets": "Ausgewählte Maschinen"
 }

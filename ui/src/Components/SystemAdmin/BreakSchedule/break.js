@@ -5,6 +5,7 @@ import * as BreakActions from '../../../redux/actions/breakActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddBreak from './breakForm';
+import UpdateBreak from './updateBreak';
 import EditIcon from "../../../resources/u668.svg";
 
 class Break extends Component {
@@ -13,7 +14,8 @@ class Break extends Component {
 		this.state = {
 			BreakData: [],
 			shifts: [],
-			showBreakForm: false,
+			showCreateBreak: false,
+			showUpdateBreak: false,
 			action: '',
 			unavailable: {},
 			statusFilter: 'Active',
@@ -50,18 +52,23 @@ class Break extends Component {
 		});
 	}
 
-	openBreakModal = (action, unavailable) => {
+	openCreateBreak = () => {
 		this.setState({
-			showBreakForm: true,
-			action,
+			showCreateBreak: true
+		});
+	};
+
+	openUpdateBreak = (unavailable) => {
+		this.setState({
+			showUpdateBreak: true,
 			unavailable
 		});
 	};
 
-	closeBreakModal = () => {
+	closeModal = () => {
 		this.setState({
-			showBreakForm: false,
-			action: '',
+			showCreateBreak: false,
+			showUpdateBreak: false,
 			unavailable: {}
 		});
 	};
@@ -82,7 +89,7 @@ class Break extends Component {
 					buttonFilter={t('Search')}
 					shiftsOptions={this.state.shifts}
 					shifts={false}
-					onClick={() => this.openBreakModal('create')}
+					onClick={() => this.openCreateBreak()}
 					onClickFilter={this.applyFilter}
 					view={'Break'}
 					t={t}
@@ -90,11 +97,17 @@ class Break extends Component {
 				<AddBreak
 					t={t}
 					user={this.props.user}
-					isOpen={this.state.showBreakForm}
-					action={this.state.action}
+					isOpen={this.state.showCreateBreak}
+					Refresh={this.loadData}
+					onRequestClose={this.closeModal}
+				/>
+				<UpdateBreak
+					t={t}
+					user={this.props.user}
+					isOpen={this.state.showUpdateBreak}
 					unavailable={this.state.unavailable}
 					Refresh={this.loadData}
-					onRequestClose={this.closeBreakModal}
+					onRequestClose={this.closeModal}
 				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
@@ -124,7 +137,7 @@ class Break extends Component {
 										src={EditIcon}
 										alt={`edit-icon`}
 										className="icon"
-										onClick={() => this.openBreakModal('update', unavailable)}
+										onClick={() => this.openUpdateBreak(unavailable)}
 									/>
 								</td>
 							</tr>

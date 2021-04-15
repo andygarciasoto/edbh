@@ -201,5 +201,10 @@
     "Update Display": "Actualizar Pantalla de Máquina",
     "Break": "Descanso",
     "Add Break": "Agregar Descanso",
-    "Update Break": "Actualizar Descanso"
+    "Update Break": "Actualizar Descanso",
+    "Asset Count": "Máquinas Asociadas",
+    "Asset Level": "Nivel de Máquina",
+    "All Assets": "Todas las Máquinas",
+    "Available Assets": "Máquinas Disponibles",
+    "Selected Assets": "Máquinas Seleccionadas"
 }

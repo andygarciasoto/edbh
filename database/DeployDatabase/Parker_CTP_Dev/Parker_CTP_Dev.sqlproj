@@ -519,5 +519,8 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_UOM.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Unavailable.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Tags.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_UnavailableCode.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
   </ItemGroup>
 </Project>

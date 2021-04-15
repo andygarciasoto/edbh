@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { GET_BREAK, GET_BREAK_BY_SITE, GET_SHIFTS } from "../constants/constants";
+import { GET_BREAK, GET_BREAK_BY_SITE, GET_SHIFTS, GET_ASSETS } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 import { genericRequest } from '../../Utils/Requests';
 
@@ -47,6 +47,18 @@ export const getShiftsFilter = (params) => {
       dispatch({
         type: GET_SHIFTS,
         shifts: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getAssetsUnavailable = (params) => {
+  return (dispatch) => {
+    return genericRequest('get', API, '/asset_by_unavailable', null, params).then((response) => {
+      dispatch({
+        type: GET_ASSETS,
+        assets: response.data,
       });
       return response.data;
     });

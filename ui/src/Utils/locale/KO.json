@@ -178,5 +178,10 @@
     "Update Display": "업데이트 디스플레이",
     "Break": "단절",
     "Add Break": "휴식 추가",
-    "Update Break": "업데이트 중단"
+    "Update Break": "업데이트 중단",
+    "Asset Count": "기계 연결",
+    "Asset Level": "기계 수준",
+    "All Assets": "모든 기계",
+    "Available Assets": "사용 가능한 기계",
+    "Selected Assets": "선택된 기계"
 }

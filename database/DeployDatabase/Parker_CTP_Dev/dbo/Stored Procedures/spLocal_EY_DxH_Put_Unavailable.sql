@@ -23,24 +23,23 @@ AS
 		@area_level		AS NVARCHAR(100) = 'Area',
 		@cell_level		AS NVARCHAR(100) = 'Cell';
 
-	IF EXISTS (SELECT top 1 unavailable_id FROM dbo.Unavailable
-	WHERE unavailable_code = @unavailable_code)
+	IF EXISTS (SELECT unavailable_id FROM dbo.Unavailable
+	WHERE unavailable_code = @unavailable_code AND asset_id = @asset_id)
 		BEGIN
 			UPDATE dbo.Unavailable
 			SET
-			unavailable_name = @unavailable_name,
-			unavailable_description = @unavailable_description,
-			start_time = @start_time,
-			end_time = @end_time,
-			duration_in_minutes = @duration_in_minutes,
-			valid_from = @valid_from,
-			valid_to = null,
-			asset_id = @asset_id,
-			status = @status,
-			last_modified_by = 'Administration Tool',
-			last_modified_on = GETDATE()
+				unavailable_name = @unavailable_name,
+				unavailable_description = @unavailable_description,
+				start_time = @start_time,
+				end_time = @end_time,
+				duration_in_minutes = @duration_in_minutes,
+				valid_from = @valid_from,
+				valid_to = null,
+				status = @status,
+				last_modified_by = 'Administration Tool',
+				last_modified_on = GETDATE()
 			WHERE
-			unavailable_code = @unavailable_code
+			unavailable_code = @unavailable_code AND asset_id = @asset_id
 		END
 	ELSE
 		BEGIN
@@ -97,6 +96,6 @@ AS
 		[last_modified_by],[last_modified_on],asset_level,asset_id)
 		OUTER APPLY [dbo].[AssetsResolverFromId] (s.asset_id, CASE WHEN S.asset_level=@site_level THEN 2 WHEN S.asset_level= @area_level THEN 1 ELSE 0 END) as H
 		INNER JOIN dbo.Asset A ON
-				H.asset_id = A.asset_id AND A.asset_level = @cell_level;
+				H.asset_id = A.asset_id AND A.asset_level = @cell_level AND A.status = 'Active';
 		END
 	END
