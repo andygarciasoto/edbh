@@ -139,9 +139,9 @@ class CheckOutModal extends React.Component {
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {!_.isEmpty(this.props.activeOperators) ?
+                        {/* {!_.isEmpty(this.props.activeOperators) ? */}
                             <Row className='container'>
-                                <Col md={12} lg={12}><span className='supervisorMessage'>{t('Please select which role you will perform at this station today') + ':'}</span></Col>
+                                <Col md={12} lg={12}><span className='supervisorMessage'>{t('Please select the users to check out from this station') + ':'}</span></Col>
                                 <Col className='operatorsCheckBoxDiv'>
                                     <FormCheck
                                         type='checkbox'
@@ -153,8 +153,8 @@ class CheckOutModal extends React.Component {
                                     {this.getCheckOptions()}
                                 </Col>
                             </Row>
-                            : <h5>{t('No active operators to check-out')}</h5>
-                        }
+                            {/* : <h5>{t('No active operators to check out')}</h5>
+                        } */}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button
