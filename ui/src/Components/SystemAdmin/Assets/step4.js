@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { genericRequest } from '../../../Utils/Requests';
+import { API } from '../../../Utils/Constants';
 import * as BreakActions from '../../../redux/actions/breakActions';
 import { Form, Col } from 'react-bootstrap';
 import { reorder, move, getItemStyle, ReasonList, getListStyleDrop } from '../../../Utils/ConfigurationTabHelper';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import moment from 'moment';
 
 export class Step4 extends Component {
 	constructor(props) {
@@ -27,6 +30,41 @@ export class Step4 extends Component {
 			});
 		});
 	}
+
+	assingBreaks = (e) => {
+		e.preventDefault();
+		const { selected } = this.state;
+
+		const newArray = this.state.selected.map((item) => {
+			item.asset_code = this.props.asset_code;
+			item.site_code = this.props.user.site_code;
+			item.valid_from = moment().tz(this.props.user.timezone);
+			item.valid_to = null;
+
+			return item;
+		});
+
+		if (selected !== []) {
+			genericRequest('put', API, '/dragndrop', null, null, {
+				site_id: this.props.user.site,
+				table: 'Unavailable',
+				data: newArray,
+			}).then(
+				() => {
+					this.setState({
+						show: true,
+					});
+				},
+				(error) => {
+					console.log(error);
+				}
+			);
+		} else {
+			this.setState({
+				modalError: true,
+			});
+		}
+	};
 
 	onDragEnd = (result) => {
 		const { source, destination } = result;
@@ -64,6 +102,7 @@ export class Step4 extends Component {
 	getList = (id) => this.state[ReasonList[id]];
 
 	render() {
+		console.log(this.state.selected);
 		return (
 			<div>
 				<DragDropContext onDragEnd={this.onDragEnd}>
@@ -100,13 +139,17 @@ export class Step4 extends Component {
 									)}
 								</Droppable>
 							</Col>
-							<Col >
-              <label>Selected Break/Lunch</label>
+							<Col>
+								<label>Selected Break/Lunch</label>
 								<Droppable droppableId="droppable2">
 									{(provided, snapshot) => (
 										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
 											{this.state.selected.map((item, index) => (
-												<Draggable key={item.unavailable_code} draggableId={item.unavailable_code} index={index}>
+												<Draggable
+													key={item.unavailable_code}
+													draggableId={item.unavailable_code}
+													index={index}
+												>
 													{(provided, snapshot) => (
 														<div
 															ref={provided.innerRef}
@@ -129,6 +172,8 @@ export class Step4 extends Component {
 							</Col>
 						</Form.Row>
 					</form>
+					<button className="button-next" onClick={(e) => this.assingBreaks(e)}>{"End Steps>>"}</button>
+
 					<button className="button-back" onClick={(e) => this.props.back(e)}>
 						{'<<Previous Step'}
 					</button>

@@ -17,11 +17,12 @@ class AddAsset extends Component {
 		this.state = {
 			step1: false,
 			step2: false,
-			step3: true,
-			step4: false,
+			step3: false,
+			step4: true,
 			showForm: true,
 			showFooter: false,
 			showConfirm: true,
+			asset_code: '',
 		};
 	}
 
@@ -72,6 +73,12 @@ class AddAsset extends Component {
 		});
 	};
 
+	getAsset_code = (asset_code) => {
+		this.setState({
+			asset_code,
+		});
+	};
+
 	handleChange = (event) => {
 		const target = event.target;
 		const value = target.value;
@@ -117,6 +124,7 @@ class AddAsset extends Component {
 								nextStep={(e) => this.assetSteps(2, e)}
 								user={this.props.user}
 								showFooter={this.hideSteps}
+								getCode={this.getAsset_code}
 							/>
 						)}
 						{this.state.step2 === true && (
@@ -131,10 +139,15 @@ class AddAsset extends Component {
 								user={this.props.user}
 								nextStep={(e) => this.assetSteps(4, e)}
 								back={(e) => this.assetSteps(2, e)}
+								asset_code={this.state.asset_code}
 							/>
 						)}
 						{this.state.step4 === true && (
-							<Step4 user={this.props.user} back={(e) => this.assetSteps(3, e)} />
+							<Step4
+								user={this.props.user}
+								back={(e) => this.assetSteps(3, e)}
+								asset_code={this.state.asset_code}
+							/>
 						)}
 					</Modal.Body>
 					{this.state.showFooter === true && (

@@ -123,6 +123,7 @@ export class Step1 extends Component {
 						show: true,
 					});
 					this.props.nextStep(e);
+					this.props.getCode(code);
 				},
 				(error) => {
 					console.log(error);
