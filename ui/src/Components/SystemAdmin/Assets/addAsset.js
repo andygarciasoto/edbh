@@ -15,9 +15,9 @@ class AddAsset extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			step1: true,
+			step1: false,
 			step2: false,
-			step3: false,
+			step3: true,
 			step4: false,
 			showForm: true,
 			showFooter: false,

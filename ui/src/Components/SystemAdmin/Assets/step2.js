@@ -72,11 +72,10 @@ export class Step2 extends Component {
 				status: status,
 			}).then(
 				() => {
-					this.props.Refresh();
 					this.setState({
 						show: true,
 					});
-					this.handleClose();
+					this.props.nextStep(e);
 				},
 				(error) => {
 					console.log(error);
@@ -249,7 +248,7 @@ export class Step2 extends Component {
 								</Col>
 							</Form.Row>
 						</form>
-        <button className="button-next" onClick={(e) => this.props.nextStep(e)}>{"Next Step>>"}</button>
+        <button className="button-next" onClick={(e) => this.createTag(e)}>{"Next Step>>"}</button>
         <button className="button-back" onClick={(e) => this.props.back(e)}>{"<<Previous Step"}</button>
       </div>
     );
