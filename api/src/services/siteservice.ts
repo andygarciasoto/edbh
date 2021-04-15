@@ -100,29 +100,30 @@ export class SiteService {
         const parameters = getParametersOfTable(table, site_id);
         const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
         const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-
         //Initialize query to store the values of the merge sentence
         let valuesMergeQuery = '';
-        var body;
-        for (var val of Object.keys(data)) {
-            body = data[val];
-            let cont = 0;
-            let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
-            for (var key of Object.keys(body)) {
-                updateRow += getValuesFromHeaderTable(headers[table], headers[table][cont], body[key]);
-                cont++;
-            }
-            updateRow += ')';
-            valuesMergeQuery += updateRow;
+        try {
+            _.forEach(data, item => {
+                const tableHeaders = headers[table];
+                let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
+                _.forEach(tableHeaders, header => {
+                    updateRow += getValuesFromHeaderTable(tableHeaders, header, (header.type === 'TIME' ? '1970-01-01 ' + item[header.key] : item[header.key]));
+                });
+                updateRow += ')';
+                valuesMergeQuery += updateRow;
+            });
+            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+            //console.log(queries);
+            _.forEach(queries, async (query, index) => {
+                try {
+                    await this.dxhdatarepository.executeGeneralImportQuery(query);
+                } catch (e) {
+                    return res.status(500).send({ message: 'Error ' + e.message });
+                }
+            });
+            return res.status(200).send('Message Entered Succesfully');
+        } catch (e) {
+            return res.status(500).send({ message: 'Error ' + e.message });
         }
-        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
-        _.forEach(queries, async (query, index) => {
-            try {
-                await this.dxhdatarepository.executeGeneralImportQuery(query);
-            } catch (e) {
-                return res.status(500).send({ message: 'Error ' + e.message });
-            }
-        });
-        return res.status(200).send('Message Entered Succesfully');
     }
 }
