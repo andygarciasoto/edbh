@@ -38,16 +38,13 @@ export class Step3 extends Component {
 		const newArray = this.state.selected.map((item) => {
 			item.asset_code = this.props.asset_code;
 			item.site_code = this.props.user.site_code;
-			item.valid_from = moment().tz(this.props.user.timezone);
-			item.valid_to = null;
-
 			return item;
 		});
 
 		if (selected !== []) {
 			genericRequest('put', API, '/dragndrop', null, null, {
 				site_id: this.props.user.site,
-				table: 'Unavailable',
+				table: 'DTReason',
 				data: newArray,
 			}).then(
 				() => {

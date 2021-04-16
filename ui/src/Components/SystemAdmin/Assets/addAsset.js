@@ -15,10 +15,10 @@ class AddAsset extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			step1: false,
+			step1: true,
 			step2: false,
 			step3: false,
-			step4: true,
+			step4: false,
 			showForm: true,
 			showFooter: false,
 			showConfirm: true,
@@ -132,6 +132,7 @@ class AddAsset extends Component {
 								nextStep={(e) => this.assetSteps(3, e)}
 								back={(e) => this.assetSteps(1, e)}
 								user={this.props.user}
+								asset_code={this.state.asset_code}
 							/>
 						)}
 						{this.state.step3 === true && (

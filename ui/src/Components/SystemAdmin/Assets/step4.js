@@ -102,7 +102,6 @@ export class Step4 extends Component {
 	getList = (id) => this.state[ReasonList[id]];
 
 	render() {
-		console.log(this.state.selected);
 		return (
 			<div>
 				<DragDropContext onDragEnd={this.onDragEnd}>
