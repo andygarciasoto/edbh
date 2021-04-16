@@ -5,8 +5,8 @@ import * as AssetActions from '../../../redux/actions/assetActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddAsset from './addAsset';
-import EditIcon from "../../../resources/u668.svg";
-
+import EditAsset from './editAsset/editAsset';
+import EditIcon from '../../../resources/u668.svg';
 
 class Assets extends Component {
 	constructor(props) {
@@ -14,6 +14,8 @@ class Assets extends Component {
 		this.state = {
 			AssetsData: [],
 			addAsset: false,
+			editAsset: false,
+			asset_id: 0,
 		};
 	}
 
@@ -39,18 +41,18 @@ class Assets extends Component {
 		});
 	};
 
-	//   showEditShift = (shift_id) => {
-	//     this.setState({
-	//       editShift: true,
-	//       shift_id: shift_id
-	//     });
-	//   };
+	showEditAsset = (asset_id) => {
+		this.setState({
+			editAsset: true,
+			asset_id: asset_id,
+		});
+	};
 
-	//   closeEditShift = () => {
-	//     this.setState({
-	//         editShift: false,
-	//     });
-	//   };
+	closeEditAsset = () => {
+		this.setState({
+			editAsset: false,
+		});
+	};
 
 	render() {
 		const t = this.props.t;
@@ -73,6 +75,17 @@ class Assets extends Component {
 						user={this.props.user}
 						showForm={this.state.addAsset}
 						closeForm={this.closeAddAsset}
+						Refresh={this.loadData}
+					/>
+				)}
+				{this.state.editAsset === true && (
+					<EditAsset
+						showForm={this.state.editAsset}
+						closeForm={this.closeEditAsset}
+						asset_id={this.state.asset_id}
+						t={t}
+						Refresh={this.loadData}
+						user={this.props.user}
 					/>
 				)}
 				<Table responsive="sm" bordered={true}>
@@ -92,26 +105,26 @@ class Assets extends Component {
 					</thead>
 					<tbody>
 						{this.state.AssetsData.map((asset, index) => (
-              <tr key={index}>
-                <td>{asset.asset_code}</td>
-                <td>{asset.asset_name}</td>
-                <td>{asset.asset_description}</td>
-                <td>{asset.asset_level}</td>
-                <td>{asset.parent_asset_code}</td>
-                <td>{asset.automation_level}</td>
+							<tr key={index}>
+								<td>{asset.asset_code}</td>
+								<td>{asset.asset_name}</td>
+								<td>{asset.asset_description}</td>
+								<td>{asset.asset_level}</td>
+								<td>{asset.parent_asset_code}</td>
+								<td>{asset.automation_level}</td>
 								<td>{asset.target_percent_of_ideal}</td>
 								<td>{asset.include_in_escalation}</td>
-                <td>{asset.status}</td>
-                <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(asset.asset_id)}
-                  />
-                </td>
-              </tr>
-            ))}
+								<td>{asset.status}</td>
+								<td>
+									<img
+										src={EditIcon}
+										alt={`edit-icon`}
+										className="icon"
+										onClick={() => this.showEditAsset(asset.asset_id)}
+									/>
+								</td>
+							</tr>
+						))}
 					</tbody>
 				</Table>
 			</div>

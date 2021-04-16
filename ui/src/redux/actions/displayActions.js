@@ -40,3 +40,16 @@ export const getAssetsLevel = (siteId) => {
 		});
 	};
 };
+
+export const getAssetById = (siteId, asset_id) => {
+	var url = `${API}/asset_by_site?site=${siteId}&asset_id=${asset_id}`;
+	return (dispatch) => {
+		return Axios.get(url).then((response) => {
+			dispatch({
+				type: GET_ASSETS,
+				assets: response.data,
+			});
+			return response.data;
+		});
+	};
+};
