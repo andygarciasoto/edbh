@@ -107,7 +107,7 @@ export class SiteService {
                 const tableHeaders = headers[table];
                 let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
                 _.forEach(tableHeaders, header => {
-                    updateRow += getValuesFromHeaderTable(tableHeaders, header, (header.type === 'TIME' ? '1970-01-01 ' + item[header.key] : item[header.key]));
+                    updateRow += getValuesFromHeaderTable(tableHeaders, header, item[header.key]);
                 });
                 updateRow += ')';
                 valuesMergeQuery += updateRow;
