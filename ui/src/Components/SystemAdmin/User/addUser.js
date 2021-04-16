@@ -17,15 +17,16 @@ class AddUser extends Component {
       username: '',
       firstname: '',
       lastname: '',
-      role: 1,
+      role: 3,
+      role_name: 'Operator',
       status: "Active",
-      escalation_id: 1,
+      escalation_id: '',
       site: props.user.site,
       roles: [],
       show: false,
       showForm: true,
       escalation: [],
-      sites: [],
+      sites: _.filter(props.user.sites, { Role: 'Administrator' }),
       modalError: false,
       validation: {}
     };
@@ -36,13 +37,11 @@ class AddUser extends Component {
 
     return Promise.all([
       actions.getRoles(),
-      actions.getEscalation(),
-      actions.getSites(),
+      actions.getEscalation()
     ]).then((response) => {
       this.setState({
         roles: response[0],
-        escalation: response[1],
-        sites: response[2],
+        escalation: response[1]
       });
     });
   }
@@ -64,7 +63,8 @@ class AddUser extends Component {
       username,
       firstname,
       lastname,
-      role,
+      role_name,
+      roles,
       status,
       escalation_id,
       site,
@@ -82,10 +82,9 @@ class AddUser extends Component {
         username: username,
         first_name: firstname,
         last_name: lastname,
-        role_id: role,
-        site_id: this.props.user.site,
+        role_id: _.find(roles, { name: role_name }).role_id,
+        site_id: site,
         escalation_id: parseInt(escalation_id, 10),
-        site: site,
         status: status,
       }).then(
         () => {
@@ -108,7 +107,7 @@ class AddUser extends Component {
 
   renderRoles(roles, index) {
     return (
-      <option value={roles.role_id} key={index}>
+      <option value={roles.name} key={index}>
         {roles.name}
       </option>
     );
@@ -215,6 +214,7 @@ class AddUser extends Component {
                     autoComplete={"false"}
                     onChange={this.handleChange}
                   >
+                    <option value=''>None</option>
                     {this.state.escalation.map(this.renderEscalation)}
                   </Form.Control>
                 </Col>
@@ -224,9 +224,9 @@ class AddUser extends Component {
                 <Col sm={10}>
                   <Form.Control
                     as="select"
-                    value={this.state.role}
+                    value={this.state.role_name}
                     autoComplete={"false"}
-                    name='role'
+                    name='role_name'
                     onChange={this.handleChange}
                   >
                     {this.state.roles.map(this.renderRoles)}

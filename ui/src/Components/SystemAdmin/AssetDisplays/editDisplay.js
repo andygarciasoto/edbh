@@ -5,6 +5,7 @@ import * as AssetActions from '../../../redux/actions/assetActions';
 import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
 import { Modal, Button } from 'react-bootstrap';
+import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
 class AddDisplay extends Component {
@@ -29,7 +30,7 @@ class AddDisplay extends Component {
 			actions.getAssets(this.props.user.site),
 		]).then((response) => {
 			this.setState({
-				AssetsData: response[1],
+				AssetsData: _.filter(response[1], { asset_level: 'Cell' }),
 				asset: response[0].assetdisplaysystem_id,
 				name: response[0].displaysystem_name,
 				status: response[0].status,

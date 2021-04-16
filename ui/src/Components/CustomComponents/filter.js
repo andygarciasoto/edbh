@@ -10,7 +10,6 @@ const Filter = ({
   onClick,
   onClickFilter,
   escalation,
-  buttonFilter,
   newClass,
   level,
   automatedLevel,
@@ -166,7 +165,7 @@ const Filter = ({
             onClickFilter(statusFilter, shiftFilter);
         }}
       >
-        {buttonFilter}
+        {t('Apply Filter')}
       </button>
       <button className="filter-button" onClick={onClick}>
         {buttonName}

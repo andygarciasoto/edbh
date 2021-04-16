@@ -182,11 +182,11 @@ class OperatorComponent extends React.Component {
                     <Col md={3} lg={3}>
                         {validPermission(props.user, 'operatorCheckOut', 'read') ?
                             <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('showCheckOutModal')}>
-                                {t('Checkout Operators')}
+                                {t('Check Out Operators')}
                             </Button>
                             : null}
                         {this.props.isEditable ?
-                            <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check-In')}</Button>
+                            <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check In')}</Button>
                             : null}
                         <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('modal_active_op_Is_Open')}>
                             {t('Active Operators')}: {this.state.activeOperators.length}
@@ -195,7 +195,7 @@ class OperatorComponent extends React.Component {
                 </Row>
                 <BadgeScannerModal
                     isOpen={this.state.modal_validate_IsOpen}
-                    modalTitle={'New Operator Check-In'}
+                    modalTitle={'New Operator Check In'}
                     inputText={'Please scan the badge to check-in the operator...'}
                     onRequestClose={this.closeModal}
                     t={t}

@@ -19,30 +19,30 @@ class ActiveOperatorsModal extends React.Component {
         }
     }
 
-    getColumns() {
+    getColumns(t) {
         let columns = [{
-            Header: 'Name',
+            Header: t('Name'),
             accessor: 'name'
         }, {
-            Header: 'Check-In',
+            Header: t('Check In'),
             accessor: 'start_time',
             Cell: c => this.getCellTime(c.original, 'start_time', ''),
         }, {
-            Header: 'Check-Out',
+            Header: t('Check-Out'),
             accessor: 'end_time',
             Cell: c => this.getCellTime(c.original, 'end_time', ''),
         }, {
-            Header: 'Action',
+            Header: t('Action'),
             accessor: 'reason'
         }, {
-            Header: 'Expected Return',
+            Header: t('Expected Return'),
             accessor: 'possible_end_time',
             Cell: c => this.getCellTime(c.original, 'possible_end_time', ''),
         }];
 
         if (!_.isEmpty(this.state.currentRow)) {
             columns.push({
-                Header: 'Closed By',
+                Header: t('Closed By'),
                 accessor: 'closed_by_name'
             });
         }
@@ -97,9 +97,9 @@ class ActiveOperatorsModal extends React.Component {
     }
 
     render() {
-        const columns = this.getColumns();
         const props = this.props;
         const t = this.props.t;
+        const columns = this.getColumns(t);
         return (
             <React.Fragment>
                 <Modal

@@ -78,7 +78,6 @@ class UOM extends Component {
 				<Filter
 					className="filter-user"
 					buttonName={'+ ' + t('UOM')}
-					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}

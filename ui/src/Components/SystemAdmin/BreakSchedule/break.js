@@ -86,7 +86,6 @@ class Break extends Component {
 				<Filter
 					className="filter-user"
 					buttonName={'+ ' + t('Break')}
-					buttonFilter={t('Search')}
 					shiftsOptions={this.state.shifts}
 					shifts={false}
 					onClick={() => this.openCreateBreak()}
