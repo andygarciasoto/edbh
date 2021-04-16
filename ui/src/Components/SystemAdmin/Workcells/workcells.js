@@ -78,7 +78,6 @@ class Workcells extends Component {
 				<Filter
 					className="filter-user"
 					buttonName={'+ ' + t('Workcell')}
-					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}

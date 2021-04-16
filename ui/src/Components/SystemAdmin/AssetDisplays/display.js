@@ -78,7 +78,6 @@ class Display extends Component {
 				<Filter
 					className="filter-user"
 					buttonName={'+ ' + t('Asset Display')}
-					buttonFilter={t('Search')}
 					role={false}
 					newClass={false}
 					level={false}

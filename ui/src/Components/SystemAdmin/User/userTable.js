@@ -84,7 +84,6 @@ class UserTable extends Component {
 					buttonName={'+ ' + t('User')}
 					role={true}
 					escalation={true}
-					buttonFilter={t('Search')}
 					onClick={() => this.showAddUser()}
 					onClickFilter={this.applyFilter}
 					view={'User'}

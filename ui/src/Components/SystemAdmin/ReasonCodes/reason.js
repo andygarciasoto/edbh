@@ -60,7 +60,6 @@ class Reason extends Component {
         <Filter
           className="filter-user"
           buttonName={"+ Reason"}
-          buttonFilter={"Search"}
           role={false}
           newClass={false}
           level={false}

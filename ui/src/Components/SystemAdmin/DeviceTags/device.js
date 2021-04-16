@@ -65,7 +65,6 @@ class Device extends Component {
 				<Filter
 					className="filter-user"
 					buttonName={'+ Tag'}
-					buttonFilter={'Search'}
 					role={false}
 					newClass={false}
 					level={false}

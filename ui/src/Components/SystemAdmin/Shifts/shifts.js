@@ -81,7 +81,6 @@ class Shifts extends Component {
         <Filter
           className="filter-user"
           buttonName={'+ ' + t('Shift')}
-          buttonFilter={t('Search')}
           role={false}
           onClick={() => this.showAddShift()}
           onClickFilter={this.applyFilter}
