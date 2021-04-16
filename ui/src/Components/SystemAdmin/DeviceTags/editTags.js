@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UOMActions from '../../../redux/actions/uomActions';
 import { API } from '../../../Utils/Constants';
-import { Modal, Button, Form, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
+import _ from 'lodash';
+import { validateTagForm } from '../../../Utils/FormValidations';
 import '../../../sass/SystemAdmin.scss';
 
 class EditDevice extends Component {
@@ -25,6 +27,7 @@ class EditDevice extends Component {
 			showForm: true,
 			sites: [],
 			modalError: false,
+			validation: {}
 		};
 	}
 
@@ -36,10 +39,11 @@ class EditDevice extends Component {
 			actions.getAssets(this.props.user.site),
 			actions.getTagById(this.props.user.site, this.props.tag_id),
 		]).then((response) => {
+			const assetOption = _.filter(response[1], { asset_level: 'Cell' });
 			this.setState({
 				uomData: response[0],
-				sites: response[1],
-				asset: response[1][1].asset_id,
+				sites: assetOption,
+				asset: response[2][0].asset_id,
 				code: response[2][0].tag_code,
 				status: response[2][0].status,
 				name: response[2][0].tag_name,
@@ -66,8 +70,9 @@ class EditDevice extends Component {
 		e.preventDefault();
 		const { code, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
 
-		var url = `${API}/insert_tag`;
-		if (code !== '' && name !== '' && description !== '') {
+		let url = `${API}/insert_tag`;
+		const validation = validateTagForm(this.state);
+		if (_.isEmpty(validation)) {
 			Axios.put(url, {
 				tag_id: this.props.tag_id,
 				tag_code: code,
@@ -95,7 +100,7 @@ class EditDevice extends Component {
 			);
 		} else {
 			this.setState({
-				modalError: true,
+				validation
 			});
 		}
 	};
@@ -129,153 +134,122 @@ class EditDevice extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose} contentClassName="modal-reason">
+				<Modal show={this.state.showForm} onHide={this.handleClose} className="general-modal" centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Update Tag</Modal.Title>
+						<Modal.Title>{t('Update Tag')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<form>
-							<Form.Row>
-								<Col>
-									<label>
-										Code:
-										<input
-											className="input-tag-code"
-											type="text"
-											name="code"
-											value={this.state.code}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
+						<Form>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										type='text'
+										name='name'
+										value={this.state.name}
+										autoComplete={'false'}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.name}</Form.Text>
 								</Col>
-								<Col>
-									<label>
-										Status:
-										<select
-											value={this.state.status}
-											className="select-display-status uom-status"
-											name="status"
-											onChange={this.handleChange}
-										>
-											<option value="Active">Active</option>
-											<option value="Inactive">Inactive</option>
-										</select>
-									</label>
+								<Form.Label column sm={2}>{t('UOM Code')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as='select'
+										name='uom_code'
+										onChange={this.handleChange}
+										value={this.state.uom_code}
+									>
+										{this.state.uomData.map(this.renderUOM)}
+									</Form.Control>
 								</Col>
-							</Form.Row>
-							<Form.Row>
-								<Col>
-									<label>
-										Name:
-										<input
-											className="input-tag-name"
-											type="text"
-											name="name"
-											value={this.state.name}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Rollover Point')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										type='number'
+										name='rollover'
+										min={1}
+										value={this.state.rollover}
+										autoComplete={'false'}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.rollover}</Form.Text>
 								</Col>
-								<Col>
-									<label className="label-tag-category">
-										UOM Code:
-										<select
-											value={this.state.uom_code}
-											className="select-tag-type"
-											name="uom_code"
-											onChange={this.handleChange}
-										>
-											{this.state.uomData.map(this.renderUOM)}
-										</select>
-									</label>
+								<Form.Label column sm={2}>{t('Data Type')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as='select'
+										name='data_type'
+										value={this.state.data_type}
+										onChange={this.handleChange}
+									>
+										<option value="Integer">Integer</option>
+										<option value="Float">Decimals</option>
+									</Form.Control>
 								</Col>
-							</Form.Row>
-							<Form.Row>
-								<Col>
-									<label>
-										Description:
-										<textarea
-											className="input-tag-description"
-											type="text"
-											name="description"
-											value={this.state.description}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Max Change')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										type='number'
+										min={1}
+										name='max_change'
+										value={this.state.max_change}
+										autoComplete={'false'}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.max_change}</Form.Text>
 								</Col>
-
-								<Col>
-									<label className="label-tag-category">
-										Rollover Point:
-										<input
-											className="input-reason-name"
-											type="number"
-											name="rollover"
-											min={999999}
-											value={this.state.rollover}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
+								<Form.Label column sm={2}>{t('Asset')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as='select'
+										name='asset'
+										value={this.state.asset}
+										onChange={this.handleChange}
+									>
+										{this.state.sites.map(this.renderAssets)}
+									</Form.Control>
 								</Col>
-							</Form.Row>
-							<Form.Row>
-								<Col>
-									<label>
-										Data Type:
-										<select
-											className="select-tag-type"
-											name="data_type"
-											onChange={this.handleChange}
-											value={this.state.datatype}
-										>
-											<option value="Integer">Integer</option>
-											<option value="Float">Decimals</option>
-										</select>
-									</label>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="textarea"
+										name="description"
+										value={this.state.description}
+										onChange={this.handleChange}
+										rows={3} />
 								</Col>
-								<Col>
-									<label className="label-tag-category">
-										Max Change:
-										<input
-											className="input-tag-aggregation"
-											type="number"
-											min={10}
-											name="max_change"
-											value={this.state.max_change}
-											autoComplete={'false'}
-											onChange={this.handleChange}
-										/>
-									</label>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as='select'
+										name='status'
+										value={this.state.status}
+										onChange={this.handleChange}
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
 								</Col>
-							</Form.Row>
-							<Form.Row>
-								<Col>
-									<label>
-										Asset:
-										<select
-											className="select-display-status uom-status"
-											name="asset"
-											onChange={this.handleChange}
-										>
-											{this.state.sites.map(this.renderAssets)}
-										</select>
-									</label>
-								</Col>
-							</Form.Row>
-						</form>
+							</Form.Group>
+						</Form>
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createTag(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

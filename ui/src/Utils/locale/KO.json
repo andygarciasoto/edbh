@@ -230,5 +230,13 @@
     "Asset Level": "기계 수준",
     "All Assets": "모든 기계",
     "Available Assets": "사용 가능한 기계",
-    "Selected Assets": "선택된 기계"
+    "Selected Assets": "선택된 기계",
+    "Data Type": "데이터 유형",
+    "UOM Code": "UOM 코드",
+    "Rollover Point": "롤오버 지점",
+    "Aggregation": "집합체",
+    "Max Change": "최대 변화",
+    "Tag": "꼬리표",
+    "Add Tag": "태그 추가",
+    "Update Tag": "태그 업데이트"
 }

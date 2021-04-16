@@ -112,11 +112,30 @@ function validateBreakForm(state) {
     return validation;
 }
 
+function validateTagForm(state) {
+    let validation = {};
+    if (state.name.trim() === '') {
+        validation.name = 'Name is required';
+    }
+    if (state.rollover === '') {
+        validation.rollover = 'Rollover Point is required';
+    } else if (parseInt(state.rollover, 10) < 1) {
+        validation.rollover = 'Rollover Point needs to be greater than 0';
+    }
+    if (state.max_change === '') {
+        validation.max_change = 'Max Change Point is required';
+    } else if (parseInt(state.max_change, 10) < 1) {
+        validation.max_change = 'Max Change Point needs to be greater than 0';
+    }
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
     validateShiftsForm,
     validateCommonParametersForm,
     validateUserForm,
-    validateBreakForm
+    validateBreakForm,
+    validateTagForm
 }

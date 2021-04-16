@@ -16,7 +16,7 @@
 }
 
 .general-modal .modal-dialog {
-    max-width: 50%;
+	max-width: 50%;
 }
 
 .commonParametersForm {
@@ -24,10 +24,10 @@
 	padding-top : 2%;
 }
 
-.commonParamBtn{
-	max-width: 30%;
+.commonParamBtn {
+	max-width   : 30%;
 	margin-right: 3%;
-	text-align: center;
+	text-align  : center;
 }
 
 .fix-form {
@@ -280,8 +280,8 @@
 }
 
 .input-tag-description {
-	width: 250px;
-	height: 100px;
+	width      : 250px;
+	height     : 100px;
 	margin-left: 17px;
 
 	&.asset-description {

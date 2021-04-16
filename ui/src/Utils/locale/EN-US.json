@@ -230,5 +230,13 @@
     "Asset Level": "Asset Level",
     "All Assets": "All Assets",
     "Available Assets": "Available Assets",
-    "Selected Assets": "Selected Assets"
+    "Selected Assets": "Selected Assets",
+    "Data Type": "Data Type",
+    "UOM Code": "UOM Code",
+    "Rollover Point": "Rollover Point",
+    "Aggregation": "Aggregation",
+    "Max Change": "Max Change",
+    "Tag": "Tag",
+    "Add Tag": "Add Tag",
+    "Update Tag": "Update Tag"
 }

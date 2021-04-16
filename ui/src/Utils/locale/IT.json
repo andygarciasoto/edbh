@@ -229,5 +229,13 @@
     "Asset Level": "Livello Macchina",
     "All Assets": "Tutte le Macchine",
     "Available Assets": "Macchine Disponibili",
-    "Selected Assets": "Macchine Selezionate"
+    "Selected Assets": "Macchine Selezionate",
+    "Data Type": "Tipo di Dati",
+    "UOM Code": "Codice UOM",
+    "Rollover Point": "Punto di Rollover",
+    "Aggregation": "Aggregazione",
+    "Max Change": "Variazione Massima",
+    "Tag": "Etichetta",
+    "Add Tag": "Aggiungi Etichetta",
+    "Update Tag": "Aggiorna Etichetta"
 }

@@ -67,7 +67,7 @@ class AddUser extends Component {
       roles,
       status,
       escalation_id,
-      site,
+      site
     } = this.state;
 
     let url = `${API}/insert_user`;
