@@ -19,7 +19,7 @@ class Shifts extends Component {
       addShift: false,
       editShift: false,
       shift_id: 0,
-      statusFilter: 'All'
+      statusFilter: 'Active'
     };
   }
 

@@ -16,7 +16,7 @@ class UOM extends Component {
 			addUOM: false,
 			editUOM: false,
 			uom_id: 0,
-			statusFilter: 'All'
+			statusFilter: 'Active'
 		};
 	}
 

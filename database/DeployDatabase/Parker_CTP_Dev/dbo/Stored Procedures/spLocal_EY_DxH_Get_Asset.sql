@@ -80,7 +80,7 @@ AS
 			   W.workcell_name
         FROM dbo.Asset A WITH(NOLOCK)
 		LEFT JOIN dbo.Workcell W ON A.grouping1 = W.workcell_id
-        WHERE STATUS = 'Active'
+        WHERE A.status = 'Active'
               AND site_code = @site_code
               AND ISNULL(asset_level, '') = ISNULL(@Level, ISNULL(asset_level, ''))
               AND ISNULL(automation_level, '') = ISNULL(@Automation_Level, ISNULL(automation_level, ''))
