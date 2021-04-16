@@ -26,7 +26,7 @@ class Device extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
-		const { statusFilter, roleFilter, escalationFilter } = this.state;
+		const { statusFilter } = this.state;
 
 		const params = {
 			site_id: this.props.user.site,
