@@ -16,6 +16,7 @@ class Device extends Component {
 			addTag: false,
 			editTag: false,
 			tag_id: 0,
+			statusFilter: 'Active'
 		};
 	}
 
@@ -25,13 +26,25 @@ class Device extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-		return actions.getTags(this.props.user.site).then((response) => {
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
+
+		return actions.getTagsFilter(params).then((response) => {
 			this.setState({
 				TagsData: response,
 			});
 		});
 	};
+
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
 	showAddTag = () => {
 		this.setState({
@@ -64,7 +77,7 @@ class Device extends Component {
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Tag'}
+					buttonName={'+ ' + t('Tag')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -72,6 +85,8 @@ class Device extends Component {
 					category={false}
 					type={false}
 					onClick={() => this.showAddTag()}
+					onClickFilter={this.applyFilter}
+					view={'Tag'}
 					t={t}
 				></Filter>
 				{this.state.addTag === true && (
@@ -96,17 +111,17 @@ class Device extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Code</th>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Data Type</th>
-							<th>UOM code</th>
-							<th>Rollover Point</th>
-							<th>Aggregation</th>
-							<th>Max Change</th>
-							<th>Asset</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<th>{t('Code')}</th>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Data Type')}</th>
+							<th>{t('UOM Code')}</th>
+							<th>{t('Rollover Point')}</th>
+							<th>{t('Aggregation')}</th>
+							<th>{t('Max Change')}</th>
+							<th>{t('Asset')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>

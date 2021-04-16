@@ -228,5 +228,13 @@
     "Asset Level": "Maschinenebene",
     "All Assets": "Alle Maschinen",
     "Available Assets": "Verfügbare Maschinen",
-    "Selected Assets": "Ausgewählte Maschinen"
+    "Selected Assets": "Ausgewählte Maschinen",
+    "Data Type": "Datentyp",
+    "UOM Code": "UOM-Code",
+    "Rollover Point": "Überrollpunkt",
+    "Aggregation": "Anhäufung",
+    "Max Change": "Max. Änderung",
+    "Tag": "Etikett",
+    "Add Tag": "Etikett Hinzufügen",
+    "Update Tag": "Etikett Aktualisieren"
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AssetRepository } from '../repositories/asset-repository';
-
+import { getAssetParameters } from '../validators/assetValidator';
 
 export class AssetService {
 
@@ -61,14 +61,14 @@ export class AssetService {
     }
 
     public async getAssetBySiteExport(req: Request, res: Response) {
-        const site = req.query.site;
-        if (!site) {
+        const site_id = req.query.site_id;
+        if (!site_id) {
             res.status(400).json({ message: "Bad Request - Missing Parameters" });
             return;
         }
         let assets: any;
         try {
-            assets = await this.assetrepository.getAssetBySiteExport(site);
+            assets = await this.assetrepository.findAssetsByFilter(getAssetParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

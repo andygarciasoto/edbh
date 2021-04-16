@@ -30,7 +30,7 @@ export const getUOMById = (siteId, uom_id) => {
 };
 
 export const getAssets = (siteId) => {
-  var url = `${API}/asset_by_site?site=${siteId}`;
+  var url = `${API}/asset_by_site?site_id=${siteId}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({
@@ -43,7 +43,7 @@ export const getAssets = (siteId) => {
 };
 
 export const getTagById = (siteId, tag_id) => {
-  var url = `${API}/tags?site=${siteId}&tag_id=${tag_id}`;
+  var url = `${API}/tags?site_id=${siteId}&tag_id=${tag_id}`;
   return (dispatch) => {
     return Axios.get(url).then((response) => {
       dispatch({

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { TagRepository } from '../repositories/tag-repository';
+import { getTagParameters } from '../validators/tagValidator';
 
 export class TagService {
     private readonly tagrepository: TagRepository;
@@ -9,18 +10,14 @@ export class TagService {
     }
 
     public async getTags(req: Request, res: Response) {
-        let site = req.query.site;
+        let site_id = req.query.site_id;
         let tag_id = req.query.tag_id;
-        if (!site || site === null || site === undefined) {
+        if (!site_id || site_id === null || site_id === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let tags: any;
         try {
-            if (!tag_id) {
-                tags = await this.tagrepository.getTagBySite(site);
-            } else {
-                tags = await this.tagrepository.getTagById(tag_id);
-            }
+            tags = await this.tagrepository.findTagsByFilter(getTagParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

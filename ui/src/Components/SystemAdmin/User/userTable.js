@@ -16,7 +16,7 @@ class UserTable extends Component {
 			user: false,
 			edit: false,
 			badge: "",
-			statusFilter: 'All',
+			statusFilter: 'Active',
 			roleFilter: 'All',
 			escalationFilter: 'All'
 		};

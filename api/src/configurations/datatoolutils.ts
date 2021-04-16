@@ -168,7 +168,7 @@ export function getParametersOfTable(tableName, siteId) {
             break;
         case 'Asset':
             parametersObject.extraColumns = ', w.workcell_id';
-            parametersObject.joinSentence = `INNER JOIN dbo.Asset a ON a.asset_code = s.site_code
+            parametersObject.joinSentence = `LEFT JOIN dbo.Asset a ON a.asset_code = s.site_code
             LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name AND A.asset_id = w.site_id`;
             parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
             parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], 
@@ -267,7 +267,7 @@ export function getParametersOfTable(tableName, siteId) {
                 [default_routed_cycle_time], [status], [entered_by], [last_modified_by], [summary_timeout],
                 [break_minutes], [lunch_minutes], [site_prefix], [assembly_url]) 
                 VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[language_id], s.[timezone_id],
-                s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[language], s.[status], 'Administration Tool',
+                s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[status], 'Administration Tool',
                 'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url])`;
             break;
         case 'Unavailable':
@@ -312,7 +312,7 @@ export function getValuesFromHeaderTable(headers, header, value) {
                 newValue = `'${value}'`;
                 break;
             case 'TIME':
-                value = new Date(value).toISOString();
+                value = new Date('1970-01-01 ' + value).toISOString();
                 value = value.substring(11, 19);
                 newValue = `'${value}'`;
                 break;
