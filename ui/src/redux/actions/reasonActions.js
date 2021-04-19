@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { GET_REASONS, GET_REASONS_BY_SITE } from "../constants/constants";
+import { GET_REASONS, GET_REASONS_BY_SITE, GET_REASONS_BY_ASSET } from "../constants/constants";
 import { API } from "../../Utils/Constants";
 
 export const getReasons = (siteId) => {
@@ -21,6 +21,19 @@ export const getReasonsBySite = (siteId) => {
     return Axios.get(url).then((response) => {
       dispatch({
         type: GET_REASONS_BY_SITE,
+        reasons: response.data,
+      });
+      return response.data;
+    });
+  };
+};
+
+export const getReasonsByAsset = (siteId, asset_id) => {
+  var url = `${API}/unique_reasons?site=${siteId}&asset_id=${asset_id}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_REASONS_BY_ASSET,
         reasons: response.data,
       });
       return response.data;

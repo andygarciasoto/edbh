@@ -24,11 +24,18 @@ export class Step4 extends Component {
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return actions.getBreak(this.props.user.site).then((response) => {
+		return Promise.all([
+			actions.getBreak(this.props.user.site),
+			actions.getUnavailableByAssets(this.props.asset_id),
+		]).then((response) => {
+			console.log(response);
 			this.setState({
-				ReasonData: response,
+				ReasonData: response[0],
+				selected: response[1],
 			});
 		});
+
+		
 	}
 
 	assingBreaks = (e) => {

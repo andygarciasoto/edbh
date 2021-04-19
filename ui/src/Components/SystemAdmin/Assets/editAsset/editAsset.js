@@ -133,6 +133,7 @@ class AddAsset extends Component {
 								back={(e) => this.assetSteps(1, e)}
 								user={this.props.user}
 								asset_code={this.state.asset_code}
+								asset_id={this.props.asset_id}
 							/>
 						)}
 						{this.state.step3 === true && (
@@ -141,6 +142,7 @@ class AddAsset extends Component {
 								nextStep={(e) => this.assetSteps(4, e)}
 								back={(e) => this.assetSteps(2, e)}
 								asset_code={this.state.asset_code}
+								asset_id={this.props.asset_id}
 							/>
 						)}
 						{this.state.step4 === true && (
@@ -148,6 +150,7 @@ class AddAsset extends Component {
 								user={this.props.user}
 								back={(e) => this.assetSteps(3, e)}
 								asset_code={this.state.asset_code}
+								asset_id={this.props.asset_id}
 							/>
 						)}
 					</Modal.Body>

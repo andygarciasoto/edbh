@@ -7,7 +7,6 @@ import * as ReasonActions from '../../../../redux/actions/reasonActions';
 import { Form, Col } from 'react-bootstrap';
 import { reorder, move, getItemStyle, ReasonList, getListStyleDrop } from '../../../../Utils/ConfigurationTabHelper';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import moment from "moment";
 
 export class Step3 extends Component {
 	constructor(props) {
@@ -24,11 +23,16 @@ export class Step3 extends Component {
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return actions.getReasonsBySite(this.props.user.site).then((response) => {
+		return Promise.all([
+			actions.getReasonsBySite(this.props.user.site),
+			actions.getReasonsByAsset(this.props.user.site, this.props.asset_id),
+		]).then((response) => {
 			this.setState({
-				ReasonData: response,
+				ReasonData: response[0],
+				selected: response[1],
 			});
 		});
+
 	}
 
 	assingReasons = (e) => {

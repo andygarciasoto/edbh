@@ -64,3 +64,16 @@ export const getAssetsUnavailable = (params) => {
     });
   };
 };
+
+export const getUnavailableByAssets = (asset_id) => {
+  var url = `${API}/unavailable_by_asset?asset_id=${asset_id}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_BREAK_BY_SITE,
+        break: response.data,
+      });
+      return response.data;
+    });
+  };
+};
