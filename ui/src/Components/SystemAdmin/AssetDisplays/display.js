@@ -16,7 +16,7 @@ class Display extends Component {
 			addDisplay: false,
 			editDisplay: false,
 			display_id: 0,
-			statusFilter: 'All'
+			statusFilter: 'Active'
 		};
 	}
 

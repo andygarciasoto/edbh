@@ -4,8 +4,9 @@ import { bindActionCreators } from 'redux';
 import * as AssetActions from '../../../redux/actions/assetActions';
 import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
+import { generalValidationForm } from '../../../Utils/FormValidations';
 import '../../../sass/SystemAdmin.scss';
 
 class AddDisplay extends Component {
@@ -19,6 +20,7 @@ class AddDisplay extends Component {
 			show: false,
 			showForm: true,
 			modalError: false,
+			validation: {}
 		};
 	}
 
@@ -31,7 +33,7 @@ class AddDisplay extends Component {
 		]).then((response) => {
 			this.setState({
 				AssetsData: _.filter(response[1], { asset_level: 'Cell' }),
-				asset: response[0].assetdisplaysystem_id,
+				asset: response[0].asset_id,
 				name: response[0].displaysystem_name,
 				status: response[0].status,
 			});
@@ -52,7 +54,9 @@ class AddDisplay extends Component {
 		e.preventDefault();
 		const { name, asset, status } = this.state;
 
-		if (name !== '') {
+		const validation = generalValidationForm(this.state);
+
+		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_displaysystem', null, null, {
 				assetdisplaysystem_id: this.props.display_id,
 				asset_id: parseInt(asset, 10),
@@ -73,7 +77,7 @@ class AddDisplay extends Component {
 			);
 		} else {
 			this.setState({
-				modalError: true,
+				validation
 			});
 		}
 	};
@@ -100,6 +104,7 @@ class AddDisplay extends Component {
 
 	render() {
 		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
 			<div>
 				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
@@ -107,42 +112,49 @@ class AddDisplay extends Component {
 						<Modal.Title>{t('Update Display')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<form>
-							<label>
-								{t('Name')}:
-								<input
-									className="input-display-name"
-									type="text"
-									name="name"
-									value={this.state.name}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
-							<label>
-								{t('Asset')}:
-								<select
-									value={this.state.asset}
-									className="input-display-asset"
-									name="asset"
-									onChange={this.handleChange}
-								>
-									{this.state.AssetsData.map(this.renderAssets)}
-								</select>
-							</label>
-							<label>
-								{t('Status')}:
-								<select
-									value={this.state.status}
-									className="select-display-status"
-									name="status"
-									onChange={this.handleChange}
-								>
-									<option value="Active">Active</option>
-									<option value="Inactive">Inactive</option>
-								</select>
-							</label>
-						</form>
+						<Form>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										type="text"
+										name="name"
+										value={this.state.name}
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.name}</Form.Text>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Asset')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as='select'
+										name='asset'
+										value={this.state.asset}
+										onChange={this.handleChange}
+									>
+										{this.state.AssetsData.map(this.renderAssets)}
+									</Form.Control>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.status}
+										name='status'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+						</Form>
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createDisplay(e)}>

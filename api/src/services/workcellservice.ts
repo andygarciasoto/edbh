@@ -30,13 +30,14 @@ export class WorkcellService {
         const workcell_name = req.body.workcell_name ? req.body.workcell_name : undefined;
         const workcell_description = req.body.workcell_description;
         const site_id = req.body.site_id ? req.body.site_id : undefined;
+        const status = req.body.status ? req.body.status : undefined;
 
-        if (workcell_name === undefined || site_id === undefined) {
+        if (workcell_name === undefined || site_id === undefined || status === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let workcell: any;
         try {
-            workcell = await this.workcellrepository.putWorkcell(workcell_id, workcell_name, workcell_description, site_id);
+            workcell = await this.workcellrepository.putWorkcell(workcell_id, workcell_name, workcell_description, status, site_id);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

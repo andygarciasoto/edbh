@@ -2,6 +2,7 @@
     [workcell_id]          INT            IDENTITY (1, 1) NOT NULL,
     [workcell_name]        NVARCHAR (200) NOT NULL,
     [workcell_description] NVARCHAR (256) NULL,
+    [status]               NVARCHAR (50)   NOT NULL,
     [entered_by]           NVARCHAR (100) CONSTRAINT [DF_Workcell_entered_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
     [entered_on]           DATETIME       CONSTRAINT [DF_Workcell_entered_on] DEFAULT (getdate()) NOT NULL,
     [last_modified_by]     NVARCHAR (100) CONSTRAINT [DF_Workcell_last_modified_by] DEFAULT (N'SQL Manual Entry') NOT NULL,

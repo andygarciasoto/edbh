@@ -130,6 +130,14 @@ function validateTagForm(state) {
     return validation;
 }
 
+function generalValidationForm(state) {
+    let validation = {};
+    if (state.name.trim() === '') {
+        validation.name = 'Name is required';
+    }
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
@@ -137,5 +145,6 @@ export {
     validateCommonParametersForm,
     validateUserForm,
     validateBreakForm,
-    validateTagForm
+    validateTagForm,
+    generalValidationForm
 }

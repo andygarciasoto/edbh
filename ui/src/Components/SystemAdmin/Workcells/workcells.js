@@ -16,7 +16,7 @@ class Workcells extends Component {
 			addWorkcell: false,
 			editWorkcell: false,
 			workcell_id: 0,
-			statusFilter: 'All'
+			statusFilter: 'Active'
 		};
 	}
 
@@ -114,6 +114,7 @@ class Workcells extends Component {
 						<tr>
 							<th>{t('Name')}</th>
 							<th>{t('Description')}</th>
+							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
@@ -122,6 +123,7 @@ class Workcells extends Component {
 							<tr key={index}>
 								<td>{workcell.workcell_name}</td>
 								<td>{workcell.workcell_description}</td>
+								<td>{workcell.status}</td>
 								<td>
 									<img
 										src={EditIcon}

@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 import * as UOMActions from '../../../redux/actions/uomActions';
 import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { generalValidationForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
 class EditUOM extends Component {
@@ -18,6 +20,7 @@ class EditUOM extends Component {
 			show: false,
 			showForm: true,
 			modalError: false,
+			validation: {}
 		};
 	}
 
@@ -52,7 +55,9 @@ class EditUOM extends Component {
 		e.preventDefault();
 		const { name, description, status, decimals } = this.state;
 
-		if (name !== '' && this.props.user.site_prefix !== null) {
+		const validation = generalValidationForm(this.state);
+
+		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_uom', null, null, {
 				uom_id: this.props.uom_id,
 				uom_code: `${this.props.user.site_prefix}-${name}`,
@@ -75,7 +80,7 @@ class EditUOM extends Component {
 			);
 		} else {
 			this.setState({
-				modalError: true,
+				validation
 			});
 		}
 	};
@@ -94,59 +99,70 @@ class EditUOM extends Component {
 
 	render() {
 		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose}  centered>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
 						<Modal.Title>{t('Update UOM')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<form>
-							<label>
-								{t('Name')}:
-								<input
-									type="text"
-									name="name"
-									className="input-uom-name"
-									value={this.state.name}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
-							<label>
-								{t('Description')}:
-								<textarea
-									value={this.state.description}
-									className="text-uom-description"
-									name="description"
-									onChange={this.handleChange}
-								></textarea>
-							</label>
-							<label>
-								{t('Decimals')}:
-								<select
-									value={this.state.decimals}
-									className="select-uom-decimals"
-									name="decimals"
-									onChange={this.handleChange}
-								>
-									<option value={false}>No</option>
-									<option value={true}>Yes</option>
-								</select>
-							</label>
-							<label>
-								{t('Status')}:
-								<select
-									value={this.state.status}
-									className="select-display-status uom-status"
-									name="status"
-									onChange={this.handleChange}
-								>
-									<option value="Active">Active</option>
-									<option value="Inactive">Inactive</option>
-								</select>
-							</label>
-						</form>
+						<Form>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										type="text"
+										name="name"
+										value={this.state.name}
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.name}</Form.Text>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										as="textarea"
+										name="description"
+										value={this.state.description}
+										onChange={this.handleChange}
+										rows={3} />
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Decimals')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.decimals}
+										name='decimals'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value={0}>No</option>
+										<option value={1}>Yes</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.status}
+										name='status'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+						</Form>
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>

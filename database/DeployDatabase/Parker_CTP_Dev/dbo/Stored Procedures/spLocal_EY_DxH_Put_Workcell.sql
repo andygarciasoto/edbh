@@ -9,6 +9,7 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Workcell]
 	@workcell_id			AS INT,
 	@workcell_name			AS NVARCHAR(100),
 	@workcell_description	AS NVARCHAR(100),			
+	@status					AS NVARCHAR(50),			
 	@site_id				AS INT
 
 AS  BEGIN 
@@ -21,6 +22,7 @@ AS  BEGIN
 			SET 
 			workcell_name = @workcell_name,
 			workcell_description = @workcell_description,
+			status = @status,
 			last_modified_by = 'Administration Tool',
 			last_modified_on = GETDATE()
 			WHERE
@@ -31,6 +33,7 @@ AS  BEGIN
 			INSERT INTO dbo.Workcell
            (workcell_name
            ,workcell_description
+		   ,status
            ,entered_by
            ,entered_on
            ,last_modified_by
@@ -39,6 +42,7 @@ AS  BEGIN
 		VALUES
            (@workcell_name
            ,@workcell_description
+		   ,@status
            ,'Administration Tool'
            ,GETDATE()
            ,'Administration Tool'
