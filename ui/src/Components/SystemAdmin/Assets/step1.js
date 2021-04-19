@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../redux/actions/displayActions';
 import { genericRequest } from '../../../Utils/Requests';
+import { Modal, Button } from 'react-bootstrap';
 import { API } from '../../../Utils/Constants';
 
 import { Form, Col } from 'react-bootstrap';
@@ -26,6 +27,8 @@ export class Step1 extends Component {
 			displayData: [],
 			workcellData: [],
 			parentData: [],
+			show: false,
+			modalError: false,
 		};
 	}
 
@@ -122,7 +125,7 @@ export class Step1 extends Component {
 					this.setState({
 						show: true,
 					});
-					this.props.nextStep(e);
+					this.props.levelSite === true && this.props.nextStep(e);
 					this.props.getCode(code);
 				},
 				(error) => {
@@ -134,6 +137,14 @@ export class Step1 extends Component {
 				modalError: true,
 			});
 		}
+	};
+
+	closeModalError = () => {
+		this.setState({ modalError: false });
+	};
+
+	closeSuccessModal = () => {
+		this.setState({ show: false });
 	};
 
 	renderDisplay(display, index) {
@@ -320,9 +331,42 @@ export class Step1 extends Component {
 						</Col>
 					</Form.Row>
 				</form>
-				<button className="button-next" onClick={(e) => this.createAsset(e)}>
-					{'Next Step>>'}
-				</button>
+				{this.props.levelSite === false ? (
+					<div>
+						<Button variant="Primary" onClick={(e) => this.createAsset(e)}>
+							Confirm
+						</Button>
+						<Button variant="secondary" onClick={this.props.handleClose}>
+							Close
+						</Button>{' '}
+					</div>
+				) : (
+					<button className="button-next" onClick={(e) => this.createAsset(e)}>
+						{'Next Step>>'}
+					</button>
+				)}
+				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+					<Modal.Header closeButton>
+						<Modal.Title>Sucess</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Asset has been added</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeSuccessModal}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+					<Modal.Header closeButton>
+						<Modal.Title>Warning</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeModalError}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
 			</div>
 		);
 	}

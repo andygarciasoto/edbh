@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../../redux/actions/displayActions';
 import { genericRequest } from '../../../../Utils/Requests';
 import { API } from '../../../../Utils/Constants';
+import { Modal, Button } from 'react-bootstrap';
 
 import { Form, Col } from 'react-bootstrap';
 
@@ -26,7 +27,8 @@ export class Step1 extends Component {
 			displayData: [],
 			workcellData: [],
 			parentData: [],
-			assetData: [],
+			show: false,
+			modalError: false,
 		};
 	}
 
@@ -73,13 +75,24 @@ export class Step1 extends Component {
 			actions.getAssetsLevel(this.props.user.site),
 			actions.getAssetById(this.props.user.site, this.props.asset_id),
 		]).then((response) => {
-      console.log(response);
+			console.log(response);
 			this.setState({
 				workcellData: response[0],
 				workcell: response[0][0].workcell_id,
 				parentData: response[1],
 				parent_code: response[1][0].asset_code,
-				assetData: response[2][0],
+				code: response[2][0].asset_code,
+				automation_level: response[2][0].automation_level,
+				name: response[2][0].asset_name,
+				description: response[2][0].asset_description,
+				workcell: response[2][0].grouping1,
+				level: response[2][0].asset_level,
+				site_code: response[2][0].site_code,
+				defaultPercent: response[2][0].target_percent_of_ideal,
+				parent_code: response[2][0].parent_asset_code,
+				escalation: response[2][0].include_in_escalation,
+				status: response[2][0].status,
+				multiple: response[2][0].is_multiple,
 			});
 		});
 	};
@@ -105,6 +118,7 @@ export class Step1 extends Component {
 		if (name !== '' && code !== '' && description !== '') {
 			genericRequest('put', API, '/insert_asset', null, null, {
 				site_id: this.props.user.site,
+				asset_id: this.props.asset_id,
 				asset_code: code,
 				asset_name: name,
 				asset_description: description,
@@ -126,7 +140,7 @@ export class Step1 extends Component {
 					this.setState({
 						show: true,
 					});
-					this.props.nextStep(e);
+					this.props.levelSite === true && this.props.nextStep(e);
 					this.props.getCode(code);
 				},
 				(error) => {
@@ -138,6 +152,14 @@ export class Step1 extends Component {
 				modalError: true,
 			});
 		}
+	};
+
+	closeModalError = () => {
+		this.setState({ modalError: false });
+	};
+
+	closeSuccessModal = () => {
+		this.setState({ show: false });
 	};
 
 	renderDisplay(display, index) {
@@ -177,6 +199,7 @@ export class Step1 extends Component {
 									className="input-tag-code asset-code"
 									type="text"
 									name="code"
+									value={this.state.code}
 									autoComplete={'false'}
 									onChange={this.handleChange}
 								/>
@@ -186,6 +209,7 @@ export class Step1 extends Component {
 							<label className="label-tag-category">
 								Automation Level:
 								<select
+									value={this.state.automation_level}
 									className="select-tag-category asset-automation"
 									name="automation_level"
 									onChange={this.handleChange}
@@ -202,6 +226,7 @@ export class Step1 extends Component {
 							<label>
 								Name:
 								<input
+									value={this.state.name}
 									className="input-tag-name asset-name"
 									type="text"
 									name="name"
@@ -214,6 +239,7 @@ export class Step1 extends Component {
 							<label className="label-tag-category">
 								Status:
 								<select
+									value={this.state.status}
 									className="select-tag-type asset-asset"
 									name="status"
 									onChange={this.handleChange}
@@ -231,6 +257,7 @@ export class Step1 extends Component {
 								<textarea
 									className="input-tag-description asset-description"
 									type="text"
+									value={this.state.description}
 									name="description"
 									autoComplete={'false'}
 									onChange={this.handleChange}
@@ -241,6 +268,7 @@ export class Step1 extends Component {
 							<label className="label-tag-category">
 								Workcell:
 								<select
+									value={this.state.workcell}
 									className="select-tag-type asset-workcell"
 									name="workcell"
 									onChange={this.handleChange}
@@ -257,6 +285,7 @@ export class Step1 extends Component {
 								<select
 									className="select-tag-type asset-level"
 									name="level"
+									value={this.state.level}
 									onChange={this.handleChange}
 								>
 									<option value="Site">Site</option>
@@ -289,6 +318,7 @@ export class Step1 extends Component {
 									className="select-tag-type asset-parent"
 									disabled={this.state.level === 'Cell' ? false : true}
 									name="parent_code"
+									value={this.state.parent_code}
 									onChange={this.handleChange}
 								>
 									{this.state.parentData.map(this.renderParent)}
@@ -299,6 +329,7 @@ export class Step1 extends Component {
 							<label className="label-tag-category">
 								Include Escalation:
 								<select
+									value={this.state.escalation}
 									className="input-tag-aggregation asset-escalation"
 									name="escalation"
 									onChange={this.handleChange}
@@ -314,6 +345,7 @@ export class Step1 extends Component {
 							<label className="label-tag-category">
 								Is Multiple:
 								<select
+									value={this.state.multiple}
 									className="input-tag-aggregation asset-escalation"
 									name="multiple"
 									onChange={this.handleChange}
@@ -325,9 +357,42 @@ export class Step1 extends Component {
 						</Col>
 					</Form.Row>
 				</form>
-				<button className="button-next" onClick={(e) => this.createAsset(e)}>
-					{'Next Step>>'}
-				</button>
+				{this.props.levelSite === false ? (
+					<div>
+						<Button variant="Primary" onClick={(e) => this.createAsset(e)}>
+							Confirm
+						</Button>
+						<Button variant="secondary" onClick={this.props.handleClose}>
+							Close
+						</Button>{' '}
+					</div>
+				) : (
+					<button className="button-next" onClick={(e) => this.createAsset(e)}>
+						{'Next Step>>'}
+					</button>
+				)}
+				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+					<Modal.Header closeButton>
+						<Modal.Title>Sucess</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Asset has been Updated</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeSuccessModal}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+					<Modal.Header closeButton>
+						<Modal.Title>Warning</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeModalError}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
 			</div>
 		);
 	}

@@ -123,7 +123,8 @@ class AddAsset extends Component {
 								user={this.props.user}
 								showFooter={this.hideSteps}
 								getCode={this.getAsset_code}
-                asset_id={this.props.asset_id}
+								asset_id={this.props.asset_id}
+								levelSite={this.state.showFooter}
 							/>
 						)}
 						{this.state.step2 === true && (
@@ -180,38 +181,6 @@ class AddAsset extends Component {
 							</div>
 						</Modal.Footer>
 					)}
-					{this.state.showConfirm === true && (
-						<Modal.Footer>
-							<Button variant="Primary" onClick={(e) => this.createUser(e)}>
-								Confirm
-							</Button>
-							<Button variant="secondary" onClick={this.handleClose}>
-								Close
-							</Button>
-						</Modal.Footer>
-					)}
-				</Modal>
-				<Modal show={this.state.show} onHide={this.handleClose}>
-					<Modal.Header closeButton>
-						<Modal.Title>Sucess</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>Asset has been Updated</Modal.Body>
-					<Modal.Footer>
-						<Button variant="secondary" onClick={this.handleClose}>
-							Close
-						</Button>
-					</Modal.Footer>
-				</Modal>
-				<Modal show={this.state.modalError} onHide={this.handleClose}>
-					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>All inputs must be filled</Modal.Body>
-					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
-							Close
-						</Button>
-					</Modal.Footer>
 				</Modal>
 			</div>
 		);

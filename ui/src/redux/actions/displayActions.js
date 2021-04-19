@@ -29,7 +29,7 @@ export const getWorkcells = (siteId) => {
 };
 
 export const getAssetsLevel = (siteId) => {
-	var url = `${API}/asset_by_site?site=${siteId}&level=cell`;
+	var url = `${API}/asset_by_site?site_id=${siteId}&level=cell`;
 	return (dispatch) => {
 		return Axios.get(url).then((response) => {
 			dispatch({
@@ -42,7 +42,7 @@ export const getAssetsLevel = (siteId) => {
 };
 
 export const getAssetById = (siteId, asset_id) => {
-	var url = `${API}/asset_by_site?site=${siteId}&asset_id=${asset_id}`;
+	var url = `${API}/asset_by_site?site_id=${siteId}&asset_id=${asset_id}`;
 	return (dispatch) => {
 		return Axios.get(url).then((response) => {
 			dispatch({
