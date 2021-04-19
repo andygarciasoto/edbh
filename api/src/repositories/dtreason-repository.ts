@@ -1,4 +1,5 @@
 import { SqlServerStore } from '../configurations/sqlserverstore';
+import _ from 'lodash';
 
 export class DTReasonRepository {
     private static readonly table = 'DTReason';
@@ -48,6 +49,17 @@ export class DTReasonRepository {
         GROUP BY dtreason_code, dtreason_name
         HAVING SUM(CASE WHEN asset_id = ${asset_id} THEN 1 ELSE 0 END) = 0
         ORDER BY dtreason_code`);
+    }
+    public async findReasonByFilter(parameters: any[]): Promise<any> {
+        const query: string = `SELECT DT.dtreason_code,DT.dtreason_name, DT.dtreason_description,
+        DT.dtreason_category,DT.reason1,DT.reason2, DT.status,DT.type,DT.level, COUNT(*) AS asset_count
+        FROM dbo.DTReason AS DT
+        ${_.isEmpty(parameters) ? '' :
+                'WHERE ' + _.join(parameters, ' AND ')
+            }
+            GROUP BY DT.dtreason_code,DT.dtreason_name, DT.dtreason_description,
+            DT.dtreason_category,DT.reason1,DT.reason2, DT.status,DT.type,DT.level`;
+        return await this.sqlServerStore.ExecuteQuery(query);
     }
 }
 

@@ -92,10 +92,10 @@ class UpdateBreak extends Component {
       const activeUnAssets = _.filter(originalUnAssets, { status: 'Active' });
       const unselectedAssetsUn = _.filter(_.differenceWith(this.state.assetsOptions, activeUnAssets, _.isEqual), { asset_level: 'Cell' });
       let availableListTabs = _.map(unselectedAssetsUn, asset => {
-        return { id: asset.asset_id.toString(), content: asset.asset_name };
+        return { id: asset.asset_code, content: asset.asset_name };
       });
       let selectedListTabs = _.map(activeUnAssets, asset => {
-        return { id: asset.asset_id.toString(), content: asset.asset_name };
+        return { id: asset.asset_code, content: asset.asset_name };
       });
       this.setState({
         originalUnAssets,
@@ -143,7 +143,7 @@ class UpdateBreak extends Component {
     const { completeListTabs, originalSelectedListTabs, unselectedAssetsUn } = this.state;
     let newAvailable = event.target.value !== '' ?
       _.map(_.filter(unselectedAssetsUn, { parent_asset_code: event.target.value }), asset => {
-        return { id: asset.asset_id.toString(), content: asset.asset_name };
+        return { id: asset.asset_code, content: asset.asset_name };
       }) : completeListTabs;
     this.setState({
       [event.target.name]: event.target.value,
@@ -160,11 +160,11 @@ class UpdateBreak extends Component {
     this.setState({ show: false });
   };
 
-  submitUnavailable = (e) => {
+  submitUnavailable = async (e) => {
     const { activeUnAssets, selectedListTabs } = this.state;
 
     const orginalActivateTabs = _.map(activeUnAssets, asset => {
-      return { id: asset.asset_id.toString(), content: asset.asset_name };
+      return { id: asset.asset_code, content: asset.asset_name };
     });
     //primero tenemos que sacar los que si siguen activos de los orginales
     const stillActive = _.intersectionWith(orginalActivateTabs, selectedListTabs, _.isEqual);
@@ -181,9 +181,8 @@ class UpdateBreak extends Component {
 
     const validation = validateBreakForm(this.state);
     if (_.isEmpty(validation)) {
-      let message = [];
-      _.forEach(tabsToInsert, async (selected, index) => {
-        const data = {
+      let arrayData = _.map(tabsToInsert, selection => {
+        return {
           unavailable_code: this.state.unavailable.unavailable_code,
           unavailable_name: this.state.unavailable_name,
           unavailable_description: this.state.unavailable_description,
@@ -191,28 +190,30 @@ class UpdateBreak extends Component {
           end_time: this.state.end_time,
           duration_in_minutes: difference,
           valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
-          status: selected.status || this.state.status,
-          asset_level: 'Cell',
-          asset_id: parseInt(selected.id, 10),
-          site_id: this.props.user.site
+          asset_code: selection.id,
+          site_code: this.props.user.site_code,
+          status: selection.status || this.state.status
         };
-        let res = await getResponseFromGeneric('put', API, '/insert_unavailable', {}, {}, data);
-        if (res.status !== 200) {
-          message.push(selected);
-        }
-        if (index === (this.state.selectedListTabs.length - 1)) {
-          this.props.Refresh();
-          if (_.isEmpty(message)) {
-            this.props.onRequestClose();
-            this.setState({
-              show: true,
-              validation: {}
-            });
-          } else {
-            console.log('Error', _.map(message, 'content').join(', '));
-          }
-        }
       });
+      const data = {
+        site_id: this.props.user.site,
+        table: 'Unavailable',
+        data: arrayData
+      };
+      let res = await getResponseFromGeneric('put', API, '/dragndrop', {}, {}, data);
+      if (res.status !== 200) {
+        this.setState({
+          modalError: true,
+          validation: {}
+        });
+      } else {
+        this.props.Refresh();
+        this.setState({
+          show: true,
+          validation: {}
+        });
+        this.props.onRequestClose();
+      }
     } else {
       this.setState({ validation });
     }

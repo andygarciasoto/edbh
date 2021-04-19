@@ -59,7 +59,7 @@ AS
             A.[value_stream],
             A.[automation_level],
             A.[include_in_escalation],
-            A.[grouping1],
+            W.workcell_name AS [grouping1],
             A.[grouping2],
             A.[grouping3],
             A.[grouping4],
@@ -69,5 +69,6 @@ AS
             A.[is_multiple]
         FROM [dbo].[Unavailable] AS U
             INNER JOIN [dbo].[Asset] AS A ON U.asset_id = A.asset_id
+            LEFT JOIN [dbo].[Workcell] AS W ON A.grouping1 = W.workcell_id 
         WHERE U.unavailable_code = @unavailable_code;
     END;

@@ -43,8 +43,4 @@ export class UnavailableRepository {
     public async getAssetsUnavailableCode(unavailable_code: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_UnavailableCode N'${unavailable_code}'`);
     }
-    public async putUnavailable(unavailable_code: string, unavailable_name: string, unavailable_description: string, start_time: string, end_time: string,
-        duration_in_minutes: number, valid_from: string, status: string, asset_level: string, asset_id: number, site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Unavailable N'${unavailable_code}', N'${unavailable_name}', N'${unavailable_description}', '${start_time}', '${end_time}', ${duration_in_minutes}, '${valid_from}', '${status}', '${asset_level}', ${asset_id},  ${site_id}`);
-    }
 }

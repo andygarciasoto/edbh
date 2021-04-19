@@ -56,6 +56,7 @@ export class SiteService {
             siteInformation.escalations = await this.escalationrepository.getEscalationBySite(site_id);
 
         } catch (ex) {
+            console.log(ex);
             return res.status(500).json({ message: ex.message });
         }
         return res.status(200).json(siteInformation);
@@ -113,15 +114,20 @@ export class SiteService {
                 valuesMergeQuery += updateRow;
             });
             queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
-            //console.log(queries);
+            // console.log(queries);
+            const queriesLength = queries.length;
             _.forEach(queries, async (query, index) => {
                 try {
                     await this.dxhdatarepository.executeGeneralImportQuery(query);
                 } catch (e) {
                     return res.status(500).send({ message: 'Error ' + e.message });
                 }
+                if ((queriesLength - 1) === index) {
+                    console.log('Queries execution end');
+                    console.log('Queries count: ', queriesLength);
+                    return res.status(200).send('Queries Entered Succesfully');
+                }
             });
-            return res.status(200).send('Message Entered Succesfully');
         } catch (e) {
             return res.status(500).send({ message: 'Error ' + e.message });
         }

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { DTReasonRepository } from '../repositories/dtreason-repository';
 import { AssetRepository } from '../repositories/asset-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
+import { getReasonParameters } from '../validators/reasonValidator';
 import moment from 'moment';
 
 export class DTReasonService {
@@ -166,7 +167,22 @@ export class DTReasonService {
                 reasons = await this.dtreasonrepository.getDTReasonBySite(site);
             } else {
                 reasons = await this.dtreasonrepository.getDTReasonById(site, dtreason_id);
-            }   
+            }
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(reasons);
+    }
+
+    public async getReasonsByFilter(req: Request, res: Response) {
+        let site_id = req.query.site_id;
+        if (!site_id || site_id === null || site_id === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let reasons: any;
+        try {
+            reasons = await this.dtreasonrepository.findReasonByFilter(getReasonParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

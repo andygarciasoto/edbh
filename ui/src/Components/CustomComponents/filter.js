@@ -25,6 +25,8 @@ const Filter = ({
   const [roleFilter, setRole] = useState('All');
   const [escalationFilter, setEscalation] = useState('All');
   const [shiftFilter, setShift] = useState('All');
+  const [categoryFilter, setCategory] = useState('All');
+  const [typeFilter, setType] = useState('Downtime');
 
 
   return (
@@ -79,12 +81,11 @@ const Filter = ({
         <div>
           <p className="p-status role">{t('Category')}:</p>
           <Form>
-            <Form.Group controlId="role" className="drop-status">
-              <Form.Control as="select" size="sm" custom>
-                <option>All</option>
-                <option>Administrator</option>
-                <option>Operator</option>
-                <option>Supervisor</option>
+            <Form.Group controlId="category" className="drop-status">
+              <Form.Control as="select" size="sm" custom value={categoryFilter} onChange={(e) => setCategory(e.target.value)}>
+                <option value='All'>All</option>
+                <option value='Cost'>Cost</option>
+                <option value='Quality'>Quality</option>
               </Form.Control>
             </Form.Group>
           </Form>
@@ -94,12 +95,11 @@ const Filter = ({
         <div>
           <p className="p-status role">{t('Type')}:</p>
           <Form>
-            <Form.Group controlId="role" className="drop-status">
-              <Form.Control as="select" size="sm" custom>
-                <option>Downtime</option>
-                <option>Administrator</option>
-                <option>Operator</option>
-                <option>Supervisor</option>
+            <Form.Group controlId="type" className="drop-status">
+              <Form.Control as="select" size="sm" custom value={typeFilter} onChange={(e) => setType(e.target.value)}>
+                <option value='All'>All</option>
+                <option value='Downtime'>Downtime</option>
+                <option value='Scrap'>Scrap</option>
               </Form.Control>
             </Form.Group>
           </Form>
@@ -163,6 +163,8 @@ const Filter = ({
             onClickFilter(statusFilter);
           if (view === 'Break')
             onClickFilter(statusFilter, shiftFilter);
+          if (view === 'Reason')
+            onClickFilter(statusFilter, categoryFilter, typeFilter)
         }}
       >
         {t('Apply Filter')}
