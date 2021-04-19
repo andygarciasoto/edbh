@@ -7,7 +7,6 @@ import * as ReasonActions from '../../../redux/actions/reasonActions';
 import { Form, Col } from 'react-bootstrap';
 import { reorder, move, getItemStyle, ReasonList, getListStyleDrop } from '../../../Utils/ConfigurationTabHelper';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import moment from "moment";
 
 export class Step3 extends Component {
 	constructor(props) {

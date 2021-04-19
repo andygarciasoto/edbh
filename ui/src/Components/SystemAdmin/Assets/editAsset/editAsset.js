@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UserActions from '../../../../redux/actions/userActions';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import '../../../../sass/SystemAdmin.scss';
 import Step1 from './step1';
 import Step2 from './step2';

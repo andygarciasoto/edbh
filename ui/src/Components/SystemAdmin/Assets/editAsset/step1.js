@@ -66,16 +66,11 @@ export class Step1 extends Component {
 	loadData = () => {
 		const { actions } = this.props;
 
-		const params = {
-			site_id: this.props.user.site,
-		};
-
 		return Promise.all([
 			actions.getWorkcells(this.props.user.site),
 			actions.getAssetsLevel(this.props.user.site),
 			actions.getAssetById(this.props.user.site, this.props.asset_id),
 		]).then((response) => {
-			console.log(response);
 			this.setState({
 				workcellData: response[0],
 				workcell: response[0][0].workcell_id,
@@ -137,9 +132,10 @@ export class Step1 extends Component {
 				is_multiple: multiple,
 			}).then(
 				() => {
-					this.setState({
-						show: true,
-					});
+					this.props.levelSite === true &&
+						this.setState({
+							show: true,
+						});
 					this.props.levelSite === true && this.props.nextStep(e);
 					this.props.getCode(code);
 				},
@@ -187,7 +183,6 @@ export class Step1 extends Component {
 	}
 
 	render() {
-		console.log(this.state.assetData);
 		return (
 			<div>
 				<form>
