@@ -71,7 +71,7 @@ class BreakForm extends Component {
   fetchData() {
     let options = [];
     _.forEach(_.filter(this.state.assetsOptions, { asset_level: this.state.asset_level }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+      options.push({ id: asset.asset_code, content: asset.asset_name });
     });
     this.setState((state) => ({
       availableListTabs: state.asset_level === 'Site' ? [] : options,
@@ -101,7 +101,7 @@ class BreakForm extends Component {
   handleChangeAssetLevel = (event) => {
     let options = [];
     _.forEach(_.filter(this.state.assetsOptions, { asset_level: event.target.value }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+      options.push({ id: asset.asset_code, content: asset.asset_name });
     });
     this.setState({
       [event.target.name]: event.target.value,
@@ -119,7 +119,7 @@ class BreakForm extends Component {
     this.setState({ show: false });
   };
 
-  submitUnavailable = (e) => {
+  submitUnavailable = async (e) => {
     e.preventDefault();
 
     let startTime1 = moment('1970-01-01 ' + this.state.start_time);
@@ -131,38 +131,40 @@ class BreakForm extends Component {
     if (
       _.isEmpty(validation)
     ) {
-      let message = [];
-      _.forEach(this.state.selectedListTabs, async (selected, index) => {
-        const data = {
-          unavailable_code: `${this.props.user.site_prefix} - ${this.state.unavailable_name}`,
+      let arrayData = _.map(this.state.selectedListTabs, selection => {
+        return {
+          unavailable_code: `${this.props.user.site_prefix}-${this.state.unavailable_name}`.replace(/\s+/g, ''),
           unavailable_name: this.state.unavailable_name,
           unavailable_description: this.state.unavailable_description,
           start_time: this.state.start_time,
           end_time: this.state.end_time,
           duration_in_minutes: difference,
           valid_from: moment().tz(this.props.user.timezone).format('YYYY-MM-DD HH:mm:ss'),
-          status: this.state.status,
-          asset_level: this.state.asset_level,
-          asset_id: parseInt(selected.id, 10),
-          site_id: this.props.user.site
+          asset_code: selection.id,
+          site_code: this.props.user.site_code,
+          status: this.state.status
         };
-        let res = await getResponseFromGeneric('put', API, '/insert_unavailable', {}, {}, data);
-        if (res.status !== 200) {
-          message.push(selected);
-        }
-        if (index === (this.state.selectedListTabs.length - 1)) {
-          this.props.Refresh();
-          if (_.isEmpty(message)) {
-            this.props.onRequestClose();
-            this.setState({
-              show: true,
-              validation: {}
-            });
-          } else {
-            console.log('Error', _.map(message, 'content').join(', '));
-          }
-        }
       });
+      const data = {
+        site_id: this.props.user.site,
+        table: 'Unavailable',
+        data: arrayData
+      };
+
+      let res = await getResponseFromGeneric('put', API, '/dragndrop', {}, {}, data);
+      if (res.status !== 200) {
+        this.setState({
+          modalError: true,
+          validation: {}
+        });
+      } else {
+        this.props.Refresh();
+        this.props.onRequestClose();
+        this.setState({
+          show: true,
+          validation: {}
+        });
+      }
     } else {
       this.setState({ validation });
     }
@@ -295,9 +297,9 @@ class BreakForm extends Component {
         </Modal>
         <Modal show={this.state.modalError} onHide={this.closeModalError}>
           <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
+            <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Body>Error when try to create the new break</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>
               Close
