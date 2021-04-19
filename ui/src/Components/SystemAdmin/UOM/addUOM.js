@@ -42,7 +42,7 @@ class AddUOM extends Component {
 
 		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_uom', null, null, {
-				uom_code: `${this.props.user.site_prefix}-${name}`,
+				uom_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				uom_name: name,
 				uom_description: description,
 				status: status,

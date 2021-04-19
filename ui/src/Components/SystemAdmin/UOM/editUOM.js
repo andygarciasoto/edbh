@@ -60,7 +60,7 @@ class EditUOM extends Component {
 		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_uom', null, null, {
 				uom_id: this.props.uom_id,
-				uom_code: `${this.props.user.site_prefix}-${name}`,
+				uom_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				uom_name: name,
 				uom_description: description === '' ? null : description,
 				status: status,

@@ -93,7 +93,7 @@ export class AddShift extends Component {
       _.isEmpty(validation)
     ) {
       Axios.put(url, {
-        shift_code: `${this.props.user.site_prefix} - ${shift_name}`,
+        shift_code: `${this.props.user.site_prefix}-${shift_name}`.replace(/\s+/g, ''),
         shift_name: shift_name,
         shift_description: shift_description,
         shift_sequence: parseInt(shift_sequence, 10),
