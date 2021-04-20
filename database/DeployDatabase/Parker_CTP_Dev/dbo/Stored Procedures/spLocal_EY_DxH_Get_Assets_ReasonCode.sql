@@ -1,4 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Assets_UnavailableCode]    Script Date: 29/12/2020 11:31:05 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Assets_ReasonCode]    Script Date: 29/12/2020 11:31:05 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -10,10 +10,10 @@
 --	To Do:
 --
 --  Output Parameters:
---- List of All Asset asociate to a specific Unavailable code
+--- List of All Asset asociate to a specific Reason code
 ---
 --  Input Parameters:
---- @unavailable_code
+--- @dtreason_code
 ---	
 --  Trigger:
 ---
@@ -35,14 +35,14 @@
 ---
 -- Modification Change History:
 --------------------------------------------------------------------------------
---	20210414		C00V00 - Intial code created
+--	20210419		C00V00 - Intial code created
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Assets_UnavailableCode N'EY - TestBreak'
+-- exec spLocal_EY_DxH_Get_Assets_ReasonCode N'EY - TestBreak'
 --
-CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Assets_UnavailableCode]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Assets_ReasonCode]
 --Declare
-@unavailable_code	NVARCHAR(100) -- code of the unavailable record to search
+@dtreason_code	NVARCHAR(100) -- code of the Reason record to search
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
@@ -64,11 +64,11 @@ AS
             A.[grouping3],
             A.[grouping4],
             A.[grouping5],
-            U.[status],
+            DT.[status],
             A.[target_percent_of_ideal],
             A.[is_multiple]
-        FROM [dbo].[Unavailable] AS U
-            INNER JOIN [dbo].[Asset] AS A ON U.asset_id = A.asset_id
+        FROM [dbo].[DTReason] AS DT
+            INNER JOIN [dbo].[Asset] AS A ON DT.asset_id = A.asset_id
             LEFT JOIN [dbo].[Workcell] AS W ON A.grouping1 = W.workcell_id 
-        WHERE U.unavailable_code = @unavailable_code;
+        WHERE DT.dtreason_code = @dtreason_code;
     END;

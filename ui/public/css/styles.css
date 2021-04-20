@@ -35,7 +35,7 @@
   border-color: #b80600; }
 
 .escalation_inital {
-  color: #cf9903; }
+  color: #ffb91d; }
 
 .escalation_warning {
   color: darkorange; }
@@ -48,23 +48,23 @@
   animation: blinker 1s step-end infinite alternate; }
 
 .escalation_icon_danger {
-  animation: blinker .1s step-end infinite alternate; }
+  animation: blinker .5s step-end infinite alternate; }
 
 @keyframes blinker {
   50% {
     color: white; } }
 
 .border_escalation_inital {
-  border: 2px solid #cf9903;
+  border: 8px solid #ffb91d;
   animation: blinker2 1s step-end infinite alternate; }
 
 .border_escalation_warning {
-  border: 2px solid darkorange;
+  border: 8px solid darkorange;
   animation: blinker2 1s step-end infinite alternate; }
 
 .border_escalation_danger {
-  border: 2px solid #b80600;
-  animation: blinker2 .1s step-end infinite alternate; }
+  border: 8px solid #b80600;
+  animation: blinker2 .5s step-end infinite alternate; }
 
 @keyframes blinker2 {
   50% {
@@ -390,12 +390,14 @@ a:hover {
   font-size: 1.4em; }
 
 #previous-shift,
+#next-shift,
 #current-shift {
   text-decoration: underline;
   padding: 8px 8px 8px 5px;
   margin-bottom: 5px !important; }
 
 #previous-shift:hover,
+#next-shift:hover,
 #current-shift:hover {
   background-color: #cf9903;
   cursor: pointer; }
@@ -584,4 +586,5 @@ a:hover {
   height: 100px;
   width: 200px;
   font-weight: bold;
-  font-size: medium; }
+  font-size: medium;
+  white-space: normal; }

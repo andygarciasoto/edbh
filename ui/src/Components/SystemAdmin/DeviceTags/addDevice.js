@@ -64,7 +64,7 @@ class AddDevice extends Component {
 		const validation = validateTagForm(this.state);
 		if (_.isEmpty(validation)) {
 			Axios.put(url, {
-				tag_code: `${this.props.user.site_prefix}_${name}`,
+				tag_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				tag_name: name,
 				tag_description: description,
 				datatype: data_type,

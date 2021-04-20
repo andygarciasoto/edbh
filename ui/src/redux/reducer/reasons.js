@@ -1,7 +1,8 @@
-import { GET_REASONS, GET_REASONS_BY_SITE } from '../constants/constants';
+import { GET_REASONS, GET_REASONS_BY_SITE, GET_ASSETS } from '../constants/constants';
 
 const initialState = {
 	reasons: {},
+	assets: {}
 };
 
 export default (state = initialState, action) => {
@@ -11,11 +12,16 @@ export default (state = initialState, action) => {
 				...state,
 				reasons: { ...action.reasons },
 			};
-			case GET_REASONS_BY_SITE:
-				return {
-					...state,
-					reasons: { ...action.reasons },
-				};
+		case GET_REASONS_BY_SITE:
+			return {
+				...state,
+				reasons: { ...action.reasons },
+			};
+		case GET_ASSETS:
+			return {
+				...state,
+				assets: { ...action.assets },
+			};
 		default:
 			return state;
 	}

@@ -195,10 +195,11 @@ export function getParametersOfTable(tableName, siteId) {
                 VALUES (s.[displaysystem_name], s.[status], 'Administration Tool', 'Administration Tool', s.[asset_id])`
             break;
         case 'DTReason':
-            parametersObject.extraColumns = ', h.asset_id, a2.asset_id as site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code OUTER APPLY [dbo].[AssetsResolverFromId] 
-                (a.asset_id, CASE WHEN (a.asset_level='Area' or a.asset_level='Site') then 3 else 0 end ) as H JOIN dbo.Asset a2 ON 
-                a.site_code = a2.asset_code`;
+            parametersObject.extraColumns = ', h.asset_id, ASite.asset_id as site_id';
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset AS A ON S.asset_code = A.asset_code AND S.site_code = A.site_code
+                INNER JOIN dbo.Asset AS ASite ON S.site_code = ASite.asset_code AND ASite.asset_level = 'Site'
+                OUTER APPLY [dbo].[AssetsResolverFromId] (A.asset_id, CASE WHEN A.asset_level='Site' THEN 2 WHEN A.asset_level= 'Area' THEN 1 ELSE 0 END) as H
+                INNER JOIN dbo.Asset AS FA ON FA.asset_id = H.asset_id AND FA.asset_level = 'Cell' AND FA.status = 'Active'`;
             parametersObject.matchParameters = 's.dtreason_code = t.dtreason_code AND s.asset_id = t.asset_id';
             parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], 
                 t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], 
@@ -271,9 +272,11 @@ export function getParametersOfTable(tableName, siteId) {
                 'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url])`;
             break;
         case 'Unavailable':
-            parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code JOIN dbo.Asset aas ON s.site_code = aas.asset_code AND 
-                aas.asset_level = 'Site'`;
+            parametersObject.extraColumns = ', H.asset_id, ASite.asset_id AS site_id';
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset AS A ON S.asset_code = A.asset_code AND S.site_code = A.site_code
+                INNER JOIN dbo.Asset AS ASite ON S.site_code = ASite.asset_code AND ASite.asset_level = 'Site'
+                OUTER APPLY [dbo].[AssetsResolverFromId] (A.asset_id, CASE WHEN A.asset_level='Site' THEN 2 WHEN A.asset_level= 'Area' THEN 1 ELSE 0 END) as H
+                INNER JOIN dbo.Asset AS FA ON FA.asset_id = H.asset_id AND FA.asset_level = 'Cell' AND FA.status = 'Active'`;
             parametersObject.matchParameters = 's.unavailable_code = t.unavailable_code AND s.asset_id = t.asset_id AND s.site_id = t.site_id';
             parametersObject.updateSentence = `t.[unavailable_name] = s.[unavailable_name], t.[unavailable_description] = s.[unavailable_description], 
                 t.[start_time] = s.[start_time], t.[end_time] = s.[end_time], t.[duration_in_minutes] = s.[duration_in_minutes], 

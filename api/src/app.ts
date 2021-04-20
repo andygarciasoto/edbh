@@ -297,6 +297,12 @@ const appConfig = {
         new http.RestEndpoint('/api/reasons_by_site', 'get', async (req: Request, res: Response) => {
             await dtreasonService.getReasonsBySite(req, res);
         }, true),
+        new http.RestEndpoint('/api/reasons_by_filter', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getReasonsByFilter(req, res);
+        }, true),
+        new http.RestEndpoint('/api/asset_by_reason', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getAssetsReasonCode(req, res);
+        }, true),
         new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
             await tagService.getTags(req, res);
         }, true),
@@ -314,10 +320,7 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/tag_by_asset', 'get', async (req: Request, res: Response) => {
             await tagService.getTagByAsset(req, res);
-        }, true),
-        new http.RestEndpoint('/api/insert_unavailable', 'put', async (req: Request, res: Response) => {
-            await unavailableService.putUnavailable(req, res);
-        }, true),
+        }, true)
     ],
     router: configutils.routerWhithoutToken(config),
     routerToken: configutils.routerWithToken(config)

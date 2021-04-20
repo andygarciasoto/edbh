@@ -16,7 +16,6 @@ class Break extends Component {
 			shifts: [],
 			showCreateBreak: false,
 			showUpdateBreak: false,
-			action: '',
 			unavailable: {},
 			statusFilter: 'Active',
 			shiftsFilter: 'All'
