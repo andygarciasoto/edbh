@@ -205,7 +205,7 @@ class AddReason extends Component {
                   />
                   <Form.Text className='validation'>{validation.name}</Form.Text>
                 </Col>
-                <Form.Label column sm={2}>{t('Type')}:</Form.Label>
+                <Form.Label column sm={1}>{t('Type')}:</Form.Label>
                 <Col sm={4}>
                   <Form.Control
                     as="select"
@@ -229,7 +229,7 @@ class AddReason extends Component {
                     onChange={this.handleChange}
                   />
                 </Col>
-                <Form.Label column sm={2}>{t('Category')}:</Form.Label>
+                <Form.Label column sm={1}>{t('Category')}:</Form.Label>
                 <Col sm={4}>
                   <Form.Control
                     as="select"
@@ -253,7 +253,7 @@ class AddReason extends Component {
                     onChange={this.handleChange}
                   />
                 </Col>
-                <Form.Label column sm={2}>{t('Level')}:</Form.Label>
+                <Form.Label column sm={1}>{t('Level')}:</Form.Label>
                 <Col sm={4}>
                   <Form.Control
                     as="select"
@@ -279,7 +279,7 @@ class AddReason extends Component {
                     value={this.state.description}
                     rows={3} />
                 </Col>
-                <Form.Label column sm={2}>{t('Status')}:</Form.Label>
+                <Form.Label column sm={1}>{t('Status')}:</Form.Label>
                 <Col sm={4}>
                   <Form.Control
                     as="select"
