@@ -164,7 +164,7 @@
     "Users": "Usuarios",
     "Assets": "Máquinas",
     "Shifts": "Turnos",
-    "Reason Codes": "Códigos de Razon",
+    "Reason Codes": "Códigos de Razón",
     "Device Tags": "Etiquetas de Equipo",
     "Workcells": "Celdas de trabajo",
     "UOM": "Unidades de Medida",
@@ -238,5 +238,8 @@
     "Max Change": "Cambio Máximo",
     "Tag": "Etiqueta",
     "Add Tag": "Agregar Etiqueta",
-    "Update Tag": "Actualizar Etiqueta"
+    "Update Tag": "Actualizar Etiqueta",
+    "Select Area": "Seleccionar Area",
+    "Add Reason": "Agregar Razón",
+    "Update Reason": "Actualizar Razón"
 }

@@ -53,7 +53,20 @@ export class DTReasonService {
         }
         return res.status(200).json(dtdata);
     }
-
+    public async getAssetsReasonCode(req: Request, res: Response) {
+        let dtreason_code = req.query.dtreason_code;
+        if (!dtreason_code) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let unavailable: any;
+        try {
+            unavailable = await this.dtreasonrepository.getAssetsReasonCode(dtreason_code);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(unavailable);
+    }
     public async putDtData(req: Request, res: Response) {
         let dxh_data_id = req.body.dxh_data_id ? parseInt(req.body.dxh_data_id) : undefined;
         let productiondata_id = req.body.productiondata_id ? parseInt(req.body.productiondata_id) : null;

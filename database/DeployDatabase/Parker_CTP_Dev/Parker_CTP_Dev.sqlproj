@@ -521,5 +521,8 @@
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_UnavailableCode.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_ReasonCode.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
   </ItemGroup>
 </Project>

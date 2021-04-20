@@ -109,8 +109,6 @@ class UpdateBreak extends Component {
     });
   }
 
-
-
   updateTabsImported = (availableListTabs, selectedListTabs) => {
     this.setState({ availableListTabs, selectedListTabs });
   }
@@ -166,9 +164,9 @@ class UpdateBreak extends Component {
     const orginalActivateTabs = _.map(activeUnAssets, asset => {
       return { id: asset.asset_code, content: asset.asset_name };
     });
-    //primero tenemos que sacar los que si siguen activos de los orginales
+    //check assets that still active
     const stillActive = _.intersectionWith(orginalActivateTabs, selectedListTabs, _.isEqual);
-    //y luego esa lista compararla con la total de activos originales y la diferencia no están son los que tenemos que pasar a Inactive
+    //compare the list of still Ative with the original list to know what assets change to inactive
     const changeToInactive = _.map(_.differenceWith(orginalActivateTabs, stillActive, _.isEqual), tab => {
       tab.status = 'Inactive';
       return tab;

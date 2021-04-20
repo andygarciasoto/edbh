@@ -61,6 +61,9 @@ export class DTReasonRepository {
             DT.dtreason_category,DT.reason1,DT.reason2, DT.status,DT.type,DT.level`;
         return await this.sqlServerStore.ExecuteQuery(query);
     }
+    public async getAssetsReasonCode(dtreason_code: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_ReasonCode N'${dtreason_code}'`);
+    }
 }
 
 

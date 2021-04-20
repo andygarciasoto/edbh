@@ -130,6 +130,17 @@ function validateTagForm(state) {
     return validation;
 }
 
+function validateReasonForm(state) {
+    let validation = {};
+    if (state.name.trim() === '') {
+        validation.name = 'Name is required';
+    }
+    if (state.type === 'Scrap' && state.level.trim() === '') {
+        validation.level = 'Level is required for Scrap Type';
+    }
+    return validation;
+}
+
 function generalValidationForm(state) {
     let validation = {};
     if (state.name.trim() === '') {
@@ -146,5 +157,6 @@ export {
     validateUserForm,
     validateBreakForm,
     validateTagForm,
+    validateReasonForm,
     generalValidationForm
 }

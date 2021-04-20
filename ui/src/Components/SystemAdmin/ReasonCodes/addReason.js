@@ -6,6 +6,7 @@ import { API } from "../../../Utils/Constants";
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import ConfigurationTabGeneric from '../../Common/ConfigurationTabGeneric';
 import { getResponseFromGeneric } from '../../../Utils/Requests';
+import { validateReasonForm } from '../../../Utils/FormValidations';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
@@ -73,7 +74,7 @@ class AddReason extends Component {
   fetchData() {
     let options = [];
     _.forEach(_.filter(this.state.assetsOptions, { asset_level: this.state.asset_level }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+      options.push({ id: asset.asset_code, content: asset.asset_name });
     });
     this.setState((state) => ({
       availableListTabs: state.asset_level === 'Site' ? [] : options,
@@ -100,10 +101,17 @@ class AddReason extends Component {
     });
   };
 
+  handleChangeType = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+      level: ''
+    });
+  };
+
   handleChangeAssetLevel = (event) => {
     let options = [];
     _.forEach(_.filter(this.state.assetsOptions, { asset_level: event.target.value }), asset => {
-      options.push({ id: asset.asset_id.toString(), content: asset.asset_name });
+      options.push({ id: asset.asset_code, content: asset.asset_name });
     });
     this.setState({
       [event.target.name]: event.target.value,
@@ -121,36 +129,49 @@ class AddReason extends Component {
     this.setState({ show: false });
   };
 
-  submitReason = (e) => {
+  submitReason = async (e) => {
     e.preventDefault();
 
-    const validation = [];//validateBreakForm(this.state);
+    const validation = validateReasonForm(this.state);
 
     if (
       _.isEmpty(validation)
     ) {
-      let message = [];
-      _.forEach(this.state.selectedListTabs, async (selected, index) => {
-        const data = {
-
+      let arrayData = _.map(this.state.selectedListTabs, selection => {
+        return {
+          dtreason_code: `${this.props.user.site_prefix}-${this.state.name}`.replace(/\s+/g, ''),
+          dtreason_name: this.state.name,
+          dtreason_description: this.state.description,
+          dtreason_category: this.state.category,
+          asset_code: selection.id,
+          reason1: this.state.reason1,
+          reason2: this.state.reason2,
+          status: this.state.status,
+          type: this.state.type,
+          level: this.state.level,
+          site_code: this.props.user.site_code
         };
-        let res = await getResponseFromGeneric('put', API, '/insert_unavailable', {}, {}, data);
-        if (res.status !== 200) {
-          message.push(selected);
-        }
-        if (index === (this.state.selectedListTabs.length - 1)) {
-          this.props.Refresh();
-          if (_.isEmpty(message)) {
-            this.props.onRequestClose();
-            this.setState({
-              show: true,
-              validation: {}
-            });
-          } else {
-            console.log('Error', _.map(message, 'content').join(', '));
-          }
-        }
       });
+      const data = {
+        site_id: this.props.user.site,
+        table: 'DTReason',
+        data: arrayData
+      };
+
+      let res = await getResponseFromGeneric('put', API, '/dragndrop', {}, {}, data);
+      if (res.status !== 200) {
+        this.setState({
+          modalError: true,
+          validation: {}
+        });
+      } else {
+        this.props.Refresh();
+        this.props.onRequestClose();
+        this.setState({
+          show: true,
+          validation: {}
+        });
+      }
     } else {
       this.setState({ validation });
     }
@@ -168,7 +189,7 @@ class AddReason extends Component {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Add Reason</Modal.Title>
+            <Modal.Title>{t('Add Reason')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -189,7 +210,7 @@ class AddReason extends Component {
                   <Form.Control
                     as="select"
                     name="type"
-                    onChange={this.handleChange}
+                    onChange={this.handleChangeType}
                     value={this.state.type}
                   >
                     <option value="Downtime">Downtime</option>
@@ -212,12 +233,12 @@ class AddReason extends Component {
                 <Col sm={4}>
                   <Form.Control
                     as="select"
-                    name="quality"
+                    name="category"
                     onChange={this.handleChange}
-                    value={this.state.quality}
+                    value={this.state.category}
                   >
-                    <option value="Active">Cost</option>
-                    <option value="Inactive">Quality</option>
+                    <option value="Cost">Cost</option>
+                    <option value="Quality">Quality</option>
                   </Form.Control>
                 </Col>
               </Form.Group>
@@ -245,6 +266,7 @@ class AddReason extends Component {
                     <option value="Setup">Setup</option>
                     <option value="Production">Production</option>
                   </Form.Control>
+                  <Form.Text className='validation'>{validation.level}</Form.Text>
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
@@ -325,9 +347,9 @@ class AddReason extends Component {
         </Modal>
         <Modal show={this.state.modalError} onHide={this.closeModalError}>
           <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
+            <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Body>Error when try to create the new Reason</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>
               Close

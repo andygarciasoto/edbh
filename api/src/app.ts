@@ -300,6 +300,9 @@ const appConfig = {
         new http.RestEndpoint('/api/reasons_by_filter', 'get', async (req: Request, res: Response) => {
             await dtreasonService.getReasonsByFilter(req, res);
         }, true),
+        new http.RestEndpoint('/api/asset_by_reason', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getAssetsReasonCode(req, res);
+        }, true),
         new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
             await tagService.getTags(req, res);
         }, true),

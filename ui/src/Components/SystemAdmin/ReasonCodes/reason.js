@@ -6,6 +6,7 @@ import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddReason from "./addReason";
 import EditIcon from "../../../resources/u668.svg";
+import UpdateReason from "./updateReason";
 
 class Reason extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Reason extends Component {
     this.loadData();
   }
 
-  loadData() {
+  loadData = () => {
     const { actions } = this.props;
     const { statusFilter, categoryFilter, typeFilter } = this.state;
 
@@ -66,7 +67,7 @@ class Reason extends Component {
     this.setState({
       showCreateReason: false,
       showUpdateReason: false,
-      unavailable: {}
+      reason: {}
     });
   };
 
@@ -91,11 +92,20 @@ class Reason extends Component {
           Refresh={this.loadData}
           onRequestClose={this.closeModal}
         />
+        <UpdateReason
+          t={t}
+          user={this.props.user}
+          isOpen={this.state.showUpdateReason}
+          reason={this.state.reason}
+          Refresh={this.loadData}
+          onRequestClose={this.closeModal}
+        />
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
               <th>{t('Code')}</th>
               <th>{t('Name')}</th>
+              <th>{t('Description')}</th>
               <th>{t('Category')}</th>
               <th>{t('Type')}</th>
               <th>{t('Asset Count')}</th>
@@ -108,6 +118,7 @@ class Reason extends Component {
               <tr key={index}>
                 <td>{reason.dtreason_code}</td>
                 <td>{reason.dtreason_name}</td>
+                <td>{reason.dtreason_description}</td>
                 <td>{reason.dtreason_category}</td>
                 <td>{reason.type}</td>
                 <td>{reason.asset_count}</td>
@@ -117,7 +128,7 @@ class Reason extends Component {
                     src={EditIcon}
                     alt={`edit-icon`}
                     className="icon"
-                    onClick={() => this.showEditShift(reason.dtreason_id)}
+                    onClick={() => this.openUpdateReason(reason)}
                   />
                 </td>
               </tr>
