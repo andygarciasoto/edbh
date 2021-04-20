@@ -241,5 +241,11 @@
     "Update Tag": "Actualizar Etiqueta",
     "Select Area": "Seleccionar Area",
     "Add Reason": "Agregar Razón",
-    "Update Reason": "Actualizar Razón"
+    "Update Reason": "Actualizar Razón",
+    "Reason 1": "Reason 1",
+    "Reason 2": "Reason 2",
+    "Parent Code": "Código Padre",
+    "Automation Level": "Nivel de Automaticación",
+    "Include in Escalation": "Incluir en la Escalación",
+    "Is Multiple": "Es Multiple"
 }

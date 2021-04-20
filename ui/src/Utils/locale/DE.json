@@ -239,5 +239,11 @@
     "Update Tag": "Etikett Aktualisieren",
     "Select Area": "Bereich Auswählen",
     "Add Reason": "Grund Hinzufügen",
-    "Update Reason": "Grund Aktualisieren"
+    "Update Reason": "Grund Aktualisieren",
+    "Reason 1": "Grund 1",
+    "Reason 2": "Grund 2",
+    "Parent Code": "Übergeordneter Code",
+    "Automation Level": "Automatisierungsgrad",
+    "Include in Escalation": "In Die Eskalation Einbeziehen",
+    "Is Multiple": "Ist Mehrfach"
 }

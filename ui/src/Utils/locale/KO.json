@@ -241,5 +241,11 @@
     "Update Tag": "태그 업데이트",
     "Select Area": "선택 부문",
     "Add Reason": "이유 추가",
-    "Update Reason": "업데이트 이유"
+    "Update Reason": "업데이트 이유",
+    "Reason 1": "이유 1",
+    "Reason 2": "이유 2",
+    "Parent Code": "부모 코드",
+    "Automation Level": "자동화 수준",
+    "Include in Escalation": "에스컬레이션에 포함",
+    "Is Multiple": "여러"
 }

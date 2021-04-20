@@ -241,5 +241,11 @@
     "Update Tag": "Update Tag",
     "Select Area": "Select Area",
     "Add Reason": "Add Reason",
-    "Update Reason": "Update Reason"
+    "Update Reason": "Update Reason",
+    "Reason 1": "Reason 1",
+    "Reason 2": "Reason 2",
+    "Parent Code": "Parent Code",
+    "Automation Level": "Automation Level",
+    "Include in Escalation": "Include in Escalation",
+    "Is Multiple": "Is Multiple"
 }
