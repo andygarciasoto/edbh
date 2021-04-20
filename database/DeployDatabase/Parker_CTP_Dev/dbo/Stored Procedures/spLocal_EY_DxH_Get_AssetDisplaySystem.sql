@@ -71,7 +71,8 @@ BEGIN
 		a.grouping3,
 		a.grouping4,
 		a.grouping5,
-		a.is_multiple
+		a.is_multiple,
+		a.is_dynamic
 	From dbo.Asset a with (nolock),
 		dbo.AssetDisplaySystem ads with (nolock)
 	Where a.asset_id = ads.asset_id

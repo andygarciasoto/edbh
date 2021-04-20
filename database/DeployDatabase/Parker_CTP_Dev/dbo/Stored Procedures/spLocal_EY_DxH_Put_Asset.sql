@@ -1,4 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 8/4/2021 09:14:38 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
 
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@asset_id					as INT,
@@ -9,7 +9,7 @@ CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@site_code					as NVARCHAR(100),	
 	@parent_asset_code			as NVARCHAR(100),
 	@automation_level			as NVARCHAR(100),
-	@include_in_escalation		as BIT,
+	@include_in_escalation		as NVARCHAR(100),
 	@grouping1					as NVARCHAR(256),
 	@grouping2					as NVARCHAR(256),
 	@grouping3    				as NVARCHAR(256),
@@ -17,9 +17,29 @@ CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@grouping5					as NVARCHAR(256),
 	@status						as NVARCHAR(50),
 	@target_percent_of_ideal	as FLOAT,
-	@is_multiple				as BIT)
+	@is_multiple				as BIT,
+	@is_dynamic					as BIT,
+	@badge						as VARCHAR(100),
+	@value_stream				as VARCHAR(100))
 	
 AS  BEGIN 
+
+DECLARE
+@Username		NVARCHAR(100),
+@First_Name		NVARCHAR(100),
+@Last_Name		NVARCHAR(100),
+@Site			INT,
+@role_id		INT,
+@escalation_id	INT
+
+        SELECT TOP 1 
+				@Username = Username,
+				@First_Name = First_Name,
+				@Last_Name = Last_Name,
+				@role_id = role_id,
+				@escalation_id = escalation_id
+        FROM [dbo].[TFDUsers]
+        WHERE Badge = @badge
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 	WHERE
@@ -45,7 +65,9 @@ BEGIN
 		  ,[last_modified_on] = getDate()
 		  ,[target_percent_of_ideal] = @target_percent_of_ideal
 		  ,[is_multiple] = @is_multiple
-	WHERE asset_id = @asset_id AND site_code = @site_code
+		  ,[is_dynamic] = @is_dynamic
+		  ,[value_stream] = @value_stream
+	WHERE asset_code = @asset_code AND site_code = @site_code
 	END
 ELSE
 	BEGIN
@@ -69,7 +91,9 @@ ELSE
 			   ,[last_modified_by]
 			   ,[last_modified_on]
 			   ,[target_percent_of_ideal]
-			   ,[is_multiple])
+			   ,[is_multiple]
+			   ,[is_dynamic]
+			   ,[value_stream])
 		 VALUES
 			   (@asset_code
 			   ,@asset_name
@@ -90,7 +114,46 @@ ELSE
 			   , 'Administration Tool'
 			   , GETDATE()
 			   ,@target_percent_of_ideal
-			   ,@is_multiple)
+			   ,@is_multiple
+			   ,@is_dynamic
+			   ,@value_stream)
+
+		IF (@asset_level = 'Site')
+		BEGIN
+			SELECT TOP 1 
+				@Site = asset_id
+			FROM [dbo].[Asset]
+			WHERE asset_level = 'Site'
+			ORDER BY entered_on DESC
+
+		INSERT INTO [dbo].[TFDUsers]
+		(Badge
+		,Username
+		,First_Name
+		,Last_Name
+		,Site
+		,role_id
+		,status
+		,entered_by
+		,entered_on
+		,last_modified_by
+		,last_modified_on
+		,escalation_id)
+		VALUES
+		(@badge
+		,@Username
+		,@First_Name
+		,@Last_Name
+		,@Site
+		,@role_id
+		,'Active'
+		,'Administration Tool'
+		,GETDATE()
+		,'Administration Tool'
+		,GETDATE()
+		,@escalation_id)
+		END
+
 	END
 END
 

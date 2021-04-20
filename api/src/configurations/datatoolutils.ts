@@ -23,7 +23,8 @@ export let headers = {
         { header: 'grouping5', type: 'VARCHAR', key: 'grouping5', width: 10 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'target_percent_of_ideal', type: 'FLOAT', key: 'target_percent_of_ideal', width: 28 },
-        { header: 'is_multiple', type: 'BIT', key: 'is_multiple', width: 20 }
+        { header: 'is_multiple', type: 'BIT', key: 'is_multiple', width: 20 },
+        { header: 'is_dynamic', type: 'BIT', key: 'is_dynamic', width: 20 }
     ],
     AssetDisplaySystem: [
         { header: 'displaysystem_name', type: 'VARCHAR', key: 'displaysystem_name', width: 25 },
@@ -176,13 +177,13 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[workcell_id], 
                 t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], 
                 t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
-                t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple]`;
+                t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple], t.[is_dynamic] = s.[is_dynamic]`;
             parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], 
                 [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], 
-                [entered_by], [last_modified_by], [target_percent_of_ideal],[is_multiple]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
+                [entered_by], [last_modified_by], [target_percent_of_ideal],[is_multiple],[is_dynamic]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
                 s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], 
                 s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], 'Administration Tool', 'Administration Tool', 
-                s.[target_percent_of_ideal], s.[is_multiple])`;
+                s.[target_percent_of_ideal], s.[is_multiple], s.[is_dynamic])`;
             break;
         case 'AssetDisplaySystem':
             parametersObject.extraColumns = ', a.asset_id, a2.asset_id as site_id';

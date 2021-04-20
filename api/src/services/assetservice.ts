@@ -93,13 +93,16 @@ export class AssetService {
         const status = req.body.status ? req.body.status : 'Active';
         const target_percent_of_ideal = req.body.target_percent_of_ideal ? req.body.target_percent_of_ideal : null;
         const is_multiple = req.body.is_multiple ? req.body.is_multiple : 0;
+        const is_dynamic = req.body.is_dynamic ? req.body.is_dynamic : 0;
+        const badge = req.body.badge ? req.body.badge : undefined;
+        const value_stream = req.body.value_stream ? req.body.value_stream : null;
 
-        if (asset_code === undefined || asset_name === undefined || asset_level === undefined || site_code === undefined || parent_asset_code === undefined) {
+        if (asset_code === undefined || asset_name === undefined || asset_level === undefined || site_code === undefined || parent_asset_code === undefined || badge === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let asset: any;
         try {
-            asset = await this.assetrepository.putAsset(asset_id, asset_code, asset_name, asset_description, asset_level, site_code, parent_asset_code, automation_level, include_in_escalation, grouping1, grouping2, grouping3, grouping4, grouping5, status, target_percent_of_ideal, is_multiple);
+            asset = await this.assetrepository.putAsset(asset_id, asset_code, asset_name, asset_description, asset_level, site_code, parent_asset_code, automation_level, include_in_escalation, grouping1, grouping2, grouping3, grouping4, grouping5, status, target_percent_of_ideal, is_multiple, is_dynamic, badge, value_stream);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
