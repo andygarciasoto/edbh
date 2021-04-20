@@ -17,7 +17,7 @@ export class Step1 extends Component {
 			name: '',
 			description: '',
 			workcell: 0,
-			level: 'Site',
+			level: 'Cell',
 			site_code: '',
 			defaultPercent: 0,
 			parent_code: '',
@@ -257,6 +257,7 @@ export class Step1 extends Component {
 							<label>
 								Level:
 								<select
+									value={this.state.level}
 									className="select-tag-type asset-level"
 									name="level"
 									onChange={this.handleChange}

@@ -7,8 +7,6 @@
 .flex-modules {
 	width: auto;
 	height: auto;
-	max-width: 145px;
-	min-width: 145px;
 }
 
 .validation {
@@ -25,9 +23,9 @@
 }
 
 .commonParamBtn {
-	max-width   : 30%;
+	max-width: 30%;
 	margin-right: 3%;
-	text-align  : center;
+	text-align: center;
 }
 
 .fix-form {
@@ -280,8 +278,8 @@
 }
 
 .input-tag-description {
-	width      : 250px;
-	height     : 100px;
+	width: 250px;
+	height: 100px;
 	margin-left: 17px;
 
 	&.asset-description {
@@ -689,81 +687,162 @@
 	}
 }
 
+@media screen and (min-width: 1025px) {
+	.card-component {
+		border-style: groove;
+		border-radius: 5px;
+		width: 16%;
+		cursor: pointer;
+
+		&.common {
+			margin-left: 390px;
+			margin-top: -177px;
+		}
+
+		&.assets {
+			margin-left: 780px;
+			margin-top: -178px;
+		}
+
+		&.reason {
+			margin-left: 1170px;
+			margin-top: -177px;
+		}
+
+		&.device {
+			margin-left: 1550px;
+			margin-top: -178px;
+		}
+
+		&.shifts {
+			margin-top: 50px;
+		}
+
+		&.uom {
+			margin-left: 390px;
+			margin-top: -177px;
+		}
+
+		&.break {
+			margin-left: 780px;
+			margin-top: -178px;
+		}
+
+		&.display {
+			margin-left: 1170px;
+			margin-top: -177px;
+		}
+
+		&.work {
+			margin-left: 1550px;
+			margin-top: -178px;
+			padding-bottom: 40px;
+		}
+
+		//   :hover {
+		//     background-color: #aaaaaa;
+		//   }
+
+		.icon {
+			width: 20%;
+			margin-left: 117px;
+			margin-top: 15px;
+			height: auto;
+		}
+
+		.p-number {
+			color: #aaaaaa;
+			text-align: center;
+			margin-top: 10px;
+			font-size: 20px;
+		}
+
+		.p-name {
+			color: #aaaaaa;
+			text-align: center;
+			margin-top: -10px;
+			font-size: 20px;
+		}
+	}
+}
+
 //STYLES FOR CARD
 
-.card-component {
-	border-style: groove;
-	border-radius: 5px;
-	width: 12%;
-	cursor: pointer;
+@media (max-width: 1280px) {
+	.card-component {
+		border-style: groove;
+		border-radius: 5px;
+		width: 12%;
+		cursor: pointer;
 
-	&.common {
-		margin-left: 250px;
-		margin-top: -143px;
-	}
+		&.common {
+			margin-left: 250px;
+			margin-top: -143px;
+		}
 
-	&.assets {
-		margin-left: 500px;
-		margin-top: -142px;
-	}
+		&.assets {
+			margin-left: 500px;
+			margin-top: -142px;
+		}
 
-	&.reason {
-		margin-left: 750px;
-		margin-top: -143px;
-	}
+		&.reason {
+			margin-left: 750px;
+			margin-top: -143px;
+		}
 
-	&.device {
-		margin-left: 1000px;
-		margin-top: -142px;
-	}
+		&.device {
+			margin-left: 1000px;
+			margin-top: -142px;
+		}
 
-	&.shifts {
-		margin-top: 50px;
-	}
+		&.shifts {
+			margin-top: 50px;
+		}
 
-	&.uom {
-		margin-left: 250px;
-		margin-top: -143px;
-	}
+		&.uom {
+			margin-left: 250px;
+			margin-top: -143px;
+		}
 
-	&.break {
-		margin-left: 500px;
-		margin-top: -142px;
-	}
+		&.break {
+			margin-left: 500px;
+			margin-top: -142px;
+		}
 
-	&.display {
-		margin-left: 750px;
-		margin-top: -143px;
-	}
+		&.display {
+			margin-left: 750px;
+			margin-top: -143px;
+		}
 
-	&.work {
-		margin-left: 1000px;
-		margin-top: -142px;
-		padding-bottom: 10px;
-	}
+		&.work {
+			margin-left: 1000px;
+			margin-top: -142px;
+			padding-bottom: 10px;
+		}
 
-	//   :hover {
-	//     background-color: #aaaaaa;
-	//   }
+		//   :hover {
+		//     background-color: #aaaaaa;
+		//   }
 
-	.icon {
-		width: 20%;
-		margin-left: 56px;
-		margin-top: 15px;
-		height: auto;
-	}
+		.icon {
+			width: 20%;
+			margin-left: 56px;
+			margin-top: 15px;
+			height: auto;
+		}
 
-	.p-number {
-		color: #aaaaaa;
-		text-align: center;
-		margin-top: 10px;
-		font-size: 20px;
-	}
+		.p-number {
+			color: #aaaaaa;
+			text-align: center;
+			margin-top: 10px;
+			font-size: 20px;
+		}
 
-	.p-name {
-		color: #aaaaaa;
-		text-align: center;
-		margin-top: -10px;
-		font-size: 20px;
+		.p-name {
+			color: #aaaaaa;
+			text-align: center;
+			margin-top: -10px;
+			font-size: 20px;
+		}
 	}
 }

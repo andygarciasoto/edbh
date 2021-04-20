@@ -19,7 +19,7 @@ class AddAsset extends Component {
 			step3: false,
 			step4: false,
 			showForm: true,
-			showFooter: false,
+			showFooter: true,
 			showConfirm: true,
 			asset_code: '',
 		};
