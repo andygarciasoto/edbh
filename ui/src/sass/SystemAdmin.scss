@@ -4,11 +4,6 @@
 	margin: 30px 30px;
 }
 
-.flex-modules {
-	width: auto;
-	height: auto;
-}
-
 .validation {
 	color: $color-red;
 }
@@ -687,7 +682,13 @@
 	}
 }
 
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 1281px) {
+	.flex-modules {
+		width: auto;
+		height: auto;
+		max-width: 294px;
+		min-width: 294px;
+	}
 	.card-component {
 		border-style: groove;
 		border-radius: 5px;
@@ -769,6 +770,12 @@
 //STYLES FOR CARD
 
 @media (max-width: 1280px) {
+	.flex-modules {
+		width: auto;
+		height: auto;
+		max-width: 145px;
+		min-width: 145px;
+	}
 	.card-component {
 		border-style: groove;
 		border-radius: 5px;
