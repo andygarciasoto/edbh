@@ -17,7 +17,7 @@
 }
 
 .asset-modal .modal-dialog {
-	max-width : 60%;
+	max-width: 60%;
 }
 
 .asset-modal .modal-content {
@@ -30,6 +30,17 @@
 
 .asset-modal .col-sm-4 {
 	padding-left: 1%;
+}
+
+.fa-edit {
+	color : $color-green;
+	cursor: pointer;
+}
+
+.fa-copy {
+	color      : $color-blue;
+	margin-left: 10%;
+	cursor     : pointer;
 }
 
 .barStepsAsset {
@@ -52,9 +63,9 @@
 }
 
 .commonParamBtn {
-	max-width: 30%;
+	max-width   : 30%;
 	margin-right: 3%;
-	text-align: center;
+	text-align  : center;
 }
 
 .fix-form {
@@ -306,8 +317,8 @@
 }
 
 .input-tag-description {
-	width: 250px;
-	height: 100px;
+	width      : 250px;
+	height     : 100px;
 	margin-left: 17px;
 
 	&.asset-description {
@@ -727,35 +738,36 @@
 
 @media screen and (min-width: 1281px) {
 	.flex-modules {
-		width: auto;
-		height: auto;
+		width    : auto;
+		height   : auto;
 		max-width: 294px;
 		min-width: 294px;
 	}
+
 	.card-component {
-		border-style: groove;
+		border-style : groove;
 		border-radius: 5px;
-		width: 16%;
-		cursor: pointer;
+		width        : 16%;
+		cursor       : pointer;
 
 		&.common {
 			margin-left: 390px;
-			margin-top: -177px;
+			margin-top : -177px;
 		}
 
 		&.assets {
 			margin-left: 780px;
-			margin-top: -178px;
+			margin-top : -178px;
 		}
 
 		&.reason {
 			margin-left: 1170px;
-			margin-top: -177px;
+			margin-top : -177px;
 		}
 
 		&.device {
 			margin-left: 1550px;
-			margin-top: -178px;
+			margin-top : -178px;
 		}
 
 		&.shifts {
@@ -764,22 +776,22 @@
 
 		&.uom {
 			margin-left: 390px;
-			margin-top: -177px;
+			margin-top : -177px;
 		}
 
 		&.break {
 			margin-left: 780px;
-			margin-top: -178px;
+			margin-top : -178px;
 		}
 
 		&.display {
 			margin-left: 1170px;
-			margin-top: -177px;
+			margin-top : -177px;
 		}
 
 		&.work {
-			margin-left: 1550px;
-			margin-top: -178px;
+			margin-left   : 1550px;
+			margin-top    : -178px;
 			padding-bottom: 40px;
 		}
 
@@ -788,24 +800,24 @@
 		//   }
 
 		.icon {
-			width: 20%;
+			width      : 20%;
 			margin-left: 117px;
-			margin-top: 15px;
-			height: auto;
+			margin-top : 15px;
+			height     : auto;
 		}
 
 		.p-number {
-			color: #aaaaaa;
+			color     : #aaaaaa;
 			text-align: center;
 			margin-top: 10px;
-			font-size: 20px;
+			font-size : 20px;
 		}
 
 		.p-name {
-			color: #aaaaaa;
+			color     : #aaaaaa;
 			text-align: center;
 			margin-top: -10px;
-			font-size: 20px;
+			font-size : 20px;
 		}
 	}
 }
@@ -814,35 +826,36 @@
 
 @media (max-width: 1280px) {
 	.flex-modules {
-		width: auto;
-		height: auto;
+		width    : auto;
+		height   : auto;
 		max-width: 145px;
 		min-width: 145px;
 	}
+
 	.card-component {
-		border-style: groove;
+		border-style : groove;
 		border-radius: 5px;
-		width: 12%;
-		cursor: pointer;
+		width        : 12%;
+		cursor       : pointer;
 
 		&.common {
 			margin-left: 250px;
-			margin-top: -143px;
+			margin-top : -143px;
 		}
 
 		&.assets {
 			margin-left: 500px;
-			margin-top: -142px;
+			margin-top : -142px;
 		}
 
 		&.reason {
 			margin-left: 750px;
-			margin-top: -143px;
+			margin-top : -143px;
 		}
 
 		&.device {
 			margin-left: 1000px;
-			margin-top: -142px;
+			margin-top : -142px;
 		}
 
 		&.shifts {
@@ -851,22 +864,22 @@
 
 		&.uom {
 			margin-left: 250px;
-			margin-top: -143px;
+			margin-top : -143px;
 		}
 
 		&.break {
 			margin-left: 500px;
-			margin-top: -142px;
+			margin-top : -142px;
 		}
 
 		&.display {
 			margin-left: 750px;
-			margin-top: -143px;
+			margin-top : -143px;
 		}
 
 		&.work {
-			margin-left: 1000px;
-			margin-top: -142px;
+			margin-left   : 1000px;
+			margin-top    : -142px;
 			padding-bottom: 10px;
 		}
 
@@ -875,24 +888,24 @@
 		//   }
 
 		.icon {
-			width: 20%;
+			width      : 20%;
 			margin-left: 56px;
-			margin-top: 15px;
-			height: auto;
+			margin-top : 15px;
+			height     : auto;
 		}
 
 		.p-number {
-			color: #aaaaaa;
+			color     : #aaaaaa;
 			text-align: center;
 			margin-top: 10px;
-			font-size: 20px;
+			font-size : 20px;
 		}
 
 		.p-name {
-			color: #aaaaaa;
+			color     : #aaaaaa;
 			text-align: center;
 			margin-top: -10px;
-			font-size: 20px;
+			font-size : 20px;
 		}
 	}
 }
