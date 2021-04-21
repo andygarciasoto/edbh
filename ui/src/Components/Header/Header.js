@@ -165,7 +165,7 @@ class Header extends React.Component {
         const user = this.props.user;
         const asset = _.find(user.machines, { asset_code: this.state.mc });
 
-        if (user.role === 'Operator' && asset && asset.is_multiple) {
+        if (user.role === 'Operator' && asset && (asset.is_multiple || asset.is_dynamic)) {
             this.props.displayModalLogOff(true);
         } else {
             console.log('Success LogOff');

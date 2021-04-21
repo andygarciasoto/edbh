@@ -33,8 +33,9 @@ class LogOffModal extends React.Component {
             });
         } else {
             this.setState({ modal_loading_IsOpen: true }, async () => {
+                const badge = this.props.activeOperators[0] ? this.props.activeOperators[0].badge : this.props.user.badge;
                 const parameters = {
-                    badge: this.props.activeOperators[0].badge,
+                    badge: badge,
                     site_id: this.props.user.site
                 };
                 let res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
@@ -114,7 +115,7 @@ class LogOffModal extends React.Component {
             } else {
                 this.setState({ modal_loading_IsOpen: false });
                 this.props.onRequestClose();
-                if (this.props.activeOperators.length === 1) {
+                if (this.props.activeOperators.length <= 1) {
                     // remove stored data
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('st');
@@ -138,6 +139,7 @@ class LogOffModal extends React.Component {
     render() {
         const t = this.props.t;
         const props = this.props;
+        const user = props.user;
         return (
             <React.Fragment>
                 <Modal
@@ -155,8 +157,12 @@ class LogOffModal extends React.Component {
                         <Row>
                             <Col md={12} lg={12}><span className='LogOffMessage'>{t('Please select what is the reason to sign out')}</span></Col>
                             <Col md={12} lg={12} className="d-flex justify-content-center logoffbuttons">
-                                <Button onClick={() => this.logOffReason('Lunch')} className='btnYellow'>{t('Begin Lunch')}</Button>
-                                <Button onClick={() => this.logOffReason('Break')} className='btnGreen'>{t('Begin Break')}</Button>
+                                {user.lunch_minutes > 0 ?
+                                    <Button onClick={() => this.logOffReason('Lunch')} className='btnYellow'>{t('Begin Lunch')}</Button>
+                                    : null}
+                                {user.break_minutes > 0 ?
+                                    <Button onClick={() => this.logOffReason('Break')} className='btnGreen'>{t('Begin Break')}</Button>
+                                    : null}
                                 <Button onClick={() => this.logOffReason('Check-Out')} variant='outline-primary'>{t('Exit Station')}</Button>
                             </Col>
                         </Row>
