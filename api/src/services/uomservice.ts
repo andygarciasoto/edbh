@@ -50,7 +50,7 @@ export class UomService {
         const uom_id = req.body.uom_id ? req.body.uom_id : null;
         const uom_code = req.body.uom_code ? req.body.uom_code : undefined;
         const uom_name = req.body.uom_name ? req.body.uom_name : undefined;
-        const uom_description = req.body.uom_description ? req.body.uom_description : null;
+        const uom_description = req.body.uom_description;
         const status = req.body.status ? req.body.status : 'Active';
         const site_id = req.body.site_id ? req.body.site_id : undefined;
         const decimals = req.body.decimals ? req.body.decimals : 0;

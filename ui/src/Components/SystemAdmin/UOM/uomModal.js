@@ -9,10 +9,12 @@ import { generalValidationForm } from '../../../Utils/FormValidations';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
-class EditUOM extends Component {
+class UOMModal extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			uom: props.uom,
+			code: '',
 			name: '',
 			description: '',
 			decimals: false,
@@ -24,22 +26,22 @@ class EditUOM extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.loadData();
+	static getDerivedStateFromProps(nextProps, prevState) {
+		if (!_.isEqual(nextProps.uom, prevState.uom)) {
+			const name = nextProps.action === 'Edit' ? nextProps.uom.UOM_name : '';
+			const uom_id = nextProps.action === 'Edit' ? nextProps.uom.UOM_id : 0;
+			return {
+				uom: nextProps.uom,
+				uom_id: uom_id,
+				name: name,
+				description: nextProps.uom.UOM_description || '',
+				decimals: nextProps.uom.decimals || false,
+				status: nextProps.uom.status || 'Active',
+				validation: {}
+			};
+		}
+		return null;
 	}
-
-	loadData = () => {
-		const { actions } = this.props;
-
-		return actions.getUOMById(this.props.user.site, this.props.uom_id).then((response) => {
-			this.setState({
-				name: response[0].UOM_name,
-				description: response[0].UOM_description,
-				decimals: response[0].decimals,
-				status: response[0].status
-			});
-		});
-	};
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -53,14 +55,14 @@ class EditUOM extends Component {
 
 	createUOM = (e) => {
 		e.preventDefault();
-		const { name, description, status, decimals } = this.state;
+		const { uom_id, code, name, description, status, decimals } = this.state;
 
 		const validation = generalValidationForm(this.state);
 
 		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_uom', null, null, {
-				uom_id: this.props.uom_id,
-				uom_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
+				uom_id: uom_id,
+				uom_code: this.props.action === 'Edit' ? code : `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				uom_name: name,
 				uom_description: description,
 				status: status,
@@ -69,10 +71,11 @@ class EditUOM extends Component {
 			}).then(
 				() => {
 					this.props.Refresh();
+					this.props.handleClose();
 					this.setState({
 						show: true,
+						validation: {}
 					});
-					this.handleClose();
 				},
 				(error) => {
 					console.log(error);
@@ -85,16 +88,8 @@ class EditUOM extends Component {
 		}
 	};
 
-	handleClose = () => {
-		this.setState({ showForm: false });
-	};
-
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
-
-	closeSuccessModal = () => {
-		this.setState({ show: false });
+	closeModalMessage = () => {
+		this.setState({ modalError: false, show: false });
 	};
 
 	render() {
@@ -102,7 +97,7 @@ class EditUOM extends Component {
 		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
+				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
 					<Modal.Header closeButton>
 						<Modal.Title>{t('Update UOM')}</Modal.Title>
 					</Modal.Header>
@@ -142,8 +137,8 @@ class EditUOM extends Component {
 										autoComplete={"false"}
 										onChange={this.handleChange}
 									>
-										<option value={0}>No</option>
-										<option value={1}>Yes</option>
+										<option value={false}>No</option>
+										<option value={true}>Yes</option>
 									</Form.Control>
 								</Col>
 							</Form.Group>
@@ -168,23 +163,23 @@ class EditUOM extends Component {
 						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
 							{t('Confirm')}
 						</Button>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.props.handleClose}>
 							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>UOM has been updated</Modal.Body>
+					<Modal.Body>UOM has been copied</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeSuccessModal}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+				<Modal show={this.state.modalError} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Warning</Modal.Title>
 					</Modal.Header>
@@ -194,7 +189,7 @@ class EditUOM extends Component {
 							: 'All inputs must be filled'}
 					</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
@@ -210,4 +205,4 @@ export const mapDispatch = (dispatch) => {
 	};
 };
 
-export default connect(null, mapDispatch)(EditUOM);
+export default connect(null, mapDispatch)(UOMModal);
