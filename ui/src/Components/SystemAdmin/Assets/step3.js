@@ -133,9 +133,6 @@ export class Step3 extends Component {
 					<button className="button-next" onClick={(e) => this.assingReasons(e)}>
 						{t('Next Step') + '>>'}
 					</button>
-					<button className="button-back" onClick={(e) => this.props.back(e)}>
-						{'<<' + t('Previous Step')}
-					</button>
 				</Form>
 			</div>
 		);

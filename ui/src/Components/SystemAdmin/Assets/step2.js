@@ -205,7 +205,6 @@ export class Step2 extends Component {
 						</Col>
 					</Form.Group>
 					<button className="button-next" onClick={(e) => this.createTag(e)}>{t('Next Step') + '>>'}</button>
-					<button className="button-back" onClick={(e) => this.props.back(e)}>{'<<' + t('Previous Step')}</button>
 				</Form>
 		);
 	}

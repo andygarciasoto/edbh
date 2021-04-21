@@ -110,7 +110,6 @@ export class Step4 extends Component {
 						</Col>
 					</Form.Group>
 					<button className="button-next" onClick={(e) => this.assingBreaks(e)}>{t('End Steps') + '>>'}</button>
-					<button className="button-back" onClick={(e) => this.props.back(e)}>{'<<' + t('Previous Step')}</button>
 				</Form>
 			</div >
 		);

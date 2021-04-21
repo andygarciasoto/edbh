@@ -4,54 +4,82 @@ import { bindActionCreators } from 'redux';
 import { genericRequest } from '../../../../Utils/Requests';
 import { API } from '../../../../Utils/Constants';
 import * as BreakActions from '../../../../redux/actions/breakActions';
-import { Form, Col } from 'react-bootstrap';
-import { reorder, move, getItemStyle, ReasonList, getListStyleDrop } from '../../../../Utils/ConfigurationTabHelper';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Form, Row, Col } from 'react-bootstrap';
+import ConfigurationTabGeneric from '../../../Common/ConfigurationTabGeneric';
 import moment from 'moment';
+import _ from 'lodash';
 
 export class Step4 extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			ReasonData: [],
-			addReason: false,
-			editReason: false,
-			shift_id: 0,
-			selected: [],
+			BreakData: [],
+			completeListTabs: [],
+			availableListTabs: [],
+			selectedListTabs: [],
 		};
 	}
 
 	componentDidMount() {
 		const { actions } = this.props;
 
+		const params = {
+			site_id: this.props.user.site,
+			status: 'Active',
+		};
+
 		return Promise.all([
-			actions.getBreak(this.props.user.site),
+			actions.getBreakFilter(params)(this.props.user.site),
 			actions.getUnavailableByAssets(this.props.asset_id),
 		]).then((response) => {
-			console.log(response);
+			const BreakData = response[0];
+			const availableListTabs = _.map(BreakData, (breakObject) => {
+				breakObject.id =
+					breakObject.unavailable_code +
+					breakObject.unavailable_name +
+					'(' +
+					breakObject.start_time +
+					'-' +
+					breakObject.end_time +
+					')';
+				breakObject.content =
+					breakObject.unavailable_name + ' (' + breakObject.start_time + ' - ' + breakObject.end_time + ')';
+				return breakObject;
+			});
 			this.setState({
-				ReasonData: response[0],
-				selected: response[1],
+				BreakData,
+				availableListTabs,
+				completeListTabs: availableListTabs,
+				selectedListTabs: response[1],
 			});
 		});
-
-		
 	}
+
+	updateTabsImported = (availableListTabs, selectedListTabs) => {
+		this.setState({ availableListTabs, selectedListTabs });
+	};
+
+	importAllTabs = () => {
+		this.updateTabsImported([], this.state.completeListTabs);
+	};
+
+	resetTabs = () => {
+		this.updateTabsImported(this.state.completeListTabs, []);
+	};
 
 	assingBreaks = (e) => {
 		e.preventDefault();
-		const { selected } = this.state;
+		const { selectedListTabs } = this.state;
 
-		const newArray = this.state.selected.map((item) => {
+		const newArray = _.map(selectedListTabs, (item) => {
 			item.asset_code = this.props.asset_code;
 			item.site_code = this.props.user.site_code;
 			item.valid_from = moment().tz(this.props.user.timezone);
 			item.valid_to = null;
-
 			return item;
 		});
 
-		if (selected !== []) {
+		if (selectedListTabs !== []) {
 			genericRequest('put', API, '/dragndrop', null, null, {
 				site_id: this.props.user.site,
 				table: 'Unavailable',
@@ -73,117 +101,30 @@ export class Step4 extends Component {
 		}
 	};
 
-	onDragEnd = (result) => {
-		const { source, destination } = result;
-
-		// dropped outside the list
-		if (!destination) {
-			return;
-		}
-
-		if (source.droppableId === destination.droppableId) {
-			const selected = reorder(this.getList(source.droppableId), source.index, destination.index);
-
-			let state = { selected };
-
-			if (source.droppableId === 'droppable') {
-				state = { ReasonData: selected };
-			}
-
-			this.setState(state);
-		} else {
-			const result = move(
-				this.getList(source.droppableId),
-				this.getList(destination.droppableId),
-				source,
-				destination
-			);
-
-			this.setState({
-				ReasonData: result.droppable,
-				selected: result.droppable2,
-			});
-		}
-	};
-
-	getList = (id) => this.state[ReasonList[id]];
-
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<DragDropContext onDragEnd={this.onDragEnd}>
-					<form>
-						<Form.Row>
-							<Col>
-								<label>Available Break/Lunch</label>
-								<Droppable droppableId="droppable">
-									{(provided, snapshot) => (
-										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
-											{this.state.ReasonData.map((item, index) => (
-												<Draggable
-													key={item.unavailable_code}
-													draggableId={item.unavailable_code}
-													index={index}
-												>
-													{(provided, snapshot) => (
-														<div
-															ref={provided.innerRef}
-															{...provided.draggableProps}
-															{...provided.dragHandleProps}
-															style={getItemStyle(
-																snapshot.isDragging,
-																provided.draggableProps.style
-															)}
-														>
-															{item.unavailable_name}
-														</div>
-													)}
-												</Draggable>
-											))}
-											{provided.placeholder}
-										</div>
-									)}
-								</Droppable>
-							</Col>
-							<Col>
-								<label>Selected Break/Lunch</label>
-								<Droppable droppableId="droppable2">
-									{(provided, snapshot) => (
-										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
-											{this.state.selected.map((item, index) => (
-												<Draggable
-													key={item.unavailable_code}
-													draggableId={item.unavailable_code}
-													index={index}
-												>
-													{(provided, snapshot) => (
-														<div
-															ref={provided.innerRef}
-															{...provided.draggableProps}
-															{...provided.dragHandleProps}
-															style={getItemStyle(
-																snapshot.isDragging,
-																provided.draggableProps.style
-															)}
-														>
-															{item.unavailable_name}
-														</div>
-													)}
-												</Draggable>
-											))}
-											{provided.placeholder}
-										</div>
-									)}
-								</Droppable>
-							</Col>
-						</Form.Row>
-					</form>
-					<button className="button-next" onClick={(e) => this.assingBreaks(e)}>{"End Steps>>"}</button>
-
-					<button className="button-back" onClick={(e) => this.props.back(e)}>
-						{'<<Previous Step'}
+				<Form>
+					<Form.Group as={Row}>
+						<Col sm={12}>
+							<ConfigurationTabGeneric
+								availableListTabs={this.state.availableListTabs}
+								selectedListTabs={this.state.selectedListTabs}
+								selectedAction={this.state.selectedAction}
+								onUpdateTabsImported={this.updateTabsImported}
+								importAllTabs={this.importAllTabs}
+								resetTabs={this.resetTabs}
+								height={'350px'}
+								t={t}
+								genericTitle="Breaks"
+							/>
+						</Col>
+					</Form.Group>
+					<button className="button-next" onClick={(e) => this.assingBreaks(e)}>
+						{t('End Steps') + '>>'}
 					</button>
-				</DragDropContext>
+				</Form>
 			</div>
 		);
 	}
