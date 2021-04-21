@@ -1,6 +1,6 @@
 ﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
 
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
+ALTER    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@asset_id					as INT,
 	@asset_code					as NVARCHAR(100),			
 	@asset_name					as NVARCHAR(200),	
@@ -33,13 +33,14 @@ DECLARE
 @escalation_id	INT
 
         SELECT TOP 1 
-				@Username = Username,
-				@First_Name = First_Name,
-				@Last_Name = Last_Name,
-				@role_id = role_id,
-				@escalation_id = escalation_id
-        FROM [dbo].[TFDUsers]
-        WHERE Badge = @badge
+				@Username = TFD.Username,
+				@First_Name = TFD.First_Name,
+				@Last_Name = TFD.Last_Name,
+				@role_id = TFD.role_id,
+				@escalation_id = TFD.escalation_id
+        FROM [dbo].[TFDUsers] TFD
+		INNER JOIN dbo.Asset A ON TFD.Site = A.asset_id AND A.asset_code = @site_code
+        WHERE TFD.Badge = @badge;
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 	WHERE
@@ -117,41 +118,36 @@ ELSE
 			   ,@is_multiple
 			   ,@is_dynamic
 			   ,@value_stream)
-
+			   SET @Site = SCOPE_IDENTITY();
 		IF (@asset_level = 'Site')
 		BEGIN
-			SELECT TOP 1 
-				@Site = asset_id
-			FROM [dbo].[Asset]
-			WHERE asset_level = 'Site'
-			ORDER BY entered_on DESC
 
 		INSERT INTO [dbo].[TFDUsers]
-		(Badge
-		,Username
-		,First_Name
-		,Last_Name
-		,Site
-		,role_id
-		,status
-		,entered_by
-		,entered_on
-		,last_modified_by
-		,last_modified_on
-		,escalation_id)
+			(Badge
+			,Username
+			,First_Name
+			,Last_Name
+			,Site
+			,role_id
+			,status
+			,entered_by
+			,entered_on
+			,last_modified_by
+			,last_modified_on
+			,escalation_id)
 		VALUES
-		(@badge
-		,@Username
-		,@First_Name
-		,@Last_Name
-		,@Site
-		,@role_id
-		,'Active'
-		,'Administration Tool'
-		,GETDATE()
-		,'Administration Tool'
-		,GETDATE()
-		,@escalation_id)
+			(@badge
+			,@Username
+			,@First_Name
+			,@Last_Name
+			,@Site
+			,@role_id
+			,'Active'
+			,'Administration Tool'
+			,GETDATE()
+			,'Administration Tool'
+			,GETDATE()
+			,@escalation_id)
 		END
 
 	END

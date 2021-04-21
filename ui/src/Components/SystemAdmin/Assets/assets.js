@@ -90,7 +90,7 @@ class Assets extends Component {
 					onClickFilter={this.applyFilter}
 					view={'Asset'}
 					t={t}
-				></Filter>
+				/>
 				{this.state.addAsset === true && (
 					<AddAsset
 						t={t}
@@ -121,6 +121,10 @@ class Assets extends Component {
 							<th>{t('Automation Level')}</th>
 							<th>{t('Target Percent of Ideal')}</th>
 							<th>{t('Include in Escalation')}</th>
+							<th>{t('Workcell')}</th>
+							<th>{t('Value Stream')}</th>
+							<th>{t('Is Multiple')}</th>
+							<th>{t('Is Dynamic')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
 						</tr>
@@ -135,7 +139,11 @@ class Assets extends Component {
 								<td>{asset.parent_asset_code}</td>
 								<td>{asset.automation_level}</td>
 								<td>{asset.target_percent_of_ideal}</td>
-								<td>{asset.include_in_escalation}</td>
+								<td>{asset.include_in_escalation ? 'True' : 'False'}</td>
+								<td>{asset.grouping1}</td>
+								<td>{asset.value_stream}</td>
+								<td>{asset.is_multiple ? 'True' : 'False'}</td>
+								<td>{asset.is_dynamic ? 'True' : 'False'}</td>
 								<td>{asset.status}</td>
 								<td>
 									<img

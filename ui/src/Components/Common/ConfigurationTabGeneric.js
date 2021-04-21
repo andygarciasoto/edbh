@@ -75,9 +75,9 @@ class ConfigurationTabGeneric extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <label>{this.props.t('All ' + this.props.genericTitle) + ': '}
+                {/* <label>{this.props.t('All ' + this.props.genericTitle) + ': '}
                     <input id="allTabs" type="checkbox" checked={this.state.allTabsCheckBox} onChange={this.handleInputChange} style={{ marginLeft: "5px" }} />
-                </label>
+                </label> */}
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <br />
                     <Row>

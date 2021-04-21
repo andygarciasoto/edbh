@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UserActions from '../../../redux/actions/userActions';
-import { Modal } from 'react-bootstrap';
+import { Modal, Container, Row, Col } from 'react-bootstrap';
+import FontAwesome from 'react-fontawesome';
 import '../../../sass/SystemAdmin.scss';
 import Step1 from './step1';
 import Step2 from './step2';
@@ -19,9 +20,9 @@ class AddAsset extends Component {
 			step3: false,
 			step4: false,
 			showForm: true,
-			showFooter: false,
-			showConfirm: true,
-			asset_code: '',
+			showFooter: true,
+			showConfirm: false,
+			asset_code: ''
 		};
 	}
 
@@ -101,21 +102,17 @@ class AddAsset extends Component {
 	};
 
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
 				<Modal
 					show={this.state.showForm}
 					onHide={this.handleClose}
-					contentClassName={
-						this.state.step3 === true
-							? 'modal-reason reasons'
-							: this.state.step4 === true
-							? 'modal-reason reasons'
-							: 'modal-reason'
-					}
+					className='asset-modal'
+					centered
 				>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Asset</Modal.Title>
+						<Modal.Title>{t('Add Asset')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						{this.state.step1 === true && (
@@ -126,6 +123,7 @@ class AddAsset extends Component {
 								getCode={this.getAsset_code}
 								levelSite={this.state.showFooter}
 								closeModal={this.handleClose}
+								t={t}
 							/>
 						)}
 						{this.state.step2 === true && (
@@ -134,6 +132,7 @@ class AddAsset extends Component {
 								back={(e) => this.assetSteps(1, e)}
 								user={this.props.user}
 								asset_code={this.state.asset_code}
+								t={t}
 							/>
 						)}
 						{this.state.step3 === true && (
@@ -142,6 +141,7 @@ class AddAsset extends Component {
 								nextStep={(e) => this.assetSteps(4, e)}
 								back={(e) => this.assetSteps(2, e)}
 								asset_code={this.state.asset_code}
+								t={t}
 							/>
 						)}
 						{this.state.step4 === true && (
@@ -149,41 +149,76 @@ class AddAsset extends Component {
 								user={this.props.user}
 								back={(e) => this.assetSteps(3, e)}
 								asset_code={this.state.asset_code}
+								t={t}
 							/>
 						)}
 					</Modal.Body>
 					{this.state.showFooter === true && (
 						<Modal.Footer>
-							<div className="step-bar">
-								<div className={this.state.step1 === true ? 'step1 active' : 'step1'}>
-									<p className="step-number">1</p>
-									<p className="step-name">Step 1</p>
-									<p className="step-description">Define Asset</p>
-									<i className="arrow right step-1"></i>
-								</div>
-								<div className={this.state.step2 === true ? 'step2 active' : 'step2'}>
-									<p className="step-number-2">2</p>
-									<p className="step-name-2">Step 2</p>
-									<p className="step-description-2">Define Tag</p>
-									<i className="arrow right step-2"></i>
-								</div>
-								<div className={this.state.step3 === true ? 'step3 active' : 'step3'}>
-									<p className="step-number-3">3</p>
-									<p className="step-name-3">Step 3</p>
-									<p className="step-description-3">Define Reason</p>
-									<i className="arrow right step-3"></i>
-								</div>
-								<div className={this.state.step4 === true ? 'step4 active' : 'step4'}>
-									<p className="step-number-4">4</p>
-									<p className="step-name-4">Step 4</p>
-									<p className="step-description-4">Define Break</p>
-									<i className="arrow right step-4"></i>
-								</div>
-							</div>
+							<Container>
+								<Row className='barStepsAsset'>
+									<Col md={3} className={this.state.step1 ? 'active' : ''}>
+										<Row>
+											<Col md={1}>
+												<p className='numberPart'>1</p>
+											</Col>
+											<Col md={7}>
+												<p>{t('Step')} 1</p>
+												<p>{t('Define Asset')}</p>
+											</Col>
+											<Col md={2}>
+												<FontAwesome name="chevron-right fa-3x" />
+											</Col>
+										</Row>
+									</Col>
+									<Col md={3} className={this.state.step2 ? 'active' : ''}>
+										<Row>
+											<Col md={1}>
+												<p className='numberPart'>2</p>
+											</Col>
+											<Col md={7}>
+												<p>{t('Step')} 2</p>
+												<p>{t('Define Tag')}</p>
+											</Col>
+											<Col md={2}>
+												<FontAwesome name="chevron-right fa-3x" />
+											</Col>
+										</Row>
+									</Col>
+									<Col md={3} className={this.state.step3 ? 'active' : ''}>
+										<Row>
+											<Col md={1}>
+												<p className='numberPart'>3</p>
+											</Col>
+											<Col md={7}>
+												<p>{t('Step')} 3</p>
+												<p>{t('Assign Reason')}</p>
+											</Col>
+											<Col md={2}>
+												<FontAwesome name="chevron-right fa-3x" />
+											</Col>
+										</Row>
+									</Col>
+									<Col md={3} className={this.state.step4 ? 'active' : ''}>
+										<Row>
+											<Col md={1}>
+												<p className='numberPart'>4</p>
+											</Col>
+											<Col md={7}>
+												<p>{t('Step')} 4</p>
+												<p>{t('Assign Break')}</p>
+											</Col>
+											<Col md={2}>
+												<FontAwesome name="chevron-right fa-3x" />
+											</Col>
+										</Row>
+									</Col>
+								</Row>
+							</Container>
 						</Modal.Footer>
 					)}
 				</Modal>
-			</div>
+			</div >
 		);
 	}
 }
