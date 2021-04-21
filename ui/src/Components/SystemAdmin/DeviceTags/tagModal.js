@@ -1,21 +1,23 @@
-import Axios from "axios";
+import Axios from 'axios';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UOMActions from '../../../redux/actions/uomActions';
-import { API } from "../../../Utils/Constants";
+import { API } from '../../../Utils/Constants';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
 import { validateTagForm } from '../../../Utils/FormValidations';
 import '../../../sass/SystemAdmin.scss';
 
-class AddDevice extends Component {
+class TagModal extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			tag: props.tag,
+			code: '',
 			status: 'Active',
 			name: '',
-			uom_code: 0,
+			uom_code: '',
 			description: '',
 			rollover: 999999,
 			data_type: 'Integer',
@@ -33,17 +35,40 @@ class AddDevice extends Component {
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return Promise.all([actions.getUOM(this.props.user.site), actions.getAssets(this.props.user.site)]).then(
-			(response) => {
-				const assetOption = _.filter(response[1], { asset_level: 'Cell' });
-				this.setState({
-					uomData: response[0],
-					uom_code: response[0][0].UOM_code,
-					sites: assetOption,
-					asset: assetOption[0].asset_id
-				});
-			}
-		);
+		return Promise.all([
+			actions.getUOM(this.props.user.site),
+			actions.getAssets(this.props.user.site)
+		]).then((response) => {
+			const assetOption = _.filter(response[1], { asset_level: 'Cell' });
+			this.setState({
+				uomData: response[0],
+				uom_code: response[0][0].UOM_code,
+				sites: assetOption,
+				asset: assetOption[0].asset_id
+			});
+		});
+	}
+
+	static getDerivedStateFromProps(nextProps, prevState) {
+		if (!_.isEqual(nextProps.tag, prevState.tag)) {
+			const name = nextProps.action === 'Edit' ? nextProps.tag.tag_name : '';
+			const tag_id = nextProps.action === 'Edit' ? nextProps.tag.tag_id : 0;
+			return {
+				tag: nextProps.tag,
+				tag_id: tag_id,
+				name: name,
+				asset: nextProps.tag.asset_id || prevState.asset_id,
+				code: nextProps.tag.tag_code || '',
+				status: nextProps.tag.status || 'Active',
+				uom_code: nextProps.tag.UOM_code || prevState.uom_code,
+				description: nextProps.tag.tag_description || '',
+				rollover: nextProps.tag.rollover_point || 999999,
+				data_type: nextProps.tag.datatype || 'Integer',
+				max_change: nextProps.tag.max_change || 10,
+				validation: {}
+			};
+		}
+		return null;
 	}
 
 	handleChange = (event) => {
@@ -58,13 +83,14 @@ class AddDevice extends Component {
 
 	createTag = (e) => {
 		e.preventDefault();
-		const { status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
+		const { tag_id, code, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
 
 		let url = `${API}/insert_tag`;
 		const validation = validateTagForm(this.state);
 		if (_.isEmpty(validation)) {
 			Axios.put(url, {
-				tag_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
+				tag_id: tag_id,
+				tag_code: this.props.action === 'Edit' ? code : `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				tag_name: name,
 				tag_description: description,
 				datatype: data_type,
@@ -78,10 +104,11 @@ class AddDevice extends Component {
 			}).then(
 				() => {
 					this.props.Refresh();
+					this.props.handleClose();
 					this.setState({
-						show: true
+						show: true,
+						validation: {}
 					});
-					this.handleClose();
 				},
 				(error) => {
 					console.log(error);
@@ -110,16 +137,8 @@ class AddDevice extends Component {
 		);
 	}
 
-	handleClose = () => {
-		this.setState({ showForm: false });
-	};
-
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
-
-	closeSuccessModal = () => {
-		this.setState({ show: false });
+	closeModalMessage = () => {
+		this.setState({ show: false, modalError: false });
 	};
 
 	render() {
@@ -127,9 +146,9 @@ class AddDevice extends Component {
 		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose} className='general-modal' centered>
+				<Modal show={this.props.isOpen} onHide={this.props.handleClose} className="general-modal" centered>
 					<Modal.Header closeButton>
-						<Modal.Title>{t('Add Tag')}</Modal.Title>
+						<Modal.Title>{t(this.props.action + ' Tag')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Form>
@@ -237,29 +256,29 @@ class AddDevice extends Component {
 						<Button variant="Primary" onClick={(e) => this.createTag(e)}>
 							{t('Confirm')}
 						</Button>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.props.handleClose}>
 							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tag has been added</Modal.Body>
+					<Modal.Body>Tag has been copied</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeSuccessModal}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+				<Modal show={this.state.modalError} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Warning</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>All inputs must be filled</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
@@ -275,4 +294,4 @@ export const mapDispatch = (dispatch) => {
 	};
 };
 
-export default connect(null, mapDispatch)(AddDevice);
+export default connect(null, mapDispatch)(TagModal);

@@ -72,7 +72,7 @@ export class AuthService {
             if (machine) {
                 let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                 assetInformation = assetInformation[0];
-                if (assetInformation.is_multiple) {
+                if ((assetInformation.is_multiple || assetInformation.is_dynamic) && role === 'Operator') {
                     this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
                         'Check-In', 'Active', responseUser.site, 0, 0);
                 }
@@ -178,7 +178,7 @@ export class AuthService {
                 if (machine) {
                     let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                     assetInformation = assetInformation[0];
-                    if (assetInformation.is_multiple && role === 'Operator') {
+                    if ((assetInformation.is_multiple || assetInformation.is_dynamic) && role === 'Operator') {
                         this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
                             'Check-In', 'Active', responseUser.site, 0, 0);
                     }

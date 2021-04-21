@@ -4,13 +4,6 @@
 	margin: 30px 30px;
 }
 
-.flex-modules {
-	width    : auto;
-	height   : auto;
-	max-width: 145px;
-	min-width: 145px;
-}
-
 .validation {
 	color: $color-red;
 }
@@ -24,7 +17,7 @@
 }
 
 .asset-modal .modal-dialog {
-	max-width : 60%;
+	max-width: 60%;
 }
 
 .asset-modal .modal-content {
@@ -37,6 +30,17 @@
 
 .asset-modal .col-sm-4 {
 	padding-left: 1%;
+}
+
+.fa-edit {
+	color : $color-green;
+	cursor: pointer;
+}
+
+.fa-copy {
+	color      : $color-blue;
+	margin-left: 10%;
+	cursor     : pointer;
 }
 
 .barStepsAsset {
@@ -732,81 +736,176 @@
 	}
 }
 
+@media screen and (min-width: 1281px) {
+	.flex-modules {
+		width    : auto;
+		height   : auto;
+		max-width: 294px;
+		min-width: 294px;
+	}
+
+	.card-component {
+		border-style : groove;
+		border-radius: 5px;
+		width        : 16%;
+		cursor       : pointer;
+
+		&.common {
+			margin-left: 390px;
+			margin-top : -177px;
+		}
+
+		&.assets {
+			margin-left: 780px;
+			margin-top : -178px;
+		}
+
+		&.reason {
+			margin-left: 1170px;
+			margin-top : -177px;
+		}
+
+		&.device {
+			margin-left: 1550px;
+			margin-top : -178px;
+		}
+
+		&.shifts {
+			margin-top: 50px;
+		}
+
+		&.uom {
+			margin-left: 390px;
+			margin-top : -177px;
+		}
+
+		&.break {
+			margin-left: 780px;
+			margin-top : -178px;
+		}
+
+		&.display {
+			margin-left: 1170px;
+			margin-top : -177px;
+		}
+
+		&.work {
+			margin-left   : 1550px;
+			margin-top    : -178px;
+			padding-bottom: 40px;
+		}
+
+		//   :hover {
+		//     background-color: #aaaaaa;
+		//   }
+
+		.icon {
+			width      : 20%;
+			margin-left: 117px;
+			margin-top : 15px;
+			height     : auto;
+		}
+
+		.p-number {
+			color     : #aaaaaa;
+			text-align: center;
+			margin-top: 10px;
+			font-size : 20px;
+		}
+
+		.p-name {
+			color     : #aaaaaa;
+			text-align: center;
+			margin-top: -10px;
+			font-size : 20px;
+		}
+	}
+}
+
 //STYLES FOR CARD
 
-.card-component {
-	border-style : groove;
-	border-radius: 5px;
-	width        : 12%;
-	cursor       : pointer;
-
-	&.common {
-		margin-left: 250px;
-		margin-top : -143px;
+@media (max-width: 1280px) {
+	.flex-modules {
+		width    : auto;
+		height   : auto;
+		max-width: 145px;
+		min-width: 145px;
 	}
 
-	&.assets {
-		margin-left: 500px;
-		margin-top : -142px;
-	}
+	.card-component {
+		border-style : groove;
+		border-radius: 5px;
+		width        : 12%;
+		cursor       : pointer;
 
-	&.reason {
-		margin-left: 750px;
-		margin-top : -143px;
-	}
+		&.common {
+			margin-left: 250px;
+			margin-top : -143px;
+		}
 
-	&.device {
-		margin-left: 1000px;
-		margin-top : -142px;
-	}
+		&.assets {
+			margin-left: 500px;
+			margin-top : -142px;
+		}
 
-	&.shifts {
-		margin-top: 50px;
-	}
+		&.reason {
+			margin-left: 750px;
+			margin-top : -143px;
+		}
 
-	&.uom {
-		margin-left: 250px;
-		margin-top : -143px;
-	}
+		&.device {
+			margin-left: 1000px;
+			margin-top : -142px;
+		}
 
-	&.break {
-		margin-left: 500px;
-		margin-top : -142px;
-	}
+		&.shifts {
+			margin-top: 50px;
+		}
 
-	&.display {
-		margin-left: 750px;
-		margin-top : -143px;
-	}
+		&.uom {
+			margin-left: 250px;
+			margin-top : -143px;
+		}
 
-	&.work {
-		margin-left   : 1000px;
-		margin-top    : -142px;
-		padding-bottom: 10px;
-	}
+		&.break {
+			margin-left: 500px;
+			margin-top : -142px;
+		}
 
-	//   :hover {
-	//     background-color: #aaaaaa;
-	//   }
+		&.display {
+			margin-left: 750px;
+			margin-top : -143px;
+		}
 
-	.icon {
-		width      : 20%;
-		margin-left: 56px;
-		margin-top : 15px;
-		height     : auto;
-	}
+		&.work {
+			margin-left   : 1000px;
+			margin-top    : -142px;
+			padding-bottom: 10px;
+		}
 
-	.p-number {
-		color     : #aaaaaa;
-		text-align: center;
-		margin-top: 10px;
-		font-size : 20px;
-	}
+		//   :hover {
+		//     background-color: #aaaaaa;
+		//   }
 
-	.p-name {
-		color     : #aaaaaa;
-		text-align: center;
-		margin-top: -10px;
-		font-size : 20px;
+		.icon {
+			width      : 20%;
+			margin-left: 56px;
+			margin-top : 15px;
+			height     : auto;
+		}
+
+		.p-number {
+			color     : #aaaaaa;
+			text-align: center;
+			margin-top: 10px;
+			font-size : 20px;
+		}
+
+		.p-name {
+			color     : #aaaaaa;
+			text-align: center;
+			margin-top: -10px;
+			font-size : 20px;
+		}
 	}
 }
