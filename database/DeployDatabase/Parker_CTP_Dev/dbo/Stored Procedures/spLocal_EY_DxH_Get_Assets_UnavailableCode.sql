@@ -66,7 +66,8 @@ AS
             A.[grouping5],
             U.[status],
             A.[target_percent_of_ideal],
-            A.[is_multiple]
+            A.[is_multiple],
+            A.[is_dynamic]
         FROM [dbo].[Unavailable] AS U
             INNER JOIN [dbo].[Asset] AS A ON U.asset_id = A.asset_id
             LEFT JOIN [dbo].[Workcell] AS W ON A.grouping1 = W.workcell_id 

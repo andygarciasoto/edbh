@@ -68,7 +68,8 @@ BEGIN
 		grouping3,
 		grouping4,
 		grouping5,
-		is_multiple
+		is_multiple,
+		is_dynamic
 	FROM dbo.Asset WITH (nolock)
 	WHERE status = 'Active'
 		AND asset_code = @Asset_Code

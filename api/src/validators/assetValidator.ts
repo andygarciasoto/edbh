@@ -7,5 +7,9 @@ export function getAssetParameters(params: any): any[] {
         parameters.push('A2.asset_id = ' + params.site_id);
     if (params.status && params.status !== 'All')
         parameters.push(`A.status = '${params.status}'`);
+    if (params.asset_level && params.asset_level !== 'All')
+        parameters.push(`A.asset_level = '${params.asset_level}'`);
+    if (params.automation_level && params.automation_level !== 'All')
+        parameters.push(`A.automation_level = '${params.automation_level}'`);
     return parameters;
 }

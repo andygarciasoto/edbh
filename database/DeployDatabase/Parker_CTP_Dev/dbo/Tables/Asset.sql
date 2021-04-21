@@ -21,6 +21,7 @@
     [last_modified_on]        DATETIME       NOT NULL CONSTRAINT [DF_Asset_last_modified_On] DEFAULT (getdate()),
     [target_percent_of_ideal] FLOAT (53)     NULL,
     [is_multiple]             BIT NOT NULL CONSTRAINT [DF_Asset_is_multiple] DEFAULT (0),
+    [is_dynamic] BIT NOT NULL DEFAULT (0), 
     CONSTRAINT [PK_Asset_Asset_Id] PRIMARY KEY CLUSTERED ([asset_id] ASC),
     CONSTRAINT [UNC_Asset_Asset_Code] UNIQUE NONCLUSTERED ([asset_code] ASC)
 );

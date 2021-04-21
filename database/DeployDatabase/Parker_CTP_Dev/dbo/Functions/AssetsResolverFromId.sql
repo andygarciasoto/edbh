@@ -60,7 +60,7 @@ RETURN
   (          WITH CTE_ASSET_HIERARCHY 
              AS(
                     SELECT       0 AS Level,
-                                 A1.asset_id							AS asset_id,                   
+                                 A1.asset_id				  AS asset_id,                   
                                  CAST(0 AS INT)                         AS parent_id,                       
                                  A1.asset_id                            AS requested_asset_id,
                                  A1.asset_code                          AS asset_code

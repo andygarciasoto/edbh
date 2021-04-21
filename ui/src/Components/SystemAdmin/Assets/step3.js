@@ -4,43 +4,76 @@ import { bindActionCreators } from 'redux';
 import { genericRequest } from '../../../Utils/Requests';
 import { API } from '../../../Utils/Constants';
 import * as ReasonActions from '../../../redux/actions/reasonActions';
-import { Form, Col } from 'react-bootstrap';
-import { reorder, move, getItemStyle, ReasonList, getListStyleDrop } from '../../../Utils/ConfigurationTabHelper';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Form, Row, Col } from 'react-bootstrap';
+import ConfigurationTabGeneric from '../../Common/ConfigurationTabGeneric';
+import _ from 'lodash';
 
 export class Step3 extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			ReasonData: [],
-			addReason: false,
-			editReason: false,
-			shift_id: 0,
-			selected: [],
+			type: 'Downtime',
+			completeListTabs: [],
+			availableListTabs: [],
+			selectedListTabs: []
 		};
 	}
 
 	componentDidMount() {
 		const { actions } = this.props;
+		const params = {
+			site_id: this.props.user.site,
+			status: 'Active'
+		};
 
-		return actions.getReasonsBySite(this.props.user.site).then((response) => {
+		return actions.getReasonByFilter(params).then((response) => {
+			const ReasonData = response;
+			const completeListTabs = _.map(ReasonData, reason => {
+				reason.id = reason.dtreason_code;
+				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
+				return reason;
+			});
+			const availableListTabs = _.filter(completeListTabs, { type: this.state.type });
 			this.setState({
-				ReasonData: response,
+				ReasonData,
+				availableListTabs,
+				completeListTabs
 			});
 		});
 	}
 
+	updateTabsImported = (availableListTabs, selectedListTabs) => {
+		this.setState({ availableListTabs, selectedListTabs });
+	}
+
+	importAllTabs = () => {
+		this.updateTabsImported([], this.state.completeListTabs);
+	};
+
+	resetTabs = () => {
+		this.updateTabsImported(this.state.completeListTabs, []);
+	}
+
+	handleChangeType = (event) => {
+		const availableListTabs = _.differenceWith(_.filter(this.state.completeListTabs, { type: event.target.value }), this.state.selectedListTabs, _.isEqual);
+		this.setState({
+			[event.target.name]: event.target.value,
+			availableListTabs
+		});
+	};
+
 	assingReasons = (e) => {
 		e.preventDefault();
-		const { selected } = this.state;
+		const { selectedListTabs } = this.state;
 
-		const newArray = this.state.selected.map((item) => {
+		const newArray = _.map(selectedListTabs, (item) => {
 			item.asset_code = this.props.asset_code;
 			item.site_code = this.props.user.site_code;
 			return item;
 		});
 
-		if (selected !== []) {
+		if (selectedListTabs !== []) {
 			genericRequest('put', API, '/dragndrop', null, null, {
 				site_id: this.props.user.site,
 				table: 'DTReason',
@@ -63,118 +96,47 @@ export class Step3 extends Component {
 		}
 	};
 
-	onDragEnd = (result) => {
-		const { source, destination } = result;
-
-		// dropped outside the list
-		if (!destination) {
-			return;
-		}
-
-		if (source.droppableId === destination.droppableId) {
-			const selected = reorder(this.getList(source.droppableId), source.index, destination.index);
-
-			let state = { selected };
-
-			if (source.droppableId === 'droppable') {
-				state = { ReasonData: selected };
-			}
-
-			this.setState(state);
-		} else {
-			const result = move(
-				this.getList(source.droppableId),
-				this.getList(destination.droppableId),
-				source,
-				destination
-			);
-
-			this.setState({
-				ReasonData: result.droppable,
-				selected: result.droppable2,
-			});
-		}
-	};
-
-	getList = (id) => this.state[ReasonList[id]];
-
 	render() {
+		const t = this.props.t;
 		return (
 			<div>
-				<DragDropContext onDragEnd={this.onDragEnd}>
-					<form>
-						<Form.Row>
-							<Col>
-								<label>Available Reasons</label>
-								<Droppable droppableId="droppable">
-									{(provided, snapshot) => (
-										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
-											{this.state.ReasonData.map((item, index) => (
-												<Draggable
-													key={item.dtreason_code}
-													draggableId={item.dtreason_code}
-													index={index}
-												>
-													{(provided, snapshot) => (
-														<div
-															ref={provided.innerRef}
-															{...provided.draggableProps}
-															{...provided.dragHandleProps}
-															style={getItemStyle(
-																snapshot.isDragging,
-																provided.draggableProps.style
-															)}
-														>
-															{item.dtreason_name}
-														</div>
-													)}
-												</Draggable>
-											))}
-											{provided.placeholder}
-										</div>
-									)}
-								</Droppable>
-							</Col>
-							<Col>
-								<label>Selected Reasons</label>
-								<Droppable droppableId="droppable2">
-									{(provided, snapshot) => (
-										<div ref={provided.innerRef} style={getListStyleDrop(snapshot.isDraggingOver)}>
-											{this.state.selected.map((item, index) => (
-												<Draggable
-													key={item.dtreason_code}
-													draggableId={item.dtreason_code}
-													index={index}
-												>
-													{(provided, snapshot) => (
-														<div
-															ref={provided.innerRef}
-															{...provided.draggableProps}
-															{...provided.dragHandleProps}
-															style={getItemStyle(
-																snapshot.isDragging,
-																provided.draggableProps.style
-															)}
-														>
-															{item.dtreason_name}
-														</div>
-													)}
-												</Draggable>
-											))}
-											{provided.placeholder}
-										</div>
-									)}
-								</Droppable>
-							</Col>
-						</Form.Row>
-					</form>
+				<Form>
+					<Form.Group as={Row}>
+						<Form.Label column sm={1}>{t('Type')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								as="select"
+								name="type"
+								onChange={this.handleChangeType}
+								value={this.state.type}
+							>
+								<option value="Downtime">Downtime</option>
+								<option value="Scrap">Scrap</option>
+							</Form.Control>
+						</Col>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Col sm={12}>
+							<ConfigurationTabGeneric
+								availableListTabs={this.state.availableListTabs}
+								selectedListTabs={this.state.selectedListTabs}
+								selectedAction={this.state.selectedAction}
+								onUpdateTabsImported={this.updateTabsImported}
+								importAllTabs={this.importAllTabs}
+								resetTabs={this.resetTabs}
+								height={'350px'}
+								t={t}
+								genericTitle='Reasons'
+							/>
+						</Col>
+					</Form.Group>
 					<button className="button-next" onClick={(e) => this.assingReasons(e)}>
-						{'Next Step>>'}
+						{t('Next Step') + '>>'}
 					</button>
 					<button className="button-back" onClick={(e) => this.props.back(e)}>
-						{'<<Previous Step'}
+						{'<<' + t('Previous Step')}
 					</button>
-				</DragDropContext>
+				</Form>
 			</div>
 		);
 	}

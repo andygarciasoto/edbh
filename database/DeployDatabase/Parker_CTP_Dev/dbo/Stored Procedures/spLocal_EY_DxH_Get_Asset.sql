@@ -76,6 +76,7 @@ AS
                A.value_stream, 
                A.automation_level, 
 			   A.is_multiple,
+               A.is_dynamic,
                A.grouping1 as 'workcell_id',
 			   W.workcell_name
         FROM dbo.Asset A WITH(NOLOCK)

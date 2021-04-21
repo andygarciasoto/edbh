@@ -320,6 +320,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/tag_by_asset', 'get', async (req: Request, res: Response) => {
             await tagService.getTagByAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_escalation', 'put', async (req: Request, res: Response) => {
+            await escalationService.putEscalation(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

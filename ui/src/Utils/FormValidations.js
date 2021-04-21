@@ -149,6 +149,17 @@ function generalValidationForm(state) {
     return validation;
 }
 
+function validateAssetForm(state) {
+    let validation = {};
+    if (state.name.trim() === '') {
+        validation.name = 'Name is required';
+    }
+    if (state.defaultPercent === '' || parseInt(state.defaultPercent, 10) < 0) {
+        validation.defaultPercent = 'Target Percentage of Ideal needs to be equals or greater than 0';
+    }
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
@@ -158,5 +169,6 @@ export {
     validateBreakForm,
     validateTagForm,
     validateReasonForm,
-    generalValidationForm
+    generalValidationForm,
+    validateAssetForm
 }

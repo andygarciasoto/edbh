@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../redux/actions/displayActions';
 import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import { API } from '../../../Utils/Constants';
-
-import { Form, Col } from 'react-bootstrap';
+import { validateAssetForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 
 export class Step1 extends Component {
 	constructor(props) {
@@ -16,7 +16,8 @@ export class Step1 extends Component {
 			automation_level: 'Automated',
 			name: '',
 			description: '',
-			workcell: 0,
+			workcell: '',
+			valueStream: '',
 			level: 'Cell',
 			site_code: '',
 			defaultPercent: 0,
@@ -24,11 +25,13 @@ export class Step1 extends Component {
 			escalation: false,
 			status: 'Active',
 			multiple: false,
+			dynamic: false,
 			displayData: [],
 			workcellData: [],
 			parentData: [],
 			show: false,
 			modalError: false,
+			validation: {}
 		};
 	}
 
@@ -70,11 +73,12 @@ export class Step1 extends Component {
 			actions.getWorkcells(this.props.user.site),
 			actions.getAssetsLevel(this.props.user.site),
 		]).then((response) => {
+			const workcellData = response[0];
+			const parentData = _.filter(response[1], { asset_level: 'Area' });
 			this.setState({
-				workcellData: response[0],
-				workcell: response[0][0].workcell_id,
-				parentData: response[1],
-				parent_code: response[1][0].asset_code,
+				workcellData,
+				parentData,
+				parent_code: parentData[0].asset_code,
 			});
 		});
 	};
@@ -82,7 +86,6 @@ export class Step1 extends Component {
 	createAsset = (e) => {
 		e.preventDefault();
 		const {
-			code,
 			automation_level,
 			name,
 			description,
@@ -90,6 +93,8 @@ export class Step1 extends Component {
 			level,
 			parent_code,
 			escalation,
+			valueStream,
+			dynamic,
 			status,
 			defaultPercent,
 			multiple,
@@ -97,7 +102,10 @@ export class Step1 extends Component {
 
 		const newPercent = defaultPercent / 100;
 
-		if (name !== '' && code !== '' && description !== '') {
+		const validation = validateAssetForm(this.state);
+
+		if (_.isEmpty(validation)) {
+			const code = `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '');
 			genericRequest('put', API, '/insert_asset', null, null, {
 				site_id: this.props.user.site,
 				asset_code: code,
@@ -108,7 +116,7 @@ export class Step1 extends Component {
 				parent_asset_code: level === 'Site' ? '' : level === 'Area' ? this.props.user.site_code : parent_code,
 				automation_level: automation_level,
 				include_in_escalation: escalation,
-				grouping1: parseInt(workcell, 10),
+				grouping1: workcell,
 				grouping2: '',
 				grouping3: '',
 				grouping4: '',
@@ -116,13 +124,16 @@ export class Step1 extends Component {
 				status: status,
 				target_percent_of_ideal: newPercent,
 				is_multiple: multiple,
+				value_stream: valueStream,
+				is_dynamic: dynamic,
+				badge: this.props.user.badge
 			}).then(
 				() => {
 					this.setState({
 						show: true,
 					});
-					this.props.levelSite === true && this.props.nextStep(e);
 					this.props.getCode(code);
+					this.props.levelSite === true && this.props.nextStep(e);
 				},
 				(error) => {
 					console.log(error);
@@ -130,7 +141,7 @@ export class Step1 extends Component {
 			);
 		} else {
 			this.setState({
-				modalError: true,
+				validation
 			});
 		}
 	};
@@ -168,178 +179,179 @@ export class Step1 extends Component {
 	}
 
 	render() {
+		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
-			<div>
-				<form>
-					<Form.Row>
-						<Col>
-							<label>
-								Code:
-								<input
-									className="input-tag-code asset-code"
-									type="text"
-									name="code"
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+			<div className='stepContent'>
+				<Form>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								type='text'
+								name="name"
+								autoComplete={'false'}
+								onChange={this.handleChange}
+								value={this.state.name}
+							/>
+							<Form.Text className='validation'>{validation.name}</Form.Text>
 						</Col>
-						<Col>
-							<label className="label-tag-category">
-								Automation Level:
-								<select
-									className="select-tag-category asset-automation"
-									name="automation_level"
-									onChange={this.handleChange}
-								>
-									<option value="Automated">Automated</option>
-									<option value="Partially_Manual_Scan_Order">Partially_Manual_Scan_Order</option>
-									<option value="Manual">Manual</option>
-								</select>
-							</label>
+						<Form.Label column sm={2}>{t('Automation Level')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='automation_level'
+								onChange={this.handleChange}
+								value={this.state.automation_level}
+							>
+								<option value='Automated'>Automated</option>
+								<option value='Manual'>Manual</option>
+								<option value='Partially_Automatic_Order'>Partially Automatic Order</option>
+								<option value='Partially_Manual_Automatic_Order'>Partially Manual Automatic Order</option>
+								<option value='Partially_Manual_Scan_Order'>Partially Manual Scan Order</option>
+							</Form.Control>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label>
-								Name:
-								<input
-									className="input-tag-name asset-name"
-									type="text"
-									name="name"
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Level')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='level'
+								onChange={this.handleChange}
+								value={this.state.level}
+							>
+								<option value='Site'>Site</option>
+								<option value='Area'>Area</option>
+								<option value='Cell'>Cell</option>
+							</Form.Control>
 						</Col>
-						<Col>
-							<label className="label-tag-category">
-								Status:
-								<select
-									className="select-tag-type asset-asset"
-									name="status"
-									onChange={this.handleChange}
-								>
-									<option value="Active">Active</option>
-									<option value="Inactive">Inactive</option>
-								</select>
-							</label>
+						<Form.Label column sm={2}>{t('Parent Code')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='parent_code'
+								onChange={this.handleChange}
+								value={this.state.parent_code}
+								disabled={this.state.level === 'Cell' ? false : true}
+							>
+								{this.state.parentData.map(this.renderParent)}
+							</Form.Control>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label>
-								Description:
-								<textarea
-									className="input-tag-description asset-description"
-									type="text"
-									name="description"
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Workcell')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name="workcell"
+								value={this.state.workcell}
+								onChange={this.handleChange}
+							>
+								<option value=''>None</option>
+								{this.state.workcellData.map(this.renderWorkcell)}
+							</Form.Control>
 						</Col>
-						<Col>
-							<label className="label-tag-category">
-								Workcell:
-								<select
-									className="select-tag-type asset-workcell"
-									name="workcell"
-									onChange={this.handleChange}
-								>
-									{this.state.workcellData.map(this.renderWorkcell)}
-								</select>
-							</label>
+						<Form.Label column sm={2}>{t('Target Percent of Ideal')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								type='number'
+								name="defaultPercent"
+								min={0}
+								max={100}
+								step={1}
+								value={this.state.defaultPercent}
+								onChange={this.handleChangePercentage}
+								autoComplete={'false'}
+							/>
+							<Form.Text className='validation'>{validation.defaultPercent}</Form.Text>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label>
-								Level:
-								<select
-									value={this.state.level}
-									className="select-tag-type asset-level"
-									name="level"
-									onChange={this.handleChange}
-								>
-									<option value="Site">Site</option>
-									<option value="Area">Area</option>
-									<option value="Cell">Cell</option>
-								</select>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Multi Sign-In Machine')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='multiple'
+								onChange={this.handleChange}
+								value={this.state.multiple}
+							>
+								<option value={true}>Yes</option>
+								<option value={false}>No</option>
+							</Form.Control>
 						</Col>
-						<Col>
-							<label className="label-tag-category">
-								Target Percent of Ideal:
-								<input
-									className="input-tag-aggregation asset-site-code"
-									type="number"
-									name="defaultPercent"
-									min={0}
-									max={100}
-									step={1}
-									value={this.state.defaultPercent}
-									onChange={this.handleChangePercentage}
-								/>
-							</label>
+						<Form.Label column sm={2}>{t('Include in Escalation')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='escalation'
+								onChange={this.handleChange}
+								value={this.state.escalation}
+							>
+								<option value={true}>Yes</option>
+								<option value={false}>No</option>
+							</Form.Control>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label>
-								Parent Code:
-								<select
-									className="select-tag-type asset-parent"
-									disabled={this.state.level === 'Cell' ? false : true}
-									name="parent_code"
-									onChange={this.handleChange}
-								>
-									{this.state.parentData.map(this.renderParent)}
-								</select>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Unscheduled Lunchs/Breaks')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as='select'
+								name='dynamic'
+								onChange={this.handleChange}
+								value={this.state.dynamic}
+							>
+								<option value={true}>Yes</option>
+								<option value={false}>No</option>
+							</Form.Control>
 						</Col>
-						<Col>
-							<label className="label-tag-category">
-								Include Escalation:
-								<select
-									className="input-tag-aggregation asset-escalation"
-									name="escalation"
-									onChange={this.handleChange}
-								>
-									<option value={false}>No</option>
-									<option value={true}>Yes</option>
-								</select>
-							</label>
+						<Form.Label column sm={2}>{t('Value Stream')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								type='text'
+								name='valueStream'
+								onChange={this.handleChange}
+								value={this.state.valueStream}
+							/>
 						</Col>
-					</Form.Row>
-					<Form.Row>
-						<Col>
-							<label className="label-tag-category">
-								Is Multiple:
-								<select
-									className="input-tag-aggregation asset-escalation"
-									name="multiple"
-									onChange={this.handleChange}
-								>
-									<option value={false}>No</option>
-									<option value={true}>Yes</option>
-								</select>
-							</label>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as="select"
+								name="status"
+								onChange={this.handleChange}
+								value={this.state.status}
+							>
+								<option value="Active">Active</option>
+								<option value="Inactive">Inactive</option>
+							</Form.Control>
 						</Col>
-					</Form.Row>
-				</form>
+						<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+						<Col sm={4}>
+							<Form.Control
+								as="textarea"
+								name="description"
+								onChange={this.handleChange}
+								value={this.state.description}
+								rows={3} />
+						</Col>
+					</Form.Group>
+				</Form>
 				{this.props.levelSite === false ? (
 					<div>
 						<Button variant="Primary" onClick={(e) => this.createAsset(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
-						<Button variant="secondary" onClick={this.props.handleClose}>
-							Close
+						<Button variant="secondary" onClick={this.props.closeModal}>
+							{t('Close')}
 						</Button>{' '}
 					</div>
 				) : (
 					<button className="button-next" onClick={(e) => this.createAsset(e)}>
-						{'Next Step>>'}
+						{t('Next Step') + '>>'}
 					</button>
 				)}
 				<Modal show={this.state.show} onHide={this.closeSuccessModal}>

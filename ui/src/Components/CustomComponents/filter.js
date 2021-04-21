@@ -27,6 +27,8 @@ const Filter = ({
   const [shiftFilter, setShift] = useState('All');
   const [categoryFilter, setCategory] = useState('All');
   const [typeFilter, setType] = useState('Downtime');
+  const [levelFilter, setLevel] = useState('Cell');
+  const [autLevelFilter, setAutLevel] = useState('All');
 
 
   return (
@@ -110,11 +112,11 @@ const Filter = ({
           <p className="p-status level">{t('Level')}:</p>
           <Form>
             <Form.Group controlId="role" className="drop-status">
-              <Form.Control as="select" size="sm" custom>
-                <option>Cell</option>
-                <option>Administrator</option>
-                <option>Operator</option>
-                <option>Supervisor</option>
+              <Form.Control as="select" size="sm" custom value={levelFilter} onChange={(e) => setLevel(e.target.value)}>
+                <option value='All'>All</option>
+                <option value='Site'>Site</option>
+                <option value='Area'>Area</option>
+                <option value='Cell'>Cell</option>
               </Form.Control>
             </Form.Group>
           </Form>
@@ -124,12 +126,14 @@ const Filter = ({
         <div>
           <p className="p-status automated">{t('Automated Level')}:</p>
           <Form>
-            <Form.Group controlId="role" className="drop-status">
-              <Form.Control as="select" size="sm" custom>
-                <option>All</option>
-                <option>Administrator</option>
-                <option>Operator</option>
-                <option>Supervisor</option>
+            <Form.Group controlId="role" className="drop-autLevel">
+              <Form.Control as="select" size="sm" custom value={autLevelFilter} onChange={(e) => setAutLevel(e.target.value)}>
+                <option value='All'>All</option>
+                <option value='Automated'>Automated</option>
+                <option value='Manual'>Manual</option>
+                <option value='Partially_Automatic_Order'>Partially Automatic Order</option>
+                <option value='Partially_Manual_Automatic_Order'>Partially Manual Automatic Order</option>
+                <option value='Partially_Manual_Scan_Order'>Partially Manual Scan Order</option>
               </Form.Control>
             </Form.Group>
           </Form>
@@ -165,6 +169,8 @@ const Filter = ({
             onClickFilter(statusFilter, shiftFilter);
           if (view === 'Reason')
             onClickFilter(statusFilter, categoryFilter, typeFilter)
+          if (view === 'Asset')
+            onClickFilter(statusFilter, levelFilter, autLevelFilter)
         }}
       >
         {t('Apply Filter')}
