@@ -1,6 +1,8 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 21/4/2021 12:25:55 ******/
 
-ALTER    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
+
+CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@asset_id					as INT,
 	@asset_code					as NVARCHAR(100),			
 	@asset_name					as NVARCHAR(200),	
@@ -25,12 +27,21 @@ ALTER    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 AS  BEGIN 
 
 DECLARE
-@Username		NVARCHAR(100),
-@First_Name		NVARCHAR(100),
-@Last_Name		NVARCHAR(100),
-@Site			INT,
-@role_id		INT,
-@escalation_id	INT
+@Username							NVARCHAR(100),
+@First_Name							NVARCHAR(100),
+@Last_Name							NVARCHAR(100),
+@Site								INT,
+@role_id							INT,
+@escalation_id						INT,
+@production_day_offset_minutes		FLOAT,
+@inactive_timeout_minutes			INT,
+@summary_timeout					INT,
+@timezone_id						INT,
+@language_id						INT,
+@site_timezone						NVARCHAR(100),
+@ui_timezone						NVARCHAR(100),
+@language							NVARCHAR(50),
+@site_name							NVARCHAR(100)
 
         SELECT TOP 1 
 				@Username = TFD.Username,
@@ -119,8 +130,13 @@ ELSE
 			   ,@is_dynamic
 			   ,@value_stream)
 			   SET @Site = SCOPE_IDENTITY();
+
 		IF (@asset_level = 'Site')
 		BEGIN
+
+		SELECT @site_name = asset_name
+		FROM dbo.Asset
+		WHERE asset_id = @Site
 
 		INSERT INTO [dbo].[TFDUsers]
 			(Badge
@@ -148,8 +164,87 @@ ELSE
 			,'Administration Tool'
 			,GETDATE()
 			,@escalation_id)
-		END
 
+			 SELECT 
+				@production_day_offset_minutes = CP.production_day_offset_minutes,
+				@inactive_timeout_minutes = CP.inactive_timeout_minutes,
+				@summary_timeout = CP.summary_timeout,
+				@timezone_id = CP.timezone_id,
+				@language_id = CP.language_id,
+				@site_timezone = CP.site_timezone,
+				@ui_timezone = CP.ui_timezone,
+				@language = CP.language
+        FROM [dbo].[CommonParameters] CP
+		INNER JOIN dbo.TFDUsers TFD ON TFD.Site = CP.site_id
+        WHERE TFD.Badge = @badge;
+			
+			INSERT INTO [dbo].[CommonParameters]
+			(site_id
+			,site_name
+			,production_day_offset_minutes
+			,site_timezone
+			,ui_timezone
+			,language
+			,status
+			,entered_by
+			,entered_on
+			,last_modified_by
+			,last_modified_on
+			,summary_timeout
+			,timezone_id
+			,language_id
+			,site_prefix)
+			VALUES
+			(@Site
+			,@site_name
+			,@production_day_offset_minutes
+			,@site_timezone
+			,@ui_timezone
+			,@language
+			,'Active'
+			,'Administration Tool'
+			,GETDATE()
+			,'Administration Tool'
+			,GETDATE()
+			,@summary_timeout
+			,@timezone_id
+			,@language_id
+			,@site_name)
+
+			INSERT INTO dbo.Shift
+			(shift_code
+			,shift_name
+			,shift_sequence
+			,start_time
+			,end_time
+			,start_time_offset_days
+			,end_time_offset_days
+			,duration_in_minutes
+			,valid_from
+			,is_first_shift_of_day
+			,status
+			,entered_by
+			,entered_on
+			,last_modified_by
+			,last_modified_on
+			,asset_id)
+			VALUES
+			(@site_name + '-Shift'
+			,@site_name + '-Shift'
+			,1
+			,'00:00'
+			,'23:00'
+			,0
+			,0
+			,1380
+			,GETDATE()
+			,1
+			,'Active'
+			,'Administration Tool'
+			,GETDATE()
+			,'Administration Tool'
+			,GETDATE()
+			,@Site)
+		END
 	END
 END
-

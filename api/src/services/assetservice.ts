@@ -109,4 +109,19 @@ export class AssetService {
         }
         return res.status(200).send('Message Entered Succesfully');
     }
+    public async getAssetsWithoutTag(req: Request, res: Response) {
+        const site_id = req.query.site_id;
+        if (!site_id) {
+            res.status(400).json({ message: "Bad Request - Missing Parameters" });
+            return;
+        }
+        let assets: any;
+        try {
+            assets = await this.assetrepository.getAssetsWithoutTag(site_id);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(assets);
+    }
 }
