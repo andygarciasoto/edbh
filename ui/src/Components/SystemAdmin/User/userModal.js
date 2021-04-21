@@ -299,7 +299,7 @@ class UserModal extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has been updated</Modal.Body>
+          <Modal.Body>User has been copied</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalMessage}>
               Close
