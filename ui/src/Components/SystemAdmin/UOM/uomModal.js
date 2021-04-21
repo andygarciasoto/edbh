@@ -78,7 +78,9 @@ class UOMModal extends Component {
 					});
 				},
 				(error) => {
-					console.log(error);
+					this.setState({
+						modalError: true
+					});
 				}
 			);
 		} else {
@@ -99,7 +101,7 @@ class UOMModal extends Component {
 			<div>
 				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>{t('Update UOM')}</Modal.Title>
+						<Modal.Title>{t(this.props.action + ' UOM')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Form>
@@ -181,12 +183,10 @@ class UOMModal extends Component {
 				</Modal>
 				<Modal show={this.state.modalError} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						{this.props.user.site_prefix === null
-							? 'Please add a prefix for your site in the Common Parameters module'
-							: 'All inputs must be filled'}
+						UOM has not been copied
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>

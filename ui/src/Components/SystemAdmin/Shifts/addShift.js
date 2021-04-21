@@ -56,16 +56,16 @@ export class AddShift extends Component {
   };
 
   handleClose = () => {
-		this.setState({ showForm: false });
-	};
+    this.setState({ showForm: false });
+  };
 
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
+  closeModalError = () => {
+    this.setState({ modalError: false });
+  };
 
-	closeSuccessModal = () => {
-		this.setState({ show: false });
-	};
+  closeSuccessModal = () => {
+    this.setState({ show: false });
+  };
 
   createShift = (e) => {
     e.preventDefault();
@@ -116,7 +116,9 @@ export class AddShift extends Component {
           this.handleClose();
         },
         (error) => {
-          console.log(error);
+          this.setState({
+            modalError: true,
+          });
         }
       );
     } else {
@@ -288,18 +290,10 @@ export class AddShift extends Component {
         </Modal>
         <Modal show={this.state.modalError} onHide={this.closeModalError}>
           <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
+            <Modal.Title>Error</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {this.props.user.site_prefix === null
-              ? "Please add a prefix for your site in the Common Parameters module"
-              : this.state.shift_sequence === 1
-                ? "The sequence already exists"
-                : this.state.isRepeated === true
-                  ? "The sequence already exists"
-                  : this.state.firstRepeated === true
-                    ? "The first shift already exists"
-                    : "All inputs must be filled"}
+            Shift has not been added
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>

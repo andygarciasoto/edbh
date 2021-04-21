@@ -111,7 +111,9 @@ class EditUser extends Component {
           });
         },
         (error) => {
-          console.log(error);
+          this.setState({
+            modalError: true,
+          });
         }
       );
     } else {
@@ -271,9 +273,9 @@ class EditUser extends Component {
         </Modal>
         <Modal show={this.state.modalError} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
+            <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Body>User has not been updated</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>
               Close
