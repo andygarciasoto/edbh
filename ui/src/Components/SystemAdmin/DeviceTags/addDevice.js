@@ -184,17 +184,17 @@ class AddDevice extends Component {
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Max Change')}:</Form.Label>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
 								<Col sm={4}>
 									<Form.Control
-										type='number'
-										min={1}
-										name='max_change'
-										value={this.state.max_change}
-										autoComplete={'false'}
+										as='select'
+										name='status'
+										value={this.state.status}
 										onChange={this.handleChange}
-									/>
-									<Form.Text className='validation'>{validation.max_change}</Form.Text>
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
 								</Col>
 								<Form.Label column sm={2}>{t('Asset')}:</Form.Label>
 								<Col sm={4}>
@@ -218,17 +218,17 @@ class AddDevice extends Component {
 										onChange={this.handleChange}
 										rows={3} />
 								</Col>
-								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Form.Label column sm={2}>{t('Difference Between Values to Reset the Count')}:</Form.Label>
 								<Col sm={4}>
 									<Form.Control
-										as='select'
-										name='status'
-										value={this.state.status}
+										type='number'
+										min={1}
+										name='max_change'
+										value={this.state.max_change}
+										autoComplete={'false'}
 										onChange={this.handleChange}
-									>
-										<option value="Active">Active</option>
-										<option value="Inactive">Inactive</option>
-									</Form.Control>
+									/>
+									<Form.Text className='validation'>{validation.max_change}</Form.Text>
 								</Col>
 							</Form.Group>
 						</Form>

@@ -145,15 +145,15 @@ class EditUser extends Component {
 
     return (
       <div>
-        <Modal show={this.state.showForm} onHide={this.handleClose} centered>
+        <Modal show={this.state.showForm} onHide={this.handleClose} centered className='general2-modal'>
           <Modal.Header closeButton>
             <Modal.Title>{t('Edit User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Badge')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Badge')}:</Form.Label>
+                <Col sm={9}>
                   <Form.Control
                     type="text"
                     name="badge"
@@ -165,8 +165,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Username')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Username')}:</Form.Label>
+                <Col sm={9}>
                   <Form.Control
                     type="text"
                     name="username"
@@ -178,8 +178,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('First Name')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('First Name')}:</Form.Label>
+                <Col sm={9}>
                   <Form.Control
                     type="text"
                     name="firstname"
@@ -191,8 +191,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Last Name')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Last Name')}:</Form.Label>
+                <Col sm={9}>
                   <Form.Control
                     type="text"
                     name="lastname"
@@ -204,8 +204,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Escalation')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Escalation')}:</Form.Label>
+                <Col sm={5}>
                   <Form.Control
                     as="select"
                     value={escalation_id}
@@ -219,8 +219,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Role')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Role')}:</Form.Label>
+                <Col sm={5}>
                   <Form.Control
                     as="select"
                     value={role_id}
@@ -233,8 +233,8 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Status')}:</Form.Label>
-                <Col sm={10}>
+                <Form.Label column sm={3}>{t('Status')}:</Form.Label>
+                <Col sm={5}>
                   <Form.Control
                     as="select"
                     value={status}

@@ -118,7 +118,7 @@ class Device extends Component {
 							<th>{t('UOM Code')}</th>
 							<th>{t('Rollover Point')}</th>
 							<th>{t('Aggregation')}</th>
-							<th>{t('Max Change')}</th>
+							<th>{t('Difference Between Values to Reset the Count')}</th>
 							<th>{t('Asset')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
