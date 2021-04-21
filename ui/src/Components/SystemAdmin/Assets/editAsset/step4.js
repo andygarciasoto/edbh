@@ -29,7 +29,7 @@ export class Step4 extends Component {
 		};
 
 		return Promise.all([
-			actions.getBreakFilter(params)(this.props.user.site),
+			actions.getBreakFilter(params),
 			actions.getUnavailableByAssets(this.props.asset_id),
 		]).then((response) => {
 			const BreakData = response[0];
@@ -46,11 +46,27 @@ export class Step4 extends Component {
 					breakObject.unavailable_name + ' (' + breakObject.start_time + ' - ' + breakObject.end_time + ')';
 				return breakObject;
 			});
+
+			const selectedListTabs = response[1];
+			selectedListTabs.map((breakObject)=>{
+				breakObject.id =
+					breakObject.unavailable_code +
+					breakObject.unavailable_name +
+					'(' +
+					breakObject.start_time +
+					'-' +
+					breakObject.end_time +
+					')';
+				breakObject.content =
+					breakObject.unavailable_name + ' (' + breakObject.start_time + ' - ' + breakObject.end_time + ')';
+				return breakObject;
+			})
+			
 			this.setState({
 				BreakData,
 				availableListTabs,
 				completeListTabs: availableListTabs,
-				selectedListTabs: response[1],
+				selectedListTabs
 			});
 		});
 	}

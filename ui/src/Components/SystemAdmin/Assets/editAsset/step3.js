@@ -16,7 +16,7 @@ export class Step3 extends Component {
 			type: 'Downtime',
 			completeListTabs: [],
 			availableListTabs: [],
-			selectedListTabs: []
+			selectedListTabs: [],
 		};
 	}
 
@@ -24,7 +24,7 @@ export class Step3 extends Component {
 		const { actions } = this.props;
 		const params = {
 			site_id: this.props.user.site,
-			status: 'Active'
+			status: 'Active',
 		};
 
 		return Promise.all([
@@ -32,24 +32,32 @@ export class Step3 extends Component {
 			actions.getReasonsByAsset(this.props.user.site, this.props.asset_id),
 		]).then((response) => {
 			const ReasonData = response[0];
-			const completeListTabs = _.map(ReasonData, reason => {
+			const completeListTabs = _.map(ReasonData, (reason) => {
 				reason.id = reason.dtreason_code;
 				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
 				return reason;
 			});
 			const availableListTabs = _.filter(completeListTabs, { type: this.state.type });
+
+			const selectedListTabs = response[1];
+			selectedListTabs.map((reason) => {
+				reason.id = reason.dtreason_code;
+				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
+				return reason;
+			});
+
 			this.setState({
 				ReasonData,
 				availableListTabs,
 				completeListTabs,
-				selectedListTabs: response[1]
+				selectedListTabs,
 			});
 		});
 	}
 
 	updateTabsImported = (availableListTabs, selectedListTabs) => {
 		this.setState({ availableListTabs, selectedListTabs });
-	}
+	};
 
 	importAllTabs = () => {
 		this.updateTabsImported([], this.state.completeListTabs);
@@ -57,13 +65,17 @@ export class Step3 extends Component {
 
 	resetTabs = () => {
 		this.updateTabsImported(this.state.completeListTabs, []);
-	}
+	};
 
 	handleChangeType = (event) => {
-		const availableListTabs = _.differenceWith(_.filter(this.state.completeListTabs, { type: event.target.value }), this.state.selectedListTabs, _.isEqual);
+		const availableListTabs = _.differenceWith(
+			_.filter(this.state.completeListTabs, { type: event.target.value }),
+			this.state.selectedListTabs,
+			_.isEqual
+		);
 		this.setState({
 			[event.target.name]: event.target.value,
-			availableListTabs
+			availableListTabs,
 		});
 	};
 
@@ -106,7 +118,9 @@ export class Step3 extends Component {
 			<div>
 				<Form>
 					<Form.Group as={Row}>
-						<Form.Label column sm={1}>{t('Type')}:</Form.Label>
+						<Form.Label column sm={1}>
+							{t('Type')}:
+						</Form.Label>
 						<Col sm={2}>
 							<Form.Control
 								as="select"
@@ -130,7 +144,7 @@ export class Step3 extends Component {
 								resetTabs={this.resetTabs}
 								height={'350px'}
 								t={t}
-								genericTitle='Reasons'
+								genericTitle="Reasons"
 							/>
 						</Col>
 					</Form.Group>
