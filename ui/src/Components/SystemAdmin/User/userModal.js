@@ -59,7 +59,8 @@ class UserModal extends Component {
         role_id: nextProps.selectedUser.role_id || prevState.role_id,
         escalation_id: nextProps.selectedUser.escalation_level || "",
         site: nextProps.selectedUser.Site || nextProps.user.site,
-        status: nextProps.selectedUser.status || ''
+        status: nextProps.selectedUser.status || '',
+        validation: {}
       };
     }
     return null;

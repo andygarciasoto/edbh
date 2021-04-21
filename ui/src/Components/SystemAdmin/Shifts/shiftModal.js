@@ -57,7 +57,8 @@ class ShiftModal extends Component {
         end_time: nextProps.shift.end_time ? moment('1970-01-01 ' + nextProps.shift.end_time).format('HH:mm') : '',
         end_day: nextProps.shift.end_time_offset_days || 0,
         is_first_shift_of_day: nextProps.shift.is_first_shift_of_day || false,
-        status: nextProps.shift.status || ''
+        status: nextProps.shift.status || '',
+        validation: {}
       };
     }
     return null;
