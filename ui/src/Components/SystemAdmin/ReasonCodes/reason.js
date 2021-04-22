@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ReasonActions from "../../../redux/actions/reasonActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddReason from "./addReason";
-import EditIcon from "../../../resources/u668.svg";
-import UpdateReason from "./updateReason";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as ReasonActions from '../../../redux/actions/reasonActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddReason from './addReason';
+import ReasonModal from './reasonModal';
+import FontAwesome from 'react-fontawesome';
 
 class Reason extends Component {
   constructor(props) {
@@ -14,11 +14,12 @@ class Reason extends Component {
     this.state = {
       ReasonData: [],
       showCreateReason: false,
-      showUpdateReaon: false,
       reason: {},
       statusFilter: 'Active',
       categoryFilter: 'All',
-      typeFilter: 'Downtime'
+      typeFilter: 'Downtime',
+      showReasonModal: false,
+      action: ''
     };
   }
 
@@ -63,11 +64,20 @@ class Reason extends Component {
     });
   };
 
+  showReasonModal = (reason, action) => {
+    this.setState({
+      reason,
+      action,
+      showReasonModal: true
+    })
+  }
+
   closeModal = () => {
     this.setState({
       showCreateReason: false,
-      showUpdateReason: false,
-      reason: {}
+      showReasonModal: false,
+      reason: {},
+      action: ''
     });
   };
 
@@ -76,7 +86,7 @@ class Reason extends Component {
     return (
       <div>
         <Filter
-          className="filter-user"
+          className='filter-user'
           buttonName={'+ ' + t('Reason')}
           category={true}
           type={true}
@@ -92,15 +102,16 @@ class Reason extends Component {
           Refresh={this.loadData}
           onRequestClose={this.closeModal}
         />
-        <UpdateReason
+        <ReasonModal
           t={t}
           user={this.props.user}
-          isOpen={this.state.showUpdateReason}
+          isOpen={this.state.showReasonModal}
           reason={this.state.reason}
+          action={this.state.action}
           Refresh={this.loadData}
           onRequestClose={this.closeModal}
         />
-        <Table responsive="sm" bordered={true}>
+        <Table responsive='sm' bordered={true}>
           <thead>
             <tr>
               <th>{t('Code')}</th>
@@ -124,12 +135,8 @@ class Reason extends Component {
                 <td>{reason.asset_count}</td>
                 <td>{reason.status}</td>
                 <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.openUpdateReason(reason)}
-                  />
+                  <FontAwesome name='edit fa-2x' onClick={() => this.showReasonModal(reason, 'Update')} />
+                  <FontAwesome name='copy fa-2x' onClick={() => this.showReasonModal(reason, 'Copy')} />
                 </td>
               </tr>
             ))}

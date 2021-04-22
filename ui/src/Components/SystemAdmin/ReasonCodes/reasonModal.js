@@ -11,7 +11,7 @@ import { validateReasonForm } from '../../../Utils/FormValidations';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
-class UpdateReason extends Component {
+class ReasonModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -55,10 +55,11 @@ class UpdateReason extends Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.isOpen !== prevState.isOpen) {
+            const name = nextProps.action === 'Update' ? nextProps.reason.dtreason_name : '';
             return {
                 isOpen: nextProps.isOpen,
                 reason: nextProps.reason,
-                name: nextProps.reason.dtreason_name,
+                name: name,
                 description: nextProps.reason.dtreason_description,
                 category: nextProps.reason.dtreason_category,
                 reason1: nextProps.reason.reason1,
@@ -192,9 +193,13 @@ class UpdateReason extends Component {
         if (
             _.isEmpty(validation)
         ) {
+            const action = this.props.action;
+            const code = action === 'Update' ?
+                this.state.reason.dtreason_code :
+                `${this.props.user.site_prefix}-${this.state.name}`.replace(/\s+/g, '');
             let arrayData = _.map(tabsToInsert, selection => {
                 return {
-                    dtreason_code: this.state.reason.dtreason_code,
+                    dtreason_code: code,
                     dtreason_name: this.state.name,
                     dtreason_description: this.state.description,
                     dtreason_category: this.state.category,
@@ -217,6 +222,7 @@ class UpdateReason extends Component {
             if (res.status !== 200) {
                 this.setState({
                     modalError: true,
+                    title: action,
                     validation: {}
                 });
             } else {
@@ -224,6 +230,7 @@ class UpdateReason extends Component {
                 this.props.onRequestClose();
                 this.setState({
                     show: true,
+                    title: action,
                     validation: {}
                 });
             }
@@ -244,7 +251,7 @@ class UpdateReason extends Component {
                     centered
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title>{t('Update Reason')}</Modal.Title>
+                        <Modal.Title>{t(this.props.action + ' Reason')}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
@@ -409,7 +416,7 @@ class UpdateReason extends Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Sucess</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Reason has been added</Modal.Body>
+                    <Modal.Body>Reason has been {this.state.title === 'Update' ? 'updated' : 'copied'}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={this.closeSuccessModal}>
                             Close
@@ -420,7 +427,7 @@ class UpdateReason extends Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Error</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Error when try to create the new Reason</Modal.Body>
+                    <Modal.Body>Reason has not been {this.state.title === 'Update' ? 'updated' : 'copied'}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={this.closeModalError}>
                             Close
@@ -438,4 +445,4 @@ export const mapDispatch = (dispatch) => {
     };
 };
 
-export default connect(null, mapDispatch)(UpdateReason);
+export default connect(null, mapDispatch)(ReasonModal);
