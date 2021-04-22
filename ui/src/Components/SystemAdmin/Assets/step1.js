@@ -78,7 +78,7 @@ export class Step1 extends Component {
 			this.setState({
 				workcellData,
 				parentData,
-				parent_code: parentData[0].asset_code,
+				parent_code: parentData[0] ? parentData[0].asset_code : '',
 			});
 		});
 	};

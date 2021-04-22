@@ -40,11 +40,12 @@ class TagModal extends Component {
 			actions.getAssets(this.props.user.site)
 		]).then((response) => {
 			const assetOption = _.filter(response[1], { asset_level: 'Cell' });
+			const uomData = response[0];
 			this.setState({
-				uomData: response[0],
-				uom_code: response[0][0].UOM_code,
+				uomData,
+				uom_code: uomData[0] ? uomData[0].UOM_code : '',
 				sites: assetOption,
-				asset: assetOption[0].asset_id
+				asset: assetOption[0] ? assetOption[0].asset_id : 0
 			});
 		});
 	}
