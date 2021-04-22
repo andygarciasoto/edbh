@@ -525,5 +525,8 @@
       <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Escalation.sql" />
+    <Build Include="dbo\Views\Escalation_vw.sql" />
+    <Build Include="dbo\Views\Scrap_vw.sql" />
+    <Build Include="dbo\Views\MultipleLabor_vw.sql" />
   </ItemGroup>
 </Project>
