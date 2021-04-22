@@ -98,8 +98,6 @@ class EscalationCreateModal extends Component {
                 data: arrayData
             };
 
-            console.log(data);
-
             let res = await getResponseFromGeneric('put', API, '/dragndrop', {}, {}, data);
             if (res.status !== 200) {
                 this.setState({
