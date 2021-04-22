@@ -5,8 +5,8 @@ import * as BreakActions from '../../../redux/actions/breakActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddBreak from './breakForm';
-import UpdateBreak from './updateBreak';
-import EditIcon from "../../../resources/u668.svg";
+import BreakModal from './breakModal';
+import FontAwesome from 'react-fontawesome';
 
 class Break extends Component {
 	constructor(props) {
@@ -15,10 +15,11 @@ class Break extends Component {
 			BreakData: [],
 			shifts: [],
 			showCreateBreak: false,
-			showUpdateBreak: false,
+			showUnavailableModal: false,
 			unavailable: {},
 			statusFilter: 'Active',
-			shiftsFilter: 'All'
+			shiftsFilter: 'All',
+			action: ''
 		};
 	}
 
@@ -57,18 +58,20 @@ class Break extends Component {
 		});
 	};
 
-	openUpdateBreak = (unavailable) => {
+	showUnavailableModal = (unavailable, action) => {
 		this.setState({
-			showUpdateBreak: true,
-			unavailable
-		});
-	};
+			unavailable,
+			action,
+			showUnavailableModal: true
+		})
+	}
 
 	closeModal = () => {
 		this.setState({
 			showCreateBreak: false,
-			showUpdateBreak: false,
-			unavailable: {}
+			showUnavailableModal: false,
+			unavailable: {},
+			action: ''
 		});
 	};
 
@@ -99,11 +102,12 @@ class Break extends Component {
 					Refresh={this.loadData}
 					onRequestClose={this.closeModal}
 				/>
-				<UpdateBreak
+				<BreakModal
 					t={t}
 					user={this.props.user}
-					isOpen={this.state.showUpdateBreak}
+					isOpen={this.state.showUnavailableModal}
 					unavailable={this.state.unavailable}
+					action={this.state.action}
 					Refresh={this.loadData}
 					onRequestClose={this.closeModal}
 				/>
@@ -131,12 +135,8 @@ class Break extends Component {
 								<td>{unavailable.asset_count}</td>
 								<td>{unavailable.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.openUpdateBreak(unavailable)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showUnavailableModal(unavailable, 'Update')} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showUnavailableModal(unavailable, 'Copy')} />
 								</td>
 							</tr>
 						))}
