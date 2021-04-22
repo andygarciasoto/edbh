@@ -51,7 +51,7 @@ class AddDisplay extends Component {
 		const { name, asset, status } = this.state;
 
 		const validation = generalValidationForm(this.state);
-		
+
 		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_displaysystem', null, null, {
 				asset_id: parseInt(asset, 10),
@@ -67,7 +67,9 @@ class AddDisplay extends Component {
 					this.handleClose();
 				},
 				(error) => {
-					console.log(error);
+					this.setState({
+						modalError: true
+					});
 				}
 			);
 		} else {
@@ -173,9 +175,9 @@ class AddDisplay extends Component {
 				</Modal>
 				<Modal show={this.state.modalError} onHide={this.closeModalError}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Body>Display has not been added</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>
 							Close

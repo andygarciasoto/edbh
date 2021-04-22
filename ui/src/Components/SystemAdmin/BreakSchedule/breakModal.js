@@ -12,7 +12,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
-class UpdateBreak extends Component {
+class BreakModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,10 +42,11 @@ class UpdateBreak extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.isOpen !== prevState.isOpen) {
+      const name = nextProps.action === 'Update' ? nextProps.unavailable.unavailable_name : '';
       return {
         isOpen: nextProps.isOpen,
         unavailable: nextProps.unavailable,
-        unavailable_name: nextProps.unavailable.unavailable_name,
+        unavailable_name: name,
         unavailable_description: nextProps.unavailable.unavailable_description,
         start_time: nextProps.unavailable.start_time,
         end_time: nextProps.unavailable.end_time,
@@ -179,9 +180,13 @@ class UpdateBreak extends Component {
 
     const validation = validateBreakForm(this.state);
     if (_.isEmpty(validation)) {
+      const action = this.props.action;
+      const code = action === 'Update' ?
+        this.state.unavailable.unavailable_code :
+        `${this.props.user.site_prefix}-${this.state.name}`.replace(/\s+/g, '');
       let arrayData = _.map(tabsToInsert, selection => {
         return {
-          unavailable_code: this.state.unavailable.unavailable_code,
+          unavailable_code: code,
           unavailable_name: this.state.unavailable_name,
           unavailable_description: this.state.unavailable_description,
           start_time: this.state.start_time,
@@ -202,12 +207,14 @@ class UpdateBreak extends Component {
       if (res.status !== 200) {
         this.setState({
           modalError: true,
+          title: action,
           validation: {}
         });
       } else {
         this.props.Refresh();
         this.setState({
           show: true,
+          title: action,
           validation: {}
         });
         this.props.onRequestClose();
@@ -229,7 +236,7 @@ class UpdateBreak extends Component {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('Update Break')}</Modal.Title>
+            <Modal.Title>{t(this.props.action + ' Break')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -348,7 +355,7 @@ class UpdateBreak extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Break has been added</Modal.Body>
+          <Modal.Body>Break has been {this.state.title === 'Update' ? 'updated' : 'copied'}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeSuccessModal}>
               Close
@@ -357,9 +364,9 @@ class UpdateBreak extends Component {
         </Modal>
         <Modal show={this.state.modalError} onHide={this.closeModalError}>
           <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
+            <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
+          <Modal.Body>Break has not been {this.state.title === 'Update' ? 'updated' : 'copied'}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalError}>
               Close
@@ -377,4 +384,4 @@ export const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(UpdateBreak);
+export default connect(null, mapDispatch)(BreakModal);

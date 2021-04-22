@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as UOMActions from '../../../redux/actions/uomActions';
+import * as AssetActions from '../../../redux/actions/assetActions';
 import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { generalValidationForm } from '../../../Utils/FormValidations';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
+import { generalValidationForm } from '../../../Utils/FormValidations';
 import '../../../sass/SystemAdmin.scss';
 
-class EditUOM extends Component {
+class AddDisplay extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			display: props.display,
+			AssetsData: [],
 			name: '',
-			description: '',
-			decimals: false,
+			asset: 0,
 			status: 'Active',
 			show: false,
 			showForm: true,
@@ -25,21 +26,32 @@ class EditUOM extends Component {
 	}
 
 	componentDidMount() {
-		this.loadData();
-	}
-
-	loadData = () => {
 		const { actions } = this.props;
 
-		return actions.getUOMById(this.props.user.site, this.props.uom_id).then((response) => {
+		actions.getAssets(this.props.user.site).then((response) => {
+			let assetList = _.filter(response, { asset_level: 'Cell' });
 			this.setState({
-				name: response[0].UOM_name,
-				description: response[0].UOM_description,
-				decimals: response[0].decimals,
-				status: response[0].status
+				AssetsData: assetList,
+				asset: assetList[0].asset_id
 			});
 		});
-	};
+	}
+
+	static getDerivedStateFromProps(nextProps, prevState) {
+		if (!_.isEqual(nextProps.display, prevState.display)) {
+			const name = nextProps.action === 'Edit' ? nextProps.display.displaysystem_name : '';
+			const display_id = nextProps.action === 'Edit' ? nextProps.display.assetdisplaysystem_id : 0;
+			return {
+				display: nextProps.display,
+				display_id: display_id,
+				name: name,
+				asset: nextProps.display.asset_id || prevState.asset,
+				status: nextProps.display.status || 'Active',
+				validation: {}
+			};
+		}
+		return null;
+	}
 
 	handleChange = (event) => {
 		const target = event.target;
@@ -51,28 +63,26 @@ class EditUOM extends Component {
 		});
 	};
 
-	createUOM = (e) => {
+	createDisplay = (e) => {
 		e.preventDefault();
-		const { name, description, status, decimals } = this.state;
+		const { display_id, name, asset, status } = this.state;
 
 		const validation = generalValidationForm(this.state);
 
 		if (_.isEmpty(validation)) {
-			genericRequest('put', API, '/insert_uom', null, null, {
-				uom_id: this.props.uom_id,
-				uom_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
-				uom_name: name,
-				uom_description: description,
-				status: status,
-				decimals: parseInt(decimals, 10),
+			genericRequest('put', API, '/insert_displaysystem', null, null, {
+				assetdisplaysystem_id: display_id,
+				asset_id: parseInt(asset, 10),
+				displaysystem_name: name,
 				site_id: this.props.user.site,
+				status: status,
 			}).then(
 				() => {
 					this.props.Refresh();
+					this.props.handleClose();
 					this.setState({
 						show: true,
 					});
-					this.handleClose();
 				},
 				(error) => {
 					this.setState({
@@ -87,16 +97,16 @@ class EditUOM extends Component {
 		}
 	};
 
-	handleClose = () => {
-		this.setState({ showForm: false });
-	};
+	renderAssets(assets, index) {
+		return (
+			<option value={assets.asset_id} key={index}>
+				{assets.asset_name}
+			</option>
+		);
+	}
 
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
-
-	closeSuccessModal = () => {
-		this.setState({ show: false });
+	closeModalMessage = () => {
+		this.setState({ modalError: false, show: false });
 	};
 
 	render() {
@@ -104,9 +114,9 @@ class EditUOM extends Component {
 		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
+				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>{t('Update UOM')}</Modal.Title>
+						<Modal.Title>{t(this.props.action + ' Display')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Form>
@@ -124,28 +134,15 @@ class EditUOM extends Component {
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
-								<Col sm={10}>
-									<Form.Control
-										as="textarea"
-										name="description"
-										value={this.state.description}
-										onChange={this.handleChange}
-										rows={3} />
-								</Col>
-							</Form.Group>
-							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Decimals')}:</Form.Label>
+								<Form.Label column sm={2}>{t('Asset')}:</Form.Label>
 								<Col sm={4}>
 									<Form.Control
-										as="select"
-										value={this.state.decimals}
-										name='decimals'
-										autoComplete={"false"}
+										as='select'
+										name='asset'
+										value={this.state.asset}
 										onChange={this.handleChange}
 									>
-										<option value={0}>No</option>
-										<option value={1}>Yes</option>
+										{this.state.AssetsData.map(this.renderAssets)}
 									</Form.Control>
 								</Col>
 							</Form.Group>
@@ -167,34 +164,32 @@ class EditUOM extends Component {
 						</Form>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
+						<Button variant="Primary" onClick={(e) => this.createDisplay(e)}>
 							{t('Confirm')}
 						</Button>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.props.handleClose}>
 							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>UOM has been updated</Modal.Body>
+					<Modal.Body>Display has been Copied</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeSuccessModal}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+				<Modal show={this.state.modalError} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>
-						UOM has not been updated
-					</Modal.Body>
+					<Modal.Body>Display has not been Copied</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
@@ -206,8 +201,8 @@ class EditUOM extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(UOMActions, dispatch),
+		actions: bindActionCreators(AssetActions, dispatch),
 	};
 };
 
-export default connect(null, mapDispatch)(EditUOM);
+export default connect(null, mapDispatch)(AddDisplay);

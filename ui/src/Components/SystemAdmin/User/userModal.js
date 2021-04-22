@@ -7,24 +7,25 @@ import { API } from "../../../Utils/Constants";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { validateUserForm } from '../../../Utils/FormValidations';
 import _ from 'lodash';
-import "../../../sass/SystemAdmin.scss";
 
-class EditUser extends Component {
+class UserModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      badge: "",
-      username: "",
-      firstname: "",
-      lastname: "",
-      role: "",
+      selectedUser: props.selectedUser,
+      badge: '',
+      username: '',
+      firstname: '',
+      lastname: '',
+      role: '',
       role_id: 0,
-      status: "",
-      show: false,
-      showForm: true,
+      escalation_id: '',
+      status: '',
+      site: props.user.site,
       rolesArray: [],
-      escalation_id: 0,
       escalationArray: [],
+      sites: _.filter(props.user.sites, { Role: 'Administrator' }),
+      showForm: true,
       modalError: false,
       validation: {}
     };
@@ -32,25 +33,37 @@ class EditUser extends Component {
 
   componentDidMount() {
     const { actions } = this.props;
-
     return Promise.all([
-      actions.getUserInfo(this.props.user.site, this.props.badge),
       actions.getRoles(),
       actions.getEscalation(),
     ]).then((response) => {
+      const role_id = _.find(response[0], { name: 'Operator' }).role_id;
       this.setState({
-        badge: response[0].Badge,
-        username: response[0].Username,
-        firstname: response[0].First_Name,
-        lastname: response[0].Last_Name,
-        role: response[0].name,
-        role_id: response[0].role_id,
-        escalation_id: response[0].escalation_level || '',
-        status: response[0].status,
-        rolesArray: response[1],
-        escalationArray: response[2],
+        rolesArray: response[0],
+        escalationArray: response[1],
+        role_id
       });
     });
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!_.isEqual(nextProps.selectedUser, prevState.selectedUser)) {
+      const badge = nextProps.action === 'Edit' ? nextProps.selectedUser.Badge : '';
+      return {
+        selectedUser: nextProps.selectedUser,
+        badge: badge,
+        username: nextProps.selectedUser.Username || '',
+        firstname: nextProps.selectedUser.First_Name || '',
+        lastname: nextProps.selectedUser.Last_Name || '',
+        role: nextProps.selectedUser.name || '',
+        role_id: nextProps.selectedUser.role_id || prevState.role_id,
+        escalation_id: nextProps.selectedUser.escalation_level || "",
+        site: nextProps.selectedUser.Site || nextProps.user.site,
+        status: nextProps.selectedUser.status || '',
+        validation: {}
+      };
+    }
+    return null;
   }
 
   renderRoles(roles, index) {
@@ -69,6 +82,14 @@ class EditUser extends Component {
     );
   }
 
+  renderSites(sites, index) {
+    return (
+      <option value={sites.asset_id} key={index}>
+        {sites.asset_name}
+      </option>
+    );
+  }
+
   handleChange = (event) => {
     const target = event.target;
     const value = target.value;
@@ -82,6 +103,7 @@ class EditUser extends Component {
   createUser = (e) => {
     e.preventDefault();
     const {
+      badge,
       username,
       firstname,
       lastname,
@@ -95,7 +117,7 @@ class EditUser extends Component {
 
     if (_.isEmpty(validation)) {
       Axios.put(url, {
-        badge: this.props.badge,
+        badge: badge,
         username: username,
         first_name: firstname,
         last_name: lastname,
@@ -106,6 +128,7 @@ class EditUser extends Component {
       }).then(
         () => {
           this.props.Refresh();
+          this.props.handleClose();
           this.setState({
             show: true,
           });
@@ -123,12 +146,11 @@ class EditUser extends Component {
     }
   };
 
-  closeModalError = () => {
-    this.setState({ modalError: false });
-  };
-
-  handleClose = () => {
-    this.props.closeForm();
+  closeModalMessage = () => {
+    this.setState({
+      show: false,
+      modalError: false
+    });
   };
 
   render() {
@@ -140,6 +162,8 @@ class EditUser extends Component {
       role_id,
       status,
       escalation_id,
+      site,
+      sites,
       validation
     } = this.state;
 
@@ -147,9 +171,9 @@ class EditUser extends Component {
 
     return (
       <div>
-        <Modal show={this.state.showForm} onHide={this.handleClose} centered className='general2-modal'>
+        <Modal show={this.props.isOpen} onHide={this.props.handleClose} centered className='general2-modal'>
           <Modal.Header closeButton>
-            <Modal.Title>{t('Edit User')}</Modal.Title>
+            <Modal.Title>{t(this.props.action + ' User')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -235,6 +259,20 @@ class EditUser extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
+                <Form.Label column sm={3}>{t('Site')}:</Form.Label>
+                <Col sm={5}>
+                  <Form.Control
+                    as='select'
+                    name='site'
+                    value={site}
+                    autoComplete={"false"}
+                    onChange={this.handleChange}
+                  >
+                    {sites.map(this.renderSites)}
+                  </Form.Control>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Status')}:</Form.Label>
                 <Col sm={5}>
                   <Form.Control
@@ -255,29 +293,29 @@ class EditUser extends Component {
             <Button variant="Primary" onClick={(e) => this.createUser(e)}>
               {t('Confirm')}
             </Button>
-            <Button variant="secondary" onClick={this.handleClose}>
+            <Button variant="secondary" onClick={this.props.handleClose}>
               {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal show={this.state.show} onHide={this.handleClose}>
+        <Modal show={this.state.show} onHide={this.closeModalMessage}>
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has been updated</Modal.Body>
+          <Modal.Body>User has been copied</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
+            <Button variant="secondary" onClick={this.closeModalMessage}>
               Close
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal show={this.state.modalError} onHide={this.handleClose}>
+        <Modal show={this.state.modalError} onHide={this.closeModalMessage}>
           <Modal.Header closeButton>
             <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has not been updated</Modal.Body>
+          <Modal.Body>User has not been copied</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModalError}>
+            <Button variant="secondary" onClick={this.closeModalMessage}>
               Close
             </Button>
           </Modal.Footer>
@@ -293,4 +331,4 @@ export const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(EditUser);
+export default connect(null, mapDispatch)(UserModal);

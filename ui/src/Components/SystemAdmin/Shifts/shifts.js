@@ -6,9 +6,9 @@ import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddShift from "./addShift";
 import EditShift from "./editShift";
+import ShiftModal from './shiftModal';
 import moment from 'moment';
-
-import EditIcon from "../../../resources/u668.svg";
+import FontAwesome from 'react-fontawesome';
 
 
 class Shifts extends Component {
@@ -19,7 +19,10 @@ class Shifts extends Component {
       addShift: false,
       editShift: false,
       shift_id: 0,
-      statusFilter: 'Active'
+      statusFilter: 'Active',
+      shift: {},
+      action: '',
+      showShiftModal: false
     };
   }
 
@@ -68,11 +71,27 @@ class Shifts extends Component {
     });
   };
 
+  showShiftModal = (shift, action) => {
+    this.setState({
+      shift,
+      action,
+      showShiftModal: true
+    })
+  }
+
   closeEditShift = () => {
     this.setState({
       editShift: false,
     });
   };
+
+  closeShiftModal = () => {
+    this.setState({
+      shift: {},
+      action: '',
+      showShiftModal: false
+    })
+  }
 
   render() {
     const t = this.props.t;
@@ -106,6 +125,15 @@ class Shifts extends Component {
             t={t}
           />
         )}
+        <ShiftModal
+          user={this.props.user}
+          isOpen={this.state.showShiftModal}
+          shift={this.state.shift}
+          action={this.state.action}
+          Refresh={this.loadData}
+          handleClose={this.closeShiftModal}
+          t={t}
+        />
         <Table responsive="sm" bordered={true}>
           <thead>
             <tr>
@@ -136,12 +164,8 @@ class Shifts extends Component {
                 <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
                 <td>{shift.status}</td>
                 <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
+                  <FontAwesome name='edit fa-2x' onClick={() => this.showEditShift(shift.shift_id)} />
+                  <FontAwesome name='copy fa-2x' onClick={() => this.showShiftModal(shift, 'Copy')} />
                 </td>
               </tr>
             ))}

@@ -83,7 +83,9 @@ class EditWorkcell extends Component {
 					this.handleClose();
 				},
 				(error) => {
-					console.log(error);
+					this.setState({
+						modalError: true,
+					});
 				}
 			);
 		} else {
@@ -167,9 +169,9 @@ class EditWorkcell extends Component {
 				</Modal>
 				<Modal show={this.state.modalError} onHide={this.closeModalError}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Body>Workcell has not been updated</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>
 							Close
