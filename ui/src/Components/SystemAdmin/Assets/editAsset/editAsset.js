@@ -90,6 +90,7 @@ class AddAsset extends Component {
 
 	handleClose = () => {
 		this.setState({ showForm: false });
+		this.props.closeForm();
 	};
 
 	closeModalError = () => {
