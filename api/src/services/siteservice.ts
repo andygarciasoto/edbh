@@ -114,7 +114,7 @@ export class SiteService {
                 valuesMergeQuery += updateRow;
             });
             queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
-            //console.log(queries);
+            console.log(queries);
             const queriesLength = queries.length;
             _.forEach(queries, async (query, index) => {
                 try {

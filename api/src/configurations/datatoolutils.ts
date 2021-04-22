@@ -121,6 +121,13 @@ export let headers = {
         { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 },
         { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 18 },
         { header: 'status', type: 'VARCHAR', key: 'status', width: 14 },
+    ],
+    Escalation: [
+        { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 16 },
+        { header: 'escalation_group', type: 'VARCHAR', key: 'escalation_group', width: 27 },
+        { header: 'escalation_level', type: 'INT', key: 'escalation_level', width: 14 },
+        { header: 'escalation_hours', type: 'INT', key: 'escalation_hours', width: 16 },
+        { header: 'status', type: 'VARCHAR', key: 'status', width: 16 }
     ]
 };
 
@@ -141,8 +148,14 @@ export function getColumns(tableName) {
             }
             return column;
         case 'Unavailable':
-            for (let val of headers.Tag) {
+            for (let val of headers.Unavailable) {
                 column.push(headers.Unavailable[cont].header);
+                cont++;
+            }
+            return column;
+        case 'Escalation':
+            for (let val of headers.Escalation) {
+                column.push(headers.Escalation[cont].header);
                 cont++;
             }
             return column;
@@ -299,6 +312,15 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[Last_Name] = s.[Last_Name], t.[role_id] = s.[role_id], t.[escalation_id] = s.[escalation_id], t.[status] = s.[status]`;
             parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [role_id], [Site], [escalation_id], [status]) VALUES (s.[Badge], s.[Username], 
                 s.[First_Name], s.[Last_Name], s.[role_id], s.[Site], s.[escalation_id], s.[status])`;
+            break;
+        case 'Escalation':
+            parametersObject.extraColumns = '';
+            parametersObject.joinSentence = '';
+            parametersObject.matchParameters = `s.escalation_group = t.escalation_group AND s.escalation_level = t.escalation_level`;
+            parametersObject.updateSentence = `t.[escalation_name] = s.[escalation_name], t.[escalation_hours] = s.[escalation_hours], t.[status] = s.[status], 
+                    t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE()`;
+            parametersObject.insertSentence = `([escalation_name], [escalation_group], [escalation_level], [escalation_hours], [status], [entered_by], [last_modified_by]) 
+                    VALUES (s.[escalation_name], s.[escalation_group], s.[escalation_level], s.[escalation_hours], s.[status], 'Administration Tool', 'Administration Tool')`;
             break;
     }
     return parametersObject;
