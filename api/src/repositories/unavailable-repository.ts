@@ -40,7 +40,8 @@ export class UnavailableRepository {
         GROUP BY U.unavailable_code, U.unavailable_name, U.unavailable_description, U.start_time, U.end_time, U.duration_in_minutes, U.status`;
         return await this.sqlServerStore.ExecuteQuery(query);
     }
-    public async getAssetsUnavailableCode(unavailable_code: string): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_UnavailableCode N'${unavailable_code}'`);
+    public async getAssetsUnavailableCode(site_id: number, unavailable_code: string, unavailable_name: string, unavailable_description: string, start_time: string, end_time: string,
+        duration_in_minutes: number, status: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_UnavailableCode ${site_id},N'${unavailable_code}',N'${unavailable_name}',${unavailable_description},'${start_time}','${end_time}',${duration_in_minutes},'${status}'`);
     }
 }

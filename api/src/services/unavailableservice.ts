@@ -24,13 +24,20 @@ export class UnavailableService {
         return res.status(200).json(unavailable);
     }
     public async getAssetsUnavailableCode(req: Request, res: Response) {
+        let site_id = req.query.site_id;
         let unavailable_code = req.query.unavailable_code;
-        if (!unavailable_code) {
+        let unavailable_name = req.query.unavailable_name;
+        let unavailable_description = req.query.unavailable_description ? `N'${req.query.unavailable_description}'`: `N''`;
+        let start_time = req.query.start_time;
+        let end_time = req.query.end_time;
+        let duration_in_minutes = req.query.duration_in_minutes;
+        let status = req.query.status;
+        if (!site_id || !unavailable_code || !unavailable_name || !start_time || !end_time || !duration_in_minutes || !status) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let unavailable: any;
         try {
-            unavailable = await this.unavailablerepository.getAssetsUnavailableCode(unavailable_code);
+            unavailable = await this.unavailablerepository.getAssetsUnavailableCode(site_id, unavailable_code, unavailable_name, unavailable_description, start_time, end_time, duration_in_minutes, status);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

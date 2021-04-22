@@ -86,7 +86,14 @@ class BreakModal extends Component {
   fetchData() {
     const { actions } = this.props;
     const params = {
-      unavailable_code: this.state.unavailable.unavailable_code
+      site_id: this.props.user.site,
+      unavailable_code: this.state.unavailable.unavailable_code,
+      unavailable_name: this.state.unavailable.unavailable_name,
+      unavailable_description: this.state.unavailable.unavailable_description,
+      start_time: this.state.unavailable.start_time,
+      end_time: this.state.unavailable.end_time,
+      duration_in_minutes: this.state.unavailable.duration_in_minutes,
+      status: this.state.unavailable.status
     };
     actions.getAssetsUnavailable(params).then((response) => {
       const originalUnAssets = response;
