@@ -123,8 +123,8 @@ class Assets extends Component {
 							<th>{t('Include in Escalation')}</th>
 							<th>{t('Workcell')}</th>
 							<th>{t('Value Stream')}</th>
-							<th>{t('Is Multiple')}</th>
-							<th>{t('Is Dynamic')}</th>
+							<th>{t('Multi Sign-In Machine')}</th>
+							<th>{t('Unscheduled Lunchs/Breaks')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
 						</tr>
