@@ -6,7 +6,8 @@ import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddTag from './addDevice';
 import EditTag from './editTags';
-import EditIcon from '../../../resources/u668.svg';
+import TagModal from './tagModal';
+import FontAwesome from 'react-fontawesome';
 
 class Device extends Component {
 	constructor(props) {
@@ -16,7 +17,10 @@ class Device extends Component {
 			addTag: false,
 			editTag: false,
 			tag_id: 0,
-			statusFilter: 'Active'
+			statusFilter: 'Active',
+			tag: {},
+			action: '',
+			showTagModal: false
 		};
 	}
 
@@ -52,6 +56,14 @@ class Device extends Component {
 		});
 	};
 
+	showTagModal = (tag, action) => {
+		this.setState({
+			tag,
+			action,
+			showTagModal: true
+		})
+	}
+
 	closeAddTag = () => {
 		this.setState({
 			addTag: false,
@@ -70,6 +82,14 @@ class Device extends Component {
 			editTag: false,
 		});
 	};
+
+	closeTagModal = () => {
+		this.setState({
+			tag: {},
+			action: '',
+			showTagModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
@@ -108,6 +128,15 @@ class Device extends Component {
 						t={t}
 					/>
 				)}
+				<TagModal
+					user={this.props.user}
+					isOpen={this.state.showTagModal}
+					tag={this.state.tag}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeTagModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -118,7 +147,7 @@ class Device extends Component {
 							<th>{t('UOM Code')}</th>
 							<th>{t('Rollover Point')}</th>
 							<th>{t('Aggregation')}</th>
-							<th>{t('Difference Between Values to Reset the Count')}</th>
+							<th style={{ maxWidth: '200px' }}>{t('Difference Between Values to Reset the Count')}</th>
 							<th>{t('Asset')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
@@ -138,12 +167,8 @@ class Device extends Component {
 								<td>{tag.asset_code}</td>
 								<td>{tag.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditTag(tag.tag_id)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditTag(tag.tag_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showTagModal(tag, 'Copy')} />
 								</td>
 							</tr>
 						))}

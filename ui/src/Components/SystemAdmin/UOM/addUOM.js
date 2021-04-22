@@ -57,7 +57,9 @@ class AddUOM extends Component {
 					this.handleClose();
 				},
 				(error) => {
-					console.log(error);
+					this.setState({
+						modalError: true
+					});
 				}
 			);
 		} else {
@@ -168,12 +170,10 @@ class AddUOM extends Component {
 				</Modal>
 				<Modal show={this.state.modalError} onHide={this.closeModalError}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						{this.props.user.site_prefix === null
-							? 'Please add a prefix for your site in the Common Parameters module'
-							: 'All inputs must be filled'}
+						UOM has not been added
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>

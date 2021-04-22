@@ -6,7 +6,8 @@ import Table from "react-bootstrap/Table";
 import Filter from "../../CustomComponents/filter";
 import AddUser from "./addUser";
 import EditUser from "./editUser";
-import EditIcon from "../../../resources/u668.svg";
+import UserModal from "./userModal";
+import FontAwesome from 'react-fontawesome';
 
 class UserTable extends Component {
 	constructor(props) {
@@ -18,7 +19,10 @@ class UserTable extends Component {
 			badge: "",
 			statusFilter: 'Active',
 			roleFilter: 'All',
-			escalationFilter: 'All'
+			escalationFilter: 'All',
+			selectedUser: {},
+			action: '',
+			showUserModal: false
 		};
 	}
 
@@ -63,6 +67,14 @@ class UserTable extends Component {
 		});
 	};
 
+	showUserModal = (selectedUser, action) => {
+		this.setState({
+			selectedUser,
+			action,
+			showUserModal: true
+		})
+	}
+
 	closeAddUser = () => {
 		this.setState({
 			user: false,
@@ -74,6 +86,14 @@ class UserTable extends Component {
 			edit: false,
 		});
 	};
+
+	closeUserModal = () => {
+		this.setState({
+			selectedUser: {},
+			action: '',
+			showUserModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
@@ -108,6 +128,15 @@ class UserTable extends Component {
 						t={t}
 					/>
 				)}
+				<UserModal
+					user={this.props.user}
+					isOpen={this.state.showUserModal}
+					selectedUser={this.state.selectedUser}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeUserModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -132,12 +161,8 @@ class UserTable extends Component {
 								<td>{user.status}</td>
 								<td>{user.escalation_name}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditUser(user.Badge)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditUser(user.Badge)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showUserModal(user, 'Copy')} />
 								</td>
 							</tr>
 						))}

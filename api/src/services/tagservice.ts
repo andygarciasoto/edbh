@@ -42,7 +42,7 @@ export class TagService {
         const tag_id = req.body.tag_id ? req.body.tag_id : null;
         const tag_code = req.body.tag_code ? req.body.tag_code : undefined;
         const tag_name = req.body.tag_name ? req.body.tag_name : undefined;
-        const tag_description = req.body.tag_description ? req.body.tag_description : null;
+        const tag_description = req.body.tag_description;
         const datatype = req.body.datatype ? req.body.datatype : 'int';
         const UOM_code = req.body.UOM_code ? req.body.UOM_code : null;
         const rollover_point = req.body.rollover_point ? req.body.rollover_point : 9999999;

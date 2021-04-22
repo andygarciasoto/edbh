@@ -6,7 +6,9 @@ import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddWorkcell from './addWorkcell';
 import EditWorkcell from './editWorkcell';
-import EditIcon from '../../../resources/u668.svg';
+import WorkcellModal from './workcellModal';
+import FontAwesome from 'react-fontawesome';
+
 
 class Workcells extends Component {
 	constructor(props) {
@@ -16,7 +18,10 @@ class Workcells extends Component {
 			addWorkcell: false,
 			editWorkcell: false,
 			workcell_id: 0,
-			statusFilter: 'Active'
+			statusFilter: 'Active',
+			workcell: {},
+			action: '',
+			showWorkcellModal: false
 		};
 	}
 
@@ -59,6 +64,14 @@ class Workcells extends Component {
 		});
 	};
 
+	showWorkcellModal = (workcell, action) => {
+		this.setState({
+			workcell,
+			action,
+			showWorkcellModal: true
+		})
+	}
+
 	closeEditShift = () => {
 		this.setState({
 			editWorkcell: false,
@@ -68,6 +81,14 @@ class Workcells extends Component {
 	applyFilter = (statusFilter) => {
 		this.setState({ statusFilter }, () => {
 			this.loadData();
+		})
+	}
+
+	closeWorkcellModal = () => {
+		this.setState({
+			workcell: {},
+			action: '',
+			showWorkcellModal: false
 		})
 	}
 
@@ -109,6 +130,15 @@ class Workcells extends Component {
 						t={t}
 					/>
 				)}
+				<WorkcellModal
+					user={this.props.user}
+					isOpen={this.state.showWorkcellModal}
+					workcell={this.state.workcell}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeWorkcellModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -125,12 +155,8 @@ class Workcells extends Component {
 								<td>{workcell.workcell_description}</td>
 								<td>{workcell.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditShift(workcell.workcell_id)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditShift(workcell.workcell_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showWorkcellModal(workcell, 'Copy')} />
 								</td>
 							</tr>
 						))}

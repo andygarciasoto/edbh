@@ -5,8 +5,9 @@ import * as UOMActions from '../../../redux/actions/uomActions';
 import Table from 'react-bootstrap/Table';
 import AddUOM from './addUOM';
 import EditUOM from './editUOM';
+import UOMModal from './uomModal';
 import Filter from '../../CustomComponents/filter';
-import EditIcon from '../../../resources/u668.svg';
+import FontAwesome from 'react-fontawesome';
 
 class UOM extends Component {
 	constructor(props) {
@@ -16,7 +17,10 @@ class UOM extends Component {
 			addUOM: false,
 			editUOM: false,
 			uom_id: 0,
-			statusFilter: 'Active'
+			statusFilter: 'Active',
+			uom: {},
+			action: '',
+			showUOMModal: false
 		};
 	}
 
@@ -71,6 +75,22 @@ class UOM extends Component {
 		});
 	};
 
+	showUOMModal = (uom, action) => {
+		this.setState({
+			uom,
+			action,
+			showUOMModal: true
+		})
+	}
+
+	closeUOMModal = () => {
+		this.setState({
+			uom: {},
+			action: '',
+			showUOMModal: false
+		})
+	}
+
 	render() {
 		const t = this.props.t;
 		return (
@@ -108,6 +128,15 @@ class UOM extends Component {
 						t={t}
 					/>
 				)}
+				<UOMModal
+					user={this.props.user}
+					isOpen={this.state.showUOMModal}
+					uom={this.state.uom}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeUOMModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -128,12 +157,8 @@ class UOM extends Component {
 								<td>{uom.decimals === true ? 'Yes' : 'No'}</td>
 								<td>{uom.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditUOM(uom.UOM_id)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditUOM(uom.UOM_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showUOMModal(uom, 'Copy')} />
 								</td>
 							</tr>
 						))}

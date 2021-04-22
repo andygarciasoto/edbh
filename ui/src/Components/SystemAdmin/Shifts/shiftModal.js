@@ -1,48 +1,67 @@
-/* eslint-disable array-callback-return */
+import Axios from "axios";
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import moment from "moment";
 import { bindActionCreators } from "redux";
 import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Axios from "axios";
-import { Modal, Button, Form, Col, Row } from "react-bootstrap";
 import { API } from "../../../Utils/Constants";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { validateShiftsForm } from '../../../Utils/FormValidations';
-import moment from "moment";
-import _ from 'lodash';
+import "../../../sass/SystemAdmin.scss";
+import _ from "lodash";
 
-export class AddShift extends Component {
+class ShiftModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      shift_name: "",
-      shift_description: "",
-      shift_sequence: 1,
-      start_time: "1:00",
-      start_day: -1,
-      end_time: "1:00",
-      end_day: -1,
-      duration: 0,
-      is_first_shift_of_day: true,
-      status: "Active",
+      shift: props.shift,
+      shift_id: 0,
+      shift_name: '',
+      shift_description: '',
+      shift_sequence: 0,
+      start_time: '',
+      start_day: 0,
+      end_time: '',
+      end_day: 0,
+      is_first_shift_of_day: false,
+      status: '',
       show: false,
-      showForm: true,
       modalError: false,
-      isRepeated: false,
       shiftsArray: [],
-      shiftsOject: {},
-      firstRepeated: false,
       validation: {}
     };
   }
 
   componentDidMount() {
     const { actions } = this.props;
-    return actions.getShifts(this.props.user.site).then((response) => {
+
+    actions.getShifts(this.props.user.site).then((response) => {
       this.setState({
-        shiftsArray: response,
-        shiftsOject: response
+        shiftsArray: response
       });
     });
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!_.isEqual(nextProps.shift, prevState.shift)) {
+      const name = nextProps.action === 'Edit' ? nextProps.shift.shift_name : '';
+      const shift_id = nextProps.action === 'Edit' ? nextProps.shift.shift_id : 0;
+      return {
+        shift: nextProps.shift,
+        shift_id: shift_id,
+        shift_name: name,
+        shift_description: nextProps.shift.shift_description || '',
+        shift_sequence: nextProps.shift.shift_sequence || 0,
+        start_time: nextProps.shift.start_time ? moment('1970-01-01 ' + nextProps.shift.start_time).format('HH:mm') : '',
+        start_day: nextProps.shift.start_time_offset_days || 0,
+        end_time: nextProps.shift.end_time ? moment('1970-01-01 ' + nextProps.shift.end_time).format('HH:mm') : '',
+        end_day: nextProps.shift.end_time_offset_days || 0,
+        is_first_shift_of_day: nextProps.shift.is_first_shift_of_day || false,
+        status: nextProps.shift.status || '',
+        validation: {}
+      };
+    }
+    return null;
   }
 
   handleChange = (event) => {
@@ -55,21 +74,10 @@ export class AddShift extends Component {
     });
   };
 
-  handleClose = () => {
-    this.setState({ showForm: false });
-  };
-
-  closeModalError = () => {
-    this.setState({ modalError: false });
-  };
-
-  closeSuccessModal = () => {
-    this.setState({ show: false });
-  };
-
-  createShift = (e) => {
+  updateShift = (e) => {
     e.preventDefault();
     const {
+      shift_id,
       shift_name,
       shift_description,
       shift_sequence,
@@ -80,7 +88,6 @@ export class AddShift extends Component {
       is_first_shift_of_day,
       status,
     } = this.state;
-
     let url = `${API}/insert_shift`;
     const date = moment().tz(this.props.user.timezone).format("YYYY-MM-DD") + ' 00:00';
 
@@ -89,11 +96,13 @@ export class AddShift extends Component {
     let difference = endTime1.diff(startTime1, 'minutes');
 
     const validation = validateShiftsForm(this.state);
+
     if (
       _.isEmpty(validation)
     ) {
       Axios.put(url, {
-        shift_code: `${this.props.user.site_prefix}-${shift_name}`.replace(/\s+/g, ''),
+        shift_id: shift_id,
+        shift_code: `${this.props.user.site_prefix} - ${shift_name}`,
         shift_name: shift_name,
         shift_description: shift_description,
         shift_sequence: parseInt(shift_sequence, 10),
@@ -109,11 +118,11 @@ export class AddShift extends Component {
       }).then(
         () => {
           this.props.Refresh();
+          this.props.handleClose();
           this.setState({
             show: true,
             validation: {}
           });
-          this.handleClose();
         },
         (error) => {
           this.setState({
@@ -138,14 +147,32 @@ export class AddShift extends Component {
     })
   }
 
+  closeModalMessage = () => {
+    this.setState({
+      show: false,
+      modalError: false
+    });
+  };
+
   render() {
-    const validation = this.state.validation;
+    const {
+      shift_name,
+      shift_description,
+      shift_sequence,
+      start_time,
+      start_day,
+      end_time,
+      end_day,
+      is_first_shift_of_day,
+      status,
+      validation
+    } = this.state;
     const t = this.props.t;
     return (
       <div>
-        <Modal show={this.state.showForm} onHide={this.handleClose} centered>
+        <Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
           <Modal.Header closeButton>
-            <Modal.Title>{t('Add Shift')}</Modal.Title>
+            <Modal.Title>{t(this.props.action + ' Shift')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -155,7 +182,7 @@ export class AddShift extends Component {
                   <Form.Control
                     type="text"
                     name="shift_name"
-                    value={this.state.shift_name}
+                    value={shift_name}
                     autoComplete={"false"}
                     onChange={this.handleChange}
                   />
@@ -168,8 +195,8 @@ export class AddShift extends Component {
                   <Form.Control
                     as="textarea"
                     name="shift_description"
-                    value={this.state.shift_description}
                     onChange={this.handleChange}
+                    value={shift_description}
                     rows={3} />
                 </Col>
               </Form.Group>
@@ -179,7 +206,7 @@ export class AddShift extends Component {
                   <Form.Control
                     type="number"
                     name="shift_sequence"
-                    value={this.state.shift_sequence}
+                    value={shift_sequence}
                     autoComplete={"false"}
                     onChange={this.handleChange}
                     min={1}
@@ -194,7 +221,7 @@ export class AddShift extends Component {
                     type='time'
                     name="start_time"
                     onChange={this.handleHour}
-                    value={this.state.start_time}
+                    value={start_time}
                   />
                   <Form.Text className='validation'>{validation.start_time}</Form.Text>
                 </Col>
@@ -204,7 +231,7 @@ export class AddShift extends Component {
                     as='select'
                     name='start_day'
                     onChange={this.handleChange}
-                    value={this.state.start_day}
+                    value={start_day}
                   >
                     <option value={-1}>Yesterday</option>
                     <option value={0}>Today</option>
@@ -219,7 +246,7 @@ export class AddShift extends Component {
                     type='time'
                     name="end_time"
                     onChange={this.handleHour}
-                    value={this.state.end_time}
+                    value={end_time}
                   />
                   <Form.Text className='validation'>{validation.end_time}</Form.Text>
                 </Col>
@@ -229,7 +256,7 @@ export class AddShift extends Component {
                     as='select'
                     name='end_day'
                     onChange={this.handleChange}
-                    value={this.state.end_day}
+                    value={end_day}
                   >
                     <option value={-1}>Yesterday</option>
                     <option value={0}>Today</option>
@@ -244,7 +271,7 @@ export class AddShift extends Component {
                     as="select"
                     name="is_first_shift_of_day"
                     onChange={this.handleChangeActive}
-                    value={this.state.is_first_shift_of_day}
+                    value={is_first_shift_of_day}
                   >
                     <option value={true}>Yes</option>
                     <option value={false}>No</option>
@@ -259,7 +286,7 @@ export class AddShift extends Component {
                     as="select"
                     name="status"
                     onChange={this.handleChange}
-                    value={this.state.status}
+                    value={status}
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -269,34 +296,32 @@ export class AddShift extends Component {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="Primary" onClick={(e) => this.createShift(e)}>
+            <Button variant="Primary" onClick={(e) => this.updateShift(e)}>
               {t('Confirm')}
             </Button>
-            <Button variant="secondary" onClick={this.handleClose}>
+            <Button variant="secondary" onClick={this.props.handleClose}>
               {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal show={this.state.show} onHide={this.closeSuccessModal}>
+        <Modal show={this.state.show} onHide={this.closeModalMessage}>
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Shift has been added</Modal.Body>
+          <Modal.Body>Shift has been copied</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeSuccessModal}>
+            <Button variant="secondary" onClick={this.closeModalMessage}>
               Close
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal show={this.state.modalError} onHide={this.closeModalError}>
+        <Modal show={this.state.modalError} onHide={this.closeModalMessage}>
           <Modal.Header closeButton>
             <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            Shift has not been added
-          </Modal.Body>
+          <Modal.Body>Shift has not been copied</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModalError}>
+            <Button variant="secondary" onClick={this.closeModalMessage}>
               Close
             </Button>
           </Modal.Footer>
@@ -312,4 +337,4 @@ export const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(AddShift);
+export default connect(null, mapDispatch)(ShiftModal);

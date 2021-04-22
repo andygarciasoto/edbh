@@ -6,7 +6,8 @@ import Table from 'react-bootstrap/Table';
 import EditDisplay from './editDisplay';
 import Filter from '../../CustomComponents/filter';
 import AddDisplay from './addDisplay';
-import EditIcon from '../../../resources/u668.svg';
+import DisplayModal from './displayModal';
+import FontAwesome from 'react-fontawesome';
 
 class Display extends Component {
 	constructor(props) {
@@ -16,7 +17,10 @@ class Display extends Component {
 			addDisplay: false,
 			editDisplay: false,
 			display_id: 0,
-			statusFilter: 'Active'
+			statusFilter: 'Active',
+			display: {},
+			action: '',
+			showDisplayModal: false
 		};
 	}
 
@@ -71,6 +75,22 @@ class Display extends Component {
 		});
 	};
 
+	showDisplayModal = (display, action) => {
+		this.setState({
+			display,
+			action,
+			showDisplayModal: true
+		})
+	}
+
+	closeDisplayModal = () => {
+		this.setState({
+			display: {},
+			action: '',
+			showDisplayModal: false
+		})
+	}
+
 	render() {
 		const t = this.props.t;
 		return (
@@ -109,6 +129,15 @@ class Display extends Component {
 						t={t}
 					/>
 				)}
+				<DisplayModal
+					user={this.props.user}
+					isOpen={this.state.showDisplayModal}
+					display={this.state.display}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeDisplayModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
@@ -125,12 +154,8 @@ class Display extends Component {
 								<td>{display.asset_code}</td>
 								<td>{display.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditDisplay(display.assetdisplaysystem_id)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditDisplay(display.assetdisplaysystem_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showDisplayModal(display, 'Copy')} />
 								</td>
 							</tr>
 						))}
