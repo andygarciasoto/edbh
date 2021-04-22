@@ -86,7 +86,7 @@ ELSE
 			   ,@asset_name
 			   ,@asset_description
 			   ,@asset_level
-			   ,@asset_code
+			   ,CASE WHEN @asset_level = 'Site' THEN @asset_code ELSE @site_code END
 			   ,@parent_asset_code
 			   ,@automation_level
 			   ,@include_in_escalation
