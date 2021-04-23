@@ -118,7 +118,7 @@ class AddUser extends Component {
   renderEscalation(escalation, index) {
     return (
       <option value={escalation.escalation_id} key={index}>
-        {escalation.escalation_name}
+        {escalation.escalation_name + '-' + escalation.escalation_group + '-' + escalation.escalation_hours}
       </option>
     );
   }
@@ -208,7 +208,7 @@ class AddUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Escalation')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={this.state.escalation_id}
@@ -223,7 +223,7 @@ class AddUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Role')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={this.state.role_name}
@@ -237,7 +237,7 @@ class AddUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Status')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={this.state.status}
@@ -252,7 +252,7 @@ class AddUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Site')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as='select'
                     name='site'
