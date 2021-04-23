@@ -20,7 +20,7 @@ class EditUOM extends Component {
 			show: false,
 			showForm: true,
 			modalError: false,
-			validation: {}
+			validation: {},
 		};
 	}
 
@@ -36,7 +36,7 @@ class EditUOM extends Component {
 				name: response[0].UOM_name,
 				description: response[0].UOM_description,
 				decimals: response[0].decimals,
-				status: response[0].status
+				status: response[0].status,
 			});
 		});
 	};
@@ -76,19 +76,20 @@ class EditUOM extends Component {
 				},
 				(error) => {
 					this.setState({
-						modalError: true
+						modalError: true,
 					});
 				}
 			);
 		} else {
 			this.setState({
-				validation
+				validation,
 			});
 		}
 	};
 
 	handleClose = () => {
 		this.setState({ showForm: false });
+		this.props.closeForm();
 	};
 
 	closeModalError = () => {
@@ -111,37 +112,44 @@ class EditUOM extends Component {
 					<Modal.Body>
 						<Form>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Form.Label column sm={2}>
+									{t('Name')}:
+								</Form.Label>
 								<Col sm={10}>
 									<Form.Control
 										type="text"
 										name="name"
 										value={this.state.name}
-										autoComplete={"false"}
+										autoComplete={'false'}
 										onChange={this.handleChange}
 									/>
-									<Form.Text className='validation'>{validation.name}</Form.Text>
+									<Form.Text className="validation">{validation.name}</Form.Text>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+								<Form.Label column sm={2}>
+									{t('Description')}:
+								</Form.Label>
 								<Col sm={10}>
 									<Form.Control
 										as="textarea"
 										name="description"
 										value={this.state.description}
 										onChange={this.handleChange}
-										rows={3} />
+										rows={3}
+									/>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Decimals')}:</Form.Label>
+								<Form.Label column sm={2}>
+									{t('Decimals')}:
+								</Form.Label>
 								<Col sm={4}>
 									<Form.Control
 										as="select"
 										value={this.state.decimals}
-										name='decimals'
-										autoComplete={"false"}
+										name="decimals"
+										autoComplete={'false'}
 										onChange={this.handleChange}
 									>
 										<option value={0}>No</option>
@@ -150,13 +158,15 @@ class EditUOM extends Component {
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
-								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Form.Label column sm={2}>
+									{t('Status')}:
+								</Form.Label>
 								<Col sm={4}>
 									<Form.Control
 										as="select"
 										value={this.state.status}
-										name='status'
-										autoComplete={"false"}
+										name="status"
+										autoComplete={'false'}
 										onChange={this.handleChange}
 									>
 										<option value="Active">Active</option>
@@ -190,9 +200,7 @@ class EditUOM extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>
-						UOM has not been updated
-					</Modal.Body>
+					<Modal.Body>UOM has not been updated</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>
 							Close

@@ -64,7 +64,7 @@ class EditUser extends Component {
   renderEscalation(escalation, index) {
     return (
       <option value={escalation.escalation_id} key={index}>
-        {escalation.escalation_name}
+        {escalation.escalation_name + '-' + escalation.escalation_group + '-' + escalation.escalation_hours}
       </option>
     );
   }
@@ -207,7 +207,7 @@ class EditUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Escalation')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={escalation_id}
@@ -222,7 +222,7 @@ class EditUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Role')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={role_id}
@@ -236,7 +236,7 @@ class EditUser extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Form.Label column sm={3}>{t('Status')}:</Form.Label>
-                <Col sm={5}>
+                <Col sm={7}>
                   <Form.Control
                     as="select"
                     value={status}

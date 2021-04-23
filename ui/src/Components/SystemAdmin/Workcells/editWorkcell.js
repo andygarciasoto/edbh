@@ -47,6 +47,7 @@ class EditWorkcell extends Component {
 
 	handleClose = () => {
 		this.setState({ showForm: false });
+		this.props.closeForm();
 	};
 
 	handle = () => {
