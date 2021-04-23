@@ -259,6 +259,7 @@ export class Step1 extends Component {
 								name='level'
 								onChange={this.handleChange}
 								value={this.state.level}
+								disabled={this.props.action !== 'Create'}
 							>
 								<option value='Site'>Site</option>
 								<option value='Area'>Area</option>

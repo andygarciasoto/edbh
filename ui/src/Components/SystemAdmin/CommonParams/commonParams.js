@@ -3,15 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as CommonActions from '../../../redux/actions/commonActions';
 import * as UserActions from "../../../redux/actions/userActions";
-import Table from "react-bootstrap/Table";
 import Axios from 'axios';
 import { API } from '../../../Utils/Constants';
 import { Form, Col, Modal, Button, Row, InputGroup } from 'react-bootstrap';
 import { validateCommonParametersForm } from '../../../Utils/FormValidations';
-import EscalationModal from './escalationModal';
-import EscalationCreateModal from './escalationCreateModal';
+import { getResponseFromGeneric } from '../../../Utils/Requests';
 import _ from 'lodash';
-import FontAwesome from 'react-fontawesome';
 
 
 class CommonParams extends Component {
@@ -39,11 +36,9 @@ class CommonParams extends Component {
 			show: false,
 			readOnly: true,
 			validation: {},
-			EscalationData: [],
-			escalation: {},
-			action: '',
-			showEscalationModal: false,
-			showEscalationCreateModal: false
+			escalationlevel1: 0,
+			escalationlevel2: 0,
+			escalationlevel3: 0
 		};
 	}
 
@@ -53,13 +48,19 @@ class CommonParams extends Component {
 
 	loadData = () => {
 		const { actions } = this.props;
-
+		const params = {
+			site_id: this.props.user.site
+		}
 		Promise.all([
 			actions.getParams(this.props.user.site),
 			actions.getTimezones(),
 			actions.getLanguages(),
-			actions.getEscalation()
+			actions.getEscalationFilter(params),
+			actions.getEscalationFilter()
 		]).then((response) => {
+			const escalationlevel1 = _.isEmpty(response[3]) ? 0 : response[3][0].escalation_hours;
+			const escalationlevel2 = _.isEmpty(response[3]) ? 0 : response[3][1].escalation_hours;
+			const escalationlevel3 = _.isEmpty(response[3]) ? 0 : response[3][2].escalation_hours;
 			this.setState({
 				defaultRouted: response[0].default_routed_cycle_time,
 				defaultLunch: response[0].lunch_minutes,
@@ -78,7 +79,11 @@ class CommonParams extends Component {
 				status: response[0].status,
 				timezonesData: response[1],
 				languagesData: response[2],
-				EscalationData: response[3]
+				escalationlevel1,
+				escalationlevel2,
+				escalationlevel3,
+				siteEscalations: response[3],
+				newSiteEscalations: response[4]
 			});
 		});
 	}
@@ -144,6 +149,11 @@ class CommonParams extends Component {
 			defaultMinutes,
 			siteCode,
 			status,
+			escalationlevel1,
+			escalationlevel2,
+			escalationlevel3,
+			siteEscalations,
+			newSiteEscalations
 		} = this.state;
 
 		let url = `${API}/insert_commonparameter`;
@@ -154,6 +164,7 @@ class CommonParams extends Component {
 		if (
 			_.isEmpty(validation)
 		) {
+			const escalation_group = _.isEmpty(siteEscalations) ? 'Group ' + newSiteEscalations[0]["Group to create"] : siteEscalations[0].escalation_group;
 			Axios.put(url, {
 				site_id: this.props.user.site,
 				site_name: this.props.user.site_name,
@@ -170,12 +181,38 @@ class CommonParams extends Component {
 				assembly_url: assembly_url,
 				timezone_id: parseInt(timezone_id, 10),
 				language_id: parseInt(language_id, 10),
+				escalation_group: escalation_group
 			}).then(
-				() => {
-					this.setState({
-						show: true,
-					});
-					this.loadData();
+				async () => {
+					let arrayData = [];
+					for (let i = 0; i < 3; i++) {
+						arrayData.push({
+							escalation_name: i === 0 ? 'Site Manager' : (i === 1 ? ' Value Stream Manager' : 'Plant Manager'),
+							escalation_group: escalation_group,
+							escalation_level: i + 1,
+							escalation_hours: i === 0 ? escalationlevel1 : (i === 1 ? escalationlevel2 : escalationlevel3),
+							status: 'Active'
+						});
+					}
+					const data = {
+						site_id: this.props.user.site,
+						table: 'Escalation',
+						data: arrayData
+					};
+
+					let res = await getResponseFromGeneric('put', API, '/dragndrop', {}, {}, data);
+					if (res.status !== 200) {
+						this.setState({
+							modalError: true,
+							validation: {}
+						});
+					} else {
+						this.setState({
+							show: true,
+							validation: {}
+						});
+						this.loadData();
+					}
 				},
 				(error) => {
 					console.log(error);
@@ -382,7 +419,44 @@ class CommonParams extends Component {
 							/>
 							<Form.Text className='validation'>{validation.siteCode}</Form.Text>
 						</Col>
-						<Col md={{ span: 4, offset: 3 }}>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Level 1 Site Manager Escalation Hours')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="escalationlevel1"
+								value={this.state.escalationlevel1}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
+						</Col>
+						<Form.Label column sm={2}>{t('Level 2 Value Stream Manager Escalation Hours')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="escalationlevel2"
+								value={this.state.escalationlevel2}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
+						</Col>
+					</Form.Group>
+					<Form.Group as={Row}>
+						<Form.Label column sm={2}>{t('Level 3 Plant Manager Escalation Hour')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type="number"
+								name="escalationlevel3"
+								value={this.state.escalationlevel3}
+								autoComplete={"false"}
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
+						</Col>
+						<Col md={{ span: 3, offset: 5 }}>
 							<Button variant="outline-primary" className='commonParamBtn' onClick={(e) => this.updateParams(e)}>
 								{t('Confirm')}
 							</Button>
@@ -392,52 +466,6 @@ class CommonParams extends Component {
 						</Col>
 					</Form.Group>
 				</Form>
-				<div className='escalationContent'>
-					<Button variant='outline-success' className='btnNGroup' onClick={() => this.showEscalationCreateModal()}>Create New Group</Button>
-					<Table responsive="sm" bordered={true}>
-						<thead>
-							<tr>
-								<th>{t('Name')}</th>
-								<th>{t('Group')}</th>
-								<th>{t('Level')}</th>
-								<th>{t('Hours')}</th>
-								<th>{t('Status')}</th>
-								<th>{t('Actions')}</th>
-							</tr>
-						</thead>
-						<tbody>
-							{this.state.EscalationData.map((escalation, index) => (
-								<tr key={index}>
-									<td>{escalation.escalation_name}</td>
-									<td>{escalation.escalation_group}</td>
-									<td>{escalation.escalation_level}</td>
-									<td>{escalation.escalation_hours}</td>
-									<td>{escalation.status}</td>
-									<td>
-										<FontAwesome name='edit fa-2x' onClick={() => this.showEscalationModal(escalation, 'Edit')} />
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</Table>
-					<EscalationModal
-						user={this.props.user}
-						isOpen={this.state.showEscalationModal}
-						escalation={this.state.escalation}
-						action={this.state.action}
-						Refresh={this.loadData}
-						handleClose={this.closeEscalationModal}
-						t={t}
-					/>
-					<EscalationCreateModal
-						user={this.props.user}
-						isOpen={this.state.showEscalationCreateModal}
-						EscalationData={this.state.EscalationData}
-						Refresh={this.loadData}
-						handleClose={this.closeEscalationModal}
-						t={t}
-					/>
-				</div>
 				<Modal show={this.state.show} onHide={this.handleClose}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>

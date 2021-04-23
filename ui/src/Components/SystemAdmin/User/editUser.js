@@ -32,11 +32,13 @@ class EditUser extends Component {
 
   componentDidMount() {
     const { actions } = this.props;
-
+    const params = {
+      site_id: this.props.user.site
+    }
     return Promise.all([
       actions.getUserInfo(this.props.user.site, this.props.badge),
       actions.getRoles(),
-      actions.getEscalation(),
+      actions.getEscalationFilter(params)
     ]).then((response) => {
       this.setState({
         badge: response[0].Badge,
@@ -64,7 +66,7 @@ class EditUser extends Component {
   renderEscalation(escalation, index) {
     return (
       <option value={escalation.escalation_id} key={index}>
-        {escalation.escalation_name + '-' + escalation.escalation_group + '-' + escalation.escalation_hours}
+        {escalation.escalation_name + ' - ' + escalation.escalation_hours + ' hours'}
       </option>
     );
   }

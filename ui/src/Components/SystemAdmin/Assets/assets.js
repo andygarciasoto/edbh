@@ -103,12 +103,12 @@ class Assets extends Component {
 							<th>{t('Level')}</th>
 							<th>{t('Parent Code')}</th>
 							<th>{t('Automation Level')}</th>
-							<th style={{ maxWidth: '150px' }}>{t('Target Percent of Ideal')}</th>
-							<th>{t('Include in Escalation')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Target Percent of Ideal')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Include in Escalation')}</th>
 							<th>{t('Workcell')}</th>
 							<th>{t('Value Stream')}</th>
-							<th>{t('Multi Sign-In Machine')}</th>
-							<th>{t('Unscheduled Lunchs/Breaks')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Multi Sign-In Machine')}</th>
+							<th style={{ maxWidth: '150px' }}>{t('Unscheduled Lunchs/Breaks')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
 						</tr>

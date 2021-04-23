@@ -99,3 +99,15 @@ export const getEscalation = () => {
     });
   };
 };
+
+export const getEscalationFilter = (params) => {
+  return (dispatch) => {
+    return genericRequest('get', API, '/escalation', null, params).then((response) => {
+      dispatch({
+        type: GET_ESCALATION,
+        escalation: response.data,
+      });
+      return response.data;
+    });
+  };
+};

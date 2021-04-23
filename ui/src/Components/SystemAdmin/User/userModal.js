@@ -33,9 +33,12 @@ class UserModal extends Component {
 
   componentDidMount() {
     const { actions } = this.props;
+    const params = {
+      site_id: this.props.user.site
+    }
     return Promise.all([
       actions.getRoles(),
-      actions.getEscalation(),
+      actions.getEscalationFilter(params)
     ]).then((response) => {
       const role_id = _.find(response[0], { name: 'Operator' }).role_id;
       this.setState({
@@ -77,7 +80,7 @@ class UserModal extends Component {
   renderEscalation(escalation, index) {
     return (
       <option value={escalation.escalation_id} key={index}>
-        {escalation.escalation_name + '-' + escalation.escalation_group + '-' + escalation.escalation_hours}
+        {escalation.escalation_name + ' - ' + escalation.escalation_hours + ' hours'}
       </option>
     );
   }

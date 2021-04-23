@@ -34,10 +34,12 @@ class AddUser extends Component {
 
   componentDidMount() {
     const { actions } = this.props;
-
+    const params = {
+      site_id: this.props.user.site
+    }
     return Promise.all([
       actions.getRoles(),
-      actions.getEscalation()
+      actions.getEscalationFilter(params)
     ]).then((response) => {
       this.setState({
         roles: response[0],
@@ -118,7 +120,7 @@ class AddUser extends Component {
   renderEscalation(escalation, index) {
     return (
       <option value={escalation.escalation_id} key={index}>
-        {escalation.escalation_name + '-' + escalation.escalation_group + '-' + escalation.escalation_hours}
+        {escalation.escalation_name + ' - ' + escalation.escalation_hours + ' hours'}
       </option>
     );
   }
