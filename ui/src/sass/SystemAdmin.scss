@@ -53,6 +53,11 @@
 	float        : right;
 }
 
+.table thead th {
+	text-align    : left;
+	vertical-align: top;
+}
+
 .barStepsAsset {
 	.active {
 		color: #49b5f3;
