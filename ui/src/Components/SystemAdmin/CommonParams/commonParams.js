@@ -187,7 +187,7 @@ class CommonParams extends Component {
 					let arrayData = [];
 					for (let i = 0; i < 3; i++) {
 						arrayData.push({
-							escalation_name: i === 0 ? 'Site Manager' : (i === 1 ? ' Value Stream Manager' : 'Plant Manager'),
+							escalation_name: i === 0 ? 'Site Manager' : (i === 1 ? 'Value Stream Manager' : 'Plant Manager'),
 							escalation_group: escalation_group,
 							escalation_level: i + 1,
 							escalation_hours: i === 0 ? escalationlevel1 : (i === 1 ? escalationlevel2 : escalationlevel3),
