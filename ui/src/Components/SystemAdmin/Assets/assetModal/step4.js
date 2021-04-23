@@ -40,9 +40,16 @@ export class Step4 extends Component {
 			status: 'Active'
 		};
 
+		const params2 = {
+			site_id: this.props.user.site,
+			asset_id: this.state.asset2.asset_id,
+			status: 'Active'
+		};
+
 		return Promise.all([
 			actions.getBreakFilter(params),
-			actions.getBreakFilter(params1)
+			actions.getBreakFilter(params1),
+			actions.getBreakFilter(params2)
 		]).then((response) => {
 			const BreakData = response[0];
 			const completeListTabs = _.map(BreakData, (breakObject) => {
@@ -55,7 +62,8 @@ export class Step4 extends Component {
 				return breakObject;
 			});
 
-			const selectedListTabs = _.map(response[1], (breakObject) => {
+			const breaksToUse = (this.props.action === 'Copy' && _.isEmpty(response[1]) ? response[2] : response[1]) || [];
+			const selectedListTabs = _.map(breaksToUse, (breakObject) => {
 				delete breakObject.asset_count;
 				breakObject.id = breakObject.unavailable_code + '-' + breakObject.unavailable_name + '-' + breakObject.unavailable_description + '-' + breakObject.start_time + '-' +
 					breakObject.end_time + '-' + breakObject.duration_in_minutes + '-' + breakObject.status;

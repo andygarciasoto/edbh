@@ -41,9 +41,16 @@ export class Step3 extends Component {
 			status: 'Active'
 		};
 
+		const params3 = {
+			site_id: this.props.user.site,
+			asset_id: this.state.asset2.asset_id,
+			status: 'Active'
+		};
+
 		return Promise.all([
 			actions.getReasonByFilter(params),
-			actions.getReasonByFilter(params2)
+			actions.getReasonByFilter(params2),
+			actions.getReasonByFilter(params3)
 		]).then((response) => {
 			const ReasonData = response[0];
 			const completeListTabs = _.map(ReasonData, (reason) => {
@@ -54,7 +61,8 @@ export class Step3 extends Component {
 				return reason;
 			});
 
-			const associateReasons = _.map(response[1], (reason) => {
+			const reasonsToUse = (this.props.action === 'Copy' && _.isEmpty(response[1]) ? response[2] : response[1]) || [];
+			const associateReasons = _.map(reasonsToUse, (reason) => {
 				delete reason.COUNT;
 				reason.asset_count = 0;
 				reason.id = reason.dtreason_code + '-' + reason.dtreason_name + '-' + reason.dtreason_description + '-' + reason.dtreason_category + '-' +

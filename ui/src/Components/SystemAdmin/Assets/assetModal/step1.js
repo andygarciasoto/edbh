@@ -13,16 +13,19 @@ export class Step1 extends Component {
 
 	constructor(props) {
 		super(props);
+		const name = props.action === 'Copy' && _.isEqual(props.asset, props.asset2) ? '' : props.asset.asset_name;
+		const code = props.action === 'Copy' && _.isEqual(props.asset, props.asset2) ? '' : props.asset.asset_code;
 		this.state = {
 			asset: props.asset || {},
-			code: props.asset.asset_code || '',
+			asset2: props.asset2 || {},
+			code: code || '',
 			automation_level: props.asset.automation_level || 'Automated',
-			name: props.asset.asset_name || '',
+			name: name || '',
 			description: props.asset.asset_description || '',
 			workcell: props.asset.grouping1 || '',
 			level: props.asset.asset_level || 'Cell',
 			site_code: props.asset.site_code || '',
-			defaultPercent: props.asset.target_percent_of_ideal ? props.asset.target_percent_of_ideal * 100 : '',
+			defaultPercent: props.asset.target_percent_of_ideal ? props.asset.target_percent_of_ideal * 100 : 0,
 			parent_code: props.asset.parent_asset_code || '',
 			escalation: props.asset.include_in_escalation || false,
 			status: props.asset.status || 'Active',
@@ -56,16 +59,19 @@ export class Step1 extends Component {
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (!_.isEqual(nextProps.asset, prevState.asset)) {
+			const name = nextProps.action === 'Copy' && _.isEqual(nextProps.asset, nextProps.asset2) ? '' : nextProps.asset.asset_name;
+			const code = nextProps.action === 'Copy' && _.isEqual(nextProps.asset, nextProps.asset2) ? '' : nextProps.asset.asset_code;
 			return {
 				asset: nextProps.asset,
-				code: nextProps.asset.asset_code,
+				asset2: nextProps.asset2,
+				code: code,
 				automation_level: nextProps.asset.automation_level,
-				name: nextProps.asset.asset_name,
+				name: name,
 				description: nextProps.asset.asset_description,
 				workcell: nextProps.asset.grouping1 || '',
 				level: nextProps.asset.asset_level,
 				site_code: nextProps.asset.site_code,
-				defaultPercent: nextProps.asset.target_percent_of_ideal ? nextProps.asset.target_percent_of_ideal * 100 : '',
+				defaultPercent: nextProps.asset.target_percent_of_ideal ? nextProps.asset.target_percent_of_ideal * 100 : 0,
 				parent_code: nextProps.asset.parent_asset_code || '',
 				escalation: nextProps.asset.include_in_escalation,
 				status: nextProps.asset.status,
@@ -144,6 +150,8 @@ export class Step1 extends Component {
 			status,
 			defaultPercent,
 			multiple,
+			asset,
+			asset2
 		} = this.state;
 
 		const newPercent = defaultPercent / 100;
@@ -152,8 +160,9 @@ export class Step1 extends Component {
 
 
 		if (_.isEmpty(validation)) {
+			console.log(code);
 			const new_code = code === '' ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
-			const asset_id = this.props.asset.asset_id;
+			const asset_id = this.props.action === 'Copy' && _.isEqual(asset, asset2) ? 0 : asset.asset_id;
 			genericRequest('put', API, '/insert_asset', null, null, {
 				site_id: this.props.user.site,
 				asset_id: asset_id,
@@ -395,7 +404,7 @@ export class Step1 extends Component {
 									</Col>
 								</Form.Group>
 								: null}
-							{this.props.action !== 'Create' || (this.props.action === 'Create' && this.props.asset.asset_id) ?
+							{this.props.action === 'Edit' || (this.props.action === 'Create' && this.props.asset.asset_id) || (this.props.action === 'Copy' && !_.isEqual(this.state.asset, this.state.asset2)) ?
 								<button className="button-next" onClick={(e) => this.props.nextStep(e)}>{t('Next Step') + '>>'}</button>
 								: null}
 						</div>

@@ -16,6 +16,7 @@ export class Step2 extends Component {
 			asset: props.asset,
 			asset2: props.asset2,
 			tag: {},
+			code: '',
 			status: 'Active',
 			name: '',
 			uom_code: 0,
@@ -42,19 +43,28 @@ export class Step2 extends Component {
 			asset_id: this.state.asset.asset_id
 		};
 
+		const params2 = {
+			site_id: this.props.user.site,
+			asset_id: this.state.asset2.asset_id
+		};
+
 		return Promise.all([
 			actions.getUOMFilter(params),
-			actions.getTagsFilter(params)
+			actions.getTagsFilter(params),
+			actions.getTagsFilter(params2)
 		]).then(
 			(response) => {
 				const uomData = response[0];
-				const tag = response[1][0] || {};
+				const tag = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? response[2][0] : response[1][0]) || {};
+				const name = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? '' : tag.tag_name) || '';
+				const code = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? '' : tag.tag_code) || '';
 				this.setState({
 					uomData,
 					tag,
+					code,
 					uom_code: tag.UOM_code || (uomData[0] ? uomData[0].UOM_code : 0),
 					status: tag.status || 'Active',
-					name: tag.tag_name || '',
+					name,
 					description: tag.tag_description || '',
 					rollover: tag.rollover_point || 999999,
 					data_type: tag.datatype || 'Integer',
@@ -92,15 +102,16 @@ export class Step2 extends Component {
 
 	createTag = (e) => {
 		e.preventDefault();
-		const { tag, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
+		const { tag, code, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
 		var url = `${API}/insert_tag`;
 
 		const validation = validateTagForm(this.state);
 
 		if (_.isEmpty(validation)) {
-			const new_code = !tag.tag_id ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : tag.tag_code;
+			const new_code = code === '' ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
+			const tag_id = code === '' ? 0 : tag.tag_id;
 			Axios.put(url, {
-				tag_id: tag.tag_id,
+				tag_id: tag_id,
 				tag_code: new_code,
 				tag_name: name,
 				tag_description: description,

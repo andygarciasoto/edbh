@@ -131,7 +131,7 @@ class Assets extends Component {
 								<td>{asset.status}</td>
 								<td>
 									<FontAwesome name='edit fa-2x' onClick={() => this.showAssetModal(asset, 'Edit')} />
-									{/* <FontAwesome name='copy fa-2x' onClick={() => this.showAssetModal(asset, 'Copy')} /> */}
+									<FontAwesome name='copy fa-2x' onClick={() => this.showAssetModal(asset, 'Copy')} />
 								</td>
 							</tr>
 						))}

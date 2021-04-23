@@ -28,7 +28,7 @@ class AssetModal extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.action !== 'Create' && !_.isEqual(nextProps.asset, prevState.asset)) {
+        if (nextProps.isOpen && _.isEmpty(prevState.asset)) {
             return {
                 asset: nextProps.asset,
                 asset2: nextProps.asset,
@@ -38,6 +38,17 @@ class AssetModal extends Component {
                 step4: false,
                 showFooter: _.isEmpty(nextProps.asset) || nextProps.asset.asset_level === 'Cell'
             };
+        }
+        if (!nextProps.isOpen) {
+            return {
+                asset: {},
+                asset2: {},
+                step1: true,
+                step2: false,
+                step3: false,
+                step4: false,
+                showFooter: true
+            }
         }
         return null;
     }
@@ -125,6 +136,7 @@ class AssetModal extends Component {
                                 nextStep={(e) => this.assetSteps(2, e)}
                                 user={this.props.user}
                                 asset={this.state.asset}
+                                asset2={this.state.asset2}
                                 action={this.props.action}
                                 showFooter={this.hideSteps}
                                 updateAssetByCode={this.updateAssetByCode}
