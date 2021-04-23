@@ -12,13 +12,14 @@ export class EscalationService {
     public async getEscalation(req: Request, res: Response) {
         const site_id = req.query.site_id ? req.query.site_id : undefined;
         let escalation: any;
+
+        if (!site_id || site_id === undefined || site_id === null) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
         try {
-            if (!site_id || site_id === null || site_id === undefined) {
-                escalation = await this.escalationrepository.getEscalation();
-            } else {
-                escalation = await this.escalationrepository.getEscalationBySite(site_id);
-            }
-        } catch (err) {
+            escalation = await this.escalationrepository.getEscalation(site_id);
+        }
+        catch (err) {
             return res.status(500).json({ message: err.message });
         }
         return res.status(200).json(escalation);
@@ -33,7 +34,7 @@ export class EscalationService {
         const escalation_id = req.body.escalation_id ? req.body.escalation_id : null;
 
         if (escalation_name === undefined || escalation_group === undefined || escalation_level === undefined || escalation_hours === undefined) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters"});
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let escalation: any;
         try {

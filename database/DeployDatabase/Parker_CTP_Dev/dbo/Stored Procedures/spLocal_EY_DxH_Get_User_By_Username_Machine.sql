@@ -91,6 +91,7 @@ BEGIN
 		E.escalation_name as escalation_name,
 		E.escalation_level as escalation_level,
 		E.escalation_hours as escalation_hours,
+		E.escalation_group as escalation_group,
 		TFDU.Site AS site,
 		@site_code AS site_code,
 		CP.site_name,

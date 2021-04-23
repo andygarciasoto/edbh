@@ -3,7 +3,7 @@
 /****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_CommonParameters]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
--- exec spLocal_EY_DxH_Put_CommonParameters 1, 'Eaton', -60, 0.9, 20, 300, 480, 'Active', 10080, 20, 30, 'Eaton', 'http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder', 36, 1
+-- exec spLocal_EY_DxH_Put_CommonParameters 1, 'Eaton', -60, 0.9, 20, 300, 480, 'Active', 10080, 20, 30, 'Eaton', 'http://tfd036w04.us.parker.corp/jTrax/DxHTrigger/api/assemblyorder', 36, 1, 'Group 1'
 
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommonParameters] 
 	@site_id							AS INT,
@@ -20,7 +20,8 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommonParameters]
 	@site_prefix						AS NVARCHAR(100),
 	@assembly_url						AS NVARCHAR(256),			
 	@timezone_id						AS INT,
-	@language_id						AS INT		
+	@language_id						AS INT,
+	@escalation_group					AS NVARCHAR(50)	
     
 AS  BEGIN 
 
@@ -45,7 +46,8 @@ AS  BEGIN
 			timezone_id = @timezone_id,
 			language_id = @language_id,
 			last_modified_by = 'Administration Tool',
-			last_modified_on = GETDATE()
+			last_modified_on = GETDATE(),
+			escalation_group = @escalation_group
 			WHERE
 			site_id = @site_id
 		END
@@ -70,7 +72,8 @@ AS  BEGIN
            ,entered_by
            ,entered_on
            ,last_modified_by
-           ,last_modified_on)
+           ,last_modified_on
+		   ,escalation_group)
 
 		VALUES
            (@site_id
@@ -91,6 +94,7 @@ AS  BEGIN
            ,'Administration Tool'
            ,GETDATE()
            ,'Administration Tool'
-           ,GETDATE())
+           ,GETDATE()
+		   ,@escalation_group)
 		END
 	END

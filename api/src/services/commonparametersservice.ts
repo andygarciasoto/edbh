@@ -25,13 +25,14 @@ export class CommonParametersService {
         const assembly_url = req.body.assembly_url;
         const timezone_id = req.body.timezone_id ? req.body.timezone_id : null;
         const language_id = req.body.language_id ? req.body.language_id : null;
+        const escalation_group = req.body.escalation_group ? req.body.escalation_group : null;
 
         if (site_id === undefined || site_name === undefined) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let commonparameters: any;
         try {
-            commonparameters = await this.commonparametersrepository.putCommonParameter(site_id, site_name, production_day_offset_minutes, default_target_percent_of_ideal, default_setup_minutes, default_routed_cycle_time, inactive_timeout_minutes, status, summary_timeout, break_minutes, lunch_minutes, site_prefix, assembly_url, timezone_id, language_id);
+            commonparameters = await this.commonparametersrepository.putCommonParameter(site_id, site_name, production_day_offset_minutes, default_target_percent_of_ideal, default_setup_minutes, default_routed_cycle_time, inactive_timeout_minutes, status, summary_timeout, break_minutes, lunch_minutes, site_prefix, assembly_url, timezone_id, language_id, escalation_group);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
