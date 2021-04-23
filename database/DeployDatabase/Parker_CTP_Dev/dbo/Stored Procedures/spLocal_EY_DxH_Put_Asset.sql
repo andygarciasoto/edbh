@@ -1,6 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 21/4/2021 12:25:55 ******/
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
 
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@asset_id					as INT,
@@ -27,31 +25,8 @@ CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 AS  BEGIN 
 
 DECLARE
-@Username							NVARCHAR(100),
-@First_Name							NVARCHAR(100),
-@Last_Name							NVARCHAR(100),
 @Site								INT,
-@role_id							INT,
-@escalation_id						INT,
-@production_day_offset_minutes		FLOAT,
-@inactive_timeout_minutes			INT,
-@summary_timeout					INT,
-@timezone_id						INT,
-@language_id						INT,
-@site_timezone						NVARCHAR(100),
-@ui_timezone						NVARCHAR(100),
-@language							NVARCHAR(50),
-@site_name							NVARCHAR(100)
-
-        SELECT TOP 1 
-				@Username = TFD.Username,
-				@First_Name = TFD.First_Name,
-				@Last_Name = TFD.Last_Name,
-				@role_id = TFD.role_id,
-				@escalation_id = TFD.escalation_id
-        FROM [dbo].[TFDUsers] TFD
-		INNER JOIN dbo.Asset A ON TFD.Site = A.asset_id AND A.asset_code = @site_code
-        WHERE TFD.Badge = @badge;
+@New_Site_Id						INT;
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 	WHERE
@@ -111,7 +86,7 @@ ELSE
 			   ,@asset_name
 			   ,@asset_description
 			   ,@asset_level
-			   ,@site_code
+			   ,CASE WHEN @asset_level = 'Site' THEN @asset_code ELSE @site_code END
 			   ,@parent_asset_code
 			   ,@automation_level
 			   ,@include_in_escalation
@@ -129,14 +104,14 @@ ELSE
 			   ,@is_multiple
 			   ,@is_dynamic
 			   ,@value_stream)
-			   SET @Site = SCOPE_IDENTITY();
+			   SET @New_Site_Id = SCOPE_IDENTITY();
 
 		IF (@asset_level = 'Site')
 		BEGIN
 
-		SELECT @site_name = asset_name
+		SELECT @Site = asset_id
 		FROM dbo.Asset
-		WHERE asset_id = @Site
+		WHERE asset_code = @site_code AND asset_level = 'Site';
 
 		INSERT INTO [dbo].[TFDUsers]
 			(Badge
@@ -151,34 +126,24 @@ ELSE
 			,last_modified_by
 			,last_modified_on
 			,escalation_id)
-		VALUES
-			(@badge
-			,@Username
-			,@First_Name
-			,@Last_Name
-			,@Site
-			,@role_id
-			,'Active'
-			,'Administration Tool'
-			,GETDATE()
-			,'Administration Tool'
-			,GETDATE()
-			,@escalation_id)
+		SELECT
+			Badge,
+			Username,
+			First_Name,
+			Last_Name,
+			@New_Site_Id AS Site,
+			role_id,
+			status,
+			'Administration Tool' AS entered_by,
+			GETDATE() AS entered_on,
+			'Administration Tool' AS last_modified_by,
+			GETDATE() AS last_modified_on,
+			escalation_id
+		FROM dbo.TFDUsers
+			WHERE Badge = @badge AND Site = @Site;
 
-			 SELECT 
-				@production_day_offset_minutes = CP.production_day_offset_minutes,
-				@inactive_timeout_minutes = CP.inactive_timeout_minutes,
-				@summary_timeout = CP.summary_timeout,
-				@timezone_id = CP.timezone_id,
-				@language_id = CP.language_id,
-				@site_timezone = CP.site_timezone,
-				@ui_timezone = CP.ui_timezone,
-				@language = CP.language
-        FROM [dbo].[CommonParameters] CP
-		INNER JOIN dbo.TFDUsers TFD ON TFD.Site = CP.site_id
-        WHERE TFD.Badge = @badge;
 			
-			INSERT INTO [dbo].[CommonParameters]
+		INSERT INTO [dbo].[CommonParameters]
 			(site_id
 			,site_name
 			,production_day_offset_minutes
@@ -194,24 +159,26 @@ ELSE
 			,timezone_id
 			,language_id
 			,site_prefix)
-			VALUES
-			(@Site
-			,@site_name
-			,@production_day_offset_minutes
-			,@site_timezone
-			,@ui_timezone
-			,@language
-			,'Active'
-			,'Administration Tool'
-			,GETDATE()
-			,'Administration Tool'
-			,GETDATE()
-			,@summary_timeout
-			,@timezone_id
-			,@language_id
-			,@site_name)
+		SELECT
+			@New_Site_Id AS site_id,
+			@asset_name AS site_name,
+			production_day_offset_minutes,
+			site_timezone,
+			ui_timezone,
+			language,
+			status,
+			'Administration Tool' AS entered_by,
+			GETDATE() AS entered_on,
+			'Administration Tool' AS last_modified_by,
+			GETDATE() AS last_modified_on,
+			summary_timeout,
+			timezone_id,
+			language_id,
+			@asset_code AS site_prefix
+		FROM dbo.CommonParameters
+			WHERE site_id = @Site;
 
-			INSERT INTO dbo.Shift
+		INSERT INTO dbo.Shift
 			(shift_code
 			,shift_name
 			,shift_sequence
@@ -228,23 +195,25 @@ ELSE
 			,last_modified_by
 			,last_modified_on
 			,asset_id)
-			VALUES
-			(@site_name + '-Shift'
-			,@site_name + '-Shift'
-			,1
-			,'00:00'
-			,'23:00'
-			,0
-			,0
-			,1380
-			,GETDATE()
-			,1
-			,'Active'
-			,'Administration Tool'
-			,GETDATE()
-			,'Administration Tool'
-			,GETDATE()
-			,@Site)
+		SELECT
+			CONCAT(@asset_code,'-',shift_name) AS shift_code,
+			shift_name,
+			shift_sequence,
+			start_time,
+			end_time,
+			start_time_offset_days,
+			end_time_offset_days,
+			duration_in_minutes,
+			valid_from,
+			is_first_shift_of_day,
+			status,
+			'Administration Tool' AS entered_by,
+			GETDATE() AS entered_on,
+			'Administration Tool' AS last_modified_by,
+			GETDATE() AS last_modified_on,
+			@New_Site_Id AS asset_id
+		FROM dbo.Shift
+			WHERE asset_id = @Site;
 		END
 	END
 END

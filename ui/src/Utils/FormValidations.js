@@ -160,6 +160,35 @@ function validateAssetForm(state) {
     return validation;
 }
 
+function validateEscalationCreateForm(state) {
+    let validation = {};
+    if (state.name_es_1.trim() === '') {
+        validation.name_es_1 = 'Name is required';
+    }
+    if (state.name_es_2.trim() === '') {
+        validation.name_es_2 = 'Name is required';
+    }
+    if (state.name_es_3.trim() === '') {
+        validation.name_es_3 = 'Name is required';
+    }
+    if (state.hours_es_1 === '') {
+        validation.hours_es_1 = 'Hours is required';
+    } else if (parseInt(state.hours_es_1, 10) < 1) {
+        validation.hours_es_1 = 'Hour needs to be equals or greater than 1';
+    }
+    if (state.hours_es_2 === '') {
+        validation.hours_es_2 = 'Hours is required';
+    } else if (parseInt(state.hours_es_2, 10) < 1) {
+        validation.hours_es_2 = 'Hour needs to be equals or greater than 1';
+    }
+    if (state.hours_es_3 === '') {
+        validation.hours_es_3 = 'Hours is required';
+    } else if (parseInt(state.hours_es_3, 10) < 1) {
+        validation.hours_es_3 = 'Hour needs to be equals or greater than 1';
+    }
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
@@ -170,5 +199,6 @@ export {
     validateTagForm,
     validateReasonForm,
     generalValidationForm,
-    validateAssetForm
+    validateAssetForm,
+    validateEscalationCreateForm
 }

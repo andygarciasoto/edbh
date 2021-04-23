@@ -32,7 +32,7 @@ class AddDisplay extends Component {
 			let assetList = _.filter(response, { asset_level: 'Cell' });
 			this.setState({
 				AssetsData: assetList,
-				asset: assetList[0].asset_id
+				asset: assetList[0] ? assetList[0].asset_id : 0
 			});
 		});
 	}

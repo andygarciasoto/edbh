@@ -43,6 +43,21 @@
 	cursor     : pointer;
 }
 
+.escalationContent {
+	margin: 2%;
+}
+
+.btnNGroup {
+	margin-bottom: 0.5%;
+	cursor       : pointer;
+	float        : right;
+}
+
+.table thead th {
+	text-align    : left;
+	vertical-align: top;
+}
+
 .barStepsAsset {
 	.active {
 		color: #49b5f3;

@@ -91,7 +91,16 @@ class ReasonModal extends Component {
     fetchData() {
         const { actions } = this.props;
         const params = {
-            dtreason_code: this.state.reason.dtreason_code
+            site_id: this.props.user.site,
+            dtreason_code: this.state.reason.dtreason_code,
+            dtreason_name: this.state.reason.dtreason_name,
+            dtreason_description: this.state.reason.dtreason_description,
+            dtreason_category: this.state.reason.dtreason_category,
+            reason1: this.state.reason.reason1,
+            reason2: this.state.reason.reason2,
+            status: this.state.reason.status,
+            type: this.state.reason.type,
+            level: this.state.reason.level
         };
         actions.getAssetsReasons(params).then((response) => {
             const originalUnAssets = response;

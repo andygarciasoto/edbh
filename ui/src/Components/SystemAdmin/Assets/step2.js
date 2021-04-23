@@ -36,9 +36,10 @@ export class Step2 extends Component {
 		actions.getAssets(this.props.user.site)
 		]).then((response) => {
 			const cells = _.filter(response[1], { asset_level: 'Cell' });
+			const uomData = response[0];
 			this.setState({
-				uomData: response[0],
-				uom_code: response[0][0].UOM_code,
+				uomData,
+				uom_code: uomData[0] ? uomData[0].UOM_code : 0,
 				sites: cells
 			});
 		}
@@ -116,96 +117,96 @@ export class Step2 extends Component {
 		const t = this.props.t;
 		const validation = this.state.validation;
 		return (
-				<Form>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Name')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type='text'
-								name='name'
-								value={this.state.name}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className='validation'>{validation.name}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>{t('UOM Code')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as='select'
-								name='uom_code'
-								onChange={this.handleChange}
-								value={this.state.uom_code}
-							>
-								{this.state.uomData.map(this.renderUOM)}
-							</Form.Control>
-						</Col>
-					</Form.Group>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Rollover Point')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type='number'
-								name='rollover'
-								min={1}
-								value={this.state.rollover}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className='validation'>{validation.rollover}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>{t('Data Type')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as='select'
-								name='data_type'
-								value={this.state.data_type}
-								onChange={this.handleChange}
-							>
-								<option value="Integer">Integer</option>
-								<option value="Float">Decimals</option>
-							</Form.Control>
-						</Col>
-					</Form.Group>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Difference Between Values to Reset the Count')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type='number'
-								min={1}
-								name='max_change'
-								value={this.state.max_change}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className='validation'>{validation.max_change}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>{t('Status')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as='select'
-								name='status'
-								value={this.state.status}
-								onChange={this.handleChange}
-							>
-								<option value="Active">Active</option>
-								<option value="Inactive">Inactive</option>
-							</Form.Control>
-						</Col>
-					</Form.Group>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Description')}:</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as="textarea"
-								name="description"
-								value={this.state.description}
-								onChange={this.handleChange}
-								rows={3} />
-						</Col>
-					</Form.Group>
-					<button className="button-next" onClick={(e) => this.createTag(e)}>{t('Next Step') + '>>'}</button>
-				</Form>
+			<Form>
+				<Form.Group as={Row}>
+					<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							type='text'
+							name='name'
+							value={this.state.name}
+							autoComplete={'false'}
+							onChange={this.handleChange}
+						/>
+						<Form.Text className='validation'>{validation.name}</Form.Text>
+					</Col>
+					<Form.Label column sm={2}>{t('UOM Code')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							as='select'
+							name='uom_code'
+							onChange={this.handleChange}
+							value={this.state.uom_code}
+						>
+							{this.state.uomData.map(this.renderUOM)}
+						</Form.Control>
+					</Col>
+				</Form.Group>
+				<Form.Group as={Row}>
+					<Form.Label column sm={2}>{t('Rollover Point')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							type='number'
+							name='rollover'
+							min={1}
+							value={this.state.rollover}
+							autoComplete={'false'}
+							onChange={this.handleChange}
+						/>
+						<Form.Text className='validation'>{validation.rollover}</Form.Text>
+					</Col>
+					<Form.Label column sm={2}>{t('Data Type')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							as='select'
+							name='data_type'
+							value={this.state.data_type}
+							onChange={this.handleChange}
+						>
+							<option value="Integer">Integer</option>
+							<option value="Float">Decimals</option>
+						</Form.Control>
+					</Col>
+				</Form.Group>
+				<Form.Group as={Row}>
+					<Form.Label column sm={2}>{t('Difference Between Values to Reset the Count')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							type='number'
+							min={1}
+							name='max_change'
+							value={this.state.max_change}
+							autoComplete={'false'}
+							onChange={this.handleChange}
+						/>
+						<Form.Text className='validation'>{validation.max_change}</Form.Text>
+					</Col>
+					<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							as='select'
+							name='status'
+							value={this.state.status}
+							onChange={this.handleChange}
+						>
+							<option value="Active">Active</option>
+							<option value="Inactive">Inactive</option>
+						</Form.Control>
+					</Col>
+				</Form.Group>
+				<Form.Group as={Row}>
+					<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+					<Col sm={4}>
+						<Form.Control
+							as="textarea"
+							name="description"
+							value={this.state.description}
+							onChange={this.handleChange}
+							rows={3} />
+					</Col>
+				</Form.Group>
+				<button className="button-next" onClick={(e) => this.createTag(e)}>{t('Next Step') + '>>'}</button>
+			</Form>
 		);
 	}
 }

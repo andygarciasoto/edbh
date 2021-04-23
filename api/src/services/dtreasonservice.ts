@@ -54,13 +54,24 @@ export class DTReasonService {
         return res.status(200).json(dtdata);
     }
     public async getAssetsReasonCode(req: Request, res: Response) {
+        let site_id = req.query.site_id;
         let dtreason_code = req.query.dtreason_code;
-        if (!dtreason_code) {
+        let dtreason_name = req.query.dtreason_name;
+        let dtreason_description = req.query.dtreason_description ? `N'${req.query.dtreason_description}'` : `N''`;
+        let dtreason_category = req.query.dtreason_category;
+        let reason1 = req.query.reason1 ? `N'${req.query.reason1}'` : `N''`;
+        let reason2 = req.query.reason2 ? `N'${req.query.reason2}'` : `N''`;
+        let status = req.query.status;
+        let type = req.query.type;
+        let level = req.query.level ? `N'${req.query.level}'` : `N''`;
+
+        if (!site_id || !dtreason_code || !dtreason_name || !dtreason_category || !status || !type) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let unavailable: any;
         try {
-            unavailable = await this.dtreasonrepository.getAssetsReasonCode(dtreason_code);
+            unavailable = await this.dtreasonrepository.getAssetsReasonCode(site_id, dtreason_code, dtreason_name, dtreason_description, dtreason_category, reason1, reason2,
+                status, type, level);
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;

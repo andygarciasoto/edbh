@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as CommonActions from '../../../redux/actions/commonActions';
+import * as UserActions from "../../../redux/actions/userActions";
+import Table from "react-bootstrap/Table";
 import Axios from 'axios';
 import { API } from '../../../Utils/Constants';
 import { Form, Col, Modal, Button, Row, InputGroup } from 'react-bootstrap';
 import { validateCommonParametersForm } from '../../../Utils/FormValidations';
+import EscalationModal from './escalationModal';
+import EscalationCreateModal from './escalationCreateModal';
 import _ from 'lodash';
+import FontAwesome from 'react-fontawesome';
+
 
 class CommonParams extends Component {
 	constructor(props) {
@@ -32,7 +38,12 @@ class CommonParams extends Component {
 			modalError: false,
 			show: false,
 			readOnly: true,
-			validation: {}
+			validation: {},
+			EscalationData: [],
+			escalation: {},
+			action: '',
+			showEscalationModal: false,
+			showEscalationCreateModal: false
 		};
 	}
 
@@ -47,6 +58,7 @@ class CommonParams extends Component {
 			actions.getParams(this.props.user.site),
 			actions.getTimezones(),
 			actions.getLanguages(),
+			actions.getEscalation()
 		]).then((response) => {
 			this.setState({
 				defaultRouted: response[0].default_routed_cycle_time,
@@ -66,6 +78,7 @@ class CommonParams extends Component {
 				status: response[0].status,
 				timezonesData: response[1],
 				languagesData: response[2],
+				EscalationData: response[3]
 			});
 		});
 	}
@@ -179,6 +192,29 @@ class CommonParams extends Component {
 		e.preventDefault(e);
 		this.setState({ show: false, modalError: false });
 	};
+
+	showEscalationModal = (escalation, action) => {
+		this.setState({
+			escalation,
+			action,
+			showEscalationModal: true
+		})
+	}
+
+	showEscalationCreateModal = () => {
+		this.setState({
+			showEscalationCreateModal: true
+		})
+	}
+
+	closeEscalationModal = () => {
+		this.setState({
+			escalation: {},
+			action: '',
+			showEscalationModal: false,
+			showEscalationCreateModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
@@ -356,6 +392,52 @@ class CommonParams extends Component {
 						</Col>
 					</Form.Group>
 				</Form>
+				<div className='escalationContent'>
+					<Button variant='outline-success' className='btnNGroup' onClick={() => this.showEscalationCreateModal()}>Create New Group</Button>
+					<Table responsive="sm" bordered={true}>
+						<thead>
+							<tr>
+								<th>{t('Name')}</th>
+								<th>{t('Group')}</th>
+								<th>{t('Level')}</th>
+								<th>{t('Hours')}</th>
+								<th>{t('Status')}</th>
+								<th>{t('Actions')}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{this.state.EscalationData.map((escalation, index) => (
+								<tr key={index}>
+									<td>{escalation.escalation_name}</td>
+									<td>{escalation.escalation_group}</td>
+									<td>{escalation.escalation_level}</td>
+									<td>{escalation.escalation_hours}</td>
+									<td>{escalation.status}</td>
+									<td>
+										<FontAwesome name='edit fa-2x' onClick={() => this.showEscalationModal(escalation, 'Edit')} />
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</Table>
+					<EscalationModal
+						user={this.props.user}
+						isOpen={this.state.showEscalationModal}
+						escalation={this.state.escalation}
+						action={this.state.action}
+						Refresh={this.loadData}
+						handleClose={this.closeEscalationModal}
+						t={t}
+					/>
+					<EscalationCreateModal
+						user={this.props.user}
+						isOpen={this.state.showEscalationCreateModal}
+						EscalationData={this.state.EscalationData}
+						Refresh={this.loadData}
+						handleClose={this.closeEscalationModal}
+						t={t}
+					/>
+				</div>
 				<Modal show={this.state.show} onHide={this.handleClose}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
@@ -384,7 +466,7 @@ class CommonParams extends Component {
 }
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(CommonActions, dispatch),
+		actions: Object.assign(bindActionCreators(CommonActions, dispatch), bindActionCreators(UserActions, dispatch)),
 	};
 };
 

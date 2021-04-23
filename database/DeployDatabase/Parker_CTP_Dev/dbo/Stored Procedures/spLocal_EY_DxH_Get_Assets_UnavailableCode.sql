@@ -42,7 +42,14 @@
 --
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Assets_UnavailableCode]
 --Declare
-@unavailable_code	NVARCHAR(100) -- code of the unavailable record to search
+@site_id        	        INT,            -- code of the unavailable record to search
+@unavailable_code	        NVARCHAR(100),  -- code of the unavailable record to search
+@unavailable_name           NVARCHAR(100),  -- name of the unavailable record to search
+@unavailable_description	NVARCHAR(100),  -- description of the unavailable record to search
+@start_time                 TIME,           -- start_time of the unavailable record to search
+@end_time               	TIME,           -- end_time of the unavailable record to search
+@duration_in_minutes    	INT,            -- duration in minutes of the unavailable record to search
+@status                 	NVARCHAR(100)   -- status of the unavailable record to search
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
@@ -71,5 +78,6 @@ AS
         FROM [dbo].[Unavailable] AS U
             INNER JOIN [dbo].[Asset] AS A ON U.asset_id = A.asset_id
             LEFT JOIN [dbo].[Workcell] AS W ON A.grouping1 = W.workcell_id 
-        WHERE U.unavailable_code = @unavailable_code;
+        WHERE U.site_id = @site_id AND U.unavailable_code = @unavailable_code AND U.unavailable_name = @unavailable_name AND ISNULL(U.unavailable_description,'') = @unavailable_description AND
+            U.start_time = @start_time AND U.end_time = @end_time AND U.duration_in_minutes = @duration_in_minutes AND U.status = @status;
     END;

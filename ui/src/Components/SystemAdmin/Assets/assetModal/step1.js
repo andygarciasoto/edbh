@@ -1,31 +1,37 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as DisplayActions from '../../../redux/actions/displayActions';
-import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
-import { API } from '../../../Utils/Constants';
-import { validateAssetForm } from '../../../Utils/FormValidations';
+import * as DisplayActions from '../../../../redux/actions/displayActions';
+import { genericRequest } from '../../../../Utils/Requests';
+import { API } from '../../../../Utils/Constants';
+import { Modal, Button } from 'react-bootstrap';
+import { validateAssetForm } from '../../../../Utils/FormValidations';
 import _ from 'lodash';
+import { Form, Col, Row } from 'react-bootstrap';
 
 export class Step1 extends Component {
+
 	constructor(props) {
 		super(props);
+		const name = props.action === 'Copy' && _.isEqual(props.asset, props.asset2) ? '' : props.asset.asset_name;
+		const code = props.action === 'Copy' && _.isEqual(props.asset, props.asset2) ? '' : props.asset.asset_code;
 		this.state = {
-			code: '',
-			automation_level: 'Automated',
-			name: '',
-			description: '',
-			workcell: '',
-			valueStream: '',
-			level: 'Cell',
-			site_code: '',
-			defaultPercent: 0,
-			parent_code: '',
-			escalation: false,
-			status: 'Active',
-			multiple: false,
-			dynamic: false,
+			asset: props.asset || {},
+			asset2: props.asset2 || {},
+			code: code || '',
+			automation_level: props.asset.automation_level || 'Automated',
+			name: name || '',
+			description: props.asset.asset_description || '',
+			workcell: props.asset.grouping1 || '',
+			level: props.asset.asset_level || 'Cell',
+			site_code: props.asset.site_code || '',
+			defaultPercent: props.asset.target_percent_of_ideal ? props.asset.target_percent_of_ideal * 100 : 0,
+			parent_code: props.asset.parent_asset_code || '',
+			escalation: props.asset.include_in_escalation || false,
+			status: props.asset.status || 'Active',
+			multiple: props.asset.is_multiple || false,
+			valueStream: props.asset.value_stream || '',
+			dynamic: props.asset.is_dynamic || false,
 			displayData: [],
 			workcellData: [],
 			parentData: [],
@@ -36,7 +42,45 @@ export class Step1 extends Component {
 	}
 
 	componentDidMount() {
-		this.loadData();
+		const { actions } = this.props;
+		return Promise.all([
+			actions.getWorkcells(this.props.user.site),
+			actions.getAssetsLevel(this.props.user.site)
+		]).then((response) => {
+			const workcellData = response[0];
+			const parentData = _.filter(response[1], { asset_level: 'Area' });
+			this.setState({
+				workcellData,
+				parentData,
+				parent_code: parentData[0] ? parentData[0].asset_code : ''
+			});
+		});
+	}
+
+	static getDerivedStateFromProps(nextProps, prevState) {
+		if (!_.isEqual(nextProps.asset, prevState.asset)) {
+			const name = nextProps.action === 'Copy' && _.isEqual(nextProps.asset, nextProps.asset2) ? '' : nextProps.asset.asset_name;
+			const code = nextProps.action === 'Copy' && _.isEqual(nextProps.asset, nextProps.asset2) ? '' : nextProps.asset.asset_code;
+			return {
+				asset: nextProps.asset,
+				asset2: nextProps.asset2,
+				code: code,
+				automation_level: nextProps.asset.automation_level,
+				name: name,
+				description: nextProps.asset.asset_description,
+				workcell: nextProps.asset.grouping1 || '',
+				level: nextProps.asset.asset_level,
+				site_code: nextProps.asset.site_code,
+				defaultPercent: nextProps.asset.target_percent_of_ideal ? nextProps.asset.target_percent_of_ideal * 100 : 0,
+				parent_code: nextProps.asset.parent_asset_code || '',
+				escalation: nextProps.asset.include_in_escalation,
+				status: nextProps.asset.status,
+				multiple: nextProps.asset.is_multiple,
+				valueStream: nextProps.asset.value_stream || '',
+				dynamic: nextProps.asset.is_dynamic
+			};
+		}
+		return null;
 	}
 
 	handleChange = (event) => {
@@ -66,94 +110,6 @@ export class Step1 extends Component {
 		}
 	};
 
-	loadData = () => {
-		const { actions } = this.props;
-
-		return Promise.all([
-			actions.getWorkcells(this.props.user.site),
-			actions.getAssetsLevel(this.props.user.site),
-		]).then((response) => {
-			const workcellData = response[0];
-			const parentData = _.filter(response[1], { asset_level: 'Area' });
-			this.setState({
-				workcellData,
-				parentData,
-				parent_code: parentData[0] ? parentData[0].asset_code : '',
-			});
-		});
-	};
-
-	createAsset = (e) => {
-		e.preventDefault();
-		const {
-			automation_level,
-			name,
-			description,
-			workcell,
-			level,
-			parent_code,
-			escalation,
-			valueStream,
-			dynamic,
-			status,
-			defaultPercent,
-			multiple,
-		} = this.state;
-
-		const newPercent = defaultPercent / 100;
-
-		const validation = validateAssetForm(this.state);
-
-		if (_.isEmpty(validation)) {
-			const code = `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '');
-			genericRequest('put', API, '/insert_asset', null, null, {
-				site_id: this.props.user.site,
-				asset_code: code,
-				asset_name: name,
-				asset_description: description,
-				asset_level: level,
-				site_code: this.props.user.site_code,
-				parent_asset_code: level === 'Site' ? '' : level === 'Area' ? this.props.user.site_code : parent_code,
-				automation_level: automation_level,
-				include_in_escalation: escalation,
-				grouping1: workcell,
-				grouping2: '',
-				grouping3: '',
-				grouping4: '',
-				grouping5: '',
-				status: status,
-				target_percent_of_ideal: newPercent,
-				is_multiple: multiple,
-				value_stream: valueStream,
-				is_dynamic: dynamic,
-				badge: this.props.user.badge
-			}).then(
-				() => {
-					this.setState({
-						show: true,
-					});
-					this.props.getCode(code);
-					this.props.levelSite === true && this.props.nextStep(e);
-				},
-				(error) => {
-					console.log(error);
-				}
-			);
-		} else {
-			this.setState({
-				validation
-			});
-		}
-	};
-
-	closeModalError = () => {
-		this.setState({ modalError: false });
-	};
-
-	closeSuccessModal = () => {
-		this.setState({ show: false });
-	};
-
 	renderDisplay(display, index) {
 		return (
 			<option value={display.assetdisplaysystem_id} key={index}>
@@ -177,6 +133,88 @@ export class Step1 extends Component {
 			</option>
 		);
 	}
+
+	createAsset = (e) => {
+		e.preventDefault();
+		const {
+			code,
+			automation_level,
+			name,
+			description,
+			workcell,
+			level,
+			parent_code,
+			escalation,
+			valueStream,
+			dynamic,
+			status,
+			defaultPercent,
+			multiple,
+			asset,
+			asset2
+		} = this.state;
+
+		const newPercent = defaultPercent / 100;
+
+		const validation = validateAssetForm(this.state);
+
+
+		if (_.isEmpty(validation)) {
+			console.log(code);
+			const new_code = code === '' ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
+			const asset_id = this.props.action === 'Copy' && _.isEqual(asset, asset2) ? 0 : asset.asset_id;
+			genericRequest('put', API, '/insert_asset', null, null, {
+				site_id: this.props.user.site,
+				asset_id: asset_id,
+				asset_code: new_code,
+				asset_name: name,
+				asset_description: description,
+				asset_level: level,
+				site_code: this.props.user.site_code,
+				parent_asset_code: level === 'Site' ? '' : level === 'Area' ? this.props.user.site_code : parent_code,
+				automation_level: automation_level,
+				include_in_escalation: escalation,
+				grouping1: workcell,
+				grouping2: '',
+				grouping3: '',
+				grouping4: '',
+				grouping5: '',
+				status: status,
+				target_percent_of_ideal: newPercent,
+				is_multiple: multiple,
+				value_stream: valueStream,
+				is_dynamic: dynamic,
+				badge: this.props.user.badge
+			}).then(
+				() => {
+					this.setState({
+						show: true,
+						validation: {}
+					});
+					this.props.Refresh();
+					if (level !== 'Cell' && (this.props.action === 'Create' || this.props.action === 'Copy')) {
+						this.props.handleClose();
+					} else {
+						this.props.updateAssetByCode(new_code);
+					}
+				},
+				(error) => {
+					this.setState({
+						modalError: true,
+						validation: {}
+					});
+				}
+			);
+		} else {
+			this.setState({
+				validation
+			});
+		}
+	};
+
+	closeModalMessage = () => {
+		this.setState({ modalError: false, show: false });
+	};
 
 	render() {
 		const t = this.props.t;
@@ -203,6 +241,7 @@ export class Step1 extends Component {
 								name='automation_level'
 								onChange={this.handleChange}
 								value={this.state.automation_level}
+								disabled={this.state.level !== 'Cell'}
 							>
 								<option value='Automated'>Automated</option>
 								<option value='Manual'>Manual</option>
@@ -247,6 +286,7 @@ export class Step1 extends Component {
 								name="workcell"
 								value={this.state.workcell}
 								onChange={this.handleChange}
+								disabled={this.state.level !== 'Cell'}
 							>
 								<option value=''>None</option>
 								{this.state.workcellData.map(this.renderWorkcell)}
@@ -263,6 +303,7 @@ export class Step1 extends Component {
 								value={this.state.defaultPercent}
 								onChange={this.handleChangePercentage}
 								autoComplete={'false'}
+								disabled={this.state.level !== 'Cell'}
 							/>
 							<Form.Text className='validation'>{validation.defaultPercent}</Form.Text>
 						</Col>
@@ -275,6 +316,7 @@ export class Step1 extends Component {
 								name='multiple'
 								onChange={this.handleChange}
 								value={this.state.multiple}
+								disabled={this.state.level !== 'Cell'}
 							>
 								<option value={true}>Yes</option>
 								<option value={false}>No</option>
@@ -287,6 +329,7 @@ export class Step1 extends Component {
 								name='escalation'
 								onChange={this.handleChange}
 								value={this.state.escalation}
+								disabled={this.state.level !== 'Cell'}
 							>
 								<option value={true}>Yes</option>
 								<option value={false}>No</option>
@@ -301,6 +344,7 @@ export class Step1 extends Component {
 								name='dynamic'
 								onChange={this.handleChange}
 								value={this.state.dynamic}
+								disabled={this.state.level !== 'Cell'}
 							>
 								<option value={true}>Yes</option>
 								<option value={false}>No</option>
@@ -313,6 +357,7 @@ export class Step1 extends Component {
 								name='valueStream'
 								onChange={this.handleChange}
 								value={this.state.valueStream}
+								disabled={this.state.level !== 'Cell'}
 							/>
 						</Col>
 					</Form.Group>
@@ -339,39 +384,50 @@ export class Step1 extends Component {
 								rows={3} />
 						</Col>
 					</Form.Group>
+					{this.state.level !== 'Cell' ? (
+						<Form.Group as={Row}>
+							<Col sm={6}>
+								<Button variant="Primary" onClick={(e) => this.createAsset(e)}>
+									{t('Confirm')}
+								</Button>
+								<Button variant="secondary" onClick={(e) => this.props.handleClose()}>
+									{t('Close')}
+								</Button>
+							</Col>
+						</Form.Group>
+					) : (
+						<div>
+							{this.props.action !== 'Create' || (this.props.action === 'Create' && !this.props.asset.asset_id) ?
+								<Form.Group as={Row}>
+									<Col sm={4}>
+										<Button variant='success' onClick={(e) => this.createAsset(e)}>{t('Apply')}</Button>
+									</Col>
+								</Form.Group>
+								: null}
+							{this.props.action === 'Edit' || (this.props.action === 'Create' && this.props.asset.asset_id) || (this.props.action === 'Copy' && !_.isEqual(this.state.asset, this.state.asset2)) ?
+								<button className="button-next" onClick={(e) => this.props.nextStep(e)}>{t('Next Step') + '>>'}</button>
+								: null}
+						</div>
+					)}
 				</Form>
-				{this.props.levelSite === false ? (
-					<div>
-						<Button variant="Primary" onClick={(e) => this.createAsset(e)}>
-							{t('Confirm')}
-						</Button>
-						<Button variant="secondary" onClick={this.props.closeModal}>
-							{t('Close')}
-						</Button>{' '}
-					</div>
-				) : (
-					<button className="button-next" onClick={(e) => this.createAsset(e)}>
-						{t('Next Step') + '>>'}
-					</button>
-				)}
-				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Asset has been added</Modal.Body>
+					<Modal.Body>Asset has been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeSuccessModal}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+				<Modal show={this.state.modalError} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Body>Asset has not been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.closeModalError}>
+						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
 						</Button>
 					</Modal.Footer>
