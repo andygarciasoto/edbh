@@ -14,6 +14,10 @@ export class EscalationRepository {
         INNER JOIN dbo.CommonParameters CP ON E.escalation_group = CP.escalation_group AND CP.site_id = ${site_id}
 		WHERE E.status = 'Active'`);
     }
+    public async getEscalationGroups(): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT COUNT(DISTINCT E.escalation_group) as 'Current Groups',
+        COUNT(DISTINCT E.escalation_group) + 1 as 'Group to create' FROM dbo.Escalation E`);
+    }
     public async getEscalationBySite(site_id: number): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`SELECT DISTINCT TFD.escalation_id, E.escalation_name, 
         e.escalation_group, e.escalation_hours, e.escalation_level, e.status FROM dbo.TFDUsers TFD

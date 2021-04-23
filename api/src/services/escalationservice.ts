@@ -12,12 +12,12 @@ export class EscalationService {
     public async getEscalation(req: Request, res: Response) {
         const site_id = req.query.site_id ? req.query.site_id : undefined;
         let escalation: any;
-
-        if (!site_id || site_id === undefined || site_id === null) {
-            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
-        }
         try {
-            escalation = await this.escalationrepository.getEscalation(site_id);
+            if (site_id === undefined || site_id === null || !site_id) {
+                escalation = await this.escalationrepository.getEscalationGroups();
+            } else {
+                escalation = await this.escalationrepository.getEscalation(site_id);
+            }
         }
         catch (err) {
             return res.status(500).json({ message: err.message });
