@@ -95,7 +95,8 @@ AS
 		@Target INT,
 		@Order_Start_Time		DATETIME,
 		@Previous_Production_Id	INT,
-		@Minutes_Less			INT;
+		@Minutes_Less			INT,
+        @ActualInt              INT = @Actual;
 
         IF NOT EXISTS
         (
@@ -256,7 +257,7 @@ AS
                     BEGIN
                         UPDATE dbo.ProductionData
                           SET 
-                              actual = @Existing_Actual + @Actual, 
+                              actual = @Existing_Actual + @ActualInt, 
                               setup_scrap = @Existing_Setup_Scrap + @Setup_Scrap, 
                               other_scrap = @Existing_Other_Scrap + @Other_Scrap,
                               last_modified_by = @Initials, 
@@ -279,7 +280,7 @@ AS
                         --
                         UPDATE dbo.ProductionData
                           SET 
-                              actual = @Actual, 
+                              actual = @ActualInt, 
                               setup_scrap = @Setup_Scrap, 
                               other_scrap = @Other_Scrap,
                               last_modified_by = @Initials, 
@@ -464,7 +465,7 @@ AS
                  @Product_Code, 
                  @Ideal, 
                  @Target, 
-                 @Actual, 
+                 @ActualInt, 
                  @UOM_Code, 
                  @Order_Id, 
                  @OrderNumber, 
