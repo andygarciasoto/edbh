@@ -24,10 +24,10 @@ export const SOCKET = 'http://localhost:8080';
 // export const SOCKET = 'https://edxhapidev.us.parker.corp';
 
 //private Test
-//  export const API = 'https://edxhapitst.us.parker.corp/api';
-//  export const AUTH = 'https://edxhapitst.us.parker.corp/auth';
-//  export const DATATOOL = 'https://edxhapitst.us.parker.corp/datatool';
-//  export const SOCKET = 'https://edxhapitst.us.parker.corp';
+// export const API = 'https://edxhapitst.us.parker.corp/api';
+// export const AUTH = 'https://edxhapitst.us.parker.corp/auth';
+// export const DATATOOL = 'https://edxhapitst.us.parker.corp/datatool';
+// export const SOCKET = 'https://edxhapitst.us.parker.corp';
 
 //private Prod
 // export const API = 'https://parkerdaybyhourapi.us.parker.corp/api';

@@ -147,7 +147,8 @@ class DashboardTable extends React.Component {
                 dt: formatDate(filter[1]).split("-").join(""),
                 start_date_time: start_date_time,
                 end_date_time: end_date_time,
-                st: props.user.site
+                st: props.user.site,
+                hr: moment.tz(props.user.timezone).format('HH')
             };
 
             getResponseFromGeneric('get', API, '/data', null, parameters2, {}, verticalToken.token).then(response => {
@@ -206,7 +207,8 @@ class DashboardTable extends React.Component {
                 start_date_time: start_date_time,
                 end_date_time: end_date_time,
                 st: props.user.site,
-                dt: formatDate(filter[1]).split("-").join("")
+                dt: formatDate(filter[1]).split("-").join(""),
+                hr: moment.tz(props.user.timezone).format('HH') 
             }
 
             if (dashOneToken !== null) {
