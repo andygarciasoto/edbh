@@ -154,6 +154,7 @@ class Header extends React.Component {
         if (Number(this.state.cs) !== Number(site.asset_id)) {
             const search = qs.parse(this.props.history.location.search);
             const ln = search.ln || this.props.user.language;
+            localStorage.removeItem('st');
             const newUrl = configuration['root'] + `${this.props.history.location.pathname}?cs=${site.asset_id}${ln ? ('&ln=' + ln) : ''}`;
             window.location.href = newUrl;
 
@@ -171,9 +172,10 @@ class Header extends React.Component {
             console.log('Success LogOff');
             // remove stored data
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('st');
+            const st = localStorage.getItem('st');
+            const newUrl = configuration['root'] + `?st=${st}&ln=${this.props.user.language}`;
             // Redirect to login
-            window.location.replace(configuration['root']);
+            window.location.href = newUrl;
         }
     }
 

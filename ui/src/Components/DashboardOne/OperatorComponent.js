@@ -83,9 +83,10 @@ class OperatorComponent extends React.Component {
                 if (this.props.user.role === 'Operator' && _.isEmpty(activeOperators)) {
                     // remove stored data
                     localStorage.removeItem('accessToken');
-                    localStorage.removeItem('st');
+                    const st = localStorage.getItem('st');
+                    const newUrl = configuration['root'] + `?st=${st}&ln=${this.props.user.language}`;
                     // Redirect to login
-                    window.location.replace(configuration['root']);
+                    window.location.href = newUrl;
                 } else {
                     this.props.updateActiveOperators(activeOperators);
                     this.setState({
