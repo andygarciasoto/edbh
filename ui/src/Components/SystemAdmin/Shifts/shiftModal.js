@@ -170,7 +170,7 @@ class ShiftModal extends Component {
     const t = this.props.t;
     return (
       <div>
-        <Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
+        <Modal className='general3-modal' show={this.props.isOpen} onHide={this.props.handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t(this.props.action + ' Shift')}</Modal.Title>
           </Modal.Header>

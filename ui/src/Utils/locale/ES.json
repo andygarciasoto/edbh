@@ -273,5 +273,6 @@
     "Copy Workcell": "Copiar Celda de Trabajo",
     "Copy UOM": "Copiar UOM",
     "Copy Break": "Copiar Descanso",
-    "Copy Display": "Copiar Pantalla de Máquina"
+    "Copy Display": "Copiar Pantalla de Máquina",
+    "Site Prefix Code": "Código Prefijo de la Planta"
 }

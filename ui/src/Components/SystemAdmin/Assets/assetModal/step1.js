@@ -22,7 +22,7 @@ export class Step1 extends Component {
 			automation_level: props.asset.automation_level || 'Automated',
 			name: name || '',
 			description: props.asset.asset_description || '',
-			workcell: props.asset.grouping1 || '',
+			workcell: props.asset.workcell_id || '',
 			level: props.asset.asset_level || 'Cell',
 			site_code: props.asset.site_code || '',
 			defaultPercent: props.asset.target_percent_of_ideal ? props.asset.target_percent_of_ideal * 100 : 0,
@@ -32,6 +32,7 @@ export class Step1 extends Component {
 			multiple: props.asset.is_multiple || false,
 			valueStream: props.asset.value_stream || '',
 			dynamic: props.asset.is_dynamic || false,
+			siteCode: '',
 			displayData: [],
 			workcellData: [],
 			parentData: [],
@@ -68,7 +69,7 @@ export class Step1 extends Component {
 				automation_level: nextProps.asset.automation_level,
 				name: name,
 				description: nextProps.asset.asset_description,
-				workcell: nextProps.asset.grouping1 || '',
+				workcell: nextProps.asset.workcell_id || '',
 				level: nextProps.asset.asset_level,
 				site_code: nextProps.asset.site_code,
 				defaultPercent: nextProps.asset.target_percent_of_ideal ? nextProps.asset.target_percent_of_ideal * 100 : 0,
@@ -88,13 +89,17 @@ export class Step1 extends Component {
 		const value = target.value;
 		const name = target.name;
 
-		if (value === 'Cell') {
-			this.props.showFooter(true, false);
-		} else if (value === 'Site') {
-			this.props.showFooter(false, true);
-		} else if (value === 'Area') {
-			this.props.showFooter(false, true);
-		}
+		this.setState({
+			[name]: value,
+		});
+	};
+
+	handleChangeLevel = (event) => {
+		const target = event.target;
+		const value = target.value;
+		const name = target.name;
+
+		this.props.showFooter(value === 'Cell');
 
 		this.setState({
 			[name]: value,
@@ -151,12 +156,13 @@ export class Step1 extends Component {
 			defaultPercent,
 			multiple,
 			asset,
-			asset2
+			asset2,
+			siteCode
 		} = this.state;
 
 		const newPercent = defaultPercent / 100;
 
-		const validation = validateAssetForm(this.state);
+		const validation = validateAssetForm(this.state, this.props);
 
 
 		if (_.isEmpty(validation)) {
@@ -184,7 +190,8 @@ export class Step1 extends Component {
 				is_multiple: multiple,
 				value_stream: valueStream,
 				is_dynamic: dynamic,
-				badge: this.props.user.badge
+				badge: this.props.user.badge,
+				site_prefix: siteCode
 			}).then(
 				() => {
 					this.setState({
@@ -257,7 +264,7 @@ export class Step1 extends Component {
 							<Form.Control
 								as='select'
 								name='level'
-								onChange={this.handleChange}
+								onChange={this.handleChangeLevel}
 								value={this.state.level}
 								disabled={this.props.action !== 'Create'}
 							>
@@ -385,7 +392,22 @@ export class Step1 extends Component {
 								rows={3} />
 						</Col>
 					</Form.Group>
-					{this.state.level !== 'Cell' ? (
+					{this.state.level === 'Site' &&
+						<Form.Group as={Row}>
+							<Form.Label column sm={2}>{t('Site Prefix Code')}:</Form.Label>
+							<Col sm={4}>
+								<Form.Control
+									type='text'
+									name="siteCode"
+									autoComplete={'false'}
+									onChange={this.handleChange}
+									value={this.state.siteCode}
+								/>
+								<Form.Text className='validation'>{validation.siteCode}</Form.Text>
+							</Col>
+						</Form.Group>
+					}
+					{this.state.level !== 'Cell' && this.props.action !== 'Edit' ? (
 						<Form.Group as={Row}>
 							<Col sm={6}>
 								<Button variant="Primary" onClick={(e) => this.createAsset(e)}>

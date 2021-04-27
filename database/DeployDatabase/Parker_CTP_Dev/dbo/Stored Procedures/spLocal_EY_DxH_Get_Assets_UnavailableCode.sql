@@ -66,6 +66,7 @@ AS
             A.[value_stream],
             A.[automation_level],
             A.[include_in_escalation],
+            A.[grouping1] AS workcell_id,
             W.workcell_name AS [grouping1],
             A.[grouping2],
             A.[grouping3],

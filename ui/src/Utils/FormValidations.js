@@ -149,13 +149,16 @@ function generalValidationForm(state) {
     return validation;
 }
 
-function validateAssetForm(state) {
+function validateAssetForm(state, props) {
     let validation = {};
     if (state.name.trim() === '') {
         validation.name = 'Name is required';
     }
     if (state.defaultPercent === '' || parseInt(state.defaultPercent, 10) < 0) {
         validation.defaultPercent = 'Target Percentage of Ideal needs to be equals or greater than 0';
+    }
+    if (props.action !== 'Edit' && state.level === 'Site' && state.siteCode.trim() === '') {
+        validation.siteCode = 'Generally this is the Parker Hannifin 3 or 4 digit location identifier';
     }
     return validation;
 }

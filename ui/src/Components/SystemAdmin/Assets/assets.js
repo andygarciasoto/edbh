@@ -97,7 +97,6 @@ class Assets extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>{t('Code')}</th>
 							<th>{t('Name')}</th>
 							<th>{t('Description')}</th>
 							<th>{t('Level')}</th>
@@ -116,18 +115,17 @@ class Assets extends Component {
 					<tbody>
 						{this.state.AssetsData.map((asset, index) => (
 							<tr key={index}>
-								<td>{asset.asset_code}</td>
 								<td>{asset.asset_name}</td>
 								<td>{asset.asset_description}</td>
 								<td>{asset.asset_level}</td>
 								<td>{asset.parent_asset_code}</td>
 								<td>{asset.automation_level}</td>
 								<td>{asset.target_percent_of_ideal ? (asset.target_percent_of_ideal * 100) + '%' : ''}</td>
-								<td>{asset.include_in_escalation ? 'True' : 'False'}</td>
+								<td>{asset.include_in_escalation ? 'Yes' : 'No'}</td>
 								<td>{asset.grouping1}</td>
 								<td>{asset.value_stream}</td>
-								<td>{asset.is_multiple ? 'True' : 'False'}</td>
-								<td>{asset.is_dynamic ? 'True' : 'False'}</td>
+								<td>{asset.is_multiple ? 'Yes' : 'No'}</td>
+								<td>{asset.is_dynamic ? 'Yes' : 'No'}</td>
 								<td>{asset.status}</td>
 								<td>
 									<FontAwesome name='edit fa-2x' onClick={() => this.showAssetModal(asset, 'Edit')} />

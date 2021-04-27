@@ -20,8 +20,6 @@ class ReasonModal extends Component {
             name: '',
             description: '',
             category: 'Cost',
-            reason1: '',
-            reason2: '',
             status: 'Active',
             type: 'Downtime',
             level: '',
@@ -62,8 +60,6 @@ class ReasonModal extends Component {
                 name: name,
                 description: nextProps.reason.dtreason_description,
                 category: nextProps.reason.dtreason_category,
-                reason1: nextProps.reason.reason1,
-                reason2: nextProps.reason.reason2,
                 status: nextProps.reason.status,
                 type: nextProps.reason.type,
                 level: nextProps.reason.level,
@@ -96,8 +92,6 @@ class ReasonModal extends Component {
             dtreason_name: this.state.reason.dtreason_name,
             dtreason_description: this.state.reason.dtreason_description,
             dtreason_category: this.state.reason.dtreason_category,
-            reason1: this.state.reason.reason1,
-            reason2: this.state.reason.reason2,
             status: this.state.reason.status,
             type: this.state.reason.type,
             level: this.state.reason.level
@@ -213,8 +207,6 @@ class ReasonModal extends Component {
                     dtreason_description: this.state.description,
                     dtreason_category: this.state.category,
                     asset_code: selection.id,
-                    reason1: this.state.reason1,
-                    reason2: this.state.reason2,
                     status: selection.status || this.state.status,
                     type: this.state.type,
                     level: this.state.level,
@@ -290,17 +282,7 @@ class ReasonModal extends Component {
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
-                                <Form.Label column sm={2}>{t('Reason 1')}:</Form.Label>
-                                <Col sm={4}>
-                                    <Form.Control
-                                        type="text"
-                                        name="reason1"
-                                        value={this.state.reason1}
-                                        autoComplete={"false"}
-                                        onChange={this.handleChange}
-                                    />
-                                </Col>
-                                <Form.Label column sm={1}>{t('Category')}:</Form.Label>
+                                <Form.Label column sm={2}>{t('Category')}:</Form.Label>
                                 <Col sm={4}>
                                     <Form.Control
                                         as="select"
@@ -311,18 +293,6 @@ class ReasonModal extends Component {
                                         <option value="Cost">Cost</option>
                                         <option value="Quality">Quality</option>
                                     </Form.Control>
-                                </Col>
-                            </Form.Group>
-                            <Form.Group as={Row}>
-                                <Form.Label column sm={2}>{t('Reason 2')}:</Form.Label>
-                                <Col sm={4}>
-                                    <Form.Control
-                                        type="text"
-                                        name="reason2"
-                                        value={this.state.reason2}
-                                        autoComplete={"false"}
-                                        onChange={this.handleChange}
-                                    />
                                 </Col>
                                 <Form.Label column sm={1}>{t('Level')}:</Form.Label>
                                 <Col sm={4}>

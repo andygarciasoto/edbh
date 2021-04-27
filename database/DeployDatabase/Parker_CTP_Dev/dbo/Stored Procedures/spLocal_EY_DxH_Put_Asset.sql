@@ -20,7 +20,8 @@ CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@is_multiple				as BIT,
 	@is_dynamic					as BIT,
 	@badge						as VARCHAR(100),
-	@value_stream				as VARCHAR(100))
+	@value_stream				as VARCHAR(100),
+	@site_prefix				as NVARCHAR(100))
 	
 AS  BEGIN 
 
@@ -174,7 +175,7 @@ ELSE
 			summary_timeout,
 			timezone_id,
 			language_id,
-			@asset_code AS site_prefix
+			@site_prefix
 		FROM dbo.CommonParameters
 			WHERE site_id = @Site;
 

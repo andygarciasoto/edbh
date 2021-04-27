@@ -140,8 +140,8 @@ class Device extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>{t('Code')}</th>
-							<th>{t('Name')}</th>
+							<th style={{ maxWidth: '300px' }}>{t('Code')}</th>
+							<th style={{ maxWidth: '300px' }}>{t('Name')}</th>
 							<th>{t('Description')}</th>
 							<th>{t('Data Type')}</th>
 							<th>{t('UOM Code')}</th>
@@ -156,8 +156,8 @@ class Device extends Component {
 					<tbody>
 						{this.state.TagsData.map((tag, index) => (
 							<tr key={index}>
-								<td>{tag.tag_code}</td>
-								<td>{tag.tag_name}</td>
+								<td style={{ maxWidth: '300px', wordWrap: 'break-word' }}>{tag.tag_code}</td>
+								<td style={{ maxWidth: '300px', wordWrap: 'break-word' }}>{tag.tag_name}</td>
 								<td>{tag.tag_description}</td>
 								<td>{tag.datatype}</td>
 								<td>{tag.UOM_code}</td>

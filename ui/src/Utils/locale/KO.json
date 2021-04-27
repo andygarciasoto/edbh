@@ -273,5 +273,6 @@
     "Copy Workcell": "작업 셀 복사",
     "Copy UOM": "UOM 복사",
     "Copy Break": "복사 나누기",
-    "Copy Display": "디스플레이 복사"
+    "Copy Display": "디스플레이 복사",
+    "Site Prefix Code": "사이트 접두사 코드"
 }

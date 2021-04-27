@@ -159,7 +159,7 @@ class EditShift extends Component {
     const t = this.props.t;
     return (
       <div>
-        <Modal show={this.props.showForm} onHide={this.handleClose} centered>
+        <Modal className='general3-modal' show={this.props.showForm} onHide={this.handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('Edit Shift')}</Modal.Title>
           </Modal.Header>

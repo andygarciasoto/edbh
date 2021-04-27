@@ -18,8 +18,6 @@ class AddReason extends Component {
       name: '',
       description: '',
       category: 'Cost',
-      reason1: '',
-      reason2: '',
       status: 'Active',
       type: 'Downtime',
       level: '',
@@ -144,8 +142,6 @@ class AddReason extends Component {
           dtreason_description: this.state.description,
           dtreason_category: this.state.category,
           asset_code: selection.id,
-          reason1: this.state.reason1,
-          reason2: this.state.reason2,
           status: this.state.status,
           type: this.state.type,
           level: this.state.level,
@@ -219,17 +215,7 @@ class AddReason extends Component {
                 </Col>
               </Form.Group>
               <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Reason 1')}:</Form.Label>
-                <Col sm={4}>
-                  <Form.Control
-                    type="text"
-                    name="reason1"
-                    value={this.state.reason1}
-                    autoComplete={"false"}
-                    onChange={this.handleChange}
-                  />
-                </Col>
-                <Form.Label column sm={1}>{t('Category')}:</Form.Label>
+                <Form.Label column sm={2}>{t('Category')}:</Form.Label>
                 <Col sm={4}>
                   <Form.Control
                     as="select"
@@ -240,18 +226,6 @@ class AddReason extends Component {
                     <option value="Cost">Cost</option>
                     <option value="Quality">Quality</option>
                   </Form.Control>
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row}>
-                <Form.Label column sm={2}>{t('Reason 2')}:</Form.Label>
-                <Col sm={4}>
-                  <Form.Control
-                    type="text"
-                    name="reason2"
-                    value={this.state.reason2}
-                    autoComplete={"false"}
-                    onChange={this.handleChange}
-                  />
                 </Col>
                 <Form.Label column sm={1}>{t('Level')}:</Form.Label>
                 <Col sm={4}>

@@ -115,7 +115,7 @@ class Reason extends Component {
           <thead>
             <tr>
               <th>{t('Code')}</th>
-              <th>{t('Name')}</th>
+              <th style={{ width: '350px' }}>{t('Name')}</th>
               <th>{t('Description')}</th>
               <th>{t('Category')}</th>
               <th>{t('Type')}</th>

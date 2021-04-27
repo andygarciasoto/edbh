@@ -408,7 +408,7 @@ class CommonParams extends Component {
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
-						<Form.Label column sm={1}>{t('Site Identifier')}:</Form.Label>
+						<Form.Label column sm={1}>{t('Site Prefix Code')}:</Form.Label>
 						<Col sm={2}>
 							<Form.Control
 								type="text"
@@ -421,42 +421,45 @@ class CommonParams extends Component {
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Level 1 Site Manager Escalation Hours')}:</Form.Label>
+						<Form.Label column sm={1}>{t('Level 1 Site Manager Escalation Hours')}:</Form.Label>
 						<Col sm={2}>
 							<Form.Control
-								type="number"
-								name="escalationlevel1"
+								type='number'
+								name='escalationlevel1'
+								className='escalationInput'
 								value={this.state.escalationlevel1}
-								autoComplete={"false"}
+								autoComplete='false'
 								min={0}
 								onChange={this.handleChangeNumbers}
 							/>
 						</Col>
-						<Form.Label column sm={2}>{t('Level 2 Value Stream Manager Escalation Hours')}:</Form.Label>
+						<Form.Label column sm={1}>{t('Level 2 Value Stream Manager Escalation Hours')}:</Form.Label>
 						<Col sm={2}>
 							<Form.Control
-								type="number"
-								name="escalationlevel2"
+								type='number'
+								name='escalationlevel2'
+								className='escalationInput'
 								value={this.state.escalationlevel2}
-								autoComplete={"false"}
+								autoComplete='false'
+								min={0}
+								onChange={this.handleChangeNumbers}
+							/>
+						</Col>
+						<Form.Label column sm={1}>{t('Level 3 Plant Manager Escalation Hour')}:</Form.Label>
+						<Col sm={2}>
+							<Form.Control
+								type='number'
+								name='escalationlevel3'
+								className='escalationInput'
+								value={this.state.escalationlevel3}
+								autoComplete='false'
 								min={0}
 								onChange={this.handleChangeNumbers}
 							/>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
-						<Form.Label column sm={2}>{t('Level 3 Plant Manager Escalation Hour')}:</Form.Label>
-						<Col sm={2}>
-							<Form.Control
-								type="number"
-								name="escalationlevel3"
-								value={this.state.escalationlevel3}
-								autoComplete={"false"}
-								min={0}
-								onChange={this.handleChangeNumbers}
-							/>
-						</Col>
-						<Col md={{ span: 3, offset: 5 }}>
+						<Col md={{ span: 3, offset: 8 }}>
 							<Button variant="outline-primary" className='commonParamBtn' onClick={(e) => this.updateParams(e)}>
 								{t('Confirm')}
 							</Button>

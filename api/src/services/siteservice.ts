@@ -96,38 +96,61 @@ export class SiteService {
             return res.status(400).json({ message: "Bad Request - Missing data to proceed" });
         }
 
-        let queries = [];
-        const columns = getColumns(table);
-        const parameters = getParametersOfTable(table, site_id);
-        const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
-        const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
-        //Initialize query to store the values of the merge sentence
-        let valuesMergeQuery = '';
         try {
-            _.forEach(data, item => {
+            let queries = [];
+            const columns = getColumns(table);
+            const parameters = getParametersOfTable(table, site_id);
+            const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+            const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+            const initialLength = startMergeQuery.length + endMergeQuery.length;
+            const rowCount = data.length - 1;
+            //Initialize query to store the values of the merge sentence
+            let valuesMergeQuery = '';
+
+            _.forEach(data, (item, rowNumber) => {
                 const tableHeaders = headers[table];
                 let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
                 _.forEach(tableHeaders, header => {
                     updateRow += getValuesFromHeaderTable(tableHeaders, header, item[header.key]);
                 });
                 updateRow += ')';
-                valuesMergeQuery += updateRow;
-            });
-            queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
-            //console.log(queries);
-            const queriesLength = queries.length;
-            _.forEach(queries, async (query, index) => {
-                try {
-                    await this.dxhdatarepository.executeGeneralImportQuery(query);
-                } catch (e) {
-                    return res.status(500).send({ message: 'Error ' + e.message });
+                const newLength = valuesMergeQuery.length + updateRow.length + initialLength;
+                if (newLength < 4000 && rowNumber < rowCount) {
+                    valuesMergeQuery += updateRow;
+                } else {
+                    if (newLength >= 4000) {
+                        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                        valuesMergeQuery = updateRow.slice(1);
+                    }
+                    if (newLength < 4000) {
+                        valuesMergeQuery += updateRow;
+                    }
+                    if (rowNumber === rowCount) {
+                        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                    }
                 }
-                if ((queriesLength - 1) === index) {
-                    console.log('Queries execution end');
-                    console.log('Queries count: ', queriesLength);
-                    return res.status(200).send('Queries Entered Succesfully');
-                }
             });
+
+            // console.log(queries);
+            if (!_.isEmpty(queries)) {
+                const queriesLength = queries.length;
+                console.log('Queries execution begin');
+                console.log('Queries to execute: ', queriesLength);
+                _.forEach(queries, async (query, index) => {
+                    try {
+                        await this.dxhdatarepository.executeGeneralImportQuery(query);
+                    } catch (e) {
+                        return res.status(500).send({ message: 'Error ' + e.message });
+                    }
+                    if ((queriesLength - 1) === index) {
+                        console.log('Queries execution end');
+                        console.log('Queries count: ', queriesLength);
+                        return res.status(200).send('Queries Entered Succesfully');
+                    }
+                });
+            } else {
+                return res.status(200).send('Excel File Entered Succesfully');
+            }
         } catch (e) {
             return res.status(500).send({ message: 'Error ' + e.message });
         }

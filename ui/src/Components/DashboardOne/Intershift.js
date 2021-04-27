@@ -78,8 +78,7 @@ class Intershift extends React.Component {
     }
 
     fetchData() {
-
-        let indexSelectedShift = _.findIndex(this.props.user.shifts, { shift_name: this.state.selectedShift });
+        
         const { end_date_time } = getStartEndDateTime(this.state.selectedDate, this.state.selectedShift, this.props.user);
 
         let maxDuration = 0;

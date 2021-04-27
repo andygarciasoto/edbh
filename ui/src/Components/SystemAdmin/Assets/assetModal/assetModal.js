@@ -28,7 +28,7 @@ class AssetModal extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isOpen && _.isEmpty(prevState.asset)) {
+        if (nextProps.isOpen && _.isEmpty(prevState.asset) && !_.isEmpty(nextProps.asset)) {
             return {
                 asset: nextProps.asset,
                 asset2: nextProps.asset,
@@ -104,10 +104,9 @@ class AssetModal extends Component {
         }
     };
 
-    hideSteps = (showFooter, showConfirm) => {
+    hideSteps = (showFooter) => {
         this.setState({
-            showFooter,
-            showConfirm,
+            showFooter
         });
     };
 
