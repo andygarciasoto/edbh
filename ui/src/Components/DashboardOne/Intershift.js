@@ -81,20 +81,16 @@ class Intershift extends React.Component {
 
         let indexSelectedShift = _.findIndex(this.props.user.shifts, { shift_name: this.state.selectedShift });
         const { end_date_time } = getStartEndDateTime(this.state.selectedDate, this.state.selectedShift, this.props.user);
-        let shiftToGoBack = 2;
-        let hoursToGoBack = this.props.user.shifts[indexSelectedShift].duration_in_hours;
 
-        while (shiftToGoBack > 0) {
-            shiftToGoBack--;
-            indexSelectedShift--;
-            if (indexSelectedShift >= 0) {
-                hoursToGoBack += this.props.user.shifts[indexSelectedShift].duration_in_hours;
-            } else {
-                hoursToGoBack += this.props.user.shifts[indexSelectedShift + (this.props.user.shifts.length - 1)].duration_in_hours;
+        let maxDuration = 0;
+
+        _.forEach(this.props.user.shifts, shift=>{
+            if(maxDuration < shift.duration_in_hours){
+                maxDuration = shift.duration_in_hours;
             }
-        }
+        });
 
-        const start_date_time = moment(end_date_time).add(hoursToGoBack * -1, 'hours').format('YYYY/MM/DD HH:mm');
+        const start_date_time = moment(end_date_time).add(maxDuration * -2, 'hours').format('YYYY/MM/DD HH:mm');
 
         const parameters = {
             mc: this.state.selectedAssetOption.asset_code,
