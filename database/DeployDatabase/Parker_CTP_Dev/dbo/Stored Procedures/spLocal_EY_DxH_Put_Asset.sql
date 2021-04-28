@@ -1,4 +1,6 @@
-﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 28/4/2021 15:04:54 ******/
+
+/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Asset]    Script Date: 20/4/2021 14:10:56 ******/
 
 CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_Asset] (
 	@asset_id					as INT,
@@ -27,7 +29,8 @@ AS  BEGIN
 
 DECLARE
 @Site								INT,
-@New_Site_Id						INT;
+@New_Site_Id						INT,
+@Count								INT;
 
 IF EXISTS (SELECT asset_id FROM dbo.Asset
 	WHERE
@@ -215,6 +218,32 @@ ELSE
 			@New_Site_Id AS asset_id
 		FROM dbo.Shift
 			WHERE asset_id = @Site;
+
+		SELECT @Count = COUNT(DISTINCT E.escalation_group) + 1
+		FROM dbo.Escalation E
+		
+		INSERT INTO dbo.Escalation
+			(escalation_name
+			,escalation_group
+			,escalation_level
+			,escalation_hours
+			,status
+			,entered_by
+			,entered_on
+			,last_modified_by
+			,last_modified_on)
+		SELECT
+			escalation_name,
+			'Group ' + CAST(@Count AS VARCHAR(2)) as escalation_group,
+			escalation_level,
+			escalation_hours,
+			'Active' as status,
+			'Administration Tool' as entered_by,
+			GETDATE() as entered_on,
+			'Administration Tool' as last_modified_by,
+			GETDATE() as last_modified_on
+		FROM dbo.Escalation
+			WHERE escalation_id IN (1,2,3)
 		END
 	END
 END
