@@ -100,6 +100,7 @@ class Reason extends Component {
           user={this.props.user}
           isOpen={this.state.showCreateReason}
           Refresh={this.loadData}
+          action='Create'
           onRequestClose={this.closeModal}
         />
         <ReasonModal

@@ -116,6 +116,7 @@ class Display extends Component {
 						showForm={this.state.addDisplay}
 						t={t}
 						closeForm={this.closeAddDisplay}
+						action='Create'
 						Refresh={this.loadData}
 					/>
 				)}
@@ -125,6 +126,7 @@ class Display extends Component {
 						showForm={this.state.editDisplay}
 						closeForm={this.closeEditDisplay}
 						display_id={this.state.display_id}
+						action='Edit'
 						Refresh={this.loadData}
 						t={t}
 					/>

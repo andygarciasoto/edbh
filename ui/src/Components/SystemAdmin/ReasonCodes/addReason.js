@@ -128,11 +128,9 @@ class AddReason extends Component {
   submitReason = async (e) => {
     e.preventDefault();
 
-    const validation = validateReasonForm(this.state);
+    const validation = validateReasonForm(this.state, this.props);
 
-    if (
-      _.isEmpty(validation)
-    ) {
+    if (_.isEmpty(validation)) {
       let arrayData = _.map(this.state.selectedListTabs, selection => {
         return {
           dtreason_code: `${this.props.user.site_prefix}-${this.state.name}`.replace(/\s+/g, ''),

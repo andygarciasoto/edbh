@@ -103,6 +103,7 @@ export class Step1 extends Component {
 
 		this.setState({
 			[name]: value,
+			parent_code: value === 'Cell' ? '' : this.props.user.site_code
 		});
 	};
 
@@ -284,6 +285,7 @@ export class Step1 extends Component {
 							>
 								{this.state.parentData.map(this.renderParent)}
 							</Form.Control>
+							<Form.Text className='validation'>{validation.parent_code}</Form.Text>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>

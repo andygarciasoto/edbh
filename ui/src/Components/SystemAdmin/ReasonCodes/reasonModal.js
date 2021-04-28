@@ -191,11 +191,9 @@ class ReasonModal extends Component {
         });
         const tabsToInsert = _.concat(selectedListTabs, changeToInactive);
 
-        const validation = validateReasonForm(this.state);
+        const validation = validateReasonForm(this.state, this.props);
 
-        if (
-            _.isEmpty(validation)
-        ) {
+        if (_.isEmpty(validation)) {
             const action = this.props.action;
             const code = action === 'Update' ?
                 this.state.reason.dtreason_code :

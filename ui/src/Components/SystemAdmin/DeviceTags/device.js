@@ -115,6 +115,7 @@ class Device extends Component {
 						showForm={this.state.addTag}
 						closeForm={this.closeAddTag}
 						Refresh={this.loadData}
+						action='Create'
 						t={t}
 					/>
 				)}
@@ -125,6 +126,7 @@ class Device extends Component {
 						closeForm={this.closeEditTag}
 						tag_id={this.state.tag_id}
 						Refresh={this.loadData}
+						action='Edit'
 						t={t}
 					/>
 				)}

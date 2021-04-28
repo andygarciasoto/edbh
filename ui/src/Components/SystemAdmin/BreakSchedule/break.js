@@ -100,6 +100,7 @@ class Break extends Component {
 					user={this.props.user}
 					isOpen={this.state.showCreateBreak}
 					Refresh={this.loadData}
+					action='Create'
 					onRequestClose={this.closeModal}
 				/>
 				<BreakModal

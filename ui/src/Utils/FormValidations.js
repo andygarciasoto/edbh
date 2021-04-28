@@ -89,7 +89,7 @@ function validateUserForm(state) {
     return validation;
 }
 
-function validateBreakForm(state) {
+function validateBreakForm(state, props) {
     let validation = {};
     if (state.unavailable_name.trim() === '') {
         validation.unavailable_name = 'Name is required';
@@ -108,11 +108,13 @@ function validateBreakForm(state) {
     if (startTime.isAfter(endTime)) {
         validation.start_time = 'Start Time needs to be greater than End Time';
     }
-
+    if (props.action === 'Create' && _.isEmpty(state.selectedListTabs)) {
+        validation.selectedListTabs = 'Asset is required';
+    }
     return validation;
 }
 
-function validateTagForm(state) {
+function validateTagForm(state, props) {
     let validation = {};
     if (state.name.trim() === '') {
         validation.name = 'Name is required';
@@ -127,16 +129,22 @@ function validateTagForm(state) {
     } else if (parseInt(state.max_change, 10) < 1) {
         validation.max_change = 'Max Change Point needs to be greater than 0';
     }
+    if (props.action === 'Create' && state.asset === 0) {
+        validation.asset = 'Asset is required';
+    }
     return validation;
 }
 
-function validateReasonForm(state) {
+function validateReasonForm(state, props) {
     let validation = {};
     if (state.name.trim() === '') {
         validation.name = 'Name is required';
     }
     if (state.type === 'Scrap' && state.level.trim() === '') {
         validation.level = 'Level is required for Scrap Type';
+    }
+    if (props.action === 'Create' && _.isEmpty(state.selectedListTabs)) {
+        validation.selectedListTabs = 'Asset is required';
     }
     return validation;
 }
@@ -159,6 +167,9 @@ function validateAssetForm(state, props) {
     }
     if (props.action !== 'Edit' && state.level === 'Site' && state.siteCode.trim() === '') {
         validation.siteCode = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
+    }
+    if (props.level !== 'Site' && state.parent_code.trim() === '') {
+        validation.parent_code = 'This value is required';
     }
     return validation;
 }
@@ -192,6 +203,17 @@ function validateEscalationCreateForm(state) {
     return validation;
 }
 
+function validateDisplayForm(state, props) {
+    let validation = {};
+    if (state.name.trim() === '') {
+        validation.name = 'Name is required';
+    }
+    if (props.action === 'Create' && state.asset === 0) {
+        validation.asset = 'Asset is required';
+    }
+    return validation;
+}
+
 export {
     validateScrapSubmit,
     validateTimeLostSubmit,
@@ -203,5 +225,6 @@ export {
     validateReasonForm,
     generalValidationForm,
     validateAssetForm,
-    validateEscalationCreateForm
+    validateEscalationCreateForm,
+    validateDisplayForm
 }

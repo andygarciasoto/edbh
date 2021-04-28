@@ -62,7 +62,7 @@ class AddDevice extends Component {
 		const { status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
 
 		let url = `${API}/insert_tag`;
-		const validation = validateTagForm(this.state);
+		const validation = validateTagForm(this.state, this.props);
 		if (_.isEmpty(validation)) {
 			Axios.put(url, {
 				tag_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
@@ -91,9 +91,7 @@ class AddDevice extends Component {
 				}
 			);
 		} else {
-			this.setState({
-				validation
-			});
+			this.setState({ validation });
 		}
 	};
 
@@ -210,6 +208,7 @@ class AddDevice extends Component {
 									>
 										{this.state.sites.map(this.renderAssets)}
 									</Form.Control>
+									<Form.Text className='validation'>{validation.asset}</Form.Text>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>

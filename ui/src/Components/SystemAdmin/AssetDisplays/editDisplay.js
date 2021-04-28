@@ -6,7 +6,7 @@ import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import _ from 'lodash';
-import { generalValidationForm } from '../../../Utils/FormValidations';
+import { validateDisplayForm } from '../../../Utils/FormValidations';
 import '../../../sass/SystemAdmin.scss';
 
 class AddDisplay extends Component {
@@ -54,7 +54,7 @@ class AddDisplay extends Component {
 		e.preventDefault();
 		const { name, asset, status } = this.state;
 
-		const validation = generalValidationForm(this.state);
+		const validation = validateDisplayForm(this.state, this.props);
 
 		if (_.isEmpty(validation)) {
 			genericRequest('put', API, '/insert_displaysystem', null, null, {

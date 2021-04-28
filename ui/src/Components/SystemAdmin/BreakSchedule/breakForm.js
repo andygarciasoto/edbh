@@ -126,7 +126,7 @@ class BreakForm extends Component {
     let endTime1 = moment('1970-01-01 ' + this.state.end_time);
     let difference = endTime1.diff(startTime1, 'minutes');
 
-    const validation = validateBreakForm(this.state);
+    const validation = validateBreakForm(this.state, this.props);
 
     if (
       _.isEmpty(validation)
