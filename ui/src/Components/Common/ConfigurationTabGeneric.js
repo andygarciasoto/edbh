@@ -70,14 +70,22 @@ class ConfigurationTabGeneric extends React.Component {
         })
     };
 
+    getRenderItem = (items) => (provided, snapshot, rubric) => (
+        <div
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            className='draggable'
+        >
+            {items[rubric.source.index].content}
+        </div>
+    );
+
     getList = id => this.state[id2List[id]];
 
     render() {
         return (
             <React.Fragment>
-                {/* <label>{this.props.t('All ' + this.props.genericTitle) + ': '}
-                    <input id="allTabs" type="checkbox" checked={this.state.allTabsCheckBox} onChange={this.handleInputChange} style={{ marginLeft: "5px" }} />
-                </label> */}
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <br />
                     <Row>
@@ -87,7 +95,8 @@ class ConfigurationTabGeneric extends React.Component {
                                     {this.props.t('Available ' + this.props.genericTitle) + ':'}
                                 </label>
                             </div>
-                            <Droppable droppableId="droppable">
+                            <Droppable droppableId="droppable"
+                                renderClone={this.getRenderItem(this.state.availableListTabs)}>
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}
@@ -122,7 +131,8 @@ class ConfigurationTabGeneric extends React.Component {
                                     {this.props.t('Selected ' + this.props.genericTitle) + ':'}
                                 </label>
                             </div>
-                            <Droppable droppableId="droppable2">
+                            <Droppable droppableId="droppable2"
+                                renderClone={this.getRenderItem(this.state.selectedListTabs)}>
                                 {(provided, snapshot) => (
                                     <div
                                         ref={provided.innerRef}

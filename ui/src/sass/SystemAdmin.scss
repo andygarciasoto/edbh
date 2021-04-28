@@ -86,7 +86,7 @@
 .table thead th {
 	text-align    : left;
 	vertical-align: top;
-	word-wrap: break-word;
+	word-wrap     : break-word;
 }
 
 .commonParametersForm .row label {
@@ -248,4 +248,10 @@
 		margin-top : -40px;
 		margin-left: 10px;
 	}
+}
+
+.draggable {
+	padding   : 16;
+	margin    : 0 0 8px 0;
+	background: #FFE600;
 }
