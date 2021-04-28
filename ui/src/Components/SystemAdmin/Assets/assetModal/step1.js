@@ -32,7 +32,7 @@ export class Step1 extends Component {
 			multiple: props.asset.is_multiple || false,
 			valueStream: props.asset.value_stream || '',
 			dynamic: props.asset.is_dynamic || false,
-			siteCode: '',
+			site_prefix: '',
 			displayData: [],
 			workcellData: [],
 			parentData: [],
@@ -158,7 +158,7 @@ export class Step1 extends Component {
 			multiple,
 			asset,
 			asset2,
-			siteCode
+			site_prefix
 		} = this.state;
 
 		const newPercent = defaultPercent / 100;
@@ -167,8 +167,7 @@ export class Step1 extends Component {
 
 
 		if (_.isEmpty(validation)) {
-			console.log(code);
-			const new_code = code === '' ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
+			const new_code = code === '' ? `${this.props.action !== 'Edit' && level === 'Site' ? site_prefix : this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
 			const asset_id = this.props.action === 'Copy' && _.isEqual(asset, asset2) ? 0 : asset.asset_id;
 			genericRequest('put', API, '/insert_asset', null, null, {
 				site_id: this.props.user.site,
@@ -192,7 +191,7 @@ export class Step1 extends Component {
 				value_stream: valueStream,
 				is_dynamic: dynamic,
 				badge: this.props.user.badge,
-				site_prefix: siteCode
+				site_prefix: site_prefix
 			}).then(
 				() => {
 					this.setState({
@@ -400,12 +399,12 @@ export class Step1 extends Component {
 							<Col sm={4}>
 								<Form.Control
 									type='text'
-									name="siteCode"
+									name="site_prefix"
 									autoComplete={'false'}
 									onChange={this.handleChange}
-									value={this.state.siteCode}
+									value={this.state.site_prefix}
 								/>
-								<Form.Text className='validation'>{validation.siteCode}</Form.Text>
+								<Form.Text className='validation'>{validation.site_prefix}</Form.Text>
 							</Col>
 						</Form.Group>
 					}

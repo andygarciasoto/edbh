@@ -200,7 +200,7 @@ ELSE
 			,last_modified_on
 			,asset_id)
 		SELECT
-			CONCAT(@asset_code,'-',shift_name) AS shift_code,
+			CONCAT(@site_prefix,'-',shift_name) AS shift_code,
 			shift_name,
 			shift_sequence,
 			start_time,
@@ -243,7 +243,12 @@ ELSE
 			'Administration Tool' as last_modified_by,
 			GETDATE() as last_modified_on
 		FROM dbo.Escalation
-			WHERE escalation_id IN (1,2,3)
+			WHERE escalation_id IN (1,2,3);
+
+		UPDATE dbo.CommonParameters
+			SET escalation_group = 'Group ' + CAST(@Count AS VARCHAR(2))
+		WHERE site_id = @New_Site_Id;
+
 		END
 	END
 END

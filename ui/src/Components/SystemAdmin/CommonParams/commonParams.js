@@ -27,7 +27,7 @@ class CommonParams extends Component {
 			defaultPercent: 0,
 			verticalDashboard: 0,
 			defaultMinutes: 0,
-			siteCode: '',
+			site_prefix: '',
 			status: '',
 			assembly_url: '',
 			timezonesData: [],
@@ -75,7 +75,7 @@ class CommonParams extends Component {
 				defaultPercent: response[0].default_target_percent_of_ideal * 100,
 				verticalDashboard: response[0].summary_timeout,
 				defaultMinutes: response[0].default_setup_minutes,
-				siteCode: response[0].site_code,
+				site_prefix: response[0].site_prefix,
 				status: response[0].status,
 				timezonesData: response[1],
 				languagesData: response[2],
@@ -147,7 +147,7 @@ class CommonParams extends Component {
 			defaultPercent,
 			verticalDashboard,
 			defaultMinutes,
-			siteCode,
+			site_prefix,
 			status,
 			escalationlevel1,
 			escalationlevel2,
@@ -177,7 +177,7 @@ class CommonParams extends Component {
 				summary_timeout: parseInt(verticalDashboard, 10),
 				break_minutes: parseInt(defaultBreak, 10),
 				lunch_minutes: parseInt(defaultLunch, 10),
-				site_prefix: siteCode,
+				site_prefix: site_prefix,
 				assembly_url: assembly_url,
 				timezone_id: parseInt(timezone_id, 10),
 				language_id: parseInt(language_id, 10),
@@ -412,12 +412,12 @@ class CommonParams extends Component {
 						<Col sm={2}>
 							<Form.Control
 								type="text"
-								name="siteCode"
-								value={this.state.siteCode}
+								name="site_prefix"
+								value={this.state.site_prefix}
 								autoComplete={"false"}
 								onChange={this.handleChange}
 							/>
-							<Form.Text className='validation'>{validation.siteCode}</Form.Text>
+							<Form.Text className='validation'>{validation.site_prefix}</Form.Text>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>

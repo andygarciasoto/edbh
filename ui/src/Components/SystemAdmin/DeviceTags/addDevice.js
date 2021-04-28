@@ -157,6 +157,7 @@ class AddDevice extends Component {
 									>
 										{this.state.uomData.map(this.renderUOM)}
 									</Form.Control>
+									<Form.Text className='validation'>{validation.uom_code}</Form.Text>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>

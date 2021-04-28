@@ -60,8 +60,8 @@ function validateShiftsForm(state) {
 
 function validateCommonParametersForm(state) {
     let validation = {};
-    if (state.siteCode.trim() === '') {
-        validation.siteCode = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
+    if (state.site_prefix.trim() === '') {
+        validation.site_prefix = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
     } else if (parseInt(state.language_id, 10) === 0) {
         validation.language_id = 'You need to select a Lenguage';
     } else if (parseInt(state.timezone_id, 10) === 0) {
@@ -132,6 +132,9 @@ function validateTagForm(state, props) {
     if (props.action === 'Create' && state.asset === 0) {
         validation.asset = 'Asset is required';
     }
+    if (props.action === 'Create' && state.uom_code.trim() === '') {
+        validation.uom_code = 'UOM is required';
+    }
     return validation;
 }
 
@@ -165,8 +168,8 @@ function validateAssetForm(state, props) {
     if (state.defaultPercent === '' || parseInt(state.defaultPercent, 10) < 0) {
         validation.defaultPercent = 'Target Percentage of Ideal needs to be equals or greater than 0';
     }
-    if (props.action !== 'Edit' && state.level === 'Site' && state.siteCode.trim() === '') {
-        validation.siteCode = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
+    if (props.action !== 'Edit' && state.level === 'Site' && state.site_prefix.trim() === '') {
+        validation.site_prefix = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
     }
     if (props.level !== 'Site' && state.parent_code.trim() === '') {
         validation.parent_code = 'This value is required';
