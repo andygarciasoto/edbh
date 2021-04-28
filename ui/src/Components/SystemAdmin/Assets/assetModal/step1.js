@@ -101,10 +101,10 @@ export class Step1 extends Component {
 
 		this.props.showFooter(value === 'Cell');
 
-		this.setState({
+		this.setState((state, props) => ({
 			[name]: value,
-			parent_code: value === 'Cell' ? '' : this.props.user.site_code
-		});
+			parent_code: value === 'Cell' ? (state.parentData[0] ? state.parentData[0].asset_code : '') : props.user.site_code
+		}));
 	};
 
 	handleChangePercentage = (event) => {
@@ -394,7 +394,7 @@ export class Step1 extends Component {
 								rows={3} />
 						</Col>
 					</Form.Group>
-					{this.state.level === 'Site' &&
+					{this.state.level === 'Site' && this.props.action !== 'Edit' &&
 						<Form.Group as={Row}>
 							<Form.Label column sm={2}>{t('Site Prefix Code')}:</Form.Label>
 							<Col sm={4}>
