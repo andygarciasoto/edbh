@@ -19,7 +19,7 @@ class ReasonModal extends Component {
             reason: props.reason,
             name: '',
             description: '',
-            category: 'Cost',
+            category: ' ',
             status: 'Active',
             type: 'Downtime',
             level: '',
@@ -290,6 +290,7 @@ class ReasonModal extends Component {
                                         onChange={this.handleChange}
                                         value={this.state.category}
                                     >
+                                        <option value=" ">None</option>
                                         <option value="Cost">Cost</option>
                                         <option value="Quality">Quality</option>
                                     </Form.Control>

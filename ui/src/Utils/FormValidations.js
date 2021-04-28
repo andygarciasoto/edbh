@@ -61,7 +61,7 @@ function validateShiftsForm(state) {
 function validateCommonParametersForm(state) {
     let validation = {};
     if (state.siteCode.trim() === '') {
-        validation.siteCode = 'Site Identifier is required';
+        validation.siteCode = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
     } else if (parseInt(state.language_id, 10) === 0) {
         validation.language_id = 'You need to select a Lenguage';
     } else if (parseInt(state.timezone_id, 10) === 0) {
@@ -158,7 +158,7 @@ function validateAssetForm(state, props) {
         validation.defaultPercent = 'Target Percentage of Ideal needs to be equals or greater than 0';
     }
     if (props.action !== 'Edit' && state.level === 'Site' && state.siteCode.trim() === '') {
-        validation.siteCode = 'Generally this is the Parker Hannifin 3 or 4 digit location identifier';
+        validation.siteCode = 'This value is required. Generally this is the Parker Hannifin 3 or 4 digit location identifier';
     }
     return validation;
 }

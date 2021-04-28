@@ -43,7 +43,7 @@ export class AssetRepository {
         ${_.isEmpty(parameters) ? '' :
                 'WHERE ' + _.join(parameters, ' AND ')
             }
-            ORDER BY A.asset_id`;
+            ORDER BY A.asset_level, A.asset_name`;
         return await this.sqlServerStore.ExecuteQuery(query);
     }
     public async putAsset(asset_id: number, asset_code: string, asset_name: string, asset_description: string, asset_level: string, site_code: string, parent_asset_code: string, automation_level: string, include_in_escalation: boolean, grouping1: string, grouping2: string, grouping3: string, grouping4: string, grouping5: string, status: string, target_percent_of_ideal: number, is_multiple: boolean, is_dynamic: boolean, badge: string, value_stream: string, site_prefix: string): Promise<any> {

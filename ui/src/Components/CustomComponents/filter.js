@@ -86,6 +86,7 @@ const Filter = ({
             <Form.Group controlId="category" className="drop-status">
               <Form.Control as="select" size="sm" custom value={categoryFilter} onChange={(e) => setCategory(e.target.value)}>
                 <option value='All'>All</option>
+                <option value=" ">None</option>
                 <option value='Cost'>Cost</option>
                 <option value='Quality'>Quality</option>
               </Form.Control>

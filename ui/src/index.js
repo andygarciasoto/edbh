@@ -28,9 +28,6 @@ if (search !== '') {
 
 if (window.location.pathname === '/' || window.location.pathname === '/login') {
 	let machineName = params.st;
-	if (!machineName) {
-		machineName = localStorage.getItem('st');
-	}
 	ReactDOM.render(
 		<Provider store={store}>
 			<App defaultAsset={machineName} />

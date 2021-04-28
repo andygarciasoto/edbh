@@ -65,7 +65,7 @@ export class DTReasonService {
         let type = req.query.type;
         let level = req.query.level ? `N'${req.query.level}'` : `N''`;
 
-        if (!site_id || !dtreason_code || !dtreason_name || !dtreason_category || !status || !type) {
+        if (!site_id || !dtreason_code || !dtreason_name || !status || !type) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let unavailable: any;

@@ -178,7 +178,7 @@ class OperatorComponent extends React.Component {
     render() {
         const props = this.props;
         const { t } = props;
-        const openSupervisorSignInModal = !props.user.assing_role && props.user.role === 'Supervisor';
+        const openSupervisorSignInModal = !props.user.assing_role && this.state.selectedAssetOption.is_multiple && props.user.role === 'Supervisor';
         return (
             <React.Fragment>
                 <Row className='d-flex justify-content-end operatorComponent'>

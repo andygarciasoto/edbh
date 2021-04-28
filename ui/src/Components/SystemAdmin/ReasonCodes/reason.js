@@ -119,6 +119,7 @@ class Reason extends Component {
               <th>{t('Description')}</th>
               <th>{t('Category')}</th>
               <th>{t('Type')}</th>
+              <th>{t('Level')}</th>
               <th>{t('Asset Count')}</th>
               <th>{t('Status')}</th>
               <th>{t('Actions')}</th>
@@ -132,6 +133,7 @@ class Reason extends Component {
                 <td>{reason.dtreason_description}</td>
                 <td>{reason.dtreason_category}</td>
                 <td>{reason.type}</td>
+                <td>{reason.level}</td>
                 <td>{reason.asset_count}</td>
                 <td>{reason.status}</td>
                 <td>

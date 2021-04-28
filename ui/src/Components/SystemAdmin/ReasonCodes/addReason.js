@@ -17,7 +17,7 @@ class AddReason extends Component {
       isOpen: props.isOpen,
       name: '',
       description: '',
-      category: 'Cost',
+      category: ' ',
       status: 'Active',
       type: 'Downtime',
       level: '',
@@ -47,9 +47,7 @@ class AddReason extends Component {
         isOpen: nextProps.isOpen,
         name: '',
         description: '',
-        category: 'Cost',
-        reason1: '',
-        reason2: '',
+        category: ' ',
         status: 'Active',
         type: 'Downtime',
         level: '',
@@ -223,6 +221,7 @@ class AddReason extends Component {
                     onChange={this.handleChange}
                     value={this.state.category}
                   >
+                    <option value=" ">None</option>
                     <option value="Cost">Cost</option>
                     <option value="Quality">Quality</option>
                   </Form.Control>
