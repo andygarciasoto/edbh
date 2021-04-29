@@ -66,3 +66,16 @@ export const getUOMFilter = (params) => {
     });
   };
 };
+
+export const getAssetsWithoutTag = (siteId) => {
+  var url = `${API}/assets_without_tag?site_id=${siteId}`;
+  return (dispatch) => {
+    return Axios.get(url).then((response) => {
+      dispatch({
+        type: GET_ASSETS,
+        assets: response.data,
+      });
+      return response.data;
+    });
+  };
+};

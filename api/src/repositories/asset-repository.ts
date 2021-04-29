@@ -50,16 +50,12 @@ export class AssetRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Asset ${asset_id}, '${asset_code}', N'${asset_name}', N'${asset_description}', '${asset_level}', '${site_code}', '${parent_asset_code}', '${automation_level}', ${include_in_escalation}, '${grouping1}', '${grouping2}', '${grouping3}', '${grouping4}', '${grouping5}', '${status}', ${target_percent_of_ideal}, ${is_multiple}, ${is_dynamic}, '${badge}', '${value_stream}', N'${site_prefix}'`);
     }
     public async getAssetsWithoutTag(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT A.asset_code, A.asset_name, A.asset_description, A.asset_level, A.site_code, A.parent_asset_code,
+        return await this.sqlServerStore.ExecuteQuery(`SELECT A.asset_id, A.asset_code, A.asset_name, A.asset_description, A.asset_level, A.site_code, A.parent_asset_code,
         A.value_stream, A.automation_level, A.include_in_escalation, A.grouping1 as 'workcell_id', A.status,
         A.target_percent_of_ideal, A.is_multiple, A.is_dynamic, T.tag_code
         FROM dbo.Asset A
-        INNER JOIN dbo.Asset A2
-        ON ${site_id} = A2.asset_id
-        AND A2.asset_code = A.site_code
-        AND A.asset_level = 'Cell'
-        LEFT JOIN dbo.Tag T
-        ON A.asset_id = T.asset_id
-        AND T.tag_code = NULL`);
+        INNER JOIN dbo.Asset A2 ON A.site_code = A2.asset_code
+        LEFT JOIN dbo.Tag T ON A.asset_id = T.asset_id
+            WHERE A2.asset_id = ${site_id} AND A.asset_level = 'Cell' AND T.tag_id IS NULL`);
     }
 }

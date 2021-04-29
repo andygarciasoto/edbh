@@ -33,6 +33,7 @@ AS  BEGIN
 			UOM_code = @UOM_code,
 			rollover_point = @rollover_point,
 			aggregation = @aggregation,
+			asset_id = @asset_id,
 			max_change = @max_change,
 			status = @status,
 			last_modified_by = 'Administration Tool',

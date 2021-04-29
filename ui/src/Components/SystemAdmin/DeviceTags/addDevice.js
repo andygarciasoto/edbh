@@ -33,9 +33,13 @@ class AddDevice extends Component {
 	componentDidMount() {
 		const { actions } = this.props;
 
-		return Promise.all([actions.getUOM(this.props.user.site), actions.getAssets(this.props.user.site)]).then(
+		return Promise.all([
+			actions.getUOM(this.props.user.site),
+			actions.getAssets(this.props.user.site),
+			actions.getAssetsWithoutTag(this.props.user.site)
+		]).then(
 			(response) => {
-				const assetOption = _.filter(response[1], { asset_level: 'Cell' });
+				const assetOption = _.filter(response[2], { asset_level: 'Cell' });
 				const uomData = response[0];
 				this.setState({
 					uomData,

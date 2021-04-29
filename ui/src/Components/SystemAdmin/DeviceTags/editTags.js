@@ -38,8 +38,10 @@ class EditDevice extends Component {
 			actions.getUOM(this.props.user.site),
 			actions.getAssets(this.props.user.site),
 			actions.getTagById(this.props.user.site, this.props.tag_id),
+			actions.getAssetsWithoutTag(this.props.user.site)
 		]).then((response) => {
-			const assetOption = _.filter(response[1], { asset_level: 'Cell' });
+			let assetOption = _.filter(response[3], { asset_level: 'Cell' });
+			assetOption.push(_.find(response[1], { asset_id: response[2][0].asset_id }));
 			this.setState({
 				uomData: response[0],
 				sites: assetOption,

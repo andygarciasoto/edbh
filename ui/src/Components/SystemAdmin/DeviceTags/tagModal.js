@@ -37,9 +37,10 @@ class TagModal extends Component {
 
 		return Promise.all([
 			actions.getUOM(this.props.user.site),
-			actions.getAssets(this.props.user.site)
+			actions.getAssets(this.props.user.site),
+			actions.getAssetsWithoutTag(this.props.user.site)
 		]).then((response) => {
-			const assetOption = _.filter(response[1], { asset_level: 'Cell' });
+			const assetOption = _.filter(response[2], { asset_level: 'Cell' });
 			const uomData = response[0];
 			this.setState({
 				uomData,
