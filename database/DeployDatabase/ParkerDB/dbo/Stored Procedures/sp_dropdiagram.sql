@@ -1,5 +1,5 @@
 ﻿
-	CREATE PROCEDURE [dbo].[sp_dropdiagram]
+	CREATE   PROCEDURE [dbo].[sp_dropdiagram]
 	(
 		@diagramname 	sysname,
 		@owner_id	int	= null
@@ -38,4 +38,3 @@
 	
 		return 0;
 	END
-	

@@ -1,21 +1,27 @@
 ﻿CREATE TABLE [dbo].[Product] (
-    [product_id]          INT           IDENTITY (1, 1) NOT NULL,
-    [product_code]        VARCHAR (100) NOT NULL,
-    [product_name]        VARCHAR (200) NOT NULL,
-    [product_description] VARCHAR (256) NULL,
-    [product_family]      VARCHAR (100) NULL,
-    [value_stream]        VARCHAR (100) NULL,
-    [grouping1]           VARCHAR (256) NULL,
-    [grouping2]           VARCHAR (256) NULL,
-    [grouping3]           VARCHAR (256) NULL,
-    [grouping4]           VARCHAR (256) NULL,
-    [grouping5]           VARCHAR (256) NULL,
-    [status]              VARCHAR (50)  NOT NULL,
-    [entered_by]          VARCHAR (100) NOT NULL,
-    [entered_on]          DATETIME      NOT NULL,
-    [last_modified_by]    VARCHAR (100) NOT NULL,
-    [last_modified_on]    DATETIME      NOT NULL,
-    [asset_id]            INT           NULL,
-    CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY NONCLUSTERED ([product_id] ASC)
+    [product_id]          INT            IDENTITY (1, 1) NOT NULL,
+    [product_code]        NVARCHAR (100) NOT NULL,
+    [product_name]        NVARCHAR (100) NOT NULL,
+    [product_description] NVARCHAR (256) NULL,
+    [product_family]      NVARCHAR (100) NULL,
+    [value_stream]        NVARCHAR (100) NULL,
+    [grouping1]           NVARCHAR (256) NULL,
+    [grouping2]           NVARCHAR (256) NULL,
+    [grouping3]           NVARCHAR (256) NULL,
+    [grouping4]           NVARCHAR (256) NULL,
+    [grouping5]           NVARCHAR (256) NULL,
+    [status]              VARCHAR (50)   NOT NULL,
+    [entered_by]          NVARCHAR (100) CONSTRAINT [DF_Product_entered_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
+    [entered_on]          DATETIME       CONSTRAINT [DF_Product_entered_on] DEFAULT (getdate()) NOT NULL,
+    [last_modified_by]    NVARCHAR (100) CONSTRAINT [DF_Product_last_modified_by] DEFAULT (N'SQL Manual Entry') NOT NULL,
+    [last_modified_on]    DATETIME       CONSTRAINT [DF_Product_last_modified_on] DEFAULT (getdate()) NOT NULL,
+    [asset_id]            INT            NULL,
+    CONSTRAINT [PK_Product_Product_Id] PRIMARY KEY CLUSTERED ([product_id] ASC)
 );
+
+
+GO
+CREATE NONCLUSTERED INDEX [NCI_Product_product_name]
+    ON [dbo].[Product]([product_code] ASC)
+    INCLUDE([product_name]);
 

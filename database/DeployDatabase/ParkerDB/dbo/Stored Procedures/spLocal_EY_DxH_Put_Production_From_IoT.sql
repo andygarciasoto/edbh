@@ -1,8 +1,8 @@
 ﻿--exec spLocal_EY_DxH_Put_Production_From_IoT '168-0065.Blowout.Length', '413591', 'SQL manual entry', '2020-07-29 11:50:59.813'
 CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
-(@tag_name AS      VARCHAR(200), 
- @tagdata_value AS VARCHAR(256), 
- @entered_by AS    VARCHAR(100), 
+(@tag_name AS      NVARCHAR(200), 
+ @tagdata_value AS NVARCHAR(256), 
+ @entered_by AS    NVARCHAR(100), 
  @entered_on AS    DATETIME
 )
 AS
@@ -18,8 +18,8 @@ AS
          timestamp      DATETIME, 
          dxhdata_id     INT, 
          production_day DATETIME, 
-         shift_code     VARCHAR(100), 
-         hour_interval  VARCHAR(100)
+         shift_code     NVARCHAR(100), 
+         hour_interval  NVARCHAR(100)
         );
 
         DECLARE
@@ -27,16 +27,17 @@ AS
         @dxhdata_id INT,
         @current_value FLOAT,
         @previous_value FLOAT,
-        @productiondata_id AS VARCHAR(100),
+        @productiondata_id AS NVARCHAR(100),
         @value FLOAT,
         @actual FLOAT,
-        @site_code VARCHAR(100),
+        @site_code NVARCHAR(100),
+        @site_id INT,
         @timezone DATETIME,
         @setup_scrap FLOAT,
         @other_scrap FLOAT,
         @rollover_point FLOAT,
         @max_change FLOAT,
-        @order_number VARCHAR(100);
+        @order_number NVARCHAR(100);
         
         IF @tagdata_value = ''
         BEGIN
@@ -59,12 +60,14 @@ AS
             IF ISNULL(@asset_id, 0) != 0 AND ISNULL(@rollover_point, 0) != 0 AND ISNULL(@max_change, 0) != 0
 			BEGIN
 
-                SELECT @site_code = site_code
-                FROM dbo.Asset
-                WHERE asset_id = @asset_id;
+                 SELECT
+                 @site_code = asset_code,
+                 @site_id = asset_id
+                 FROM dbo.Asset WHERE asset_code = ( SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id)
 
-                SELECT @timezone = (SELECT GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE site_timezone)
-                FROM dbo.CommonParameters where site_name = @site_code;
+                SELECT @timezone = (SELECT GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE T.sql_timezone)
+                FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+				ON T.timezone_id = CP.timezone_id AND CP.site_id = @site_id;
 
                 INSERT INTO dbo.TagData
                     (tag_name, 

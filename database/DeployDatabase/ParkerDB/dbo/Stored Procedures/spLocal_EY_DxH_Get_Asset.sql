@@ -1,4 +1,4 @@
-﻿
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset]    Script Date: 29/12/2020 11:31:05 ******/
 --
 -- Copyright © 2019 Ernst & Young LLP
 -- All Rights Reserved
@@ -39,9 +39,9 @@
 --  20200225		C00V02 - Remove JSON format of response
 --		
 -- Example Call:
--- exec spLocal_EY_DxH_Get_Asset 'Cell','Partially_Manual_Scan_Order', 1
+-- exec spLocal_EY_DxH_Get_Asset 'All','All', 1
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset]
 --Declare
 @Level            VARCHAR(100), --All, Site, Area, or Cell. Most of the time send Cell 
 @Automation_Level VARCHAR(100), --All, Automated, Partially_Manual_Scan_Order, Manual
@@ -66,27 +66,26 @@ AS
             BEGIN
                 SET @Automation_Level = NULL;
         END;
-        SELECT asset_id, 
-               asset_code, 
-               asset_name, 
-               asset_description, 
-               asset_level, 
-               site_code, 
-               parent_asset_code, 
-               value_stream, 
-               automation_level, 
-               include_in_escalation, 
-               grouping1, 
-               grouping2, 
-               grouping3, 
-               grouping4, 
-               grouping5
-        FROM dbo.Asset WITH(NOLOCK)
-        WHERE STATUS = 'Active'
+        SELECT A.asset_id, 
+               A.asset_code, 
+               A.asset_name, 
+               A.asset_description, 
+               A.asset_level, 
+               A.site_code, 
+               A.parent_asset_code, 
+               A.value_stream, 
+               A.automation_level, 
+			   A.is_multiple,
+               A.is_dynamic,
+               A.grouping1 as 'workcell_id',
+			   W.workcell_name
+        FROM dbo.Asset A WITH(NOLOCK)
+		LEFT JOIN dbo.Workcell W ON A.grouping1 = W.workcell_id
+        WHERE A.status = 'Active'
               AND site_code = @site_code
               AND ISNULL(asset_level, '') = ISNULL(@Level, ISNULL(asset_level, ''))
               AND ISNULL(automation_level, '') = ISNULL(@Automation_Level, ISNULL(automation_level, ''))
-        ORDER BY asset_name;
+        ORDER BY asset_name, asset_level, parent_asset_code;
 
         RETURN;
     END;

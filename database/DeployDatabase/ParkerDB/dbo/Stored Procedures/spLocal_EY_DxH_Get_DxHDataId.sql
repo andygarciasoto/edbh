@@ -50,6 +50,7 @@
 --	20191204		C00V03 - Change CommonParameters to CommonParameters
 --	20201111		C00V04 - Change Insert sentence for merge and add site id and status to the max sequence shift logic
 --	20210106		C00V05 - Add new logic to get the production day and the shift code using GetShiftProductionDayFromSiteAndDate Function
+--	20210218		C00V06 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- Exec dbo.spLocal_EY_DxH_Get_DxHDataId 69, '2020-01-07 10:23', 0
@@ -68,10 +69,10 @@ BEGIN
 
 Declare 
 	@DxHData_Id							Int,
-	@Shift_Code							Varchar(100),
+	@Shift_Code							NVARCHAR(100),
 	@Production_Day						Datetime,
 	@Timestamp_Hour						Int,
-	@Hour_Interval						Varchar(100),
+	@Hour_Interval						VARCHAR(100),
 	@TSHourStart						Datetime,
 	@TSHourEnd							Datetime,
 	@Site_id							Int;

@@ -1,5 +1,5 @@
 ﻿
-	CREATE PROCEDURE [dbo].[sp_creatediagram]
+	CREATE   PROCEDURE [dbo].[sp_creatediagram]
 	(
 		@diagramname 	sysname,
 		@owner_id		int	= null, 	
@@ -55,4 +55,3 @@
 		select @retval = @@IDENTITY 
 		return @retval
 	END
-	

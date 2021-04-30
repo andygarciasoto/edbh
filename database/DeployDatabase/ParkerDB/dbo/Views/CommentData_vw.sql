@@ -1,4 +1,4 @@
-﻿CREATE VIEW dbo.CommentData_vw
+﻿CREATE VIEW dbo.[CommentData_vw]
 AS
 SELECT        dbo.CommentData.commentdata_id, dbo.CommentData.dxhdata_id, dbo.CommentData.comment, dbo.CommentData.first_name, dbo.CommentData.last_name, dbo.CommentData.entered_by, dbo.CommentData.entered_on, 
                          dbo.CommentData.last_modified_by, dbo.CommentData.last_modified_on, dbo.Asset.asset_id, dbo.Asset.site_code
