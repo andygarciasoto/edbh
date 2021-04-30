@@ -1,10 +1,10 @@
-import Axios from "axios";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as UserActions from "../../../redux/actions/userActions";
-import { API } from "../../../Utils/Constants";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import Axios from 'axios';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as UserActions from '../../../redux/actions/userActions';
+import { API } from '../../../Utils/Constants';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { validateUserForm } from '../../../Utils/FormValidations';
 import _ from 'lodash';
 
@@ -17,17 +17,17 @@ class UserModal extends Component {
       username: '',
       firstname: '',
       lastname: '',
-      role: '',
-      role_id: 0,
+      role_name: 'Operator',
       escalation_id: '',
-      status: '',
+      status: 'Active',
       site: props.user.site,
-      rolesArray: [],
+      roles: [],
       escalationArray: [],
       sites: _.filter(props.user.sites, { Role: 'Administrator' }),
       showForm: true,
       modalError: false,
-      validation: {}
+      validation: {},
+      messageTitle: ''
     };
   }
 
@@ -40,29 +40,26 @@ class UserModal extends Component {
       actions.getRoles(),
       actions.getEscalationFilter(params)
     ]).then((response) => {
-      const role_id = _.find(response[0], { name: 'Operator' }).role_id;
       this.setState({
-        rolesArray: response[0],
-        escalationArray: response[1],
-        role_id
+        roles: response[0],
+        escalationArray: response[1]
       });
     });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!_.isEqual(nextProps.selectedUser, prevState.selectedUser)) {
-      const badge = nextProps.action === 'Edit' ? nextProps.selectedUser.Badge : '';
+      const badge = nextProps.action === 'Update' ? nextProps.selectedUser.Badge : '';
       return {
         selectedUser: nextProps.selectedUser,
         badge: badge,
         username: nextProps.selectedUser.Username || '',
         firstname: nextProps.selectedUser.First_Name || '',
         lastname: nextProps.selectedUser.Last_Name || '',
-        role: nextProps.selectedUser.name || '',
-        role_id: nextProps.selectedUser.role_id || prevState.role_id,
-        escalation_id: nextProps.selectedUser.escalation_level || "",
+        role_name: nextProps.selectedUser.Role || 'Operator',
+        escalation_id: nextProps.selectedUser.escalation_level || '',
         site: nextProps.selectedUser.Site || nextProps.user.site,
-        status: nextProps.selectedUser.status || '',
+        status: nextProps.selectedUser.status || 'Status',
         validation: {}
       };
     }
@@ -71,7 +68,7 @@ class UserModal extends Component {
 
   renderRoles(roles, index) {
     return (
-      <option value={roles.role_id} key={index}>
+      <option value={roles.role_name} key={index}>
         {roles.name}
       </option>
     );
@@ -94,12 +91,8 @@ class UserModal extends Component {
   }
 
   handleChange = (event) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
     this.setState({
-      [name]: value,
+      [event.target.name]: event.target.value,
     });
   };
 
@@ -110,21 +103,22 @@ class UserModal extends Component {
       username,
       firstname,
       lastname,
-      role_id,
+      role_name,
       status,
       escalation_id,
+      roles
     } = this.state;
 
     let url = `${API}/insert_user`;
     let validation = validateUserForm(this.state);
-
+    const messageTitle = this.props.action;
     if (_.isEmpty(validation)) {
       Axios.put(url, {
         badge: badge,
         username: username,
         first_name: firstname,
         last_name: lastname,
-        role_id: role_id,
+        role_id: _.find(roles, { name: role_name }).role_id,
         site_id: this.props.user.site,
         escalation_id: parseInt(escalation_id, 10),
         status: status,
@@ -134,6 +128,7 @@ class UserModal extends Component {
           this.props.handleClose();
           this.setState({
             show: true,
+            messageTitle
           });
         },
         (error) => {
@@ -152,7 +147,8 @@ class UserModal extends Component {
   closeModalMessage = () => {
     this.setState({
       show: false,
-      modalError: false
+      modalError: false,
+      messageTitle: ''
     });
   };
 
@@ -162,12 +158,13 @@ class UserModal extends Component {
       username,
       firstname,
       lastname,
-      role_id,
+      role_name,
       status,
       escalation_id,
       site,
       sites,
-      validation
+      validation,
+      messageTitle
     } = this.state;
 
     const t = this.props.t;
@@ -184,10 +181,10 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Badge')}:</Form.Label>
                 <Col sm={9}>
                   <Form.Control
-                    type="text"
-                    name="badge"
+                    type='text'
+                    name='badge'
                     value={badge}
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   />
                   <Form.Text className='validation'>{validation.badge}</Form.Text>
@@ -197,10 +194,10 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Username')}:</Form.Label>
                 <Col sm={9}>
                   <Form.Control
-                    type="text"
-                    name="username"
+                    type='text'
+                    name='username'
                     value={username}
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   />
                   <Form.Text className='validation'>{validation.username}</Form.Text>
@@ -210,10 +207,10 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('First Name')}:</Form.Label>
                 <Col sm={9}>
                   <Form.Control
-                    type="text"
-                    name="firstname"
+                    type='text'
+                    name='firstname'
                     value={firstname}
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   />
                   <Form.Text className='validation'>{validation.firstname}</Form.Text>
@@ -223,10 +220,10 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Last Name')}:</Form.Label>
                 <Col sm={9}>
                   <Form.Control
-                    type="text"
-                    name="lastname"
+                    type='text'
+                    name='lastname'
                     value={lastname}
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   />
                   <Form.Text className='validation'>{validation.lastname}</Form.Text>
@@ -236,14 +233,14 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Escalation')}:</Form.Label>
                 <Col sm={7}>
                   <Form.Control
-                    as="select"
+                    as='select'
                     value={escalation_id}
                     name='escalation_id'
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   >
                     {this.state.escalationArray.map(this.renderEscalation)}
-                    <option value="">None</option>
+                    <option value=''>None</option>
                   </Form.Control>
                 </Col>
               </Form.Group>
@@ -251,13 +248,13 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Role')}:</Form.Label>
                 <Col sm={7}>
                   <Form.Control
-                    as="select"
-                    value={role_id}
-                    autoComplete={"false"}
-                    name='role_id'
+                    as='select'
+                    value={role_name}
+                    autoComplete={'false'}
+                    name='role_name'
                     onChange={this.handleChange}
                   >
-                    {this.state.rolesArray.map(this.renderRoles)}
+                    {this.state.roles.map(this.renderRoles)}
                   </Form.Control>
                 </Col>
               </Form.Group>
@@ -268,7 +265,7 @@ class UserModal extends Component {
                     as='select'
                     name='site'
                     value={site}
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   >
                     {sites.map(this.renderSites)}
@@ -279,36 +276,36 @@ class UserModal extends Component {
                 <Form.Label column sm={3}>{t('Status')}:</Form.Label>
                 <Col sm={7}>
                   <Form.Control
-                    as="select"
+                    as='select'
                     value={status}
                     name='status'
-                    autoComplete={"false"}
+                    autoComplete={'false'}
                     onChange={this.handleChange}
                   >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value='Active'>Active</option>
+                    <option value='Inactive'>Inactive</option>
                   </Form.Control>
                 </Col>
               </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="Primary" onClick={(e) => this.createUser(e)}>
+            <Button variant='Primary' onClick={(e) => this.createUser(e)}>
               {t('Confirm')}
             </Button>
-            <Button variant="secondary" onClick={this.props.handleClose}>
+            <Button variant='secondary' onClick={this.props.handleClose}>
               {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
         <Modal show={this.state.show} onHide={this.closeModalMessage}>
           <Modal.Header closeButton>
-            <Modal.Title>Sucess</Modal.Title>
+            <Modal.Title>Success</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has been copied</Modal.Body>
+          <Modal.Body>User has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModalMessage}>
-              Close
+            <Button variant='secondary' onClick={this.closeModalMessage}>
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
@@ -316,10 +313,10 @@ class UserModal extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>User has not been copied</Modal.Body>
+          <Modal.Body>User has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModalMessage}>
-              Close
+            <Button variant='secondary' onClick={this.closeModalMessage}>
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>

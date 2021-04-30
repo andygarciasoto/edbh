@@ -1,12 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as UserActions from "../../../redux/actions/userActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddUser from "./addUser";
-import EditUser from "./editUser";
-import UserModal from "./userModal";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as UserActions from '../../../redux/actions/userActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import UserModal from './userModal';
 import FontAwesome from 'react-fontawesome';
 
 class UserTable extends Component {
@@ -15,8 +13,6 @@ class UserTable extends Component {
 		this.state = {
 			usersData: [],
 			user: false,
-			edit: false,
-			badge: "",
 			statusFilter: 'Active',
 			roleFilter: 'All',
 			escalationFilter: 'All',
@@ -54,19 +50,6 @@ class UserTable extends Component {
 		})
 	}
 
-	showAddUser = () => {
-		this.setState({
-			user: true,
-		});
-	};
-
-	showEditUser = (badge) => {
-		this.setState({
-			edit: true,
-			badge: badge,
-		});
-	};
-
 	showUserModal = (selectedUser, action) => {
 		this.setState({
 			selectedUser,
@@ -74,18 +57,6 @@ class UserTable extends Component {
 			showUserModal: true
 		})
 	}
-
-	closeAddUser = () => {
-		this.setState({
-			user: false,
-		});
-	};
-
-	closeEditUser = () => {
-		this.setState({
-			edit: false,
-		});
-	};
 
 	closeUserModal = () => {
 		this.setState({
@@ -100,34 +71,15 @@ class UserTable extends Component {
 		return (
 			<div>
 				<Filter
-					className="filter-user"
+					className='filter-user'
 					buttonName={'+ ' + t('User')}
 					role={true}
 					escalation={true}
-					onClick={() => this.showAddUser()}
+					onClick={() => this.showUserModal({}, 'Create')}
 					onClickFilter={this.applyFilter}
 					view={'User'}
 					t={t}
-				></Filter>
-				{this.state.user === true && (
-					<AddUser
-						user={this.props.user}
-						showForm={this.state.user}
-						closeForm={this.closeAddUser}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
-				{this.state.edit === true && (
-					<EditUser
-						user={this.props.user}
-						showForm={this.state.edit}
-						closeForm={this.closeEditUser}
-						badge={this.state.badge}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
+				/>
 				<UserModal
 					user={this.props.user}
 					isOpen={this.state.showUserModal}
@@ -137,7 +89,7 @@ class UserTable extends Component {
 					handleClose={this.closeUserModal}
 					t={t}
 				/>
-				<Table responsive="sm" bordered={true}>
+				<Table responsive='sm' bordered={true}>
 					<thead>
 						<tr>
 							<th>{t('Badge')}</th>
@@ -161,7 +113,7 @@ class UserTable extends Component {
 								<td>{user.status}</td>
 								<td>{user.escalation_name}</td>
 								<td>
-									<FontAwesome name='edit fa-2x' onClick={() => this.showEditUser(user.Badge)} />
+									<FontAwesome name='edit fa-2x' onClick={() => this.showUserModal(user, 'Update')} />
 									<FontAwesome name='copy fa-2x' onClick={() => this.showUserModal(user, 'Copy')} />
 								</td>
 							</tr>
