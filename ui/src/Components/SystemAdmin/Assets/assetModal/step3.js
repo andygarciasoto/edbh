@@ -3,22 +3,20 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { genericRequest } from '../../../../Utils/Requests';
 import { API } from '../../../../Utils/Constants';
-import * as ReasonActions from '../../../../redux/actions/reasonActions';
+import * as BreakActions from '../../../../redux/actions/breakActions';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import ConfigurationTabGeneric from '../../../Common/ConfigurationTabGeneric';
+import moment from 'moment';
 import _ from 'lodash';
 
-export class Step3 extends Component {
+export class Step4 extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			BreakData: [],
 			asset: props.asset,
 			asset2: props.asset2,
-			ReasonData: [],
-			type: 'Downtime',
 			completeListTabs: [],
-			associateReasons: [],
-			dynamicCompleteList: [],
 			availableListTabs: [],
 			selectedListTabs: [],
 		};
@@ -30,56 +28,57 @@ export class Step3 extends Component {
 
 	fetchData = () => {
 		const { actions } = this.props;
+
 		const params = {
 			site_id: this.props.user.site,
-			status: 'Active'
+			status: 'Active',
 		};
 
-		const params2 = {
+		const params1 = {
 			site_id: this.props.user.site,
 			asset_id: this.state.asset.asset_id,
 			status: 'Active'
 		};
 
-		const params3 = {
+		const params2 = {
 			site_id: this.props.user.site,
 			asset_id: this.state.asset2.asset_id,
 			status: 'Active'
 		};
 
 		return Promise.all([
-			actions.getReasonByFilter(params),
-			actions.getReasonByFilter(params2),
-			actions.getReasonByFilter(params3)
+			actions.getBreakFilter(params),
+			actions.getBreakFilter(params1),
+			actions.getBreakFilter(params2)
 		]).then((response) => {
-			const ReasonData = response[0];
-			const completeListTabs = _.map(ReasonData, (reason) => {
-				reason.asset_count = 0;
-				reason.id = reason.dtreason_code + '-' + reason.dtreason_name + '-' + reason.dtreason_description + '-' + reason.dtreason_category + '-' +
-					reason.reason1 + '-' + reason.reason2 + '-' + reason.status + '-' + reason.type + '-' + reason.level;
-				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
-				return reason;
+			const BreakData = response[0];
+			const completeListTabs = _.map(BreakData, (breakObject) => {
+				delete breakObject.asset_count;
+				breakObject.id =
+					breakObject.unavailable_code + '-' + breakObject.unavailable_name + '-' + breakObject.unavailable_description + '-' + breakObject.start_time + '-' +
+					breakObject.end_time + '-' + breakObject.duration_in_minutes + '-' + breakObject.status;
+				breakObject.content =
+					breakObject.unavailable_name + ' (' + breakObject.start_time + ' - ' + breakObject.end_time + ')';
+				return breakObject;
 			});
 
-			const reasonsToUse = (this.props.action === 'Copy' && _.isEmpty(response[1]) ? response[2] : response[1]) || [];
-			const associateReasons = _.map(reasonsToUse, (reason) => {
-				delete reason.COUNT;
-				reason.asset_count = 0;
-				reason.id = reason.dtreason_code + '-' + reason.dtreason_name + '-' + reason.dtreason_description + '-' + reason.dtreason_category + '-' +
-					reason.reason1 + '-' + reason.reason2 + '-' + reason.status + '-' + reason.type + '-' + reason.level;
-				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
-				return reason;
+			const breaksToUse = (this.props.action === 'Copy' && _.isEmpty(response[1]) ? response[2] : response[1]) || [];
+			const selectedListTabs = _.map(breaksToUse, (breakObject) => {
+				delete breakObject.asset_count;
+				breakObject.id = breakObject.unavailable_code + '-' + breakObject.unavailable_name + '-' + breakObject.unavailable_description + '-' + breakObject.start_time + '-' +
+					breakObject.end_time + '-' + breakObject.duration_in_minutes + '-' + breakObject.status;
+				breakObject.content =
+					breakObject.unavailable_name + ' (' + breakObject.start_time + ' - ' + breakObject.end_time + ')';
+				return breakObject;
 			});
 
-			const availableListTabs = _.filter(_.differenceWith(completeListTabs, associateReasons, _.isEqual), { type: this.state.type });
-			const selectedListTabs = _.filter(associateReasons, { type: this.state.type });
+			const availableListTabs = _.differenceWith(completeListTabs, selectedListTabs, _.isEqual);
 
 			this.setState({
-				ReasonData,
+				BreakData,
 				completeListTabs,
-				associateReasons,
 				availableListTabs,
-				selectedListTabs,
+				selectedListTabs
 			});
 		});
 	}
@@ -96,39 +95,31 @@ export class Step3 extends Component {
 		this.updateTabsImported(this.state.completeListTabs, []);
 	};
 
-	handleChangeType = (event) => {
-		const availableListTabs = _.filter(_.differenceWith(this.state.completeListTabs, this.state.associateReasons, _.isEqual), { type: event.target.value });
-		const selectedListTabs = _.filter(this.state.associateReasons, { type: event.target.value });
-		this.setState({
-			type: event.target.value,
-			availableListTabs,
-			selectedListTabs
-		});
-	};
-
 	closeModalMessage = () => {
 		this.setState({ modalError: false, show: false });
 	};
 
-	assingReasons = (e) => {
+	assingBreaks = (e) => {
 		e.preventDefault();
 		const { selectedListTabs } = this.state;
 
 		const newArray = _.map(selectedListTabs, (item) => {
 			item.asset_code = this.state.asset.asset_code;
 			item.site_code = this.props.user.site_code;
+			item.valid_from = moment().tz(this.props.user.timezone);
+			item.valid_to = null;
 			return item;
 		});
 
 		if (selectedListTabs !== []) {
 			genericRequest('put', API, '/dragndrop', null, null, {
 				site_id: this.props.user.site,
-				table: 'DTReason',
+				table: 'Unavailable',
 				data: newArray,
 			}).then(
 				() => {
 					this.setState({
-						show: true,
+						show: true
 					});
 					this.fetchData();
 				},
@@ -139,7 +130,7 @@ export class Step3 extends Component {
 				}
 			);
 		} else {
-			console.log('Selected Array Empty');
+			console.log('selected list is empty');
 		}
 	};
 
@@ -148,22 +139,6 @@ export class Step3 extends Component {
 		return (
 			<div>
 				<Form>
-					<Form.Group as={Row}>
-						<Form.Label column sm={1}>
-							{t('Type')}:
-						</Form.Label>
-						<Col sm={2}>
-							<Form.Control
-								as="select"
-								name="type"
-								onChange={this.handleChangeType}
-								value={this.state.type}
-							>
-								<option value="Downtime">Downtime</option>
-								<option value="Scrap">Scrap</option>
-							</Form.Control>
-						</Col>
-					</Form.Group>
 					<Form.Group as={Row}>
 						<Col sm={12}>
 							<ConfigurationTabGeneric
@@ -175,25 +150,24 @@ export class Step3 extends Component {
 								resetTabs={this.resetTabs}
 								height={'350px'}
 								t={t}
-								genericTitle="Reasons"
+								genericTitle="Breaks"
 							/>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
 						<Col sm={4}>
-							<Button variant='success' onClick={(e) => this.assingReasons(e)}>
+							<Button variant='success' onClick={(e) => this.assingBreaks(e)}>
 								{t('Apply')}
 							</Button>
 						</Col>
 					</Form.Group>
-					<button className="button-next" onClick={(e) => this.props.nextStep(e)}>{t('Next Step') + '>>'}</button>
 					<button className='button-back' onClick={(e) => this.props.back(e)}>{'<<' + t('Previous Step')}</button>
 				</Form>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Reason has been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
+					<Modal.Body>Break has been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
@@ -204,7 +178,7 @@ export class Step3 extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Reason has not been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
+					<Modal.Body>Break has not been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
@@ -217,8 +191,8 @@ export class Step3 extends Component {
 }
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(ReasonActions, dispatch),
+		actions: bindActionCreators(BreakActions, dispatch),
 	};
 };
 
-export default connect(null, mapDispatch)(Step3);
+export default connect(null, mapDispatch)(Step4);

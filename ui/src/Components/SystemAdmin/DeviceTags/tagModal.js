@@ -13,7 +13,7 @@ class TagModal extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			tag: props.tag,
+			tag: {},
 			code: '',
 			status: 'Active',
 			name: '',
@@ -26,40 +26,26 @@ class TagModal extends Component {
 			uomData: [],
 			show: false,
 			showForm: true,
-			sites: [],
+			assets: [],
 			modalError: false,
-			validation: {}
+			validation: {},
+			messageTitle: ''
 		};
 	}
 
 	componentDidMount() {
-		const { actions } = this.props;
-
-		return Promise.all([
-			actions.getUOM(this.props.user.site),
-			actions.getAssets(this.props.user.site),
-			actions.getAssetsWithoutTag(this.props.user.site)
-		]).then((response) => {
-			const assetOption = _.filter(response[2], { asset_level: 'Cell' });
-			const uomData = response[0];
-			this.setState({
-				uomData,
-				uom_code: uomData[0] ? uomData[0].UOM_code : '',
-				sites: assetOption,
-				asset: assetOption[0] ? assetOption[0].asset_id : 0
-			});
-		});
+		this.fetchData();
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (!_.isEqual(nextProps.tag, prevState.tag)) {
-			const name = nextProps.action === 'Edit' ? nextProps.tag.tag_name : '';
-			const tag_id = nextProps.action === 'Edit' ? nextProps.tag.tag_id : 0;
+			const name = nextProps.action === 'Update' ? nextProps.tag.tag_name : '';
+			const tag_id = nextProps.action === 'Update' ? nextProps.tag.tag_id : 0;
 			return {
 				tag: nextProps.tag,
 				tag_id: tag_id,
 				name: name,
-				asset: nextProps.tag.asset_id || prevState.asset_id,
+				asset: nextProps.tag.asset_id || 0,
 				code: nextProps.tag.tag_code || '',
 				status: nextProps.tag.status || 'Active',
 				uom_code: nextProps.tag.UOM_code || prevState.uom_code,
@@ -73,13 +59,35 @@ class TagModal extends Component {
 		return null;
 	}
 
-	handleChange = (event) => {
-		const target = event.target;
-		const value = target.value;
-		const name = target.name;
+	componentDidUpdate(prevProps, prevState) {
+		if (!_.isEqual(this.state.tag, prevState.tag)) {
+			this.fetchData();
+		}
+	}
 
+	fetchData() {
+		const { actions } = this.props;
+
+		return Promise.all([
+			actions.getAssets(this.props.user.site),
+			actions.getAssetsWithoutTag(this.props.user.site),
+			actions.getUOM(this.props.user.site)
+		]).then((response) => {
+			let assets = response[1];
+			if (this.props.action === 'Update') {
+				assets.push(_.find(response[0], { asset_id: this.state.tag.asset_id }));
+			}
+			this.setState((state) => ({
+				assets,
+				asset: state.asset ? state.asset : (assets[0] ? assets[0].asset_id : 0),
+				uomData: response[2]
+			}));
+		});
+	}
+
+	handleChange = (event) => {
 		this.setState({
-			[name]: value,
+			[event.target.name]: event.target.value
 		});
 	};
 
@@ -89,10 +97,11 @@ class TagModal extends Component {
 
 		let url = `${API}/insert_tag`;
 		const validation = validateTagForm(this.state, this.props);
+		const messageTitle = this.props.action;
 		if (_.isEmpty(validation)) {
 			Axios.put(url, {
 				tag_id: tag_id,
-				tag_code: this.props.action === 'Edit' ? code : `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
+				tag_code: this.props.action === 'Update' ? code : name.replace(/\s+/g, ''),
 				tag_name: name,
 				tag_description: description,
 				datatype: data_type,
@@ -109,12 +118,14 @@ class TagModal extends Component {
 					this.props.handleClose();
 					this.setState({
 						show: true,
-						validation: {}
+						validation: {},
+						messageTitle
 					});
 				},
 				(error) => {
 					this.setState({
 						modalError: true,
+						messageTitle
 					});
 				}
 			);
@@ -147,7 +158,7 @@ class TagModal extends Component {
 
 	render() {
 		const t = this.props.t;
-		const validation = this.state.validation;
+		const { validation, messageTitle } = this.state;
 		return (
 			<div>
 				<Modal show={this.props.isOpen} onHide={this.props.handleClose} className="general-modal" centered>
@@ -227,7 +238,7 @@ class TagModal extends Component {
 										value={this.state.asset}
 										onChange={this.handleChange}
 									>
-										{this.state.sites.map(this.renderAssets)}
+										{this.state.assets.map(this.renderAssets)}
 									</Form.Control>
 								</Col>
 							</Form.Group>
@@ -267,12 +278,12 @@ class TagModal extends Component {
 				</Modal>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Sucess</Modal.Title>
+						<Modal.Title>Success</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tag has been copied</Modal.Body>
+					<Modal.Body>Tag has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
@@ -280,10 +291,10 @@ class TagModal extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tag has not been copied</Modal.Body>
+					<Modal.Body>Tag has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

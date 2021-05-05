@@ -4,8 +4,6 @@ import { bindActionCreators } from 'redux';
 import * as TagActions from '../../../redux/actions/tagActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
-import AddTag from './addDevice';
-import EditTag from './editTags';
 import TagModal from './tagModal';
 import FontAwesome from 'react-fontawesome';
 
@@ -50,12 +48,6 @@ class Device extends Component {
 		})
 	}
 
-	showAddTag = () => {
-		this.setState({
-			addTag: true,
-		});
-	};
-
 	showTagModal = (tag, action) => {
 		this.setState({
 			tag,
@@ -63,25 +55,6 @@ class Device extends Component {
 			showTagModal: true
 		})
 	}
-
-	closeAddTag = () => {
-		this.setState({
-			addTag: false,
-		});
-	};
-
-	showEditTag = (tag_id) => {
-		this.setState({
-			editTag: true,
-			tag_id: tag_id,
-		});
-	};
-
-	closeEditTag = () => {
-		this.setState({
-			editTag: false,
-		});
-	};
 
 	closeTagModal = () => {
 		this.setState({
@@ -104,32 +77,11 @@ class Device extends Component {
 					automatedLevel={false}
 					category={false}
 					type={false}
-					onClick={() => this.showAddTag()}
+					onClick={() => this.showTagModal({}, 'Create')}
 					onClickFilter={this.applyFilter}
 					view={'Tag'}
 					t={t}
-				></Filter>
-				{this.state.addTag === true && (
-					<AddTag
-						user={this.props.user}
-						showForm={this.state.addTag}
-						closeForm={this.closeAddTag}
-						Refresh={this.loadData}
-						action='Create'
-						t={t}
-					/>
-				)}
-				{this.state.editTag === true && (
-					<EditTag
-						user={this.props.user}
-						showForm={this.state.editTag}
-						closeForm={this.closeEditTag}
-						tag_id={this.state.tag_id}
-						Refresh={this.loadData}
-						action='Edit'
-						t={t}
-					/>
-				)}
+				/>
 				<TagModal
 					user={this.props.user}
 					isOpen={this.state.showTagModal}
@@ -142,14 +94,9 @@ class Device extends Component {
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th style={{ maxWidth: '300px' }}>{t('Code')}</th>
-							<th style={{ maxWidth: '300px' }}>{t('Name')}</th>
+							<th style={{ maxWidth: '300px' }}>{t('Tag Name')}</th>
 							<th>{t('Description')}</th>
-							<th>{t('Data Type')}</th>
 							<th>{t('UOM Code')}</th>
-							<th>{t('Rollover Point')}</th>
-							<th>{t('Aggregation')}</th>
-							<th style={{ maxWidth: '200px' }}>{t('Difference Between Values to Reset the Count')}</th>
 							<th>{t('Asset')}</th>
 							<th>{t('Status')}</th>
 							<th>{t('Actions')}</th>
@@ -158,18 +105,13 @@ class Device extends Component {
 					<tbody>
 						{this.state.TagsData.map((tag, index) => (
 							<tr key={index}>
-								<td style={{ maxWidth: '300px', wordWrap: 'break-word' }}>{tag.tag_code}</td>
 								<td style={{ maxWidth: '300px', wordWrap: 'break-word' }}>{tag.tag_name}</td>
 								<td>{tag.tag_description}</td>
-								<td>{tag.datatype}</td>
 								<td>{tag.UOM_code}</td>
-								<td>{tag.rollover_point}</td>
-								<td>{tag.aggregation}</td>
-								<td>{tag.max_change}</td>
 								<td>{tag.asset_code}</td>
 								<td>{tag.status}</td>
 								<td>
-									<FontAwesome name='edit fa-2x' onClick={() => this.showEditTag(tag.tag_id)} />
+									<FontAwesome name='edit fa-2x' onClick={() => this.showTagModal(tag, 'Update')} />
 									<FontAwesome name='copy fa-2x' onClick={() => this.showTagModal(tag, 'Copy')} />
 								</td>
 							</tr>

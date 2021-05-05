@@ -134,6 +134,7 @@ class UserModal extends Component {
         (error) => {
           this.setState({
             modalError: true,
+            messageTitle
           });
         }
       );

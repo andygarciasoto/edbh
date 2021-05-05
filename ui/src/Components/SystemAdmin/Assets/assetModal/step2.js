@@ -1,33 +1,26 @@
 import React, { Component } from 'react';
-import { Form, Button, Col, Row, Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as UOMActions from '../../../../redux/actions/uomActions';
-import * as TagActions from '../../../../redux/actions/tagActions';
+import { genericRequest } from '../../../../Utils/Requests';
 import { API } from '../../../../Utils/Constants';
-import Axios from 'axios';
-import { validateTagForm } from '../../../../Utils/FormValidations';
+import * as ReasonActions from '../../../../redux/actions/reasonActions';
+import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
+import ConfigurationTabGeneric from '../../../Common/ConfigurationTabGeneric';
 import _ from 'lodash';
 
-export class Step2 extends Component {
+export class Step3 extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			asset: props.asset,
 			asset2: props.asset2,
-			tag: {},
-			code: '',
-			status: 'Active',
-			name: '',
-			uom_code: 0,
-			description: '',
-			rollover: 999999,
-			data_type: 'Integer',
-			max_change: 10,
-			uomData: [],
-			show: false,
-			modalError: false,
-			validation: {}
+			ReasonData: [],
+			type: 'Downtime',
+			completeListTabs: [],
+			associateReasons: [],
+			dynamicCompleteList: [],
+			availableListTabs: [],
+			selectedListTabs: [],
 		};
 	}
 
@@ -37,96 +30,105 @@ export class Step2 extends Component {
 
 	fetchData = () => {
 		const { actions } = this.props;
-
 		const params = {
 			site_id: this.props.user.site,
-			asset_id: this.state.asset.asset_id
+			status: 'Active'
 		};
 
 		const params2 = {
 			site_id: this.props.user.site,
-			asset_id: this.state.asset2.asset_id
+			asset_id: this.state.asset.asset_id,
+			status: 'Active'
+		};
+
+		const params3 = {
+			site_id: this.props.user.site,
+			asset_id: this.state.asset2.asset_id,
+			status: 'Active'
 		};
 
 		return Promise.all([
-			actions.getUOMFilter(params),
-			actions.getTagsFilter(params),
-			actions.getTagsFilter(params2)
-		]).then(
-			(response) => {
-				const uomData = response[0];
-				const tag = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? response[2][0] : response[1][0]) || {};
-				const name = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? '' : tag.tag_name) || '';
-				const code = (this.props.action === 'Copy' && _.isEmpty(response[1][0]) ? '' : tag.tag_code) || '';
-				this.setState({
-					uomData,
-					tag,
-					code,
-					uom_code: tag.UOM_code || (uomData[0] ? uomData[0].UOM_code : 0),
-					status: tag.status || 'Active',
-					name,
-					description: tag.tag_description || '',
-					rollover: tag.rollover_point || 999999,
-					data_type: tag.datatype || 'Integer',
-					max_change: tag.max_change || 10
-				});
-			}
-		);
+			actions.getReasonByFilter(params),
+			actions.getReasonByFilter(params2),
+			actions.getReasonByFilter(params3)
+		]).then((response) => {
+			const ReasonData = response[0];
+			const completeListTabs = _.map(ReasonData, (reason) => {
+				reason.asset_count = 0;
+				reason.id = reason.dtreason_code + '-' + reason.dtreason_name + '-' + reason.dtreason_description + '-' + reason.dtreason_category + '-' +
+					reason.reason1 + '-' + reason.reason2 + '-' + reason.status + '-' + reason.type + '-' + reason.level;
+				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
+				return reason;
+			});
+
+			const reasonsToUse = (this.props.action === 'Copy' && _.isEmpty(response[1]) ? response[2] : response[1]) || [];
+			const associateReasons = _.map(reasonsToUse, (reason) => {
+				delete reason.COUNT;
+				reason.asset_count = 0;
+				reason.id = reason.dtreason_code + '-' + reason.dtreason_name + '-' + reason.dtreason_description + '-' + reason.dtreason_category + '-' +
+					reason.reason1 + '-' + reason.reason2 + '-' + reason.status + '-' + reason.type + '-' + reason.level;
+				reason.content = reason.dtreason_code + ' - ' + reason.dtreason_name;
+				return reason;
+			});
+
+			const availableListTabs = _.filter(_.differenceWith(completeListTabs, associateReasons, _.isEqual), { type: this.state.type });
+			const selectedListTabs = _.filter(associateReasons, { type: this.state.type });
+
+			this.setState({
+				ReasonData,
+				completeListTabs,
+				associateReasons,
+				availableListTabs,
+				selectedListTabs,
+			});
+		});
 	}
 
-	handleChange = (event) => {
-		this.setState({
-			[event.target.name]: event.target.value
-		});
+	updateTabsImported = (availableListTabs, selectedListTabs) => {
+		this.setState({ availableListTabs, selectedListTabs });
 	};
 
-	renderAssets(assets, index) {
-		return (
-			<option value={assets.asset_id} key={index}>
-				{assets.asset_name}
-			</option>
-		);
-	}
+	importAllTabs = () => {
+		this.updateTabsImported([], this.state.completeListTabs);
+	};
 
-	renderUOM(uom, index) {
-		return (
-			<option value={uom.UOM_code} key={index}>
-				{uom.UOM_code}
-			</option>
-		);
-	}
+	resetTabs = () => {
+		this.updateTabsImported(this.state.completeListTabs, []);
+	};
+
+	handleChangeType = (event) => {
+		const availableListTabs = _.filter(_.differenceWith(this.state.completeListTabs, this.state.associateReasons, _.isEqual), { type: event.target.value });
+		const selectedListTabs = _.filter(this.state.associateReasons, { type: event.target.value });
+		this.setState({
+			type: event.target.value,
+			availableListTabs,
+			selectedListTabs
+		});
+	};
 
 	closeModalMessage = () => {
 		this.setState({ modalError: false, show: false });
 	};
 
-	createTag = (e) => {
+	assingReasons = (e) => {
 		e.preventDefault();
-		const { tag, code, status, name, uom_code, description, rollover, data_type, max_change, asset } = this.state;
-		var url = `${API}/insert_tag`;
+		const { selectedListTabs } = this.state;
 
-		const validation = validateTagForm(this.state);
+		const newArray = _.map(selectedListTabs, (item) => {
+			item.asset_code = this.state.asset.asset_code;
+			item.site_code = this.props.user.site_code;
+			return item;
+		});
 
-		if (_.isEmpty(validation)) {
-			const new_code = code === '' ? `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, '') : code;
-			const tag_id = code === '' ? 0 : tag.tag_id;
-			Axios.put(url, {
-				tag_id: tag_id,
-				tag_code: new_code,
-				tag_name: name,
-				tag_description: description,
-				datatype: data_type,
-				UOM_code: uom_code,
+		if (selectedListTabs !== []) {
+			genericRequest('put', API, '/dragndrop', null, null, {
 				site_id: this.props.user.site,
-				rollover_point: parseInt(rollover, 10),
-				aggregation: 'SUM',
-				asset_id: asset.asset_id,
-				max_change: parseInt(max_change, 10),
-				status: status,
+				table: 'DTReason',
+				data: newArray,
 			}).then(
 				() => {
 					this.setState({
-						show: true
+						show: true,
 					});
 					this.fetchData();
 				},
@@ -137,130 +139,61 @@ export class Step2 extends Component {
 				}
 			);
 		} else {
-			this.setState({
-				validation
-			});
+			console.log('Selected Array Empty');
 		}
 	};
 
 	render() {
 		const t = this.props.t;
-		const validation = this.state.validation;
 		return (
 			<div>
 				<Form>
 					<Form.Group as={Row}>
-						<Form.Label column sm={2}>
-							{t('Name')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type="text"
-								name="name"
-								value={this.state.name}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className="validation">{validation.name}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>
-							{t('UOM Code')}:
-					</Form.Label>
-						<Col sm={4}>
+						<Form.Label column sm={1}>
+							{t('Type')}:
+						</Form.Label>
+						<Col sm={2}>
 							<Form.Control
 								as="select"
-								name="uom_code"
-								onChange={this.handleChange}
-								value={this.state.uom_code}
+								name="type"
+								onChange={this.handleChangeType}
+								value={this.state.type}
 							>
-								{this.state.uomData.map(this.renderUOM)}
+								<option value="Downtime">Downtime</option>
+								<option value="Scrap">Scrap</option>
 							</Form.Control>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
-						<Form.Label column sm={2}>
-							{t('Rollover Point')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type="number"
-								name="rollover"
-								min={1}
-								value={this.state.rollover}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className="validation">{validation.rollover}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>
-							{t('Data Type')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as="select"
-								name="data_type"
-								value={this.state.data_type}
-								onChange={this.handleChange}
-							>
-								<option value="Integer">Integer</option>
-								<option value="Float">Decimals</option>
-							</Form.Control>
-						</Col>
-					</Form.Group>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>
-							{t('Difference Between Values to Reset the Count')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								type="number"
-								min={1}
-								name="max_change"
-								value={this.state.max_change}
-								autoComplete={'false'}
-								onChange={this.handleChange}
-							/>
-							<Form.Text className="validation">{validation.max_change}</Form.Text>
-						</Col>
-						<Form.Label column sm={2}>
-							{t('Status')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control as="select" name="status" value={this.state.status} onChange={this.handleChange}>
-								<option value="Active">Active</option>
-								<option value="Inactive">Inactive</option>
-							</Form.Control>
-						</Col>
-					</Form.Group>
-					<Form.Group as={Row}>
-						<Form.Label column sm={2}>
-							{t('Description')}:
-					</Form.Label>
-						<Col sm={4}>
-							<Form.Control
-								as="textarea"
-								name="description"
-								value={this.state.description}
-								onChange={this.handleChange}
-								rows={3}
+						<Col sm={12}>
+							<ConfigurationTabGeneric
+								availableListTabs={this.state.availableListTabs}
+								selectedListTabs={this.state.selectedListTabs}
+								selectedAction={this.state.selectedAction}
+								onUpdateTabsImported={this.updateTabsImported}
+								importAllTabs={this.importAllTabs}
+								resetTabs={this.resetTabs}
+								height={'350px'}
+								t={t}
+								genericTitle="Reasons"
 							/>
 						</Col>
 					</Form.Group>
 					<Form.Group as={Row}>
 						<Col sm={4}>
-							<Button variant='success' onClick={(e) => this.createTag(e)}>
+							<Button variant='success' onClick={(e) => this.assingReasons(e)}>
 								{t('Apply')}
 							</Button>
 						</Col>
 					</Form.Group>
-					<button className='button-next' onClick={(e) => this.props.nextStep(e)}>{t('Next Step') + '>>'}</button>
+					<button className="button-next" onClick={(e) => this.props.nextStep(e)}>{t('Next Step') + '>>'}</button>
 					<button className='button-back' onClick={(e) => this.props.back(e)}>{'<<' + t('Previous Step')}</button>
 				</Form>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tag has been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
+					<Modal.Body>Reason has been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
@@ -271,7 +204,7 @@ export class Step2 extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tag has not been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
+					<Modal.Body>Reason has not been {this.props.action === 'Create' ? 'created' : (this.props.action === 'Edit' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
 							Close
@@ -282,11 +215,10 @@ export class Step2 extends Component {
 		);
 	}
 }
-
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: Object.assign(bindActionCreators(TagActions, dispatch), bindActionCreators(UOMActions, dispatch)),
+		actions: bindActionCreators(ReasonActions, dispatch),
 	};
 };
 
-export default connect(null, mapDispatch)(Step2);
+export default connect(null, mapDispatch)(Step3);
