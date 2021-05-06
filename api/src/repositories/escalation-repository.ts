@@ -28,4 +28,9 @@ export class EscalationRepository {
     public async putEscalation(escalation_id: number, escalation_name: string, escalation_group: string, escalation_level: number, escalation_hours: number, status: string): Promise<any> {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Escalation ${escalation_id}, N'${escalation_name}', N'${escalation_group}', ${escalation_level}, ${escalation_hours}, N'${status}'`);
     }
+    
+    public async putEscalationEvents(dxhdata_id: number, asset_id: number, escalation_time: string, sign_time: string, badge: string, site_id: number, escalation_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_EscalationEvents ${dxhdata_id}, ${asset_id}, ${escalation_time}, ${sign_time}, N'${badge}', ${site_id}, ${escalation_id}`);
+    }
+    
 }

@@ -208,7 +208,7 @@ class DashboardTable extends React.Component {
                 end_date_time: end_date_time,
                 st: props.user.site,
                 dt: formatDate(filter[1]).split("-").join(""),
-                hr: moment.tz(props.user.timezone).format('HH') 
+                hr: moment.tz(props.user.timezone).format('HH')
             }
 
             if (dashOneToken !== null) {
@@ -245,11 +245,13 @@ class DashboardTable extends React.Component {
                 let modal_escalation_message = '';
 
                 if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
+                    let dxhdata_id = 0;
                     _.chain(data)
                         .groupBy('hour_interval')
                         .map((value) => {
                             const row = value[0];
                             if (currentDatetime.isAfter(moment.tz(row.ended_on_chunck, props.user.timezone))) {
+                                dxhdata_id = row.dxhdata_id;
                                 sequentialRed = row.summary_background_color === 'red' ? sequentialRed + 1 : 0;
                             }
                             return {
@@ -275,6 +277,14 @@ class DashboardTable extends React.Component {
                             localStorage.setItem('escalation', actualEscalation.escalation_level);
                             localStorage.setItem('escalation_hour', currentDatetime.hour());
                             localStorage.setItem('escalation_asset', filter[0].asset_code);
+                            let body = {
+                                dxhdata_id: dxhdata_id,
+                                asset_id: filter[0].asset_id,
+                                escalation_time: moment.tz(this.props.user.timezone).format('YYYY/MM/DD HH:mm:ss'),
+                                site_id: this.props.user.site,
+                                escalation_id: actualEscalation.escalation_id
+                            };
+                            genericRequest('put', API, '/escalation_events', null, null, body);
                         }
                     }
                 }
@@ -444,6 +454,7 @@ class DashboardTable extends React.Component {
                     selectedAssetOption={this.props.selectedAssetOption}
                     activeOperators={this.props.activeOperators}
                     isEditable={this.state.isEditable}
+                    escalation={this.state.actualEscalation}
                 />
                 <OrderModal
                     isOpen={this.props.modal_order_IsOpen}

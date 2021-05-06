@@ -45,4 +45,27 @@ export class EscalationService {
         }
         return res.status(200).send('Message Entered Succesfully');
     }
+    
+    public async putEscalationEvents(req: Request, res: Response) {
+        const dxhdata_id = req.body.dxhdata_id ? req.body.dxhdata_id : undefined;
+        const asset_id = req.body.asset_id ? req.body.asset_id : undefined;
+        const escalation_time = req.body.escalation_time ? `'${moment(new Date(req.body.escalation_time)).format(this.format)}'` : 'NULL';
+        const sign_time = req.body.sign_time ? `'${moment(new Date(req.body.sign_time)).format(this.format)}'` : 'NULL';
+        const badge = req.body.badge ? req.body.badge : null;
+        const site_id = req.body.site_id ? req.body.site_id : undefined;
+        const escalation_id = req.body.escalation_id ? req.body.escalation_id : null;
+
+        if (dxhdata_id === undefined || asset_id === undefined || site_id === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let escalationevents: any;
+        try {
+            escalationevents = await this.escalationrepository.putEscalationEvents(dxhdata_id, asset_id, escalation_time, sign_time, badge, site_id, escalation_id);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).send('Message Entered Succesfully');
+    }
+    
 }
