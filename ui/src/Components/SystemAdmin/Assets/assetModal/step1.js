@@ -273,7 +273,7 @@ export class Step1 extends Component {
 								<option value='Cell'>Cell</option>
 							</Form.Control>
 						</Col>
-						<Form.Label column sm={2}>{t('Parent Code')}:</Form.Label>
+						<Form.Label column sm={2}>{t('Parent Asset')}:</Form.Label>
 						<Col sm={4}>
 							<Form.Control
 								as='select'

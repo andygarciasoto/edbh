@@ -109,8 +109,7 @@ class AssetModal extends Component {
                     show={this.props.isOpen}
                     onHide={this.props.handleClose}
                     className='asset-modal'
-                    centered
-                >
+                    centered>
                     <Modal.Header closeButton>
                         <Modal.Title>{t(this.props.action + ' Asset')}</Modal.Title>
                     </Modal.Header>

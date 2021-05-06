@@ -175,6 +175,7 @@ class TagModal extends Component {
 										name='name'
 										value={this.state.name}
 										autoComplete={'false'}
+										disabled={this.props.action === 'Update'}
 										onChange={this.handleChange}
 									/>
 									<Form.Text className='validation'>{validation.name}</Form.Text>

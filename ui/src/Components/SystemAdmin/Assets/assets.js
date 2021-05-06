@@ -100,7 +100,7 @@ class Assets extends Component {
 							<th>{t('Name')}</th>
 							<th>{t('Description')}</th>
 							<th>{t('Level')}</th>
-							<th>{t('Parent Code')}</th>
+							<th>{t('Parent Asset')}</th>
 							<th>{t('Automation Level')}</th>
 							<th style={{ maxWidth: '100px' }}>{t('Target Percent of Ideal')}</th>
 							<th style={{ maxWidth: '100px' }}>{t('Include in Escalation')}</th>
