@@ -326,6 +326,9 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/assets_without_tag', 'get', async (req: Request, res: Response) => {
             await assetService.getAssetsWithoutTag(req, res);
+        }, true),
+        new http.RestEndpoint('/api/escalation_events', 'put', async (req: Request, res: Response) => {
+            await escalationService.putEscalationEvents(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

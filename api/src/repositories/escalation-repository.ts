@@ -30,7 +30,7 @@ export class EscalationRepository {
     }
     
     public async putEscalationEvents(dxhdata_id: number, asset_id: number, escalation_time: string, sign_time: string, badge: string, site_id: number, escalation_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_EscalationEvents ${dxhdata_id}, ${asset_id}, ${escalation_time}, ${sign_time}, N'${badge}', ${site_id}, ${escalation_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_EscalationEvents ${dxhdata_id}, ${asset_id}, '${escalation_time}', '${sign_time}', N'${badge}', ${site_id}, ${escalation_id}`);
     }
     
 }

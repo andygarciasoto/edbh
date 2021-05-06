@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import { EscalationRepository } from '../repositories/escalation-repository';
-
+import moment from 'moment';
 export class EscalationService {
 
     private readonly escalationrepository: EscalationRepository;
+    private readonly format: string = 'YYYY-MM-DD HH:mm:ss';
 
     public constructor(escalationrepository: EscalationRepository) {
         this.escalationrepository = escalationrepository;
@@ -45,7 +46,7 @@ export class EscalationService {
         }
         return res.status(200).send('Message Entered Succesfully');
     }
-    
+
     public async putEscalationEvents(req: Request, res: Response) {
         const dxhdata_id = req.body.dxhdata_id ? req.body.dxhdata_id : undefined;
         const asset_id = req.body.asset_id ? req.body.asset_id : undefined;
