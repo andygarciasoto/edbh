@@ -1,11 +1,9 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddShift from "./addShift";
-import EditShift from "./editShift";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
 import ShiftModal from './shiftModal';
 import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
@@ -52,25 +50,6 @@ class Shifts extends Component {
     })
   }
 
-  showAddShift = () => {
-    this.setState({
-      addShift: true,
-    });
-  };
-
-  closeAddShift = () => {
-    this.setState({
-      addShift: false,
-    });
-  };
-
-  showEditShift = (shift_id) => {
-    this.setState({
-      editShift: true,
-      shift_id: shift_id
-    });
-  };
-
   showShiftModal = (shift, action) => {
     this.setState({
       shift,
@@ -78,12 +57,6 @@ class Shifts extends Component {
       showShiftModal: true
     })
   }
-
-  closeEditShift = () => {
-    this.setState({
-      editShift: false,
-    });
-  };
 
   closeShiftModal = () => {
     this.setState({
@@ -98,43 +71,25 @@ class Shifts extends Component {
     return (
       <div>
         <Filter
-          className="filter-user"
+          className='filter-user'
           buttonName={'+ ' + t('Shift')}
           role={false}
-          onClick={() => this.showAddShift()}
+          onClick={() => this.showShiftModal({}, 'Create')}
           onClickFilter={this.applyFilter}
           view={'Shift'}
           t={t}
-        ></Filter>
-        {this.state.addShift === true && (
-          <AddShift
-            user={this.props.user}
-            showForm={this.state.addShift}
-            closeForm={this.closeAddShift}
-            Refresh={this.loadData}
-            t={t}
-          />
-        )}
-        {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-            Refresh={this.loadData}
-            t={t}
-          />
-        )}
+        />
         <ShiftModal
           user={this.props.user}
           isOpen={this.state.showShiftModal}
           shift={this.state.shift}
+          shifts={this.state.ShiftData}
           action={this.state.action}
           Refresh={this.loadData}
           handleClose={this.closeShiftModal}
           t={t}
         />
-        <Table responsive="sm" bordered={true}>
+        <Table responsive='sm' bordered={true}>
           <thead>
             <tr>
               <th>{t('Name')}</th>
@@ -156,15 +111,15 @@ class Shifts extends Component {
                 <td>{shift.shift_name}</td>
                 <td>{shift.shift_description}</td>
                 <td>{shift.shift_sequence}</td>
-                <td>{moment('1970-01-01 ' + shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment('1970-01-01 ' + shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
+                <td>{moment('1970-01-01 ' + shift.start_time).format('HH:mm A')}</td>
+                <td>{shift.start_time_offset_days === -1 ? 'Yesterday' : shift.start_time_offset_days === 0 ? 'Today' : 'Tomorrow'}</td>
+                <td>{moment('1970-01-01 ' + shift.end_time).format('HH:mm A')}</td>
+                <td>{shift.end_time_offset_days === -1 ? 'Yesterday' : shift.end_time_offset_days === 0 ? 'Today' : 'Tomorrow'}</td>
                 <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
+                <td>{shift.is_first_shift_of_day === true ? 'Yes' : 'No'}</td>
                 <td>{shift.status}</td>
                 <td>
-                  <FontAwesome name='edit fa-2x' onClick={() => this.showEditShift(shift.shift_id)} />
+                  <FontAwesome name='edit fa-2x' onClick={() => this.showShiftModal(shift, 'Update')} />
                   <FontAwesome name='copy fa-2x' onClick={() => this.showShiftModal(shift, 'Copy')} />
                 </td>
               </tr>

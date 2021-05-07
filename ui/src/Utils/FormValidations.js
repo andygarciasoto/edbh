@@ -31,10 +31,10 @@ function validateTimeLostSubmit(state) {
     return validation;
 }
 
-function validateShiftsForm(state) {
+function validateShiftsForm(state, props) {
     let validation = {};
-    const sequenceShift = _.find(state.shiftsArray, { shift_sequence: parseInt(state.shift_sequence, 10) });
-    const firstShift = _.find(state.shiftsArray, { is_first_shift_of_day: true });
+    const sequenceShift = _.find(props.shifts, { shift_sequence: parseInt(state.shift_sequence, 10) });
+    const firstShift = _.find(props.shifts, { is_first_shift_of_day: true });
     if (state.shift_name.trim() === '') {
         validation.shift_name = 'Name is required';
     }

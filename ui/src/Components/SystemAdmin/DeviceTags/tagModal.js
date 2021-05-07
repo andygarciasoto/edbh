@@ -190,6 +190,7 @@ class TagModal extends Component {
 									>
 										{this.state.uomData.map(this.renderUOM)}
 									</Form.Control>
+									<Form.Text className='validation'>{validation.uom_code}</Form.Text>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>
@@ -241,6 +242,7 @@ class TagModal extends Component {
 									>
 										{this.state.assets.map(this.renderAssets)}
 									</Form.Control>
+									<Form.Text className='validation'>{validation.asset}</Form.Text>
 								</Col>
 							</Form.Group>
 							<Form.Group as={Row}>

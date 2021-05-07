@@ -16,39 +16,32 @@ class ShiftModal extends Component {
     this.state = {
       shift: props.shift,
       shift_id: 0,
+      code: '',
       shift_name: '',
       shift_description: '',
-      shift_sequence: 0,
-      start_time: '',
-      start_day: 0,
-      end_time: '',
-      end_day: 0,
+      shift_sequence: 1,
+      start_time: '01:00',
+      start_day: -1,
+      end_time: '01:00',
+      end_day: -1,
       is_first_shift_of_day: false,
-      status: '',
+      status: 'Active',
       show: false,
       modalError: false,
-      shiftsArray: [],
-      validation: {}
+      validation: {},
+      messageTitle: ''
     };
-  }
-
-  componentDidMount() {
-    const { actions } = this.props;
-
-    actions.getShifts(this.props.user.site).then((response) => {
-      this.setState({
-        shiftsArray: response
-      });
-    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!_.isEqual(nextProps.shift, prevState.shift)) {
-      const name = nextProps.action === 'Edit' ? nextProps.shift.shift_name : '';
-      const shift_id = nextProps.action === 'Edit' ? nextProps.shift.shift_id : 0;
+      const name = nextProps.action === 'Update' ? nextProps.shift.shift_name : '';
+      const shift_id = nextProps.action === 'Update' ? nextProps.shift.shift_id : 0;
+      const shift_code = nextProps.action === 'Update' ? nextProps.shift.shift_code : '';
       return {
         shift: nextProps.shift,
         shift_id: shift_id,
+        shift_code: shift_code,
         shift_name: name,
         shift_description: nextProps.shift.shift_description || '',
         shift_sequence: nextProps.shift.shift_sequence || 0,
@@ -65,12 +58,8 @@ class ShiftModal extends Component {
   }
 
   handleChange = (event) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
     this.setState({
-      [name]: value,
+      [event.target.name]: event.target.value
     });
   };
 
@@ -78,6 +67,7 @@ class ShiftModal extends Component {
     e.preventDefault();
     const {
       shift_id,
+      shift_code,
       shift_name,
       shift_description,
       shift_sequence,
@@ -95,14 +85,13 @@ class ShiftModal extends Component {
     let endTime1 = moment(moment(date).add(end_day, 'days').format('YYYY-MM-DD') + ' ' + end_time);
     let difference = endTime1.diff(startTime1, 'minutes');
 
-    const validation = validateShiftsForm(this.state);
-
-    if (
-      _.isEmpty(validation)
-    ) {
+    const validation = validateShiftsForm(this.state, this.props);
+    const messageTitle = this.props.action;
+    if (_.isEmpty(validation)) {
+      const new_code = this.props.action !== 'Update' ? `${this.props.user.site_prefix}-${shift_name}`.replace(/\s+/g, '') : shift_code;
       Axios.put(url, {
         shift_id: shift_id,
-        shift_code: `${this.props.user.site_prefix} - ${shift_name}`,
+        shift_code: new_code,
         shift_name: shift_name,
         shift_description: shift_description,
         shift_sequence: parseInt(shift_sequence, 10),
@@ -121,12 +110,14 @@ class ShiftModal extends Component {
           this.props.handleClose();
           this.setState({
             show: true,
-            validation: {}
+            validation: {},
+            messageTitle
           });
         },
         (error) => {
           this.setState({
             modalError: true,
+            messageTitle
           });
         }
       );
@@ -165,7 +156,8 @@ class ShiftModal extends Component {
       end_day,
       is_first_shift_of_day,
       status,
-      validation
+      validation,
+      messageTitle
     } = this.state;
     const t = this.props.t;
     return (
@@ -308,10 +300,10 @@ class ShiftModal extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Sucess</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Shift has been copied</Modal.Body>
+          <Modal.Body>Shift has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalMessage}>
-              Close
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
@@ -319,10 +311,10 @@ class ShiftModal extends Component {
           <Modal.Header closeButton>
             <Modal.Title>Error</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Shift has not been copied</Modal.Body>
+          <Modal.Body>Shift has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeModalMessage}>
-              Close
+              {t('Close')}
             </Button>
           </Modal.Footer>
         </Modal>
