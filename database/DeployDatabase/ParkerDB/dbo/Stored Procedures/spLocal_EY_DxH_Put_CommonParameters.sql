@@ -21,7 +21,7 @@ CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_CommonParameters]
 	@assembly_url						AS NVARCHAR(256),			
 	@timezone_id						AS INT,
 	@language_id						AS INT,
-	@escalation_group					AS NVARCHAR(50)
+	@escalation_group					AS NVARCHAR(50)	
     
 AS  BEGIN 
 

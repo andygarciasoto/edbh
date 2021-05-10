@@ -40,7 +40,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_UOM 
 --
-CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Get_UOM]
+CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_UOM]
 --Declare
 AS
     BEGIN

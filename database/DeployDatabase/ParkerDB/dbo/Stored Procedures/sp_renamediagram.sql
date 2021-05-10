@@ -1,5 +1,5 @@
 ﻿
-	CREATE   PROCEDURE [dbo].[sp_renamediagram]
+	CREATE PROCEDURE [dbo].[sp_renamediagram]
 	(
 		@diagramname 		sysname,
 		@owner_id		int	= null,
@@ -59,3 +59,4 @@
 			update dbo.sysdiagrams set [name] = @new_diagramname where diagram_id = @DiagId
 		return 0
 	END
+	

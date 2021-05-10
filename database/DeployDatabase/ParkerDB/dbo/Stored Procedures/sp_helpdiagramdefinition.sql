@@ -1,5 +1,5 @@
 ﻿
-	CREATE   PROCEDURE [dbo].[sp_helpdiagramdefinition]
+	CREATE PROCEDURE [dbo].[sp_helpdiagramdefinition]
 	(
 		@diagramname 	sysname,
 		@owner_id	int	= null 		
@@ -37,3 +37,4 @@
 		select version, definition FROM dbo.sysdiagrams where diagram_id = @DiagId ; 
 		return 0
 	END
+	

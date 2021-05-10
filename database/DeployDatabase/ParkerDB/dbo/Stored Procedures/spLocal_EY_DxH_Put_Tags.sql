@@ -77,5 +77,3 @@ AS  BEGIN
            ,GETDATE())
 		END
 	END
-	
-		

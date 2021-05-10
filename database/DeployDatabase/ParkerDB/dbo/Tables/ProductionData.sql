@@ -23,14 +23,14 @@
 
 
 GO
-CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Id]
-    ON [dbo].[ProductionData]([order_id] ASC);
-
-
-GO
 CREATE NONCLUSTERED INDEX [NCI_ProductionData_DxHData_Id]
     ON [dbo].[ProductionData]([dxhdata_id] ASC)
     INCLUDE([productiondata_id], [product_code], [ideal], [target], [actual], [start_time], [setup_scrap], [other_scrap]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [NCI_ProductionData_Order_Id]
+    ON [dbo].[ProductionData]([order_id] ASC);
 
 
 GO

@@ -24,15 +24,15 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
-    <QueryStoreCaptureMode>Auto</QueryStoreCaptureMode>
+    <QueryStoreCaptureMode>All</QueryStoreCaptureMode>
     <QueryStoreDesiredState>ReadWrite</QueryStoreDesiredState>
     <QueryStoreFlushInterval>900</QueryStoreFlushInterval>
     <QueryStoreStatsInterval>60</QueryStoreStatsInterval>
     <QueryStoreMaxPlansPerQuery>200</QueryStoreMaxPlansPerQuery>
-    <QueryStoreStaleQueryThreshold>30</QueryStoreStaleQueryThreshold>
+    <QueryStoreStaleQueryThreshold>367</QueryStoreStaleQueryThreshold>
     <QueryStoreMaxStorageSize>100</QueryStoreMaxStorageSize>
     <DbScopedConfigLegacyCardinalityEstimation>Off</DbScopedConfigLegacyCardinalityEstimation>
-    <DbScopedConfigMaxDOP>8</DbScopedConfigMaxDOP>
+    <DbScopedConfigMaxDOP>0</DbScopedConfigMaxDOP>
     <DbScopedConfigParameterSniffing>On</DbScopedConfigParameterSniffing>
     <DbScopedConfigOptimizerHotfixes>Off</DbScopedConfigOptimizerHotfixes>
     <DelayedDurability>DISABLED</DelayedDurability>
@@ -57,18 +57,18 @@
     <ServiceBrokerOption>EnableBroker</ServiceBrokerOption>
     <DateCorrelationOptimizationOn>False</DateCorrelationOptimizationOn>
     <Parameterization>SIMPLE</Parameterization>
-    <AllowSnapshotIsolation>True</AllowSnapshotIsolation>
+    <AllowSnapshotIsolation>False</AllowSnapshotIsolation>
     <ReadCommittedSnapshot>True</ReadCommittedSnapshot>
     <VardecimalStorageFormatOn>True</VardecimalStorageFormatOn>
     <SupplementalLoggingOn>False</SupplementalLoggingOn>
-    <CompatibilityMode>150</CompatibilityMode>
-    <AnsiNullDefault>False</AnsiNullDefault>
-    <AnsiNulls>False</AnsiNulls>
-    <AnsiPadding>False</AnsiPadding>
-    <AnsiWarnings>False</AnsiWarnings>
-    <ArithAbort>False</ArithAbort>
-    <ConcatNullYieldsNull>False</ConcatNullYieldsNull>
-    <QuotedIdentifier>False</QuotedIdentifier>
+    <CompatibilityMode>140</CompatibilityMode>
+    <AnsiNullDefault>True</AnsiNullDefault>
+    <AnsiNulls>True</AnsiNulls>
+    <AnsiPadding>True</AnsiPadding>
+    <AnsiWarnings>True</AnsiWarnings>
+    <ArithAbort>True</ArithAbort>
+    <ConcatNullYieldsNull>True</ConcatNullYieldsNull>
+    <QuotedIdentifier>True</QuotedIdentifier>
     <NumericRoundAbort>False</NumericRoundAbort>
     <RecursiveTriggersEnabled>False</RecursiveTriggersEnabled>
     <DatabaseChaining>False</DatabaseChaining>
@@ -130,420 +130,200 @@
     <None Include="Parker-TEST.publish.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Role.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\RoleComponent.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Scan.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Shift.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\sysdiagrams.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Tag.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\TagData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\TFDUsers.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Timezone.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Unavailable.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\UOM.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Asset.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\AssetDisplaySystem.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\CommentData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\CommonParameters.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Component.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\DTData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Workcell.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\DTReason.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\DxHData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\Escalation.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\GlobalParameters.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Tables\InterShiftData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
     <Build Include="dbo\Tables\Language.sql">
-      <QuotedIdentifier>On</QuotedIdentifier>
+      <AnsiNulls>Off</AnsiNulls>
     </Build>
-    <Build Include="dbo\Tables\OrderData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Tables\CommonParameters.sql" />
+    <Build Include="dbo\Tables\parker_site_access.sql" />
+    <Build Include="dbo\Tables\DTReason.sql" />
+    <Build Include="dbo\Tables\TFDUsers.sql" />
+    <Build Include="dbo\Tables\Workcell.sql" />
+    <Build Include="dbo\Tables\Asset.sql" />
+    <Build Include="dbo\Tables\EscalationEvents.sql" />
+    <Build Include="dbo\Tables\DxHData.sql" />
+    <Build Include="dbo\Tables\ProductionData.sql" />
+    <Build Include="dbo\Tables\Shift.sql" />
+    <Build Include="dbo\Tables\AssetDisplaySystem.sql" />
+    <Build Include="dbo\Tables\AssetProductTarget.sql" />
+    <Build Include="dbo\Tables\CommentData.sql" />
+    <Build Include="dbo\Tables\DTData.sql" />
+    <Build Include="dbo\Tables\ExampleJTraxData_.sql" />
+    <Build Include="dbo\Tables\GlobalParameters.sql" />
+    <Build Include="dbo\Tables\InterShiftData.sql" />
+    <Build Include="dbo\Tables\Component.sql">
+      <AnsiNulls>Off</AnsiNulls>
     </Build>
-    <Build Include="dbo\Tables\parker_site_access.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Tables\OrderData.sql" />
+    <Build Include="dbo\Tables\Escalation.sql" />
+    <Build Include="dbo\Tables\Product.sql" />
+    <Build Include="dbo\Tables\Role.sql">
+      <AnsiNulls>Off</AnsiNulls>
     </Build>
-    <Build Include="dbo\Tables\Product.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Tables\ProductionData_History.sql" />
+    <Build Include="dbo\Tables\RoleComponent.sql" />
+    <Build Include="dbo\Tables\Scan.sql" />
+    <Build Include="dbo\Tables\SupervisorAsset.sql" />
+    <Build Include="dbo\Tables\Timezone.sql">
+      <AnsiNulls>Off</AnsiNulls>
     </Build>
-    <Build Include="dbo\Tables\ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Tables\sysdiagrams.sql" />
+    <Build Include="dbo\Tables\Tag.sql" />
+    <Build Include="dbo\Tables\TagData.sql" />
+    <Build Include="dbo\Tables\Translation.sql" />
+    <Build Include="dbo\Tables\Unavailable.sql" />
+    <Build Include="dbo\Tables\UOM.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByHour_MN.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByShift_MN.sql" />
+    <Build Include="dbo\Views\MultipleLabor_vw.sql" />
+    <Build Include="dbo\Views\Scrap_vw.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Tables\ProductionData_History.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\Asset_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\AssetDisplaySystem_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\CommentData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\DTData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\DTReason_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\DxHData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\InterShiftData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\OrderData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\ProdDataAggregateByHour.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\ProdDataAggregateByHour_MN.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\ProdDataAggregateByHour_VH.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Views\Asset_vw.sql" />
+    <Build Include="dbo\Views\DxHData_vw.sql" />
+    <Build Include="dbo\Views\ProductionData_vw.sql" />
+    <Build Include="dbo\Views\DTData_vw.sql" />
+    <Build Include="dbo\Views\DTReason_vw.sql" />
+    <Build Include="dbo\Views\OrderData_vw.sql" />
+    <Build Include="dbo\Views\Shift_vw.sql" />
+    <Build Include="dbo\Views\CommentData_vw.sql" />
+    <Build Include="dbo\Views\Unavailable_vw.sql" />
+    <Build Include="dbo\Views\InterShiftData_vw.sql" />
+    <Build Include="dbo\Views\ProductCodeSite_vw.sql" />
+    <Build Include="dbo\Views\Product_vw.sql" />
+    <Build Include="dbo\Views\AssetDisplaySystem_vw.sql" />
+    <Build Include="dbo\Views\site_code_vw.sql" />
+    <Build Include="dbo\Views\Escalation_vw.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Views\ProdDataAggregateByShift.sql">
-      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Views\ProdDataAggregateByShift_MN.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
+    <Build Include="dbo\Views\MultipleLaborPeople_vw.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByHour.sql" />
+    <Build Include="dbo\Views\ProdDataAggregateByHour_VH.sql" />
     <Build Include="dbo\Views\ProdDataAggregateByShift_VH.sql">
-      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Views\ProductCodeSite_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\ProductionData_view.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Views\ProductionData_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\Shift_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\site_code_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\Unavailable_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\Product_vw.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Views\Escalation_vw.sql" />
-    <Build Include="dbo\Views\Scrap_vw.sql" />
-    <Build Include="dbo\Views\MultipleLabor_vw.sql" />
-    <Build Include="dbo\Functions\AddIntervalToDate.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Functions\fn_diagramobjects.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Functions\UpRoundDate.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Functions\GetShiftProductionDayFromSiteAndDate.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Functions\AssetsResolverFromId.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Functions\GetRangesBetweenDates.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_alterdiagram.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_creatediagram.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_dropdiagram.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_helpdiagramdefinition.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_helpdiagrams.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_renamediagram.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\sp_upgraddiagrams.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Create_OrderData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Active_Sites.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset_By_Code.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_AssetDisplaySystem.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommentData_By_DxHData_Id.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Digital_Cups.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTData_By_DxHData_Id.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DxHDataId.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_InterShiftData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Labor_Hours.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrderData.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
+    <Build Include="dbo\Views\ProductionData_view.sql" />
+    <Build Include="dbo\Functions\AddIntervalToDate.sql" />
+    <Build Include="dbo\Functions\fn_diagramobjects.sql" />
+    <Build Include="dbo\Functions\UpRoundDate.sql" />
+    <Build Include="dbo\Functions\GetShiftProductionDayFromSiteAndDate.sql" />
+    <Build Include="dbo\Functions\AssetsResolverFromId.sql" />
+    <Build Include="dbo\Functions\GetRangesBetweenDates.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Products_From_IoT.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Active_Sites.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Row_Get_Active_Assets_By_Site.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_ReasonCode.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_UnavailableCode.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Components_By_Role.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Digital_Cups.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Rows_By_Site.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Scan_By_Asset.sql">
-      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Sites_By_User.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_Information.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommonParameters.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shifts.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Escalation.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Sites_By_User.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM_By_Site.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Username_Machine.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_Information.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Workcell.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Asset.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_AssetDisplaySystem.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommentData.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommonParameters.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_DTData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_InterShiftData.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_OperatorSignOff.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Products_From_IoT.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData_For_Any_Order.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scan.sql">
-      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scrap_ProductionData.sql">
-      <AnsiNulls>On</AnsiNulls>
+    <Build Include="dbo\Stored Procedures\sp_alterdiagram.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Shifts.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Shifts.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff.sql">
-      <AnsiNulls>On</AnsiNulls>
-    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Tags.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_UOM.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
+    <Build Include="dbo\Stored Procedures\sp_creatediagram.sql" />
     <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Users.sql">
-      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Workcell.sql" />
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Orders_From_IoT.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\sp_dropdiagram.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Workcell.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Production_From_IoT.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\sp_helpdiagramdefinition.sql" />
+    <Build Include="dbo\Stored Procedures\sp_helpdiagrams.sql" />
+    <Build Include="dbo\Stored Procedures\sp_renamediagram.sql" />
+    <Build Include="dbo\Stored Procedures\sp_upgraddiagrams.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Create_OrderData.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Tags.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Asset_By_Code.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_UnavailableCode.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_AssetDisplaySystem.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_CommentData_By_DxHData_Id.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Assets_ReasonCode.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTData_By_DxHData_Id.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DTReason.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Escalation.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_DxHDataId.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_InterShiftData.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_OrderData.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shift_Data.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_UOM_By_Site.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Asset.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_AssetDisplaySystem.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_CommentData.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_DTData.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_InterShiftData.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_OperatorSignOff.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_ProductionData.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Scrap_ProductionData.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_EscalationEvents.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_SupervisorSignOff.sql">
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Fill_Get_Production_By_Asset_And_Interval.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Shifts.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_User_By_Username_Machine.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Get_Workcell.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Insert_ProductionData.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Orders_From_IoT.sql" />
+    <Build Include="dbo\Stored Procedures\spLocal_EY_DxH_Put_Production_From_IoT.sql" />
   </ItemGroup>
 </Project>

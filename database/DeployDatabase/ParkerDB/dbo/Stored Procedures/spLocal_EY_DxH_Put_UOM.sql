@@ -55,5 +55,3 @@ AS  BEGIN
 		   ,@decimals)
 		END
 	END
-	
-		

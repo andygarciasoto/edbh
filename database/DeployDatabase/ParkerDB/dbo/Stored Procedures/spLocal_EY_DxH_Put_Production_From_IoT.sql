@@ -1,4 +1,4 @@
-﻿--exec spLocal_EY_DxH_Put_Production_From_IoT '168-0065.Blowout.Length', '413591', 'SQL manual entry', '2020-07-29 11:50:59.813'
+﻿--exec spLocal_EY_DxH_Put_Production_From_IoT 'Extruder_8.PLC.FootageCount', '439.337891', 'SQL manual entry', '2021-05-10 15:42:01.000'
 CREATE     PROCEDURE [dbo].[spLocal_EY_DxH_Put_Production_From_IoT]
 (@tag_name AS      NVARCHAR(200), 
  @tagdata_value AS NVARCHAR(256), 
@@ -28,8 +28,8 @@ AS
         @current_value FLOAT,
         @previous_value FLOAT,
         @productiondata_id AS NVARCHAR(100),
-        @value FLOAT,
-        @actual FLOAT,
+        @value INT,
+        @actual INT,
         @site_code NVARCHAR(100),
         @site_id INT,
         @timezone DATETIME,
@@ -115,10 +115,10 @@ AS
                         SELECT *
                         FROM @TagComparation;
 
-                        SELECT @previous_value = previous_value, 
-                               @current_value = current_value
+                        SELECT @previous_value = CAST(previous_value as INT), 
+                               @current_value = CAST(current_value as INT)
                         FROM @TagComparation;
-                        SELECT @value = @current_value - @previous_value;
+                        SELECT @value = @current_value - @previous_value
 
                         IF @value < 0
                         BEGIN

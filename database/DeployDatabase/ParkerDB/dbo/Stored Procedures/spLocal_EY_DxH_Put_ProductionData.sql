@@ -52,7 +52,7 @@
 -- Example Call:
 -- exec spLocal_EY_DxH_Put_ProductionData 261042, 35, 0, 0, 0, '123456789123', Null, Null, '2019/11/26 12:18', 0
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData]
+CREATE    PROCEDURE [dbo].[spLocal_EY_DxH_Put_ProductionData]
 --Declare
 @DxHData_Id      INT, -- the hour Id
 @Actual          FLOAT, -- to be inserted, increment exisiting Actual, or replace if Override

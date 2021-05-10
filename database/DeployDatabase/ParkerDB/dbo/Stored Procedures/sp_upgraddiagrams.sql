@@ -1,5 +1,5 @@
 ﻿
-	CREATE   PROCEDURE [dbo].[sp_upgraddiagrams]
+	CREATE PROCEDURE [dbo].[sp_upgraddiagrams]
 	AS
 	BEGIN
 		IF OBJECT_ID(N'dbo.sysdiagrams') IS NOT NULL
@@ -57,3 +57,4 @@
 		end
 		return 1;
 	END
+	
