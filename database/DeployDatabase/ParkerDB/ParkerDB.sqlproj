@@ -144,10 +144,8 @@
     <Build Include="dbo\Tables\ProductionData.sql" />
     <Build Include="dbo\Tables\Shift.sql" />
     <Build Include="dbo\Tables\AssetDisplaySystem.sql" />
-    <Build Include="dbo\Tables\AssetProductTarget.sql" />
     <Build Include="dbo\Tables\CommentData.sql" />
     <Build Include="dbo\Tables\DTData.sql" />
-    <Build Include="dbo\Tables\ExampleJTraxData_.sql" />
     <Build Include="dbo\Tables\GlobalParameters.sql" />
     <Build Include="dbo\Tables\InterShiftData.sql" />
     <Build Include="dbo\Tables\Component.sql">
@@ -162,14 +160,12 @@
     <Build Include="dbo\Tables\ProductionData_History.sql" />
     <Build Include="dbo\Tables\RoleComponent.sql" />
     <Build Include="dbo\Tables\Scan.sql" />
-    <Build Include="dbo\Tables\SupervisorAsset.sql" />
     <Build Include="dbo\Tables\Timezone.sql">
       <AnsiNulls>Off</AnsiNulls>
     </Build>
     <Build Include="dbo\Tables\sysdiagrams.sql" />
     <Build Include="dbo\Tables\Tag.sql" />
     <Build Include="dbo\Tables\TagData.sql" />
-    <Build Include="dbo\Tables\Translation.sql" />
     <Build Include="dbo\Tables\Unavailable.sql" />
     <Build Include="dbo\Tables\UOM.sql" />
     <Build Include="dbo\Views\ProdDataAggregateByHour_MN.sql" />
