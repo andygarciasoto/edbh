@@ -68,5 +68,5 @@ export class EscalationService {
         }
         return res.status(200).send('Message Entered Succesfully');
     }
-    
+
 }
