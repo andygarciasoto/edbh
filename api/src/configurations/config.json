@@ -3,12 +3,12 @@
         "user": "parkeradmin",
         "password": "VFM9rqSkunX4pFPm",
         "server": "parker-ctpdev-test.database.windows.net",
-        "database": "FCGFOTF_Dev"
+        "database": "FCGFOTF"
     },
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service API",
+        "service_name": "Dxh Service Demo API",
         "cors": [
             "https://dxhapitest.azurewebsites.net",
             "https://dxhwebtest.azurewebsites.net"
