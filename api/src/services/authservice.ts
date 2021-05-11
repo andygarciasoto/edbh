@@ -147,9 +147,7 @@ export class AuthService {
         if (!params.username) {
             return res.status(400).json({ message: "Bad Request - Missing Username" });
         }
-
         machine = params.st == 'null' || params.st == 'undefined' || params.st === '' ? 0 : params.st;
-
         let responseUser: any;
         try {
             responseUser = await this.userrepository.findUserByUsernameAndMachine(params.username, machine);

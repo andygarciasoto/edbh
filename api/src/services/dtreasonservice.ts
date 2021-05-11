@@ -137,5 +137,35 @@ export class DTReasonService {
             return res.status(500).json({ message: err.message });
         }
     }
+
+    public async getUniqueReasonBySite(req: Request, res: Response) {
+        let site = req.query.site;
+        if (!site || site === null || site === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let reasons: any;
+        try {
+            reasons = await this.dtreasonrepository.getUniqueReasonBySite(site);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(reasons);
+    }
+
+    public async getReasonsBySite(req: Request, res: Response) {
+        let site = req.query.site;
+        if (!site || site === null || site === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing Parameters" });
+        }
+        let reasons: any;
+        try {
+            reasons = await this.dtreasonrepository.getDTReasonBySite(site);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(reasons);
+    }
 }
 

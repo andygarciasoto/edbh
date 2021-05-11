@@ -5,6 +5,8 @@ import { UomRepository } from '../repositories/uom-repository';
 import { SiteRepository } from '../repositories/site-repository';
 import { EscalationRepository } from '../repositories/escalation-repository';
 import { WorkcellRepository } from '../repositories/workcell-repository';
+import { DxHDataRepository } from '../repositories/dxhdata-repository';
+import { headers, getParametersOfTable, getValuesFromHeaderTable, getColumns } from '../configurations/datatoolutils';
 import _ from 'lodash';
 
 export class SiteService {
@@ -15,15 +17,18 @@ export class SiteService {
     private readonly siterepository: SiteRepository;
     private readonly escalationrepository: EscalationRepository;
     private readonly workcellrepository: WorkcellRepository;
+    private readonly dxhdatarepository: DxHDataRepository;
 
     public constructor(assetRepository: AssetRepository, shiftsRepository: ShiftRepository, uomRepository: UomRepository,
-        siteRepository: SiteRepository, escalationRepository: EscalationRepository, workcellRepository: WorkcellRepository) {
+        siteRepository: SiteRepository, escalationRepository: EscalationRepository, workcellRepository: WorkcellRepository,
+        dxhdataRepository: DxHDataRepository) {
         this.assetrepository = assetRepository;
         this.shiftsrepository = shiftsRepository;
         this.uomrepository = uomRepository;
         this.siterepository = siteRepository;
         this.escalationrepository = escalationRepository;
         this.workcellrepository = workcellRepository;
+        this.dxhdatarepository = dxhdataRepository;
     }
 
     public async loadSiteConfiguration(req: Request, res: Response) {
@@ -77,5 +82,45 @@ export class SiteService {
             return;
         }
         return res.status(200).json(sites);
+    }
+
+    public async dragAndDropAdminTool(req, res: Response) {
+        const site_id = req.body.site_id ? req.body.site_id : undefined;
+        const table = req.body.table ? req.body.table : undefined
+        const data = req.body.data ? req.body.data : null;
+
+        if (!site_id || site_id === undefined || site_id === null || table === undefined) {
+            return res.status(400).json({ message: "Bad Request - Missing data to proceed" });
+        }
+
+        let queries = [];
+        const columns = getColumns(table);
+        const parameters = getParametersOfTable(table, site_id);
+        const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+        const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+
+        //Initialize query to store the values of the merge sentence
+        let valuesMergeQuery = '';
+        var body;
+        for (var val of Object.keys(data)) {
+            body = data[val];
+            let cont = 0;
+            let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
+            for (var key of Object.keys(body)) {
+                updateRow += getValuesFromHeaderTable(headers[table], headers[table][cont], body[key]);
+                cont++;
+            }
+            updateRow += ')';
+            valuesMergeQuery += updateRow;
+        }
+        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+        _.forEach(queries, async (query, index) => {
+            try {
+                await this.dxhdatarepository.executeGeneralImportQuery(query);
+            } catch (e) {
+                return res.status(500).send({ message: 'Error ' + e.message });
+            }
+        });
+        return res.status(200).send('Message Entered Succesfully');
     }
 }

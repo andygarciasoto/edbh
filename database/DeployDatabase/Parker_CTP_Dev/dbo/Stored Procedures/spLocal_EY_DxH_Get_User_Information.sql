@@ -116,7 +116,7 @@ BEGIN
 		TFDU.Site AS site,
 		@site_code AS site_code,
 		CP.site_name,
-		CP.ui_timezone AS timezone,
+		T.ui_timezone AS timezone,
 		CP.language,
 		CP.break_minutes,
 		CP.lunch_minutes,
@@ -138,6 +138,8 @@ BEGIN
 			ON TFDU.role_id = R.role_id
 		INNER JOIN dbo.CommonParameters AS CP
 			ON CP.site_id = @site
+		INNER JOIN dbo.Timezone AS T
+			ON T.timezone_id = CP.timezone_id
 		LEFT JOIN dbo.Shift AS SF
 			ON SF.asset_id = @site AND SF.status = @vert_sf_status AND SF.shift_name = @vert_sf_name
 		LEFT JOIN dbo.GlobalParameters AS GP

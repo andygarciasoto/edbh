@@ -70,12 +70,12 @@ class MachinePickerCustom extends React.Component {
             <DropdownButton
                 alignleft="true"
                 title={t(machineSelected.asset_name)}
-                id="dropdown-menu-align-right"
-                className="machine-picker-button machine-picker"
+                id="machine-selector"
+                className="machine-picker-button machine-picker asset-selector"
             >
                 {machines.map((machine, index) => {
                     return (
-                        <Dropdown.Item onSelect={() => this.onSelect(machine)} key={index} eventKey={(machine.asset_code)}>{machine.asset_name}</Dropdown.Item>
+                        <Dropdown.Item id={'option-' + machine.asset_name} onSelect={() => this.onSelect(machine)} key={index} eventKey={(machine.asset_code)}>{machine.asset_name}</Dropdown.Item>
                     )
                 }
                 )

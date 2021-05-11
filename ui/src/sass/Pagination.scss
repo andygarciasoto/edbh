@@ -16,6 +16,7 @@
 }
 
 #previous-shift,
+#next-shift,
 #current-shift {
     text-decoration: underline;
     padding        : 8px 8px 8px 5px;
@@ -23,6 +24,7 @@
 }
 
 #previous-shift:hover,
+#next-shift:hover,
 #current-shift:hover {
     background-color: $color-link-hover;
     cursor          : pointer;

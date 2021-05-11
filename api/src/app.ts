@@ -29,11 +29,16 @@ import { OrderDataRepository } from './repositories/orderdata-repository';
 import { OrderDataService } from './services/orderdataservice';
 import { DataToolService } from './services/datatoolservice';
 import { WorkcellRepository } from './repositories/workcell-repository';
+import { WorkcellService } from './services/workcellservice';
 import { ProductRepository } from './repositories/product-repository';
 import { TagRepository } from './repositories/tag-repository';
+import { TagService } from './services/tagservice';
 import { CommonParametersRepository } from './repositories/commonparameters-repository';
+import { CommonParametersService } from './services/commonparametersservice';
 import { UnavailableRepository } from './repositories/unavailable-repository';
+import { UnavailableService } from './services/unavailableservice';
 import { AssetDisplaySystemRepository } from './repositories/assetdisplaysystem-repository';
+import { AssetDisplaySystemService } from './services/assetdisplaysystemservice';
 import { ScanRepository } from './repositories/scan-repository';
 import { ScanService } from './services/scanservice';
 import { RoleRepository } from './repositories/role-repository';
@@ -42,9 +47,10 @@ import { SiteRepository } from './repositories/site-repository';
 import { SiteService } from './services/siteservice';
 import { EscalationRepository } from './repositories/escalation-repository';
 import { EscalationService } from './services/escalationservice';
-
-
-
+import { LanguageRepository } from './repositories/language-repository';
+import { LanguageService } from './services/languageservice';
+import { TimezoneRepository } from './repositories/timezone-repository';
+import { TimezoneService } from './services/timezoneservice';
 
 //INITIALIZE CONFIGURATION OF NODE JS//
 const sqlServerStore = new SqlServerStore(config);
@@ -71,10 +77,12 @@ const scanRepository = new ScanRepository(sqlServerStore);
 const roleRepository = new RoleRepository(sqlServerStore);
 const siteRepository = new SiteRepository(sqlServerStore);
 const escalationRepository = new EscalationRepository(sqlServerStore);
+const languageRepository = new LanguageRepository(sqlServerStore);
+const timezoneRepository = new TimezoneRepository(sqlServerStore);
 
 //INITIALIZE ALL SERVICES//
 const authService = new AuthService(userRepository, assetRepository, scanRepository, roleRepository, config);
-const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository);
+const siteService = new SiteService(assetRepository, shiftsRepository, uomRepository, siteRepository, escalationRepository, workcellRepository, dxhdataRepository);
 const assetService = new AssetService(assetRepository);
 const shiftService = new ShiftService(shiftsRepository);
 const userService = new UserService(userRepository, roleRepository);
@@ -90,6 +98,13 @@ const dataToolService = new DataToolService(workcellRepository, assetRepository,
 const scanService = new ScanService(scanRepository);
 const roleService = new RoleService(roleRepository);
 const escalationService = new EscalationService(escalationRepository);
+const languageService = new LanguageService(languageRepository);
+const timezoneService = new TimezoneService(timezoneRepository);
+const commonparametersService = new CommonParametersService(commonparametersRepository);
+const unavailableService = new UnavailableService(unavailableRepository);
+const assetdisplaysystemService = new AssetDisplaySystemService(assetdisplaysystemRepository);
+const workcellService = new WorkcellService(workcellRepository);
+const tagService = new TagService(tagRepository);
 
 const appConfig = {
     appInsightsKey: config.azure_section.appInsights,
@@ -236,6 +251,57 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_shift', 'put', async (req: Request, res: Response) => {
             await shiftService.putShifts(req, res);
+        }, true),
+        new http.RestEndpoint('/api/languages', 'get', async (req: Request, res: Response) => {
+            await languageService.getLanguages(req, res);
+        }, true), 
+        new http.RestEndpoint('/api/timezones', 'get', async (req: Request, res: Response) => {
+            await timezoneService.getTimezones(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_commonparameter', 'put', async (req: Request, res: Response) => {
+            await commonparametersService.putCommonParameter(req, res);
+        }, true),
+        new http.RestEndpoint('/api/commonparameters', 'get', async (req: Request, res: Response) => {
+            await commonparametersService.getCommonParameterBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/unique_reasons', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getUniqueReasonBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/unique_unavailable', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getUniqueUnavailableBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/display_by_site', 'get', async (req: Request, res: Response) => {
+            await assetdisplaysystemService.getAssetDisplayBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/workcell_by_site', 'get', async (req: Request, res: Response) => {
+            await workcellService.getWorkcellBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_uom', 'put', async (req: Request, res: Response) => {
+            await uomService.putUOM(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_displaysystem', 'put', async (req: Request, res: Response) => {
+            await assetdisplaysystemService.putAssetDisplaySystem(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_workcell', 'put', async (req: Request, res: Response) => {
+            await workcellService.putWorkcell(req, res);
+        }, true),
+        new http.RestEndpoint('/api/asset_by_site', 'get', async (req: Request, res: Response) => {
+            await assetService.getAssetBySiteExport(req, res);
+        }, true),
+        new http.RestEndpoint('/api/unavailable', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getUnavailableBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/reasons_by_site', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getReasonsBySite(req, res);
+        }, true),
+        new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
+            await tagService.getTags(req, res);
+        }, true),
+        new http.RestEndpoint('/api/dragndrop', 'put', async (req: Request, res: Response) => {
+            await siteService.dragAndDropAdminTool(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_tag', 'put', async (req: Request, res: Response) => {
+            await tagService.putTags(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

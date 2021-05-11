@@ -56,4 +56,20 @@ export class AssetService {
         }
         return res.status(200).json(assets);
     }
+
+    public async getAssetBySiteExport(req: Request, res: Response) {
+        const site = req.query.site;
+        if (!site) {
+            res.status(400).json({ message: "Bad Request - Missing Parameters" });
+            return;
+        }
+        let assets: any;
+        try {
+            assets = await this.assetrepository.getAssetBySiteExport(site);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+            return;
+        }
+        return res.status(200).json(assets);
+    }
 }

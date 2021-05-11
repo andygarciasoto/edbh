@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ShiftRepository } from '../repositories/shift-repository';
 import moment from 'moment';
+import { getShiftParameters } from '../validators/shiftValidator';
 
 export class ShiftService {
 
@@ -12,18 +13,13 @@ export class ShiftService {
     }
 
     public async getShiftBySite(req: Request, res: Response) {
-        const site = req.query.site;
-        const shift_id = req.query.shift_id ? req.query.shift_id : undefined;
-        if (!site) {
+        const site_id = req.query.site_id;
+        if (!site_id) {
             return res.status(400).send("Bad Request - Missing parameters");
         }
         let shifts: any;
         try {
-            if (shift_id === undefined || !shift_id || shift_id === null) {
-                shifts = await this.shiftrepository.getShiftBySiteExport(site);
-            } else {
-                shifts = await this.shiftrepository.getShiftById(shift_id);
-            }
+            shifts = await this.shiftrepository.findShiftByFilter(getShiftParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -37,11 +33,11 @@ export class ShiftService {
         const shift_name = req.body.shift_name ? req.body.shift_name : undefined;
         const shift_description = req.body.shift_description ? req.body.shift_description : null;
         const shift_sequence = req.body.shift_sequence ? req.body.shift_sequence : undefined;
-        const start_time = req.body.start_time ? moment(new Date(req.body.start_time)).format('HH:mm') : undefined;
+        const start_time = req.body.start_time ? req.body.start_time : undefined;
         const start_time_offset_days = req.body.start_time_offset_days ? parseInt(req.body.start_time_offset_days) : 0;
-        const end_time = req.body.end_time ? moment(new Date(req.body.end_time)).format('HH:mm') : undefined;
+        const end_time = req.body.end_time ? req.body.end_time : undefined;
         const end_time_offset_days = req.body.end_time_offset_days ? parseInt(req.body.end_time_offset_days) : 0;
-        const duration_in_minutes = req.body.duration_in_minutes ? req.body.duration_in_minutes : null;
+        const duration_in_minutes = req.body.duration_in_minutes || req.body.duration_in_minutes === 0 ? req.body.duration_in_minutes : null;
         const valid_from = req.body.valid_from ? moment(new Date(req.body.valid_from)).format(this.format) : undefined;
         const is_first_shift_of_day = req.body.is_first_shift_of_day ? req.body.is_first_shift_of_day : 0;
         const status = req.body.status ? req.body.status : 'Active';

@@ -56,18 +56,22 @@ AS
         IF EXISTS (SELECT * FROM dbo.Asset A WHERE A.asset_id = @asset_id AND A.asset_level = @asset_site)
 		BEGIN
 			SELECT
-				@start_shift_utc =  @start_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE CP.site_timezone
-			FROM dbo.CommonParameters CP WHERE CP.site_id = @asset_id;
+				@start_shift_utc =  @start_time AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC',
+				@end_shift_utc =  @end_time AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC',
+				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE T.sql_timezone
+			FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+			ON CP.timezone_id = T.timezone_id 
+			AND CP.site_id = @asset_id;
 		END
 		ELSE
 		BEGIN
 			SELECT
-				@start_shift_utc =  @start_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@end_shift_utc =  @end_time AT TIME ZONE CP.site_timezone AT TIME ZONE 'UTC',
-				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE CP.site_timezone
-			FROM dbo.CommonParameters CP WHERE CP.site_id = (
+				@start_shift_utc =  @start_time AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC',
+				@end_shift_utc =  @end_time AT TIME ZONE T.sql_timezone AT TIME ZONE 'UTC',
+				@current_date_time = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE T.sql_timezone
+			FROM dbo.CommonParameters CP INNER JOIN dbo.Timezone T
+			ON CP.timezone_id = T.timezone_id 
+			AND CP.site_id = (
 				SELECT asset_id FROM dbo.Asset WHERE asset_level = 'Site' AND asset_code = (SELECT site_code FROM dbo.Asset WHERE asset_id = @asset_id)
 			);
 		END;

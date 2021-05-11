@@ -28,8 +28,7 @@ AS  BEGIN
 	shift_id = @shift_id AND asset_id = @asset_id)
 		BEGIN
 			UPDATE dbo.Shift
-			SET 
-			shift_code = @shift_code,
+			SET
 			shift_name = @shift_name,
 			shift_description = @shift_description,
 			shift_sequence = @shift_sequence,

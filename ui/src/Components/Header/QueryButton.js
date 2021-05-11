@@ -32,7 +32,7 @@ class QueryButton extends React.Component {
 
     render() {
         return (
-            <Button variant="outline-info" className="query-button" onClick={this.onSubmit}>{this.props.t('Submit')}</Button>
+            <Button id='btnSubmitHeader' variant="outline-primary" className="query-button" onClick={this.onSubmit}>{this.props.t('Submit')}</Button>
         );
     }
 };
