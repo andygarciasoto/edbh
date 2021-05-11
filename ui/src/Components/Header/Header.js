@@ -154,6 +154,7 @@ class Header extends React.Component {
         if (Number(this.state.cs) !== Number(site.asset_id)) {
             const search = qs.parse(this.props.history.location.search);
             const ln = search.ln || this.props.user.language;
+            localStorage.removeItem('st');
             const newUrl = configuration['root'] + `${this.props.history.location.pathname}?cs=${site.asset_id}${ln ? ('&ln=' + ln) : ''}`;
             window.location.href = newUrl;
 
@@ -165,15 +166,16 @@ class Header extends React.Component {
         const user = this.props.user;
         const asset = _.find(user.machines, { asset_code: this.state.mc });
 
-        if (user.role === 'Operator' && asset && asset.is_multiple) {
+        if (user.role === 'Operator' && asset && (asset.is_multiple || asset.is_dynamic)) {
             this.props.displayModalLogOff(true);
         } else {
             console.log('Success LogOff');
             // remove stored data
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('st');
+            const st = localStorage.getItem('st');
+            const newUrl = configuration['root'] + `?st=${st}&ln=${this.props.user.language}`;
             // Redirect to login
-            window.location.replace(configuration['root']);
+            window.location.href = newUrl;
         }
     }
 

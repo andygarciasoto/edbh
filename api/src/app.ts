@@ -270,6 +270,9 @@ const appConfig = {
         new http.RestEndpoint('/api/unique_unavailable', 'get', async (req: Request, res: Response) => {
             await unavailableService.getUniqueUnavailableBySite(req, res);
         }, true),
+        new http.RestEndpoint('/api/asset_by_unavailable', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getAssetsUnavailableCode(req, res);
+        }, true),
         new http.RestEndpoint('/api/display_by_site', 'get', async (req: Request, res: Response) => {
             await assetdisplaysystemService.getAssetDisplayBySite(req, res);
         }, true),
@@ -294,6 +297,12 @@ const appConfig = {
         new http.RestEndpoint('/api/reasons_by_site', 'get', async (req: Request, res: Response) => {
             await dtreasonService.getReasonsBySite(req, res);
         }, true),
+        new http.RestEndpoint('/api/reasons_by_filter', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getReasonsByFilter(req, res);
+        }, true),
+        new http.RestEndpoint('/api/asset_by_reason', 'get', async (req: Request, res: Response) => {
+            await dtreasonService.getAssetsReasonCode(req, res);
+        }, true),
         new http.RestEndpoint('/api/tags', 'get', async (req: Request, res: Response) => {
             await tagService.getTags(req, res);
         }, true),
@@ -302,6 +311,24 @@ const appConfig = {
         }, true),
         new http.RestEndpoint('/api/insert_tag', 'put', async (req: Request, res: Response) => {
             await tagService.putTags(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_asset', 'put', async (req: Request, res: Response) => {
+            await assetService.putAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/unavailable_by_asset', 'get', async (req: Request, res: Response) => {
+            await unavailableService.getUnavailableByAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/tag_by_asset', 'get', async (req: Request, res: Response) => {
+            await tagService.getTagByAsset(req, res);
+        }, true),
+        new http.RestEndpoint('/api/insert_escalation', 'put', async (req: Request, res: Response) => {
+            await escalationService.putEscalation(req, res);
+        }, true),
+        new http.RestEndpoint('/api/assets_without_tag', 'get', async (req: Request, res: Response) => {
+            await assetService.getAssetsWithoutTag(req, res);
+        }, true),
+        new http.RestEndpoint('/api/escalation_events', 'put', async (req: Request, res: Response) => {
+            await escalationService.putEscalationEvents(req, res);
         }, true)
     ],
     router: configutils.routerWhithoutToken(config),

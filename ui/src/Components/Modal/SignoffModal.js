@@ -115,6 +115,16 @@ class SignoffModal extends React.Component {
         }
         this.setState({ modal_loading_IsOpen: true }, async () => {
             await getResponseFromGeneric('put', API, `/${this.state.signOffRole}_sign_off`, {}, {}, data);
+            if (this.state.signOffRole === 'Supervisor' && !_.isEmpty(this.props.escalation)) {
+                let body = {
+                    dxhdata_id: rowData ? rowData.dxhdata_id : null,
+                    asset_id: this.props.selectedAssetOption.asset_id,
+                    sign_time: moment.tz(this.props.user.timezone).format('YYYY/MM/DD HH:mm:ss'),
+                    badge: badge,
+                    site_id: this.props.user.site
+                };
+                getResponseFromGeneric('put', API, '/escalation_events', null, null, body);
+            }
             if (data.dxh_data_id === null) {
                 data.timestamp = formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck);
                 this.setState({ modal_loading_IsOpen: true }, async () => {

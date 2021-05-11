@@ -1,230 +1,196 @@
-//import Axios from "axios";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as UserActions from "../../../redux/actions/userActions";
-//import { API } from "../../../Utils/Constants";
-import { Modal, Button } from "react-bootstrap";
-import "../../../sass/SystemAdmin.scss";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as UserActions from '../../../redux/actions/userActions';
+import { API } from '../../../Utils/Constants';
+import { genericRequest } from '../../../Utils/Requests';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { generalValidationForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
+import '../../../sass/SystemAdmin.scss';
 
 class AddUOM extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      badge: "",
-      username: "",
-      firstname: "",
-      lastname: "",
-      role: 1,
-      status: "Active",
-      escalation_id: 1,
-      site: "",
-      roles: [],
-      show: false,
-      showForm: true,
-      escalation: [],
-      sites: [],
-      modalError: false,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			name: '',
+			description: '',
+			decimals: 0,
+			status: 'Active',
+			show: false,
+			showForm: true,
+			modalError: false,
+			validation: {}
+		};
+	}
 
-//   componentDidMount() {
-//     const { actions } = this.props;
+	handleChange = (event) => {
+		const target = event.target;
+		const value = target.value;
+		const name = target.name;
 
-//     return Promise.all([
-//       actions.getRoles(),
-//       actions.getEscalation(),
-//       actions.getSites(),
-//     ]).then((response) => {
-//       this.setState({
-//         roles: response[0],
-//         escalation: response[1],
-//         sites: response[2],
-//       });
-//     });
-//   }
+		this.setState({
+			[name]: value,
+		});
+	};
 
-  handleChange = (event) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
+	createUOM = (e) => {
+		e.preventDefault();
+		const { name, description, status, decimals } = this.state;
 
-    this.setState({
-      [name]: value,
-    });
-  };
+		const validation = generalValidationForm(this.state);
 
-//   createUser = (e) => {
-//     e.preventDefault();
-//     const {
-//       badge,
-//       username,
-//       firstname,
-//       lastname,
-//       role,
-//       status,
-//       escalation_id,
-//       site,
-//     } = this.state;
+		if (_.isEmpty(validation)) {
+			genericRequest('put', API, '/insert_uom', null, null, {
+				uom_code: `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
+				uom_name: name,
+				uom_description: description,
+				status: status,
+				decimals: parseInt(decimals, 10),
+				site_id: this.props.user.site,
+			}).then(
+				() => {
+					this.props.Refresh();
+					this.setState({
+						show: true,
+					});
+					this.handleClose();
+				},
+				(error) => {
+					this.setState({
+						modalError: true
+					});
+				}
+			);
+		} else {
+			this.setState({
+				validation
+			});
+		}
+	};
 
-//     var url = `${API}/insert_user`;
-//     if (
-//       badge !== "" &&
-//       username !== "" &&
-//       firstname !== "" &&
-//       lastname !== ""
-//     ) {
-//       Axios.put(url, {
-//         badge: badge,
-//         username: username,
-//         first_name: firstname,
-//         last_name: lastname,
-//         role_id: role,
-//         site_id: this.props.user.site,
-//         escalation_id: parseInt(escalation_id, 10),
-//         site: site,
-//         status: status,
-//       }).then(
-//         () => {
-//           this.setState({
-//             show: true,
-//           });
-//         },
-//         (error) => {
-//           console.log(error);
-//         }
-//       );
-//     } else {
-//       this.setState({
-//         modalError: true,
-//       });
-//     }
-//   };
+	handleClose = () => {
+		this.setState({ showForm: false });
+		this.props.closeForm();
+	};
 
-//   renderRoles(roles, index) {
-//     return (
-//       <option value={roles.role_id} key={index}>
-//         {roles.name}
-//       </option>
-//     );
-//   }
+	closeModalError = () => {
+		this.setState({ modalError: false });
+	};
 
-//   renderEscalation(escalation, index) {
-//     return (
-//       <option value={escalation.escalation_id} key={index}>
-//         {escalation.escalation_name}
-//       </option>
-//     );
-//   }
+	closeSuccessModal = () => {
+		this.setState({ show: false });
+	};
 
-//   renderSites(sites, index) {
-//     return (
-//       <option value={sites.asset_id} key={index}>
-//         {sites.asset_name}
-//       </option>
-//     );
-//   }
-
-  handleClose = () => {
-    this.props.closeForm();
-  };
-
-  closeModalError = () => {
-    this.setState({ modalError: false });
-  };
-
-  render() {
-    return (
-      <div>
-        <Modal show={this.props.showForm} onHide={this.handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add UOM</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <form>
-              <label>
-                Name:
-                <input
-                  type="text"
-                  name="name"
-                  className="input-uom-name"
-                  value={this.state.username}
-                  autoComplete={"false"}
-                  onChange={this.handleChange}
-                />
-              </label>
-              <label>
-                Description:
-                <textarea
-                  className="text-uom-description"
-                  name="description"
-                  onChange={this.handleChange}
-                ></textarea>
-              </label>
-              <label>
-                Decimals:
-                <select
-                  className="select-uom-decimals"
-                  name="decimals"
-                  onChange={this.handleChange}
-                >
-                  <option value="1:00">No</option>
-                  <option value="2:00">Yes</option>
-                </select>
-              </label>
-              <label>
-                Status:
-                <select
-                  className="select-display-status uom-status"
-                  name="decimals"
-                  onChange={this.handleChange}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </label>
-            </form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="Primary" onClick={(e) => this.createUser(e)}>
-              Confirm
-            </Button>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal show={this.state.show} onHide={this.handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Sucess</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>UOM has been added</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal show={this.state.modalError} onHide={this.handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Warning</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>All inputs must be filled</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModalError}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-    );
-  }
+	render() {
+		const t = this.props.t;
+		const validation = this.state.validation;
+		return (
+			<div>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
+					<Modal.Header closeButton>
+						<Modal.Title>{t('Add UOM')}</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<Form>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										type="text"
+										name="name"
+										value={this.state.name}
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.name}</Form.Text>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										as="textarea"
+										name="description"
+										value={this.state.description}
+										onChange={this.handleChange}
+										rows={3} />
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Decimals')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.decimals}
+										name='decimals'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value={0}>No</option>
+										<option value={1}>Yes</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.status}
+										name='status'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+						</Form>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant="Primary" onClick={(e) => this.createUOM(e)}>
+							{t('Confirm')}
+						</Button>
+						<Button variant="secondary" onClick={this.handleClose}>
+							{t('Close')}
+						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
+					<Modal.Header closeButton>
+						<Modal.Title>Sucess</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>UOM has been added</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeSuccessModal}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={this.state.modalError} onHide={this.closeModalError}>
+					<Modal.Header closeButton>
+						<Modal.Title>Error</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						UOM has not been added
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={this.closeModalError}>
+							Close
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(UserActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(UserActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(AddUOM);

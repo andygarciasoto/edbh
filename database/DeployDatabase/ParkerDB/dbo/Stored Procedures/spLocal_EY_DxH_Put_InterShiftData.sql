@@ -50,75 +50,42 @@
 --	20191204		C00V03 - Change CommonParameters to CommonParameters
 --		
 -- Example Call:
--- Exec spLocal_EY_DxH_Put_InterShiftData 3, 'shifting gears', '2477', Null, Null, '2019-08-09 15:08:28.220', 0
+-- Exec spLocal_EY_DxH_Put_InterShiftData_new_1 230, 'shifting gears', 'EYAdministrator', Null, Null, 0
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_InterShiftData]
 --Declare
-@DxHData_Id   INT, -- any hour Id of the shift associated with this data
-@Comment      VARCHAR(256), -- the main info for the display
-@Clock_Number VARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
-@First_Name   VARCHAR(100), -- Leave Null if you send Clock Number
-@Last_Name    VARCHAR(100), -- Leave Null if you send Clock Number
-@Timestamp    DATETIME, -- generally current time in site timezone
+@Asset_Id   INT, -- id of the associate Asset
+@Comment      NVARCHAR(256), -- the main info for the display
+@Clock_Number NVARCHAR(100), -- used to look up First and Last, leave Null if you have first and last
+@First_Name   NVARCHAR(100), -- Leave Null if you send Clock Number
+@Last_Name    NVARCHAR(100), -- Leave Null if you send Clock Number
 @Update       INT				-- generally null or 0, send the intershift_id for update
 AS
     BEGIN
         -- SET NOCOUNT ON added to prevent extra result sets from
         -- interfering with SELECT statements.
         SET NOCOUNT ON;
-        DECLARE 
-		@First VARCHAR(50),
-		@Last VARCHAR(50),
-		@Initials VARCHAR(50),
+        DECLARE
+		@Site_Id INT,
+		@First NVARCHAR(50),
+		@Last NVARCHAR(50),
+		@Initials NVARCHAR(50),
 		@InterShift_Id INT,
-		@Existing_Comment VARCHAR(256),
+		@Existing_Comment NVARCHAR(256),
 		@ReturnStatus INT,
-		@ReturnMessage VARCHAR(1000),
-		@Site_Timezone VARCHAR(100),
-		@Timestamp_UTC DATETIME,
-		@asset_id INT,
+		@ReturnMessage NVARCHAR(1000),
+		@Site_Timezone NVARCHAR(100),
 		@Production_Day DATETIME,
-		@Shift_Code VARCHAR(100),
-		@Site_Id INT;
+		@Shift_Code NVARCHAR(100);
 
-        SELECT @asset_id = asset_id, 
-               @Production_Day = production_day, 
-               @Shift_Code = shift_code
-        FROM dbo.DxHData
-        WHERE dxhdata_id = @DxHData_Id;
-        SELECT @Site_Id = asset_id
-        FROM [dbo].[Asset]
-        WHERE asset_level = 'Site'
-              AND site_code =
-        (
-            SELECT site_code
-            FROM [dbo].[Asset]
-            WHERE asset_id = @asset_id
-        );
-        SELECT @Site_Timezone = site_timezone
-        FROM dbo.CommonParameters cpt WITH(NOLOCK)
-        WHERE site_id = @Site_Id
-              AND STATUS = 'Active';
+		SELECT @Site_Id = asset_id
+		FROM [dbo].[Asset] WHERE asset_level = 'Site' AND site_code = (SELECT site_code FROM [dbo].[Asset] WHERE asset_id = @Asset_Id);
 
-        SELECT @Timestamp_UTC = @Timestamp AT TIME ZONE @Site_Timezone AT TIME ZONE 'UTC'
+		SELECT
+			@Production_Day = ProductionDay,
+			@Shift_Code = ShiftCode
+		FROM [dbo].[GetShiftProductionDayFromSiteAndDate](@Site_Id,NULL);
 
-        IF NOT EXISTS
-        (
-            SELECT dxhdata_id
-            FROM dbo.DxHData WITH(NOLOCK)
-            WHERE dxhdata_id = ISNULL(@DxHData_Id, -1)
-        )
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid DxHData_Id ' + CONVERT(VARCHAR, ISNULL(@DxHData_Id, ''));
-                GOTO ErrExit;
-        END;
-        IF ISNULL(@Comment, '') = ''
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Comment ' + CONVERT(VARCHAR, ISNULL(@Comment, ''));
-                GOTO ErrExit;
-        END;
         IF EXISTS
         (
             SELECT Badge
@@ -142,22 +109,16 @@ AS
         IF ISNULL(@First_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid First Name ' + CONVERT(VARCHAR, ISNULL(@First_Name, ''));
+                       @ReturnMessage = 'Invalid First Name ' + CONVERT(NVARCHAR, ISNULL(@First_Name, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Last_Name, '') = ''
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(VARCHAR, ISNULL(@Last_Name, ''));
+                       @ReturnMessage = 'Invalid Last Name ' + CONVERT(NVARCHAR, ISNULL(@Last_Name, ''));
                 GOTO ErrExit;
         END;
-        SELECT @Initials = CONVERT(VARCHAR, LEFT(@First_Name, 1)) + CONVERT(VARCHAR, LEFT(@last_Name, 1));
-        IF ISDATE(@Timestamp) <> 1
-            BEGIN
-                SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Timestamp ' + CONVERT(VARCHAR, ISNULL(@Timestamp, ''));
-                GOTO ErrExit;
-        END;
+        SELECT @Initials = CONVERT(NVARCHAR, LEFT(@First_Name, 1)) + CONVERT(NVARCHAR, LEFT(@last_Name, 1));
         IF(ISNULL(@Update, 0) <> 0)
           AND (NOT EXISTS
         (
@@ -167,7 +128,7 @@ AS
         ))
             BEGIN
                 SELECT @ReturnStatus = -1, 
-                       @ReturnMessage = 'Invalid Update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                       @ReturnMessage = 'Invalid Update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                 GOTO ErrExit;
         END;
         IF ISNULL(@Update, 0) = 0
@@ -180,14 +141,14 @@ AS
                  @First_Name,
                  @Last_Name,
                  @Initials,
-                 @Timestamp_UTC,
+                 GETDATE(),
                  @Initials,
                  GETDATE(),
-                 @asset_id
+                 @Asset_Id
                 );
                 SET @InterShift_Id = SCOPE_IDENTITY();
                 SELECT @ReturnStatus = 0, 
-                       @ReturnMessage = 'Inserted ' + CONVERT(VARCHAR, @InterShift_Id);
+                       @ReturnMessage = 'Inserted ' + CONVERT(NVARCHAR, @InterShift_Id);
         END;
             ELSE
             BEGIN
@@ -212,12 +173,12 @@ AS
                                       last_modified_on = GETDATE()
                                 WHERE intershift_id = @Update;
                                 SELECT @ReturnStatus = 0, 
-                                       @ReturnMessage = 'Updated ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Updated ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                             ELSE
                             BEGIN
                                 SELECT @ReturnStatus = -1, 
-                                       @ReturnMessage = 'Nothing to update ' + CONVERT(VARCHAR, ISNULL(@Update, ''));
+                                       @ReturnMessage = 'Nothing to update ' + CONVERT(NVARCHAR, ISNULL(@Update, ''));
                         END;
                 END;
         END;

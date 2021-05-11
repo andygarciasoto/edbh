@@ -1,54 +1,73 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as ShiftActions from '../../../redux/actions/shiftsActions';
+import * as AssetActions from '../../../redux/actions/assetActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
-import AddAsset from './addAsset';
+import AssetModal from './assetModal/assetModal';
+import FontAwesome from 'react-fontawesome';
+
 
 class Assets extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			ShiftData: [],
+			AssetsData: [],
 			addAsset: false,
+			editAsset: false,
+			asset_id: 0,
+			statusFilter: 'Active',
+			levelFilter: 'Cell',
+			autLevelFilter: 'All',
+			asset: {},
+			action: {},
+			showAssetModal: false
 		};
 	}
 
-	//   componentDidMount() {
-	//     const { actions } = this.props;
+	componentDidMount() {
+		this.loadData();
+	}
 
-	//     return actions.getShifts(this.props.user.site).then((response) => {
-	//       this.setState({
-	//         ShiftData: response,
-	//       });
-	//     });
-	//   }
+	loadData = () => {
+		const { actions } = this.props;
+		const { statusFilter, levelFilter, autLevelFilter } = this.state;
 
-	showAddAsset = () => {
-		this.setState({
-			addAsset: true,
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter,
+			asset_level: levelFilter,
+			automation_level: autLevelFilter
+		}
+
+		return actions.getAssetsFilter(params).then((response) => {
+			this.setState({
+				AssetsData: response
+			});
 		});
-	};
+	}
 
-	closeAddAsset = () => {
+	applyFilter = (statusFilter, levelFilter, autLevelFilter) => {
+		this.setState({ statusFilter, levelFilter, autLevelFilter }, () => {
+			this.loadData();
+		})
+	}
+
+	showAssetModal = (asset, action) => {
 		this.setState({
-			addAsset: false,
-		});
-	};
+			asset,
+			action,
+			showAssetModal: true
+		})
+	}
 
-	//   showEditShift = (shift_id) => {
-	//     this.setState({
-	//       editShift: true,
-	//       shift_id: shift_id
-	//     });
-	//   };
-
-	//   closeEditShift = () => {
-	//     this.setState({
-	//         editShift: false,
-	//     });
-	//   };
+	closeAssetModal = () => {
+		this.setState({
+			asset: {},
+			action: '',
+			showAssetModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
@@ -56,61 +75,64 @@ class Assets extends Component {
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Asset'}
+					buttonName={'+ ' + t('Asset')}
 					buttonFilter={'Search'}
-					role={false}
 					newClass={true}
 					level={true}
 					automatedLevel={true}
-					onClick={() => this.showAddAsset()}
+					onClick={() => this.showAssetModal({}, 'Create')}
+					onClickFilter={this.applyFilter}
+					view={'Asset'}
 					t={t}
-				></Filter>
-				{this.state.addAsset === true && (
-					<AddAsset
-						t={t}
-						user={this.props.user}
-						showForm={this.state.addAsset}
-						closeForm={this.closeAddAsset}
-					/>
-				)}
+				/>
+				<AssetModal
+					user={this.props.user}
+					isOpen={this.state.showAssetModal}
+					asset={this.state.asset}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeAssetModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Code</th>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Level</th>
-							<th>Parent Code</th>
-							<th>Automation Level</th>
-							<th>Target Percent of Ideal</th>
-							<th>Include in Escalation</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Level')}</th>
+							<th>{t('Parent Asset')}</th>
+							<th>{t('Automation Level')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Target Percent of Ideal')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Include in Escalation')}</th>
+							<th>{t('Workcell')}</th>
+							<th>{t('Value Stream')}</th>
+							<th style={{ maxWidth: '100px' }}>{t('Multi Sign-In Machine')}</th>
+							<th style={{ maxWidth: '150px' }}>{t('Unscheduled Lunchs/Breaks')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>
-						{/* {this.state.ShiftData.map((shift, index) => (
-              <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
-                <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
-                </td>
-              </tr>
-            ))} */}
+						{this.state.AssetsData.map((asset, index) => (
+							<tr key={index}>
+								<td>{asset.asset_name}</td>
+								<td>{asset.asset_description}</td>
+								<td>{asset.asset_level}</td>
+								<td>{asset.parent_asset_code}</td>
+								<td>{asset.automation_level}</td>
+								<td>{asset.target_percent_of_ideal ? (asset.target_percent_of_ideal * 100) + '%' : ''}</td>
+								<td>{asset.include_in_escalation ? 'Yes' : 'No'}</td>
+								<td>{asset.grouping1}</td>
+								<td>{asset.value_stream}</td>
+								<td>{asset.is_multiple ? 'Yes' : 'No'}</td>
+								<td>{asset.is_dynamic ? 'Yes' : 'No'}</td>
+								<td>{asset.status}</td>
+								<td>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showAssetModal(asset, 'Edit')} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showAssetModal(asset, 'Copy')} />
+								</td>
+							</tr>
+						))}
 					</tbody>
 				</Table>
 			</div>
@@ -120,7 +142,7 @@ class Assets extends Component {
 
 export const mapDispatch = (dispatch) => {
 	return {
-		actions: bindActionCreators(ShiftActions, dispatch),
+		actions: bindActionCreators(AssetActions, dispatch),
 	};
 };
 

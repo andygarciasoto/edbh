@@ -1,6 +1,4 @@
-﻿
-
-
+﻿/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]    Script Date: 29/12/2020 11:29:06 ******/
 
 --
 -- Copyright © 2019 Ernst & Young LLP
@@ -39,13 +37,14 @@
 -- Modification Change History:
 --------------------------------------------------------------------------------
 --	20191202		C00V00 - Intial code created
+--	20210218		C00V01 - Change variables type from varchar to nvarchar
 --		
 -- Example Call:
 -- exec spLocal_EY_DxH_Get_Asset_By_Code '34002'
 --
-CREATE   PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
+CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Get_Asset_By_Code]
 --Declare
-	@Asset_Code				VARCHAR(100)				--Asset_Code of the Site
+	@Asset_Code				NVARCHAR(100)				--Asset_Code of the Site
 AS
 
 BEGIN
@@ -68,15 +67,11 @@ BEGIN
 		grouping2,
 		grouping3,
 		grouping4,
-		grouping5
+		grouping5,
+		is_multiple,
+		is_dynamic
 	FROM dbo.Asset WITH (nolock)
 	WHERE status = 'Active'
 		AND asset_code = @Asset_Code
 		ORDER BY asset_name
-
-
 END
-
-
-/****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Get_AssetDisplaySystem]    Script Date: 4/12/2019 15:15:23 ******/
-SET ANSI_NULLS ON

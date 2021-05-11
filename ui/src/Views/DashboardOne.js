@@ -73,7 +73,7 @@ class DashboardOne extends React.Component {
             socket={props.socket}
           /> : null}
         <div className="wrapper-main">
-          {validPermission(props.user, 'operatorInformation', 'read') && this.state.selectedAssetOption.is_multiple ?
+          {validPermission(props.user, 'operatorInformation', 'read') && (this.state.selectedAssetOption.is_multiple || this.state.selectedAssetOption.is_dynamic) ?
             <OperatorComponent
               selectedAssetOption={this.state.selectedAssetOption}
               user={props.user}

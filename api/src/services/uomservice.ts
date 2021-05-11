@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UomRepository } from '../repositories/uom-repository';
 import { AssetRepository } from '../repositories/asset-repository';
+import { getUOMParameters } from '../validators/uomValidator';
 
 export class UomService {
 
@@ -13,18 +14,13 @@ export class UomService {
     }
 
     public async getUomBySite(req: Request, res: Response) {
-        let uom_id = req.query.uom_id;
-        let site = req.query.site;
-        if (!site) {
+        let site_id = req.query.site_id;
+        if (!site_id) {
             return res.status(400).json({ message: "Bad Request - Missing Parameters" });
         }
         let uoms: any;
         try {
-            if (!uom_id) {
-                uoms = await this.uomrepository.getUomBySite(site);
-            } else {
-                uoms = await this.uomrepository.getUOMById(uom_id);
-            }
+            uoms = await this.uomrepository.findUomByFilter(getUOMParameters(req.query));
         } catch (err) {
             res.status(500).json({ message: err.message });
             return;
@@ -54,7 +50,7 @@ export class UomService {
         const uom_id = req.body.uom_id ? req.body.uom_id : null;
         const uom_code = req.body.uom_code ? req.body.uom_code : undefined;
         const uom_name = req.body.uom_name ? req.body.uom_name : undefined;
-        const uom_description = req.body.uom_description ? req.body.uom_description : null;
+        const uom_description = req.body.uom_description;
         const status = req.body.status ? req.body.status : 'Active';
         const site_id = req.body.site_id ? req.body.site_id : undefined;
         const decimals = req.body.decimals ? req.body.decimals : 0;

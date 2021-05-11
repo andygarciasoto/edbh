@@ -1,4 +1,5 @@
 import { SqlServerStore } from '../configurations/sqlserverstore';
+import _ from 'lodash';
 
 export class DTReasonRepository {
     private static readonly table = 'DTReason';
@@ -29,12 +30,41 @@ export class DTReasonRepository {
         WHERE DTReason.site_id = ${site_id}
         AND Asset.asset_level = 'Cell'`);
     }
-    public async getUniqueReasonBySite(site_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`SELECT dtreason_code, MIN(dtreason_name) as dtreason_name, MIN(dtreason_description) as dtreason_description, MIN(dtreason_category) as dtreason_category,
-        MIN(reason1) as reason1, MIN(reason2) as reason2, MIN(status) as status, MIN(type) as type, MIN(level) as level FROM dbo.DTReason
+    public async getDTReasonById(site_id: number, dtreason_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT [DTReason].[dtreason_id],[DTReason].[dtreason_code],[DTReason].[dtreason_name],
+        [DTReason].[dtreason_description],[DTReason].[dtreason_category],[Asset].[asset_code],[DTReason].[reason1],[DTReason].[reason2],
+        [DTReason].[status],[DTReason].[type],[DTReason].[level],A2.asset_code as site_code 
+        FROM [dbo].[DTReason] JOIN [dbo].[Asset] ON [DTReason].[asset_id] = [Asset].[asset_id]
+        JOIN dbo.Asset A2 ON ${site_id} = A2.asset_id
+        AND DTReason.site_id = ${site_id}
+        AND Asset.asset_level = 'Cell'
+        AND DTReason.dtreason_id = ${dtreason_id}`);
+    }
+    public async getUniqueReasonBySite(site_id: number, asset_id: number): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`SELECT dtreason_code, dtreason_name, MIN(dtreason_description) as dtreason_description, MIN(dtreason_category) as dtreason_category,
+        MIN(reason1) as reason1, MIN(reason2) as reason2, MIN(status) as status, MIN(type) as type, MIN(level) as level, 
+		SUM(CASE WHEN asset_id = ${asset_id} THEN 1 ELSE 0 END) as COUNT
+        FROM dbo.DTReason
         WHERE site_id = ${site_id}
-        GROUP BY dtreason_code
+        GROUP BY dtreason_code, dtreason_name
+        HAVING SUM(CASE WHEN asset_id = ${asset_id} THEN 1 ELSE 0 END) = 0
         ORDER BY dtreason_code`);
+    }
+    public async findReasonByFilter(parameters: any[]): Promise<any> {
+        const query: string = `SELECT DT.dtreason_code,DT.dtreason_name, DT.dtreason_description,
+        DT.dtreason_category,DT.reason1,DT.reason2, DT.status,DT.type,DT.level, COUNT(*) AS asset_count
+        FROM dbo.DTReason AS DT
+        ${_.isEmpty(parameters) ? '' :
+                'WHERE ' + _.join(parameters, ' AND ')
+            }
+            GROUP BY DT.dtreason_code,DT.dtreason_name, DT.dtreason_description,
+            DT.dtreason_category,DT.reason1,DT.reason2, DT.status,DT.type,DT.level`;
+        return await this.sqlServerStore.ExecuteQuery(query);
+    }
+    public async getAssetsReasonCode(site_id: number, dtreason_code: string, dtreason_name: string, dtreason_description: string, dtreason_category: string,
+        reason1: string, reason2: string, status: string, type: string, level: string): Promise<any> {
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Assets_ReasonCode ${site_id}, N'${dtreason_code}',N'${dtreason_name}', ${dtreason_description},
+            N'${dtreason_category}',${reason1},${reason2},N'${status}',N'${type}',${level}`);
     }
 }
 

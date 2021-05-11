@@ -5,7 +5,9 @@ import * as WorkcellActions from '../../../redux/actions/workcellActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
 import AddWorkcell from './addWorkcell';
-import EditIcon from "../../../resources/u668.svg";
+import EditWorkcell from './editWorkcell';
+import WorkcellModal from './workcellModal';
+import FontAwesome from 'react-fontawesome';
 
 
 class Workcells extends Component {
@@ -16,18 +18,32 @@ class Workcells extends Component {
 			addWorkcell: false,
 			editWorkcell: false,
 			workcell_id: 0,
+			statusFilter: 'Active',
+			workcell: {},
+			action: '',
+			showWorkcellModal: false
 		};
 	}
 
 	componentDidMount() {
-		const { actions } = this.props;
+		this.loadData();
+	}
 
-		return actions.getWorkcells(this.props.user.site).then((response) => {
+	loadData = () => {
+		const { actions } = this.props;
+		const { statusFilter } = this.state;
+
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
+
+		return actions.getWorkcellsFilter(params).then((response) => {
 			this.setState({
 				WorkcellData: response,
 			});
 		});
-	}
+	};
 
 	showAddWorkcell = () => {
 		this.setState({
@@ -41,18 +57,40 @@ class Workcells extends Component {
 		});
 	};
 
-	//   showEditShift = (shift_id) => {
-	//     this.setState({
-	//       editShift: true,
-	//       shift_id: shift_id
-	//     });
-	//   };
+	showEditShift = (workcell_id) => {
+		this.setState({
+			editWorkcell: true,
+			workcell_id: workcell_id,
+		});
+	};
 
-	//   closeEditShift = () => {
-	//     this.setState({
-	//         editShift: false,
-	//     });
-	//   };
+	showWorkcellModal = (workcell, action) => {
+		this.setState({
+			workcell,
+			action,
+			showWorkcellModal: true
+		})
+	}
+
+	closeEditShift = () => {
+		this.setState({
+			editWorkcell: false,
+		});
+	};
+
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
+
+	closeWorkcellModal = () => {
+		this.setState({
+			workcell: {},
+			action: '',
+			showWorkcellModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
@@ -60,8 +98,7 @@ class Workcells extends Component {
 			<div>
 				<Filter
 					className="filter-user"
-					buttonName={'+ Workcell'}
-					buttonFilter={'Search'}
+					buttonName={'+ ' + t('Workcell')}
 					role={false}
 					newClass={false}
 					level={false}
@@ -70,30 +107,45 @@ class Workcells extends Component {
 					type={false}
 					shifts={false}
 					onClick={() => this.showAddWorkcell()}
+					onClickFilter={this.applyFilter}
+					view={'Workcell'}
 					t={t}
 				></Filter>
 				{this.state.addWorkcell === true && (
 					<AddWorkcell
-						t={t}
 						user={this.props.user}
 						showForm={this.state.addWorkcell}
 						closeForm={this.closeAddWorkcell}
+						Refresh={this.loadData}
+						t={t}
 					/>
 				)}
-				{/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
+				{this.state.editWorkcell === true && (
+					<EditWorkcell
+						user={this.props.user}
+						showForm={this.state.editWorkcell}
+						closeForm={this.closeEditShift}
+						workcell_id={this.state.workcell_id}
+						Refresh={this.loadData}
+						t={t}
+					/>
+				)}
+				<WorkcellModal
+					user={this.props.user}
+					isOpen={this.state.showWorkcellModal}
+					workcell={this.state.workcell}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeWorkcellModal}
+					t={t}
+				/>
 				<Table responsive="sm" bordered={true}>
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Actions</th>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -101,13 +153,10 @@ class Workcells extends Component {
 							<tr key={index}>
 								<td>{workcell.workcell_name}</td>
 								<td>{workcell.workcell_description}</td>
+								<td>{workcell.status}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditShift(workcell.workcell_id)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditShift(workcell.workcell_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showWorkcellModal(workcell, 'Copy')} />
 								</td>
 							</tr>
 						))}

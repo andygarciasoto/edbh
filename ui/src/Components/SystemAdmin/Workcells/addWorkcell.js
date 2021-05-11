@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 import * as UserActions from '../../../redux/actions/userActions';
 import { API } from '../../../Utils/Constants';
 import { genericRequest } from '../../../Utils/Requests';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { generalValidationForm } from '../../../Utils/FormValidations';
+import _ from 'lodash';
 import '../../../sass/SystemAdmin.scss';
 
 class AddWorkcell extends Component {
@@ -13,9 +15,11 @@ class AddWorkcell extends Component {
 		this.state = {
 			name: '',
 			description: '',
+			status: 'Active',
 			show: false,
 			showForm: true,
 			modalError: false,
+			validation: {}
 		};
 	}
 
@@ -29,33 +33,8 @@ class AddWorkcell extends Component {
 		});
 	};
 
-	createWorkcell = (e) => {
-		e.preventDefault();
-		const { name, description } = this.state;
-
-		if (name !== '' && description !== '') {
-			genericRequest('put', API, '/insert_workcell', null, null, {
-				workcell_name: name,
-				workcell_description: description,
-				site_id: this.props.user.site,
-			}).then(
-				() => {
-					this.setState({
-						show: true,
-					});
-				},
-				(error) => {
-					console.log(error);
-				}
-			);
-		} else {
-			this.setState({
-				modalError: true,
-			});
-		}
-	};
-
 	handleClose = () => {
+		this.setState({ showForm: false });
 		this.props.closeForm();
 	};
 
@@ -63,62 +42,120 @@ class AddWorkcell extends Component {
 		this.setState({ modalError: false });
 	};
 
+	closeSuccessModal = () => {
+		this.setState({ show: false });
+	};
+
+	createWorkcell = (e) => {
+		e.preventDefault();
+		const { name, description, status } = this.state;
+
+		const validation = generalValidationForm(this.state);
+
+		if (_.isEmpty(validation)) {
+			genericRequest('put', API, '/insert_workcell', null, null, {
+				workcell_name: name,
+				workcell_description: description,
+				status: status,
+				site_id: this.props.user.site,
+			}).then(
+				() => {
+					this.props.Refresh();
+					this.setState({
+						show: true,
+					});
+					this.handleClose();
+				},
+				(error) => {
+					this.setState({
+						modalError: true,
+					});
+				}
+			);
+		} else {
+			this.setState({
+				validation
+			});
+		}
+	};
+
 	render() {
-    console.log(this.props);
+		const t = this.props.t;
+		const validation = this.state.validation;
 		return (
 			<div>
-				<Modal show={this.props.showForm} onHide={this.handleClose}>
+				<Modal show={this.state.showForm} onHide={this.handleClose} centered>
 					<Modal.Header closeButton>
-						<Modal.Title>Add Workcell</Modal.Title>
+						<Modal.Title>{t('Add Workcell')}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<form>
-							<label>
-								Name:
-								<input
-									className="input-display-name"
-									type="text"
-									name="name"
-									value={this.state.badge}
-									autoComplete={'false'}
-									onChange={this.handleChange}
-								/>
-							</label>
-							<label>
-								Description:
-								<textarea
-									className="text-workcell-description"
-									name="description"
-									onChange={this.handleChange}
-								></textarea>
-							</label>
-						</form>
+						<Form>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Name')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										type="text"
+										name="name"
+										value={this.state.name}
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									/>
+									<Form.Text className='validation'>{validation.name}</Form.Text>
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Description')}:</Form.Label>
+								<Col sm={10}>
+									<Form.Control
+										as="textarea"
+										name="description"
+										value={this.state.description}
+										onChange={this.handleChange}
+										rows={3} />
+								</Col>
+							</Form.Group>
+							<Form.Group as={Row}>
+								<Form.Label column sm={2}>{t('Status')}:</Form.Label>
+								<Col sm={4}>
+									<Form.Control
+										as="select"
+										value={this.state.status}
+										name='status'
+										autoComplete={"false"}
+										onChange={this.handleChange}
+									>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</Form.Control>
+								</Col>
+							</Form.Group>
+						</Form>
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="Primary" onClick={(e) => this.createWorkcell(e)}>
-							Confirm
+							{t('Confirm')}
 						</Button>
 						<Button variant="secondary" onClick={this.handleClose}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.show} onHide={this.handleClose}>
+				<Modal show={this.state.show} onHide={this.closeSuccessModal}>
 					<Modal.Header closeButton>
 						<Modal.Title>Sucess</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>Workcell has been added</Modal.Body>
 					<Modal.Footer>
-						<Button variant="secondary" onClick={this.handleClose}>
+						<Button variant="secondary" onClick={this.closeSuccessModal}>
 							Close
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={this.state.modalError} onHide={this.handleClose}>
+				<Modal show={this.state.modalError} onHide={this.closeModalError}>
 					<Modal.Header closeButton>
-						<Modal.Title>Warning</Modal.Title>
+						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>All inputs must be filled</Modal.Body>
+					<Modal.Body>Workcell has not been added</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalError}>
 							Close

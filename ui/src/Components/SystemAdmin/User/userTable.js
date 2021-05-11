@@ -1,12 +1,11 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as UserActions from "../../../redux/actions/userActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddUser from "./addUser";
-import EditUser from "./editUser";
-import EditIcon from "../../../resources/u668.svg";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as UserActions from '../../../redux/actions/userActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import UserModal from './userModal';
+import FontAwesome from 'react-fontawesome';
 
 class UserTable extends Component {
 	constructor(props) {
@@ -14,11 +13,12 @@ class UserTable extends Component {
 		this.state = {
 			usersData: [],
 			user: false,
-			edit: false,
-			badge: "",
-			statusFilter: 'All',
+			statusFilter: 'Active',
 			roleFilter: 'All',
-			escalationFilter: 'All'
+			escalationFilter: 'All',
+			selectedUser: {},
+			action: '',
+			showUserModal: false
 		};
 	}
 
@@ -50,66 +50,46 @@ class UserTable extends Component {
 		})
 	}
 
-	showAddUser = () => {
+	showUserModal = (selectedUser, action) => {
 		this.setState({
-			user: true,
-		});
-	};
+			selectedUser,
+			action,
+			showUserModal: true
+		})
+	}
 
-	showEditUser = (badge) => {
+	closeUserModal = () => {
 		this.setState({
-			edit: true,
-			badge: badge,
-		});
-	};
-
-	closeAddUser = () => {
-		this.setState({
-			user: false,
-		});
-	};
-
-	closeEditUser = () => {
-		this.setState({
-			edit: false,
-		});
-	};
+			selectedUser: {},
+			action: '',
+			showUserModal: false
+		})
+	}
 
 	render() {
 		const t = this.props.t;
 		return (
 			<div>
 				<Filter
-					className="filter-user"
+					className='filter-user'
 					buttonName={'+ ' + t('User')}
 					role={true}
 					escalation={true}
-					buttonFilter={t('Search')}
-					onClick={() => this.showAddUser()}
+					onClick={() => this.showUserModal({}, 'Create')}
 					onClickFilter={this.applyFilter}
 					view={'User'}
 					t={t}
-				></Filter>
-				{this.state.user === true && (
-					<AddUser
-						user={this.props.user}
-						showForm={this.state.user}
-						closeForm={this.closeAddUser}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
-				{this.state.edit === true && (
-					<EditUser
-						user={this.props.user}
-						showForm={this.state.edit}
-						closeForm={this.closeEditUser}
-						badge={this.state.badge}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
-				<Table responsive="sm" bordered={true}>
+				/>
+				<UserModal
+					user={this.props.user}
+					isOpen={this.state.showUserModal}
+					selectedUser={this.state.selectedUser}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeUserModal}
+					t={t}
+				/>
+				<Table responsive='sm' bordered={true}>
 					<thead>
 						<tr>
 							<th>{t('Badge')}</th>
@@ -133,12 +113,8 @@ class UserTable extends Component {
 								<td>{user.status}</td>
 								<td>{user.escalation_name}</td>
 								<td>
-									<img
-										src={EditIcon}
-										alt={`edit-icon`}
-										className="icon"
-										onClick={() => this.showEditUser(user.Badge)}
-									/>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showUserModal(user, 'Update')} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showUserModal(user, 'Copy')} />
 								</td>
 							</tr>
 						))}

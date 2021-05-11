@@ -1,100 +1,129 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ReasonActions from "../../../redux/actions/reasonActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddReason from "./addReason";
-
-
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as ReasonActions from '../../../redux/actions/reasonActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddReason from './addReason';
+import ReasonModal from './reasonModal';
+import FontAwesome from 'react-fontawesome';
 
 class Reason extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ReasonData: [],
-      addReason: false,
-      editReason: false,
-      shift_id: 0,
+      showCreateReason: false,
+      reason: {},
+      statusFilter: 'Active',
+      categoryFilter: 'All',
+      typeFilter: 'Downtime',
+      showReasonModal: false,
+      action: ''
     };
   }
 
   componentDidMount() {
-    const { actions } = this.props;
+    this.loadData();
+  }
 
-    return actions.getReasons(this.props.user.site).then((response) => {
+  loadData = () => {
+    const { actions } = this.props;
+    const { statusFilter, categoryFilter, typeFilter } = this.state;
+
+    const params = {
+      site_id: this.props.user.site,
+      status: statusFilter,
+      category: categoryFilter,
+      type: typeFilter
+    };
+
+    return actions.getReasonByFilter(params).then((response) => {
       this.setState({
         ReasonData: response,
       });
     });
   }
 
-  showAddReason = () => {
+  applyFilter = (statusFilter, categoryFilter, typeFilter) => {
+    this.setState({ statusFilter, categoryFilter, typeFilter }, () => {
+      this.loadData();
+    })
+  }
+
+  openCreateReason = () => {
     this.setState({
-      addReason: true,
+      showCreateReason: true
     });
   };
 
-  closeAddReason = () => {
+  openUpdateReason = (reason) => {
     this.setState({
-      addReason: false,
+      showUpdateReason: true,
+      reason
     });
   };
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+  showReasonModal = (reason, action) => {
+    this.setState({
+      reason,
+      action,
+      showReasonModal: true
+    })
+  }
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+  closeModal = () => {
+    this.setState({
+      showCreateReason: false,
+      showReasonModal: false,
+      reason: {},
+      action: ''
+    });
+  };
 
   render() {
     const t = this.props.t;
     return (
       <div>
         <Filter
-          className="filter-user"
-          buttonName={"+ Reason"}
-          buttonFilter={"Search"}
-          role={false}
-          newClass={false}
-          level={false}
-          automatedLevel={false}
+          className='filter-user'
+          buttonName={'+ ' + t('Reason')}
           category={true}
           type={true}
-          onClick={() => this.showAddReason()}
+          onClick={() => this.openCreateReason()}
+          onClickFilter={this.applyFilter}
+          view={'Reason'}
           t={t}
-        ></Filter>
-        {this.state.addReason === true && (
-          <AddReason
-            user={this.props.user}
-            showForm={this.state.addReason}
-            closeForm={this.closeAddReason}
-          />
-        )}
-        {/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
-        <Table responsive="sm" bordered={true}>
+        />
+        <AddReason
+          t={t}
+          user={this.props.user}
+          isOpen={this.state.showCreateReason}
+          Refresh={this.loadData}
+          action='Create'
+          onRequestClose={this.closeModal}
+        />
+        <ReasonModal
+          t={t}
+          user={this.props.user}
+          isOpen={this.state.showReasonModal}
+          reason={this.state.reason}
+          action={this.state.action}
+          Refresh={this.loadData}
+          onRequestClose={this.closeModal}
+        />
+        <Table responsive='sm' bordered={true}>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t('Code')}</th>
+              <th style={{ width: '350px' }}>{t('Name')}</th>
+              <th>{t('Description')}</th>
+              <th>{t('Category')}</th>
+              <th>{t('Type')}</th>
+              <th>{t('Level')}</th>
+              <th>{t('Asset Count')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -102,17 +131,15 @@ class Reason extends Component {
               <tr key={index}>
                 <td>{reason.dtreason_code}</td>
                 <td>{reason.dtreason_name}</td>
+                <td>{reason.dtreason_description}</td>
                 <td>{reason.dtreason_category}</td>
                 <td>{reason.type}</td>
+                <td>{reason.level}</td>
+                <td>{reason.asset_count}</td>
                 <td>{reason.status}</td>
-
                 <td>
-                  {/* <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(reason.shift_id)}
-                  /> */}
+                  <FontAwesome name='edit fa-2x' onClick={() => this.showReasonModal(reason, 'Update')} />
+                  <FontAwesome name='copy fa-2x' onClick={() => this.showReasonModal(reason, 'Copy')} />
                 </td>
               </tr>
             ))}

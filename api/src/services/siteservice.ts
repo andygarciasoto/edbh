@@ -7,6 +7,8 @@ import { EscalationRepository } from '../repositories/escalation-repository';
 import { WorkcellRepository } from '../repositories/workcell-repository';
 import { DxHDataRepository } from '../repositories/dxhdata-repository';
 import { headers, getParametersOfTable, getValuesFromHeaderTable, getColumns } from '../configurations/datatoolutils';
+import { getWorkcellParameters } from '../validators/workcellValidator';
+import { getUOMParameters } from '../validators/uomValidator';
 import _ from 'lodash';
 
 export class SiteService {
@@ -48,12 +50,13 @@ export class SiteService {
             siteInformation.shifts = await this.shiftsrepository.getShiftBySite(site_id);
             siteInformation.site_assets = await this.assetrepository.getAssetBySite(site_id, 'All', 'All');
             siteInformation.machines = _.filter(siteInformation.site_assets, { asset_level: 'Cell' });
-            siteInformation.uoms = await this.uomrepository.getUomBySite(site_id);
-            siteInformation.workcell = await this.workcellrepository.getWorkcellBySite(site_id);
+            siteInformation.uoms = await this.uomrepository.findUomByFilter(getUOMParameters(req.query));
+            siteInformation.workcell = await this.workcellrepository.findWorkByFilter(getWorkcellParameters(req.query));
             siteInformation.assets_workcell = await this.assetrepository.getAssetByWorkcell(station || 'Null', site_id);
             siteInformation.escalations = await this.escalationrepository.getEscalationBySite(site_id);
 
         } catch (ex) {
+            console.log(ex);
             return res.status(500).json({ message: ex.message });
         }
         return res.status(200).json(siteInformation);
@@ -93,34 +96,63 @@ export class SiteService {
             return res.status(400).json({ message: "Bad Request - Missing data to proceed" });
         }
 
-        let queries = [];
-        const columns = getColumns(table);
-        const parameters = getParametersOfTable(table, site_id);
-        const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
-        const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+        try {
+            let queries = [];
+            const columns = getColumns(table);
+            const parameters = getParametersOfTable(table, site_id);
+            const startMergeQuery = `MERGE [dbo].[${table}] t USING (SELECT ${'s.' + columns.map(e => e).join(', s.') + parameters.extraColumns} FROM (VALUES`;
+            const endMergeQuery = `) AS S(${columns.map(e => e)}) ${parameters.joinSentence}) as s ON (${parameters.matchParameters}) WHEN MATCHED THEN UPDATE SET ${parameters.updateSentence} WHEN NOT MATCHED BY TARGET THEN INSERT ${parameters.insertSentence};`;
+            const initialLength = startMergeQuery.length + endMergeQuery.length;
+            const rowCount = data.length - 1;
+            //Initialize query to store the values of the merge sentence
+            let valuesMergeQuery = '';
 
-        //Initialize query to store the values of the merge sentence
-        let valuesMergeQuery = '';
-        var body;
-        for (var val of Object.keys(data)) {
-            body = data[val];
-            let cont = 0;
-            let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
-            for (var key of Object.keys(body)) {
-                updateRow += getValuesFromHeaderTable(headers[table], headers[table][cont], body[key]);
-                cont++;
+            _.forEach(data, (item, rowNumber) => {
+                const tableHeaders = headers[table];
+                let updateRow = (valuesMergeQuery.length !== 0 ? ',' : '') + '(';
+                _.forEach(tableHeaders, header => {
+                    updateRow += getValuesFromHeaderTable(tableHeaders, header, item[header.key]);
+                });
+                updateRow += ')';
+                const newLength = valuesMergeQuery.length + updateRow.length + initialLength;
+                if (newLength < 4000 && rowNumber < rowCount) {
+                    valuesMergeQuery += updateRow;
+                } else {
+                    if (newLength >= 4000) {
+                        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                        valuesMergeQuery = updateRow.slice(1);
+                    }
+                    if (newLength < 4000) {
+                        valuesMergeQuery += updateRow;
+                    }
+                    if (rowNumber === rowCount) {
+                        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
+                    }
+                }
+            });
+
+            // console.log(queries);
+            if (!_.isEmpty(queries)) {
+                const queriesLength = queries.length;
+                console.log('Queries execution begin');
+                console.log('Queries to execute: ', queriesLength);
+                _.forEach(queries, async (query, index) => {
+                    try {
+                        await this.dxhdatarepository.executeGeneralImportQuery(query);
+                    } catch (e) {
+                        return res.status(500).send({ message: 'Error ' + e.message });
+                    }
+                    if ((queriesLength - 1) === index) {
+                        console.log('Queries execution end');
+                        console.log('Queries count: ', queriesLength);
+                        return res.status(200).send('Queries Entered Succesfully');
+                    }
+                });
+            } else {
+                return res.status(200).send('Excel File Entered Succesfully');
             }
-            updateRow += ')';
-            valuesMergeQuery += updateRow;
+        } catch (e) {
+            return res.status(500).send({ message: 'Error ' + e.message });
         }
-        queries.push(startMergeQuery + valuesMergeQuery + endMergeQuery);
-        _.forEach(queries, async (query, index) => {
-            try {
-                await this.dxhdatarepository.executeGeneralImportQuery(query);
-            } catch (e) {
-                return res.status(500).send({ message: 'Error ' + e.message });
-            }
-        });
-        return res.status(200).send('Message Entered Succesfully');
     }
 }

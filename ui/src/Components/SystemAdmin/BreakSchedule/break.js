@@ -1,137 +1,157 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddBreak from "./addBreak";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as BreakActions from '../../../redux/actions/breakActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import AddBreak from './breakForm';
+import BreakModal from './breakModal';
+import FontAwesome from 'react-fontawesome';
 
 class Break extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ShiftData: [],
-      addBreak: false,
-      editBreak: false,
-      shift_id: 0,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			BreakData: [],
+			shifts: [],
+			showCreateBreak: false,
+			showUnavailableModal: false,
+			unavailable: {},
+			statusFilter: 'Active',
+			shiftsFilter: 'All',
+			action: ''
+		};
+	}
 
-  //   componentDidMount() {
-  //     const { actions } = this.props;
+	componentDidMount() {
+		this.loadData();
+	}
 
-  //     return actions.getShifts(this.props.user.site).then((response) => {
-  //       this.setState({
-  //         ShiftData: response,
-  //       });
-  //     });
-  //   }
+	loadData = () => {
+		const { actions } = this.props;
+		const { statusFilter, shiftsFilter } = this.state;
 
-    showAddBreak = () => {
-      this.setState({
-        addBreak: true,
-      });
-    };
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter,
+			shift_id: shiftsFilter
+		};
 
-    closeAddBreak = () => {
-      this.setState({
-          addBreak: false,
-      });
-    };
+		const params1 = {
+			site_id: this.props.user.site
+		};
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+		Promise.all([
+			actions.getBreakFilter(params),
+			actions.getShiftsFilter(params1)
+		]).then((responses) => {
+			this.setState({
+				BreakData: responses[0],
+				shifts: responses[1]
+			});
+		});
+	}
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+	openCreateBreak = () => {
+		this.setState({
+			showCreateBreak: true
+		});
+	};
 
-  render() {
-    return (
-      <div>
-        <Filter
-         className="filter-user"
-         buttonName={"+ Break"}
-         buttonFilter={"Search"}
-         role={false}
-         newClass={false}
-         level={false}
-         automatedLevel={false}
-         category={false}
-         type={false}
-         shifts={true}
-         onClick={() => this.showAddBreak()}
-        ></Filter>
-        {this.state.addBreak === true && (
-          <AddBreak
-            user={this.props.user}
-            showForm={this.state.addBreak}
-            closeForm={this.closeAddBreak}
-          />
-        )}
-        {/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Start Time</th>
-              <th>Start Day</th>
-              <th>End Time</th>
-              <th>End Day</th>
-              <th>Duration (minutes)</th>
-              <th>Asset Count</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
-              <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
-                <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
-                </td>
-              </tr>
-            ))} */}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+	showUnavailableModal = (unavailable, action) => {
+		this.setState({
+			unavailable,
+			action,
+			showUnavailableModal: true
+		})
+	}
+
+	closeModal = () => {
+		this.setState({
+			showCreateBreak: false,
+			showUnavailableModal: false,
+			unavailable: {},
+			action: ''
+		});
+	};
+
+	applyFilter = (statusFilter, shiftsFilter) => {
+		this.setState({ statusFilter, shiftsFilter }, () => {
+			this.loadData();
+		})
+	}
+
+	render() {
+		const t = this.props.t;
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ ' + t('Break')}
+					shiftsOptions={this.state.shifts}
+					shifts={false}
+					onClick={() => this.openCreateBreak()}
+					onClickFilter={this.applyFilter}
+					view={'Break'}
+					t={t}
+				/>
+				<AddBreak
+					t={t}
+					user={this.props.user}
+					isOpen={this.state.showCreateBreak}
+					Refresh={this.loadData}
+					action='Create'
+					onRequestClose={this.closeModal}
+				/>
+				<BreakModal
+					t={t}
+					user={this.props.user}
+					isOpen={this.state.showUnavailableModal}
+					unavailable={this.state.unavailable}
+					action={this.state.action}
+					Refresh={this.loadData}
+					onRequestClose={this.closeModal}
+				/>
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th>{t('Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('Start Time')}</th>
+							<th>{t('End Time')}</th>
+							<th>{t('Duration (minutes)')}</th>
+							<th>{t('Asset Count')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.BreakData.map((unavailable, index) => (
+							<tr key={index}>
+								<td>{unavailable.unavailable_name}</td>
+								<td>{unavailable.unavailable_description}</td>
+								<td>{unavailable.start_time}</td>
+								<td>{unavailable.end_time}</td>
+								<td>{unavailable.duration_in_minutes}</td>
+								<td>{unavailable.asset_count}</td>
+								<td>{unavailable.status}</td>
+								<td>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showUnavailableModal(unavailable, 'Update')} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showUnavailableModal(unavailable, 'Copy')} />
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(ShiftActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(BreakActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Break);

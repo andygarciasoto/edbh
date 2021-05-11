@@ -69,30 +69,33 @@ class OperatorComponent extends React.Component {
     }
 
     fetchData = () => {
-        const currentShift = _.find(this.props.user.shifts, { shift_id: this.props.user.shift_id });
-        const parameters = {
-            asset_id: this.state.selectedAssetOption.asset_id,
-            start_time: formatDate(currentShift.start_date_time_today),
-            end_time: formatDate(currentShift.end_date_time_today)
-        };
+        if (this.state.selectedAssetOption.is_multiple) {
+            const currentShift = _.find(this.props.user.shifts, { shift_id: this.props.user.shift_id });
+            const parameters = {
+                asset_id: this.state.selectedAssetOption.asset_id,
+                start_time: formatDate(currentShift.start_date_time_today),
+                end_time: formatDate(currentShift.end_date_time_today)
+            };
 
-        getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
-            const allOperators = response || [];
-            const activeOperators = _.filter(allOperators, { status: 'Active', is_current_scan: true });
-            if (this.props.user.role === 'Operator' && _.isEmpty(activeOperators)) {
-                // remove stored data
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('st');
-                // Redirect to login
-                window.location.replace(configuration['root']);
-            } else {
-                this.props.updateActiveOperators(activeOperators);
-                this.setState({
-                    allOperators: _.filter(allOperators, scan => { return scan.is_current_scan && scan.reason !== 'Check-Out'; }),
-                    activeOperators
-                });
-            }
-        });
+            getResponseFromGeneric('get', API, '/get_scan', null, parameters, null, null).then(response => {
+                const allOperators = response || [];
+                const activeOperators = _.filter(allOperators, { status: 'Active', is_current_scan: true });
+                if (this.props.user.role === 'Operator' && _.isEmpty(activeOperators)) {
+                    // remove stored data
+                    localStorage.removeItem('accessToken');
+                    const st = localStorage.getItem('st');
+                    const newUrl = configuration['root'] + `?st=${st}&ln=${this.props.user.language}`;
+                    // Redirect to login
+                    window.location.href = newUrl;
+                } else {
+                    this.props.updateActiveOperators(activeOperators);
+                    this.setState({
+                        allOperators: _.filter(allOperators, scan => { return scan.is_current_scan && scan.reason !== 'Check-Out'; }),
+                        activeOperators
+                    });
+                }
+            });
+        }
     }
 
     openModal = (modal) => {
@@ -175,27 +178,29 @@ class OperatorComponent extends React.Component {
     render() {
         const props = this.props;
         const { t } = props;
-        const openSupervisorSignInModal = !props.user.assing_role && props.user.role === 'Supervisor';
+        const openSupervisorSignInModal = !props.user.assing_role && this.state.selectedAssetOption.is_multiple && props.user.role === 'Supervisor';
         return (
             <React.Fragment>
                 <Row className='d-flex justify-content-end operatorComponent'>
                     <Col md={3} lg={3}>
-                        {validPermission(props.user, 'operatorCheckOut', 'read') ?
+                        {validPermission(props.user, 'operatorCheckOut', 'read') && this.state.selectedAssetOption.is_multiple ?
                             <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('showCheckOutModal')}>
-                                {t('Checkout Operators')}
+                                {t('Check Out Operators')}
                             </Button>
                             : null}
-                        {this.props.isEditable ?
-                            <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check-In')}</Button>
+                        {this.props.isEditable && this.state.selectedAssetOption.is_multiple ?
+                            <Button className='btnOperator' variant='outline-primary' onClick={() => this.openModal('modal_validate_IsOpen')}>{t('New Operator Check In')}</Button>
                             : null}
-                        <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('modal_active_op_Is_Open')}>
-                            {t('Active Operators')}: {this.state.activeOperators.length}
-                        </Button>
+                        {this.state.selectedAssetOption.is_multiple ?
+                            <Button className='activeOp' variant='outline-primary' onClick={() => this.openModal('modal_active_op_Is_Open')}>
+                                {t('Active Operators')}: {this.state.activeOperators.length}
+                            </Button>
+                            : null}
                     </Col>
                 </Row>
                 <BadgeScannerModal
                     isOpen={this.state.modal_validate_IsOpen}
-                    modalTitle={'New Operator Check-In'}
+                    modalTitle={'New Operator Check In'}
                     inputText={'Please scan the badge to check-in the operator...'}
                     onRequestClose={this.closeModal}
                     t={t}

@@ -92,13 +92,13 @@ class ScrapModal extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         if (!_.isEqual(this.state.currentRow, prevState.currentRow)) {
             this.setState({ modal_loading_IsOpen: true }, () => {
-                this.loadResponsables(this.props);
+                this.loadResponsible(this.props);
                 this.loadData(this.props);
             });
         }
     }
 
-    loadResponsables(props) {
+    loadResponsible(props) {
         const selectedResponsible = _.find(this.state.responsibleOptions, { asset_code: this.props.selectedAssetOption.parent_asset_code });
         this.setState({ selectedResponsible });
     }
@@ -481,7 +481,7 @@ class ScrapModal extends React.Component {
                                     }
                                 </Col>
                                 <Col sm={6} md={6}>
-                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select Responsable Area')}:</p>
+                                    <p style={{ paddingBottom: '1px', marginBottom: '5px' }}>{t('Select Responsible Area')}:</p>
                                     <Form.Group controlId="formGridState">
                                         <ReactSelect
                                             value={this.state.selectedResponsible}

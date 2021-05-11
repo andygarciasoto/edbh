@@ -31,7 +31,7 @@ export class ShiftService {
         const shift_id = req.body.shift_id ? req.body.shift_id : null;
         const shift_code = req.body.shift_code ? req.body.shift_code : undefined;
         const shift_name = req.body.shift_name ? req.body.shift_name : undefined;
-        const shift_description = req.body.shift_description ? req.body.shift_description : null;
+        const shift_description = req.body.shift_description;
         const shift_sequence = req.body.shift_sequence ? req.body.shift_sequence : undefined;
         const start_time = req.body.start_time ? req.body.start_time : undefined;
         const start_time_offset_days = req.body.start_time_offset_days ? parseInt(req.body.start_time_offset_days) : 0;

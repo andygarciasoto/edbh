@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as UserActions from '../../redux/actions/userActions';
+import { Row } from "react-bootstrap";
 import CardComponent from '../CustomComponents/card';
 import '../../sass/SystemAdmin.scss';
 import UserTable from './User/userTable';
@@ -208,87 +209,88 @@ export class Administrator extends Component {
 		const t = this.props.t;
 		return (
 			<div id="administrator">
-				<CardComponent
-					className={'card-component'}
-					icon={UserIcon}
-					number={panelData.Users}
-					name={'Users'}
-					onClick={() => this.toggleData('userTable')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component common'}
-					icon={AssetsIcon}
-					number={panelData.Assets}
-					name={'Assets'}
-					onClick={() => this.toggleData('assets')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component assets'}
-					icon={ShiftsIcon}
-					number={panelData.Shifts}
-					name={'Shifts'}
-					onClick={() => this.toggleData('shifts')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component reason'}
-					icon={ReasonIcon}
-					number={panelData.DTReasons}
-					name={'Reason Codes'}
-					onClick={() => this.toggleData('reason')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component device'}
-					icon={DeviceIcon}
-					number={panelData.Tags}
-					name={'Device Tags'}
-					onClick={() => this.toggleData('device')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component shifts'}
-					icon={WorkIcon}
-					number={panelData.Workcells}
-					name={'Workcells'}
-					onClick={() => this.toggleData('workcells')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component uom'}
-					icon={UOMIcon}
-					number={panelData.UOM}
-					name={'UOM'}
-					onClick={() => this.toggleData('uom')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component break'}
-					icon={BreakIcon}
-					number={panelData.Unavailable}
-					name={'Break Schedule'}
-					onClick={() => this.toggleData('break')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component display'}
-					icon={DisplayIcon}
-					number={panelData.AssetDisplaySystems}
-					name={'Asset Displays'}
-					onClick={() => this.toggleData('display')}
-					t={t}
-				/>
-				<CardComponent
-					className={'card-component work'}
-					icon={CommonIcon}
-					number={null}
-					name={'Common Parameters'}
-					onClick={() => this.toggleData('commonParams')}
-					t={t}
-				/>
-
+				<Row>
+					<CardComponent
+						className={'card-component flex-modules'}
+						icon={UserIcon}
+						number={panelData.Users}
+						name={'Users'}
+						onClick={() => this.toggleData('userTable')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component common flex-modules'}
+						icon={AssetsIcon}
+						number={panelData.Assets}
+						name={'Assets'}
+						onClick={() => this.toggleData('assets')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component assets flex-modules'}
+						icon={ShiftsIcon}
+						number={panelData.Shifts}
+						name={'Shifts'}
+						onClick={() => this.toggleData('shifts')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component reason flex-modules'}
+						icon={ReasonIcon}
+						number={panelData.DTReasons}
+						name={'Reason Codes'}
+						onClick={() => this.toggleData('reason')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component device flex-modules'}
+						icon={DeviceIcon}
+						number={panelData.Tags}
+						name={'Device Tags'}
+						onClick={() => this.toggleData('device')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component shifts flex-modules'}
+						icon={WorkIcon}
+						number={panelData.Workcells}
+						name={'Workcells'}
+						onClick={() => this.toggleData('workcells')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component uom flex-modules'}
+						icon={UOMIcon}
+						number={panelData.UOM}
+						name={'UOM'}
+						onClick={() => this.toggleData('uom')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component break flex-modules'}
+						icon={BreakIcon}
+						number={panelData.Unavailable}
+						name={'Break Schedule'}
+						onClick={() => this.toggleData('break')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component display flex-modules'}
+						icon={DisplayIcon}
+						number={panelData.AssetDisplaySystems}
+						name={'Asset Displays'}
+						onClick={() => this.toggleData('display')}
+						t={t}
+					/>
+					<CardComponent
+						className={'card-component work flex-modules'}
+						icon={CommonIcon}
+						number={null}
+						name={'Common Parameters'}
+						onClick={() => this.toggleData('commonParams')}
+						t={t}
+					/>
+				</Row>
 				{this.state.userTable === true && <UserTable user={this.props.user} t={t} />}
 				{this.state.commonParams === true && <CommonParams user={this.props.user} t={t} />}
 				{this.state.assets === true && <Assets user={this.props.user} t={t} />}

@@ -14,7 +14,7 @@ export class ShiftRepository {
         return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Get_Shifts ${site}`);
     }
     public async putShifts(shift_id: number, shift_code: string, shift_name: string, shift_description: string, shift_sequence: number, start_time: string, start_time_offset_days: number, end_time: string, end_time_offset_days: number, duration_in_minutes: number, valid_from: string, is_first_shift_of_day: boolean, status: string, asset_id: number): Promise<any> {
-        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Shifts ${shift_id}, '${shift_code}', '${shift_name}', '${shift_description}', ${shift_sequence}, '${start_time}', ${start_time_offset_days}, '${end_time}', ${end_time_offset_days}, ${duration_in_minutes}, '${valid_from}', ${is_first_shift_of_day}, '${status}', ${asset_id}`);
+        return await this.sqlServerStore.ExecuteQuery(`exec dbo.spLocal_EY_DxH_Put_Shifts ${shift_id}, N'${shift_code}', N'${shift_name}', N'${shift_description}', ${shift_sequence}, '${start_time}', ${start_time_offset_days}, '${end_time}', ${end_time_offset_days}, ${duration_in_minutes}, '${valid_from}', ${is_first_shift_of_day}, '${status}', ${asset_id}`);
     }
     public async findShiftByFilter(parameters: any[]): Promise<any> {
         const query = `SELECT [S].[shift_id], [S].[shift_code],[S].[shift_name],[S].[shift_description], [S].[shift_sequence],

@@ -18,6 +18,6 @@
     [history_entered_by]       VARCHAR (100) NULL,
     [history_entered_on]       DATETIME      NULL,
     [history_entered_on_UTC]   DATETIME      NULL,
-    CONSTRAINT [PK_ProductionDataHistory_ProductionDataHistory_Id] PRIMARY KEY NONCLUSTERED ([productiondatahistory_id] ASC)
+    CONSTRAINT [PK_ProductionDataHistory_PDH_Id] PRIMARY KEY CLUSTERED ([productiondatahistory_id] ASC)
 );
 

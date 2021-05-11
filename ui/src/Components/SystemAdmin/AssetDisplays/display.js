@@ -1,131 +1,177 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as DisplayActions from "../../../redux/actions/displayActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddDisplay from "./addDisplay";
-import EditIcon from "../../../resources/u668.svg";
-
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as DisplayActions from '../../../redux/actions/displayActions';
+import Table from 'react-bootstrap/Table';
+import EditDisplay from './editDisplay';
+import Filter from '../../CustomComponents/filter';
+import AddDisplay from './addDisplay';
+import DisplayModal from './displayModal';
+import FontAwesome from 'react-fontawesome';
 
 class Display extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      DisplayData: [],
-      addDisplay: false,
-      editDisplay: false,
-      shift_id: 0,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			DisplayData: [],
+			addDisplay: false,
+			editDisplay: false,
+			display_id: 0,
+			statusFilter: 'Active',
+			display: {},
+			action: '',
+			showDisplayModal: false
+		};
+	}
 
-    componentDidMount() {
-      const { actions } = this.props;
+	componentDidMount() {
+		this.loadData();
+	}
 
-      return actions.getDisplay(this.props.user.site).then((response) => {
-        this.setState({
-          DisplayData: response,
-        });
-      });
-    }
+	loadData = () => {
+		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-  showAddDisplay = () => {
-    this.setState({
-      addDisplay: true,
-    });
-  };
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
 
-  closeAddDisplay = () => {
-    this.setState({
-      addDisplay: false,
-    });
-  };
+		return actions.getDisplayFilter(params).then((response) => {
+			this.setState({
+				DisplayData: response,
+			});
+		});
+	};
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+	showAddDisplay = () => {
+		this.setState({
+			addDisplay: true,
+		});
+	};
 
-  render() {
-    const t = this.props.t;
+	closeAddDisplay = () => {
+		this.setState({
+			addDisplay: false,
+		});
+	};
 
-    return (
-      <div>
-        <Filter
-          className="filter-user"
-          buttonName={"+ Asset Display"}
-          buttonFilter={"Search"}
-          role={false}
-          newClass={false}
-          level={false}
-          automatedLevel={false}
-          category={false}
-          type={false}
-          shifts={false}
-          onClick={() => this.showAddDisplay()}
-          t={t}
-        ></Filter>
-        {this.state.addDisplay === true && (
-          <AddDisplay
-            user={this.props.user}
-            showForm={this.state.addDisplay}
-            t={t}
+	showEditDisplay = (display_id) => {
+		this.setState({
+			editDisplay: true,
+			display_id: display_id,
+		});
+	};
 
-            closeForm={this.closeAddDisplay}
-          />
-        )}
-        {/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Asset</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.DisplayData.map((display, index) => (
-              <tr key={index}>
-                <td>{display.displaysystem_name}</td>
-                <td>{display.asset_code}</td>
-                <td>{display.status}</td>
-                <td>
-                  {/* <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(display.shift_id)}
-                  /> */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+	closeEditDisplay = () => {
+		this.setState({
+			editDisplay: false,
+		});
+	};
+
+	showDisplayModal = (display, action) => {
+		this.setState({
+			display,
+			action,
+			showDisplayModal: true
+		})
+	}
+
+	closeDisplayModal = () => {
+		this.setState({
+			display: {},
+			action: '',
+			showDisplayModal: false
+		})
+	}
+
+	render() {
+		const t = this.props.t;
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ ' + t('Asset Display')}
+					role={false}
+					newClass={false}
+					level={false}
+					automatedLevel={false}
+					category={false}
+					type={false}
+					shifts={false}
+					onClick={() => this.showAddDisplay()}
+					onClickFilter={this.applyFilter}
+					view={'Display'}
+					t={t}
+				/>
+				{this.state.addDisplay === true && (
+					<AddDisplay
+						user={this.props.user}
+						showForm={this.state.addDisplay}
+						t={t}
+						closeForm={this.closeAddDisplay}
+						action='Create'
+						Refresh={this.loadData}
+					/>
+				)}
+				{this.state.editDisplay === true && (
+					<EditDisplay
+						user={this.props.user}
+						showForm={this.state.editDisplay}
+						closeForm={this.closeEditDisplay}
+						display_id={this.state.display_id}
+						action='Edit'
+						Refresh={this.loadData}
+						t={t}
+					/>
+				)}
+				<DisplayModal
+					user={this.props.user}
+					isOpen={this.state.showDisplayModal}
+					display={this.state.display}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeDisplayModal}
+					t={t}
+				/>
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th>{t('Name')}</th>
+							<th>{t('Asset')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.DisplayData.map((display, index) => (
+							<tr key={index}>
+								<td>{display.displaysystem_name}</td>
+								<td>{display.asset_code}</td>
+								<td>{display.status}</td>
+								<td>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showEditDisplay(display.assetdisplaysystem_id)} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showDisplayModal(display, 'Copy')} />
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(DisplayActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(DisplayActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Display);

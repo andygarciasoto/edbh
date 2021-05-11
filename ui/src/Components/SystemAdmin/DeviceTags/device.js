@@ -1,144 +1,132 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as ShiftActions from "../../../redux/actions/shiftsActions";
-import Table from "react-bootstrap/Table";
-import Filter from "../../CustomComponents/filter";
-import AddTag from "./addDevice";
-
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as TagActions from '../../../redux/actions/tagActions';
+import Table from 'react-bootstrap/Table';
+import Filter from '../../CustomComponents/filter';
+import TagModal from './tagModal';
+import FontAwesome from 'react-fontawesome';
 
 class Device extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ShiftData: [],
-      addTag: false,
-      editShift: false,
-      shift_id: 0,
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			TagsData: [],
+			addTag: false,
+			editTag: false,
+			tag_id: 0,
+			statusFilter: 'Active',
+			tag: {},
+			action: '',
+			showTagModal: false
+		};
+	}
 
-  //   componentDidMount() {
-  //     const { actions } = this.props;
+	componentDidMount() {
+		this.loadData();
+	}
 
-  //     return actions.getShifts(this.props.user.site).then((response) => {
-  //       this.setState({
-  //         ShiftData: response,
-  //       });
-  //     });
-  //   }
+	loadData = () => {
+		const { actions } = this.props;
+		const { statusFilter } = this.state;
 
-  showAddTag = () => {
-    this.setState({
-      addTag: true,
-    });
-  };
+		const params = {
+			site_id: this.props.user.site,
+			status: statusFilter
+		}
 
-  closeAddTag = () => {
-    this.setState({
-      addTag: false,
-    });
-  };
+		return actions.getTagsFilter(params).then((response) => {
+			this.setState({
+				TagsData: response,
+			});
+		});
+	};
 
-  //   showEditShift = (shift_id) => {
-  //     this.setState({
-  //       editShift: true,
-  //       shift_id: shift_id
-  //     });
-  //   };
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
-  //   closeEditShift = () => {
-  //     this.setState({
-  //         editShift: false,
-  //     });
-  //   };
+	showTagModal = (tag, action) => {
+		this.setState({
+			tag,
+			action,
+			showTagModal: true
+		})
+	}
 
-  render() {
-    const t = this.props.t;
-    return (
-      <div>
-        <Filter
-          className="filter-user"
-          buttonName={"+ Tag"}
-          buttonFilter={"Search"}
-          role={false}
-          newClass={false}
-          level={false}
-          automatedLevel={false}
-          category={false}
-          type={false}
-          onClick={() => this.showAddTag()}
-          t={t}
-        ></Filter>
-        {this.state.addTag === true && (
-          <AddTag
-            user={this.props.user}
-            showForm={this.state.addTag}
-            closeForm={this.closeAddTag}
-          />
-        )}
-        {/* {this.state.editShift === true && (
-          <EditShift
-            user={this.props.user}
-            showForm={this.state.editShift}
-            closeForm={this.closeEditShift}
-            shift_id={this.state.shift_id}
-          />
-        )} */}
-        <Table responsive="sm" bordered={true}>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Tag Group</th>
-              <th>Data Type</th>
-              <th>Tag Type</th>
-              <th>UOM code</th>
-              <th>Rollover Point</th>
-              <th>Aggregation</th>
-              <th>Max Change</th>
-              <th>Asset</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.ShiftData.map((shift, index) => (
-              <tr key={index}>
-                <td>{shift.shift_name}</td>
-                <td>{shift.shift_description}</td>
-                <td>{shift.shift_sequence}</td>
-                <td>{moment(shift.start_time).format("HH:mm A")}</td>
-                <td>{shift.start_time_offset_days === -1 ? "Yesterday" : shift.start_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{moment(shift.end_time).format("HH:mm A")}</td>
-                <td>{shift.end_time_offset_days === -1 ? "Yesterday" : shift.end_time_offset_days === 0 ? "Today" : "Tomorrow"}</td>
-                <td>{shift.duration_in_minutes}</td>
-                <td>{shift.is_first_shift_of_day === true ? "Yes" : "No"}</td>
-                <td>{shift.status}</td>
-                <td>
-                  <img
-                    src={EditIcon}
-                    alt={`edit-icon`}
-                    className="icon"
-                    onClick={() => this.showEditShift(shift.shift_id)}
-                  />
-                </td>
-              </tr>
-            ))} */}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+	closeTagModal = () => {
+		this.setState({
+			tag: {},
+			action: '',
+			showTagModal: false
+		})
+	}
+
+	render() {
+		const t = this.props.t;
+		return (
+			<div>
+				<Filter
+					className="filter-user"
+					buttonName={'+ ' + t('Tag')}
+					role={false}
+					newClass={false}
+					level={false}
+					automatedLevel={false}
+					category={false}
+					type={false}
+					onClick={() => this.showTagModal({}, 'Create')}
+					onClickFilter={this.applyFilter}
+					view={'Tag'}
+					t={t}
+				/>
+				<TagModal
+					user={this.props.user}
+					isOpen={this.state.showTagModal}
+					tag={this.state.tag}
+					action={this.state.action}
+					Refresh={this.loadData}
+					handleClose={this.closeTagModal}
+					t={t}
+				/>
+				<Table responsive="sm" bordered={true}>
+					<thead>
+						<tr>
+							<th style={{ maxWidth: '300px' }}>{t('Tag Name')}</th>
+							<th>{t('Description')}</th>
+							<th>{t('UOM Code')}</th>
+							<th>{t('Asset')}</th>
+							<th>{t('Status')}</th>
+							<th>{t('Actions')}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.TagsData.map((tag, index) => (
+							<tr key={index}>
+								<td style={{ maxWidth: '300px', wordWrap: 'break-word' }}>{tag.tag_name}</td>
+								<td>{tag.tag_description}</td>
+								<td>{tag.UOM_code}</td>
+								<td>{tag.asset_code}</td>
+								<td>{tag.status}</td>
+								<td>
+									<FontAwesome name='edit fa-2x' onClick={() => this.showTagModal(tag, 'Update')} />
+									<FontAwesome name='copy fa-2x' onClick={() => this.showTagModal(tag, 'Copy')} />
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</Table>
+			</div>
+		);
+	}
 }
 
-
 export const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(ShiftActions, dispatch),
-  };
+	return {
+		actions: bindActionCreators(TagActions, dispatch),
+	};
 };
 
 export default connect(null, mapDispatch)(Device);
-

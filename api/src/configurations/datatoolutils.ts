@@ -23,7 +23,8 @@ export let headers = {
         { header: 'grouping5', type: 'VARCHAR', key: 'grouping5', width: 10 },
         { header: 'status', type: 'VARCHAR', key: 'status' },
         { header: 'target_percent_of_ideal', type: 'FLOAT', key: 'target_percent_of_ideal', width: 28 },
-        { header: 'is_multiple', type: 'BIT', key: 'is_multiple', width: 20 }
+        { header: 'is_multiple', type: 'BIT', key: 'is_multiple', width: 20 },
+        { header: 'is_dynamic', type: 'BIT', key: 'is_dynamic', width: 20 }
     ],
     AssetDisplaySystem: [
         { header: 'displaysystem_name', type: 'VARCHAR', key: 'displaysystem_name', width: 25 },
@@ -95,7 +96,8 @@ export let headers = {
         { header: 'break_minutes', type: 'FLOAT', key: 'break_minutes', width: 17 },
         { header: 'lunch_minutes', type: 'FLOAT', key: 'lunch_minutes', width: 17 },
         { header: 'site_prefix', type: 'VARCHAR', key: 'site_prefix', width: 17 },
-        { header: 'assembly_url', type: 'VARCHAR', key: 'assembly_url', width: 17 }
+        { header: 'assembly_url', type: 'VARCHAR', key: 'assembly_url', width: 17 },
+        { header: 'escalation_group', type: 'VARCHAR', key: 'escalation_group', width: 20 }
 
     ],
     Unavailable: [
@@ -120,6 +122,13 @@ export let headers = {
         { header: 'site_code', type: 'VARCHAR', key: 'site_code', width: 14 },
         { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 18 },
         { header: 'status', type: 'VARCHAR', key: 'status', width: 14 },
+    ],
+    Escalation: [
+        { header: 'escalation_name', type: 'VARCHAR', key: 'escalation_name', width: 16 },
+        { header: 'escalation_group', type: 'VARCHAR', key: 'escalation_group', width: 27 },
+        { header: 'escalation_level', type: 'INT', key: 'escalation_level', width: 14 },
+        { header: 'escalation_hours', type: 'INT', key: 'escalation_hours', width: 16 },
+        { header: 'status', type: 'VARCHAR', key: 'status', width: 16 }
     ]
 };
 
@@ -140,8 +149,14 @@ export function getColumns(tableName) {
             }
             return column;
         case 'Unavailable':
-            for (let val of headers.Tag) {
+            for (let val of headers.Unavailable) {
                 column.push(headers.Unavailable[cont].header);
+                cont++;
+            }
+            return column;
+        case 'Escalation':
+            for (let val of headers.Escalation) {
+                column.push(headers.Escalation[cont].header);
                 cont++;
             }
             return column;
@@ -168,7 +183,7 @@ export function getParametersOfTable(tableName, siteId) {
             break;
         case 'Asset':
             parametersObject.extraColumns = ', w.workcell_id';
-            parametersObject.joinSentence = `INNER JOIN dbo.Asset a ON a.asset_code = s.site_code
+            parametersObject.joinSentence = `LEFT JOIN dbo.Asset a ON a.asset_code = s.site_code
             LEFT JOIN dbo.Workcell w ON s.grouping1 = w.workcell_name AND A.asset_id = w.site_id`;
             parametersObject.matchParameters = 's.asset_code = t.asset_code AND s.site_code = t.site_code AND s.asset_name = t.asset_name';
             parametersObject.updateSentence = `t.[asset_name] = s.[asset_name], t.[asset_description] = s.[asset_description], 
@@ -176,13 +191,13 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[automation_level] = s.[automation_level], t.[include_in_escalation] = s.[include_in_escalation], t.[grouping1] = s.[workcell_id], 
                 t.[grouping2] = s.[grouping2], t.[grouping3] = s.[grouping3], t.[grouping4] = s.[grouping4], t.[grouping5] = s.[grouping5], 
                 t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
-                t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple]`;
+                t.[target_percent_of_ideal] = s.[target_percent_of_ideal], t.[is_multiple] = s.[is_multiple], t.[is_dynamic] = s.[is_dynamic]`;
             parametersObject.insertSentence = `([asset_code], [asset_name], [asset_description], [asset_level], [site_code], [parent_asset_code], 
                 [value_stream], [automation_level], [include_in_escalation], [grouping1], [grouping2], [grouping3], [grouping4], [grouping5], [status], 
-                [entered_by], [last_modified_by], [target_percent_of_ideal],[is_multiple]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
+                [entered_by], [last_modified_by], [target_percent_of_ideal],[is_multiple],[is_dynamic]) VALUES (s.[asset_code], s.[asset_name], s.[asset_description], 
                 s.[asset_level], s.[site_code], s.[parent_asset_code], s.[value_stream], s.[automation_level], s.[include_in_escalation], s.[workcell_id], 
                 s.[grouping2], s.[grouping3], s.[grouping4], s.[grouping5], s.[status], 'Administration Tool', 'Administration Tool', 
-                s.[target_percent_of_ideal], s.[is_multiple])`;
+                s.[target_percent_of_ideal], s.[is_multiple], s.[is_dynamic])`;
             break;
         case 'AssetDisplaySystem':
             parametersObject.extraColumns = ', a.asset_id, a2.asset_id as site_id';
@@ -195,10 +210,11 @@ export function getParametersOfTable(tableName, siteId) {
                 VALUES (s.[displaysystem_name], s.[status], 'Administration Tool', 'Administration Tool', s.[asset_id])`
             break;
         case 'DTReason':
-            parametersObject.extraColumns = ', h.asset_id, a2.asset_id as site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code OUTER APPLY [dbo].[AssetsResolverFromId] 
-                (a.asset_id, CASE WHEN (a.asset_level='Area' or a.asset_level='Site') then 3 else 0 end ) as H JOIN dbo.Asset a2 ON 
-                a.site_code = a2.asset_code`;
+            parametersObject.extraColumns = ', h.asset_id, ASite.asset_id as site_id';
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset AS A ON S.asset_code = A.asset_code AND S.site_code = A.site_code
+                INNER JOIN dbo.Asset AS ASite ON S.site_code = ASite.asset_code AND ASite.asset_level = 'Site'
+                OUTER APPLY [dbo].[AssetsResolverFromId] (A.asset_id, CASE WHEN A.asset_level='Site' THEN 2 WHEN A.asset_level= 'Area' THEN 1 ELSE 0 END) as H
+                INNER JOIN dbo.Asset AS FA ON FA.asset_id = H.asset_id AND FA.asset_level = 'Cell' AND FA.status = 'Active'`;
             parametersObject.matchParameters = 's.dtreason_code = t.dtreason_code AND s.asset_id = t.asset_id';
             parametersObject.updateSentence = `t.[dtreason_name] = s.[dtreason_name], t.[dtreason_description] = s.[dtreason_description], 
                 t.[dtreason_category] = s.[dtreason_category], t.[reason1] = s.[reason1], t.[reason2] = s.[reason2], t.[status] = s.[status], 
@@ -261,19 +277,21 @@ export function getParametersOfTable(tableName, siteId) {
                 t.[default_setup_minutes] = s.[default_setup_minutes], t.[default_routed_cycle_time] = s.[default_routed_cycle_time], 
                 t.[status] = s.[status], t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE(), 
                 t.[summary_timeout] = s.[summary_timeout], t.[break_minutes] = s.[break_minutes], t.[lunch_minutes] = s.[lunch_minutes],
-                t.[site_prefix] = s.[site_prefix], t.[assembly_url] = s.[assembly_url]`;
+                t.[site_prefix] = s.[site_prefix], t.[assembly_url] = s.[assembly_url], t.[escalation_group] = s.[escalation_group]`;
             parametersObject.insertSentence = `([site_id], [site_name], [production_day_offset_minutes], [language_id], [timezone_id],
                 [default_target_percent_of_ideal], [default_setup_minutes], 
                 [default_routed_cycle_time], [status], [entered_by], [last_modified_by], [summary_timeout],
-                [break_minutes], [lunch_minutes], [site_prefix], [assembly_url]) 
+                [break_minutes], [lunch_minutes], [site_prefix], [assembly_url], [escalation_group]) 
                 VALUES (s.[site_id], s.[site_name], s.[production_day_offset_minutes], s.[language_id], s.[timezone_id],
-                s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[language], s.[status], 'Administration Tool',
-                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url])`;
+                s.[default_target_percent_of_ideal], s.[default_setup_minutes], s.[default_routed_cycle_time], s.[status], 'Administration Tool',
+                'Administration Tool', s.[summary_timeout], s.[break_minutes], s.[lunch_minutes], s.[site_prefix], s.[assembly_url], s.[escalation_group])`;
             break;
         case 'Unavailable':
-            parametersObject.extraColumns = ', a.asset_id, aas.asset_id AS site_id';
-            parametersObject.joinSentence = `JOIN dbo.Asset a ON s.asset_code = a.asset_code JOIN dbo.Asset aas ON s.site_code = aas.asset_code AND 
-                aas.asset_level = 'Site'`;
+            parametersObject.extraColumns = ', H.asset_id, ASite.asset_id AS site_id';
+            parametersObject.joinSentence = `INNER JOIN dbo.Asset AS A ON S.asset_code = A.asset_code AND S.site_code = A.site_code
+                INNER JOIN dbo.Asset AS ASite ON S.site_code = ASite.asset_code AND ASite.asset_level = 'Site'
+                OUTER APPLY [dbo].[AssetsResolverFromId] (A.asset_id, CASE WHEN A.asset_level='Site' THEN 2 WHEN A.asset_level= 'Area' THEN 1 ELSE 0 END) as H
+                INNER JOIN dbo.Asset AS FA ON FA.asset_id = H.asset_id AND FA.asset_level = 'Cell' AND FA.status = 'Active'`;
             parametersObject.matchParameters = 's.unavailable_code = t.unavailable_code AND s.asset_id = t.asset_id AND s.site_id = t.site_id';
             parametersObject.updateSentence = `t.[unavailable_name] = s.[unavailable_name], t.[unavailable_description] = s.[unavailable_description], 
                 t.[start_time] = s.[start_time], t.[end_time] = s.[end_time], t.[duration_in_minutes] = s.[duration_in_minutes], 
@@ -296,6 +314,15 @@ export function getParametersOfTable(tableName, siteId) {
             parametersObject.insertSentence = `([Badge], [Username], [First_Name], [Last_Name], [role_id], [Site], [escalation_id], [status]) VALUES (s.[Badge], s.[Username], 
                 s.[First_Name], s.[Last_Name], s.[role_id], s.[Site], s.[escalation_id], s.[status])`;
             break;
+        case 'Escalation':
+            parametersObject.extraColumns = '';
+            parametersObject.joinSentence = '';
+            parametersObject.matchParameters = `s.escalation_group = t.escalation_group AND s.escalation_level = t.escalation_level`;
+            parametersObject.updateSentence = `t.[escalation_name] = s.[escalation_name], t.[escalation_hours] = s.[escalation_hours], t.[status] = s.[status], 
+                    t.[last_modified_by] = 'Administration Tool', t.[last_modified_on] = GETDATE()`;
+            parametersObject.insertSentence = `([escalation_name], [escalation_group], [escalation_level], [escalation_hours], [status], [entered_by], [last_modified_by]) 
+                    VALUES (s.[escalation_name], s.[escalation_group], s.[escalation_level], s.[escalation_hours], s.[status], 'Administration Tool', 'Administration Tool')`;
+            break;
     }
     return parametersObject;
 }
@@ -312,7 +339,7 @@ export function getValuesFromHeaderTable(headers, header, value) {
                 newValue = `'${value}'`;
                 break;
             case 'TIME':
-                value = new Date(value).toISOString();
+                value = new Date('1970-01-01 ' + value).toISOString();
                 value = value.substring(11, 19);
                 newValue = `'${value}'`;
                 break;
