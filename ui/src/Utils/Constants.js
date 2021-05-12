@@ -11,10 +11,10 @@
 
 
 //public app
-export const API = 'https://dxhwebtest.azurewebsites.net/api';
-export const AUTH = 'https://dxhwebtest.azurewebsites.net/auth';
-export const DATATOOL = 'https://dxhwebtest.azurewebsites.net/datatool';
-export const SOCKET = 'https://dxhwebtest.azurewebsites.net';
+export const API = 'https://dxhapitest.azurewebsites.net/api';
+export const AUTH = 'https://dxhapitest.azurewebsites.net/auth';
+export const DATATOOL = 'https://dxhapitest.azurewebsites.net/datatool';
+export const SOCKET = 'https://dxhapitest.azurewebsites.net';
 
 //private Test
 // export const API = 'https://edxhapitst.us.parker.corp/api';
