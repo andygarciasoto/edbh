@@ -1,3 +1,6 @@
+.activeModal .modal-dialog {
+  max-width: 50%; }
+
 .actualModal .modal-dialog {
   max-width: 20%; }
 
@@ -30,6 +33,42 @@
   color: white;
   background-color: #b80600;
   border-color: #b80600; }
+
+.escalation_inital {
+  color: #ffe600; }
+
+.escalation_warning {
+  color: darkorange; }
+
+.escalation_danger {
+  color: #b80600; }
+
+.escalation_icon_inital,
+.escalation_icon_warning {
+  animation: blinker 1s step-end infinite alternate; }
+
+.escalation_icon_danger {
+  animation: blinker .5s step-end infinite alternate; }
+
+@keyframes blinker {
+  50% {
+    color: white; } }
+
+.border_escalation_inital {
+  border: 8px solid #ffe600;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_warning {
+  border: 8px solid darkorange;
+  animation: blinker2 1s step-end infinite alternate; }
+
+.border_escalation_danger {
+  border: 8px solid #b80600;
+  animation: blinker2 .5s step-end infinite alternate; }
+
+@keyframes blinker2 {
+  50% {
+    border-color: white; } }
 
 .barcodeScannerModal {
   background-color: rgba(0, 0, 0, 0.3); }
@@ -65,7 +104,7 @@
 
 .table-click:hover {
   cursor: pointer;
-  color: #ffb91d; }
+  color: #ffe600; }
 
 .wordwrap {
   white-space: pre-line !important;
@@ -86,10 +125,10 @@
   padding: 5px 30px 5px 30px; }
 
 .ideal:hover {
-  color: #ffb91d !important;
+  color: #ffe600 !important;
   cursor: pointer; }
   .ideal:hover * {
-    color: #ffb91d !important; }
+    color: #ffe600 !important; }
 
 .signoff-reminder-true {
   color: #b80600;
@@ -123,18 +162,11 @@
   font-weight: bold;
   font-size: large; }
 
-.escalateBlink {
-  border: 2px solid #ffb91d;
-  animation: blink2 .5s step-end infinite alternate; }
-
-@keyframes blink2 {
-  50% {
-    border-color: #b80600; } }
-
 .previousHours .col {
   max-width: 1px;
   min-height: 20px;
-  margin-right: 2%; }
+  margin-right: 2%;
+  margin-bottom: 2%; }
 
 .green {
   background-color: green; }
@@ -158,11 +190,14 @@
   align-items: center;
   justify-content: center; }
 
+.childrenCupDiv:hover {
+  cursor: pointer; }
+
 a {
-  color: #ffb91d; }
+  color: #ffe600; }
 
 a:hover {
-  color: #ffb91d;
+  color: #ffe600;
   text-decoration: none;
   background-color: #515151; }
 
@@ -174,12 +209,11 @@ a:hover {
   padding-left: 15px; }
 
 .navbar-light .navbar-toggler {
-  background-color: #ffb91d;
-  border-color: #ffb91d; }
+  background-color: #ffe600;
+  border-color: #ffe600; }
 
 .App-logo-header {
-  height: 90%;
-  width: auto; }
+  width: 13%; }
 
 .mega-menu-wrapper {
   padding: 30px; }
@@ -221,11 +255,11 @@ a:hover {
   color: white; }
 
 .mega-menu-children {
-  color: #ffb91d; }
+  color: #ffe600; }
 
 .query-button {
-  color: #353535;
-  border: solid 1px #353535; }
+  color: #333333;
+  border: solid 1px #333333; }
 
 .machine-picker-button .dropdown-toggle::after {
   margin-left: 6%;
@@ -265,7 +299,7 @@ a:hover {
 
 .intershift-read-more:hover {
   cursor: pointer;
-  color: #ffb91d; }
+  color: #ffe600; }
 
 .intershift-comment div {
   overflow: hidden;
@@ -343,8 +377,8 @@ a:hover {
   margin-bottom: 1%; }
 
 #semi-button-deck {
-  background-color: #ffb91d;
-  color: #353535;
+  background-color: #ffe600;
+  color: #333333;
   padding-left: 3%;
   padding-right: 3%;
   padding-bottom: 5px; }
@@ -356,14 +390,16 @@ a:hover {
   font-size: 1.4em; }
 
 #previous-shift,
+#next-shift,
 #current-shift {
   text-decoration: underline;
   padding: 8px 8px 8px 5px;
   margin-bottom: 5px !important; }
 
 #previous-shift:hover,
+#next-shift:hover,
 #current-shift:hover {
-  background-color: #cf9903;
+  background-color: #ffff99;
   cursor: pointer; }
 
 .icon-arrow:hover {
@@ -550,4 +586,5 @@ a:hover {
   height: 100px;
   width: 200px;
   font-weight: bold;
-  font-size: medium; }
+  font-size: medium;
+  white-space: normal; }
