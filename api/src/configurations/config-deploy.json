@@ -81,6 +81,26 @@
     "client_id": "773c82d8-4a87-488b-80f1-f6d955f5f62e",
     "secret": "tgnY6?j1.-mg-21-NA_CLgbRR7.Ut5.o",
     "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127",
-    "appInsights": "385f0d4a-b80b-466d-82c1-2258b5d5c03e"
+    "appInsights": "385f0d4a-b80b-466d-82c1-2258b5d5c03e",
 
+    "user": "eytech",
+    "password": "?D;}yzpA@Z7xM.G9",
+    "server": "euwdsrg02kasqlsrv01.database.windows.net",
+    "database": "euwdsrg02kadb01",
+    "port": 8080,
+    "prefix": "/",
+    "service_name": "eDBH Service NSIH API",
+    "cors": ["https://euwdsrg02krsg01app02.azurewebsites.net","https://euwdsrg02krsg01app01.azurewebsites.net"],
+    "redirect_uri": "https://euwdsrg02krsg01app02.azurewebsites.net/auth/token",
+    "timezone": "MST",
+    "URL": "https://euwdsrg02krsg01app01.azurewebsites.net",
+    "badLogin": "https://euwdsrg02krsg01app01.azurewebsites.net?err=true",
+    "badLoginUser": "https://euwdsrg02krsg01app01.azurewebsites.net/login?err=true",
+    "loginURL": "https://euwdsrg02krsg01app01.azurewebsites.net/dashboard",
+    "signingKey": "JhbGciOiJSUzI1NiJ9",
+    "app_reg_name": "PHIOTFCGFOTFDev",
+    "client_id": "50d83ea6-5d1b-4f96-b6a0-684e41e4d9b7",
+    "secret": "Q-x/Sglut50sf8Kd*-icFWfXYMzVgH0F",
+    "tenant_id": "b5da5f35-6442-4f5a-9622-92ec6a535127",
+    "appInsights": "4fd470bc-86cd-4558-86e3-74371a00bc3c"
 }

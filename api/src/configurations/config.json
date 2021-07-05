@@ -1,24 +1,24 @@
 {
     "sql_section": {
-        "user": "parkeradmin",
-        "password": "VFM9rqSkunX4pFPm",
-        "server": "parker-ctpdev-test.database.windows.net",
-        "database": "FCGFOTF"
+        "user": "eytech",
+        "password": "?D;}yzpA@Z7xM.G9",
+        "server": "euwdsrg02kasqlsrv01.database.windows.net",
+        "database": "euwdsrg02kadb01"
     },
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "Dxh Service Demo API",
+        "service_name": "eDBH Service NSIH API",
         "cors": [
-            "https://dxhapitest.azurewebsites.net",
-            "https://dxhwebtest.azurewebsites.net"
+            "https://euwdsrg02krsg01app02.azurewebsites.net",
+            "https://euwdsrg02krsg01app01.azurewebsites.net"
         ],
-        "redirect_uri": "https://dxhapitest.azurewebsites.net/auth/token",
+        "redirect_uri": "https://euwdsrg02krsg01app02.azurewebsites.net/auth/token",
         "timezone": "MST",
-        "URL": "https://dxhwebtest.azurewebsites.net",
-        "badLogin": "https://dxhwebtest.azurewebsites.net?err=true",
-        "badLoginUser": "https://dxhwebtest.azurewebsites.net/login?err=true",
-        "loginURL": "https://dxhwebtest.azurewebsites.net/dashboard"
+        "URL": "https://euwdsrg02krsg01app01.azurewebsites.net",
+        "badLogin": "https://euwdsrg02krsg01app01.azurewebsites.net?err=true",
+        "badLoginUser": "https://euwdsrg02krsg01app01.azurewebsites.net/login?err=true",
+        "loginURL": "https://euwdsrg02krsg01app01.azurewebsites.net/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
