@@ -306,7 +306,8 @@ export function getParametersOfTable(tableName, siteId) {
         case 'TFDUsers':
             parametersObject.extraColumns = ', a.asset_id as Site, E.escalation_id as escalation_id, R.role_id as role_id';
             parametersObject.joinSentence = `JOIN dbo.Asset a ON s.site_code = a.asset_code AND a.asset_level = 'Site'
-                LEFT JOIN dbo.Escalation E ON s.escalation_name = E.escalation_name
+                JOIN dbo.CommonParameters C ON A.asset_id = C.site_id AND C.status = 'Active'
+                LEFT JOIN dbo.Escalation E ON s.escalation_name = E.escalation_name AND C.escalation_group = E.escalation_group
                 JOIN dbo.Role R ON s.Role = R.name`;
             parametersObject.matchParameters = 's.Badge = t.Badge AND s.Site = t.Site';
             parametersObject.updateSentence = `t.[Badge] = s.[Badge], t.[Username] = s.[Username], t.[First_Name] = s.[First_Name], 

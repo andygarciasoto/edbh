@@ -375,20 +375,7 @@ const helpers = {
                 newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') &&
                     isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone) &&
                     currentRow.current_order_id;
-
-                if (modalType === 'supervisor_signoff' && !_.isEmpty(this.state.actualEscalation)) {
-                    if (this.props.user.escalation_level !== this.state.actualEscalation.escalation_level) {
-                        this.setState({
-                            modal_message_Is_Open: true,
-                            modal_type: 'Error',
-                            modal_message: 'Escalation level not reached. Please add ' + this.state.actualEscalation.escalation_name + ' signoff.'
-                        });
-                    } else {
-                        this.setState(Object.assign(newModalProps));
-                    }
-                } else {
-                    this.setState(Object.assign(newModalProps));
-                }
+                this.setState(Object.assign(newModalProps));
 
             }
 

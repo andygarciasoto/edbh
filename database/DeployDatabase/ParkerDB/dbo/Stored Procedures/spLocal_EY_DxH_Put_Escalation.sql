@@ -3,7 +3,7 @@
 /****** Object:  StoredProcedure [dbo].[spLocal_EY_DxH_Put_Escalation]    Script Date: 31/12/2020 09:35:04 ******/
 
 -- Example Call:
--- exec spLocal_EY_DxH_Put_Escalation 'Site Manager', 'Group 2', 1, 2
+-- exec spLocal_EY_DxH_Put_Escalation 'Front Line Manager', 'Group 2', 1, 2
 
 CREATE PROCEDURE [dbo].[spLocal_EY_DxH_Put_Escalation] 
 	@escalation_id		AS INT,

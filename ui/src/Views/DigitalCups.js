@@ -5,7 +5,7 @@ import Spinner from '../Components/Common/Spinner';
 import { API } from '../Utils/Constants';
 import { Row } from 'react-bootstrap';
 import { getResponseFromGeneric, getCurrentTime, formatDate } from '../Utils/Requests';
-import { getStartEndDateTime } from '../Utils/Utils';
+import { getStartEndDateTime, GetShiftProductionDayFromSiteAndDate } from '../Utils/Utils';
 import _ from 'lodash';
 import moment from 'moment-timezone';
 import '../sass/DigitalCups.scss';
@@ -72,14 +72,26 @@ class DigitalCups extends React.Component {
     }
 
     async loadData() {
+        let actual_date, actual_shift;
+        const { shift_name, production_day } = GetShiftProductionDayFromSiteAndDate(this.props.user);
+
+        if (_.isEmpty(this.props.search) || this.props.search.dt === undefined) {
+            actual_date = production_day.format('YYYY/MM/DD HH:mm') !== this.state.selectedDate ? production_day.format('YYYY/MM/DD HH:mm') : this.state.selectedDate;
+            actual_shift = shift_name !== this.state.selectedShift ? shift_name : this.state.selectedShift;
+        } else {
+            actual_date = this.state.selectedDate;
+            actual_shift = this.state.selectedShift;
+        }
+
         const selectedLevelDC = this.state.selectedLevelDC;
-        const { start_date_time, end_date_time } = getStartEndDateTime(this.state.selectedDate, this.state.selectedShift, this.props.user, true);
+        //const { start_date_time, end_date_time } = getStartEndDateTime(this.state.selectedDate, this.state.selectedShift, this.props.user, true);
+        const { start_date_time, end_date_time } = getStartEndDateTime(actual_date, actual_shift, this.props.user, true);
         const asset = {
             start_time: start_date_time,
             end_time: end_date_time,
             asset_id: selectedLevelDC === 'Area' ? this.state.selectedAssetDC : this.props.user.site,
             aggregation: selectedLevelDC === 'Area' ? 1 : 2,
-            production_day: this.state.selectedDate
+            production_day: actual_date
         };
         let assetList = await getResponseFromGeneric('get', API, '/digital_cups', {}, asset, {}) || [];
         if (selectedLevelDC === 'value_stream' || selectedLevelDC === 'workcell_name') {
@@ -94,9 +106,10 @@ class DigitalCups extends React.Component {
                 .map((value, key) => {
                     const childrenLength = value.length;
                     const actualHour = value[childrenLength - 1];
+                    const previousHour = value[childrenLength - 2] || {};
                     let sequentialRed = 0;
                     let actualEscalation = {};
-
+                
                     if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
                         _.forEach(value, row => {
                             if (currentDatetime.isAfter(moment.tz(row.end_time, this.props.user.timezone))) {
@@ -104,7 +117,7 @@ class DigitalCups extends React.Component {
                             }
 
                         });
-                        if (sequentialRed > 0) {
+                        if (sequentialRed > 0 && !previousHour.supervisor_signoff && actualHour.include_in_escalation) {
                             _.forEach(this.props.user.escalations, escalation => {
                                 if (Number(escalation.escalation_hours) <= sequentialRed) {
                                     actualEscalation = escalation;

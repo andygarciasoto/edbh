@@ -129,13 +129,11 @@ class DashboardTable extends React.Component {
     }
 
     loadDataAllShift(filter, props) {
-
+        
         if (filter && filter[0]) {
 
             const { start_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[0].shift_name, this.props.user);
             const { end_date_time } = getStartEndDateTime(formatDate(filter[1]), this.props.user.shifts[this.props.user.shifts.length - 1].shift_name, this.props.user);
-
-
 
             if (verticalToken !== null) {
                 verticalToken.cancel('Previous request canceled, new request is send');
@@ -244,51 +242,52 @@ class DashboardTable extends React.Component {
                 let modal_escalation_IsOpen = false;
                 let modal_escalation_message = '';
 
-                if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
-                    let dxhdata_id = 0;
-                    _.chain(data)
-                        .groupBy('hour_interval')
-                        .map((value) => {
-                            const row = value[0];
-                            if (currentDatetime.isAfter(moment.tz(row.ended_on_chunck, props.user.timezone))) {
-                                dxhdata_id = row.dxhdata_id;
-                                sequentialRed = row.summary_background_color === 'red' ? sequentialRed + 1 : 0;
-                            }
-                            return {
-                                started_on_chunck: moment.tz(row.started_on_chunck, props.user.timezone),
-                                ended_on_chunck: moment.tz(row.ended_on_chunck, props.user.timezone),
-                                summary_background_color: row.summary_background_color
-                            };
-                        })
-                        .value();
-                    if (sequentialRed > 0) {
-                        _.forEach(props.user.escalations, escalation => {
-                            if (Number(escalation.escalation_hours) <= sequentialRed) {
-                                actualEscalation = escalation;
-                            }
-                        });
+                if (this.state.selectedAssetOption.include_in_escalation) {
+                    if (currentDatetime.isSameOrAfter(moment(start_date_time)) && currentDatetime.isBefore(moment(end_date_time))) {
+                        let dxhdata_id = 0;
+                        _.chain(data)
+                            .groupBy('hour_interval')
+                            .map((value) => {
+                                const row = value[0];
+                                if (currentDatetime.isAfter(moment.tz(row.ended_on_chunck, props.user.timezone))) {
+                                    dxhdata_id = row.dxhdata_id;
+                                    sequentialRed = row.summary_background_color === 'red' ? sequentialRed + 1 : 0;
+                                }
+                                return {
+                                    started_on_chunck: moment.tz(row.started_on_chunck, props.user.timezone),
+                                    ended_on_chunck: moment.tz(row.ended_on_chunck, props.user.timezone),
+                                    summary_background_color: row.summary_background_color
+                                };
+                            })
+                            .value();
+                        if (sequentialRed > 0) {
+                            _.forEach(props.user.escalations, escalation => {
+                                if (Number(escalation.escalation_hours) <= sequentialRed) {
+                                    actualEscalation = escalation;
+                                }
+                            });
 
-                        const escalation = Number(localStorage.getItem('escalation'));
-                        const escalation_hour = Number(localStorage.getItem('escalation_hour'));
-                        const escalation_asset = localStorage.getItem('escalation_asset');
-                        if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour || escalation_asset !== filter[0].asset_code)) {
-                            modal_escalation_IsOpen = true;
-                            modal_escalation_message = `The ${actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible`;
-                            localStorage.setItem('escalation', actualEscalation.escalation_level);
-                            localStorage.setItem('escalation_hour', currentDatetime.hour());
-                            localStorage.setItem('escalation_asset', filter[0].asset_code);
-                            let body = {
-                                dxhdata_id: dxhdata_id,
-                                asset_id: filter[0].asset_id,
-                                escalation_time: moment.tz(this.props.user.timezone).format('YYYY/MM/DD HH:mm:ss'),
-                                site_id: this.props.user.site,
-                                escalation_id: actualEscalation.escalation_id
-                            };
-                            genericRequest('put', API, '/escalation_events', null, null, body);
+                            const escalation = Number(localStorage.getItem('escalation'));
+                            const escalation_hour = Number(localStorage.getItem('escalation_hour'));
+                            const escalation_asset = localStorage.getItem('escalation_asset');
+                            if (!_.isEmpty(actualEscalation) && (actualEscalation.escalation_level !== escalation || currentDatetime.hour() !== escalation_hour || escalation_asset !== filter[0].asset_code)) {
+                                modal_escalation_IsOpen = true;
+                                modal_escalation_message = `The ${actualEscalation.escalation_name} needs to sign off for this hour due to escalation. Please sign off as soon as possible`;
+                                localStorage.setItem('escalation', actualEscalation.escalation_level);
+                                localStorage.setItem('escalation_hour', currentDatetime.hour());
+                                localStorage.setItem('escalation_asset', filter[0].asset_code);
+                                let body = {
+                                    dxhdata_id: dxhdata_id,
+                                    asset_id: filter[0].asset_id,
+                                    escalation_time: moment.tz(this.props.user.timezone).format('YYYY/MM/DD HH:mm:ss'),
+                                    site_id: this.props.user.site,
+                                    escalation_id: actualEscalation.escalation_id
+                                };
+                                genericRequest('put', API, '/escalation_events', null, null, body);
+                            }
                         }
                     }
                 }
-
                 const previousEscalation = this.state.actualEscalation;
 
                 this.setState({

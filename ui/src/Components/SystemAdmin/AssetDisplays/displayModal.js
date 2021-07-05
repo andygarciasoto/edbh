@@ -39,8 +39,8 @@ class AddDisplay extends Component {
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (!_.isEqual(nextProps.display, prevState.display)) {
-			const name = nextProps.action === 'Edit' ? nextProps.display.displaysystem_name : '';
-			const display_id = nextProps.action === 'Edit' ? nextProps.display.assetdisplaysystem_id : 0;
+			const name = nextProps.action === 'Update' ? nextProps.display.displaysystem_name : '';
+			const display_id = nextProps.action === 'Update' ? nextProps.display.assetdisplaysystem_id : 0;
 			return {
 				display: nextProps.display,
 				display_id: display_id,
@@ -70,6 +70,7 @@ class AddDisplay extends Component {
 		const validation = validateDisplayForm(this.state, this.props);
 
 		if (_.isEmpty(validation)) {
+			const messageTitle = this.props.action;
 			genericRequest('put', API, '/insert_displaysystem', null, null, {
 				assetdisplaysystem_id: display_id,
 				asset_id: parseInt(asset, 10),
@@ -82,11 +83,13 @@ class AddDisplay extends Component {
 					this.props.handleClose();
 					this.setState({
 						show: true,
+						messageTitle
 					});
 				},
 				(error) => {
 					this.setState({
-						modalError: true
+						modalError: true,
+						messageTitle
 					});
 				}
 			);
@@ -111,7 +114,7 @@ class AddDisplay extends Component {
 
 	render() {
 		const t = this.props.t;
-		const validation = this.state.validation;
+		const { validation, messageTitle } = this.state;
 		return (
 			<div>
 				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
@@ -174,12 +177,12 @@ class AddDisplay extends Component {
 				</Modal>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Sucess</Modal.Title>
+						<Modal.Title>Success</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Display has been Copied</Modal.Body>
+					<Modal.Body>Display has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
@@ -187,10 +190,10 @@ class AddDisplay extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Display has not been Copied</Modal.Body>
+					<Modal.Body>Display has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

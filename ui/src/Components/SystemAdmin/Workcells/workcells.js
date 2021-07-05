@@ -4,8 +4,6 @@ import { bindActionCreators } from 'redux';
 import * as WorkcellActions from '../../../redux/actions/workcellActions';
 import Table from 'react-bootstrap/Table';
 import Filter from '../../CustomComponents/filter';
-import AddWorkcell from './addWorkcell';
-import EditWorkcell from './editWorkcell';
 import WorkcellModal from './workcellModal';
 import FontAwesome from 'react-fontawesome';
 
@@ -15,9 +13,6 @@ class Workcells extends Component {
 		super(props);
 		this.state = {
 			WorkcellData: [],
-			addWorkcell: false,
-			editWorkcell: false,
-			workcell_id: 0,
 			statusFilter: 'Active',
 			workcell: {},
 			action: '',
@@ -45,42 +40,17 @@ class Workcells extends Component {
 		});
 	};
 
-	showAddWorkcell = () => {
-		this.setState({
-			addWorkcell: true,
-		});
-	};
-
-	closeAddWorkcell = () => {
-		this.setState({
-			addWorkcell: false,
-		});
-	};
-
-	showEditShift = (workcell_id) => {
-		this.setState({
-			editWorkcell: true,
-			workcell_id: workcell_id,
-		});
-	};
+	applyFilter = (statusFilter) => {
+		this.setState({ statusFilter }, () => {
+			this.loadData();
+		})
+	}
 
 	showWorkcellModal = (workcell, action) => {
 		this.setState({
 			workcell,
 			action,
 			showWorkcellModal: true
-		})
-	}
-
-	closeEditShift = () => {
-		this.setState({
-			editWorkcell: false,
-		});
-	};
-
-	applyFilter = (statusFilter) => {
-		this.setState({ statusFilter }, () => {
-			this.loadData();
 		})
 	}
 
@@ -106,30 +76,11 @@ class Workcells extends Component {
 					category={false}
 					type={false}
 					shifts={false}
-					onClick={() => this.showAddWorkcell()}
+					onClick={() => this.showWorkcellModal({}, 'Create')}
 					onClickFilter={this.applyFilter}
 					view={'Workcell'}
 					t={t}
-				></Filter>
-				{this.state.addWorkcell === true && (
-					<AddWorkcell
-						user={this.props.user}
-						showForm={this.state.addWorkcell}
-						closeForm={this.closeAddWorkcell}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
-				{this.state.editWorkcell === true && (
-					<EditWorkcell
-						user={this.props.user}
-						showForm={this.state.editWorkcell}
-						closeForm={this.closeEditShift}
-						workcell_id={this.state.workcell_id}
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
+				/>
 				<WorkcellModal
 					user={this.props.user}
 					isOpen={this.state.showWorkcellModal}
@@ -155,7 +106,7 @@ class Workcells extends Component {
 								<td>{workcell.workcell_description}</td>
 								<td>{workcell.status}</td>
 								<td>
-									<FontAwesome name='edit fa-2x' onClick={() => this.showEditShift(workcell.workcell_id)} />
+									<FontAwesome name='edit fa-2x' onClick={() => this.showWorkcellModal(workcell, 'Update')} />
 									<FontAwesome name='copy fa-2x' onClick={() => this.showWorkcellModal(workcell, 'Copy')} />
 								</td>
 							</tr>

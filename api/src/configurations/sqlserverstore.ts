@@ -87,11 +87,13 @@ export class SqlServerStore {
             pool.acquire((poolErr, conn) => {
                 const results = [];
                 if (poolErr) {
+                    console.log('Reject connection pool of ', query);
                     return reject(poolErr);
                 }
                 const request = new Request(query, (reqErr) => {
                     conn.release();
                     if (reqErr) {
+                        console.log('Fail execution of ', query);
                         return reject(reqErr);
                     }
                     resolve(results);

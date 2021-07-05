@@ -54,6 +54,7 @@ export class AuthService {
             localStorage.setItem('user_id', responseUser.id);
             localStorage.setItem('user_badge', responseUser.badge);
             localStorage.setItem('user_machine', machine);
+            localStorage.setItem('role', role);
             localStorage.setItem('inactive_timeout_minutes', responseUser.inactive_timeout_minutes);
             const url = `https://login.microsoftonline.com/${this.config.ad_authentication_section.tenant_id}/oauth2/authorize?client_id=${this.config.ad_authentication_section.client_id}&response_type=code&scope=openid&redirect_uri=${this.config.app_section.redirect_uri}`;
             return res.redirect(302, url);
@@ -104,7 +105,7 @@ export class AuthService {
             method: "POST",
             form: params,
             timeout: 10000
-        }, (error, resp, body) => {
+        }, async (error, resp, body) => {
             if (error) {
                 console.log(error);
                 res.status(500).send({ message: 'Error', error });
@@ -127,14 +128,24 @@ export class AuthService {
             const expirationToken = localStorage.getItem('inactive_timeout_minutes');
             localStorage.removeItem('user_id');
             localStorage.removeItem('user_badge');
-            localStorage.removeItem('user_machine');
             localStorage.removeItem('inactive_timeout_minutes');
+            let machine = localStorage.getItem('user_machine') !== '0' ? localStorage.getItem('user_machine') : null;
+            let role = localStorage.getItem('role');
+
+            if (machine && role === 'Supervisor') {
+                let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
+                assetInformation = assetInformation[0];    
+                jsonwebtoken.assign_role = (assetInformation.is_multiple || assetInformation.is_dynamic) ? null : role;
+            } else if (role === 'Supervisor') {
+                jsonwebtoken.assign_role = role; 
+            }
             let jwtx = nJwt.create(jsonwebtoken, config.authentication_section.signingKey);
             jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
             let token = jwtx.compact();
-            if (localStorage.getItem("st")) {
-                let st = localStorage.getItem("st");
-                localStorage.removeItem("st");
+
+            if (localStorage.getItem("user_machine")) {
+                let st = localStorage.getItem("user_machine");
+                localStorage.removeItem("user_machine");
                 return res.redirect(302, config.app_section.loginURL + `?st=${st}` + `#token=${token}`);
             }
             return res.redirect(302, config.app_section.loginURL + `#token=${token}`);
@@ -326,5 +337,4 @@ export class AuthService {
             })
         });
     }
-
 }

@@ -95,8 +95,8 @@ export class DxHDataService {
         const row_timestamp = req.body.row_timestamp;
         const asset_code = req.body.asset_code;
 
-        if (!clocknumber) {
-            if (!(first_name || !last_name)) {
+        if (!clocknumber || clocknumber === null || clocknumber === undefined || clocknumber === '') {
+            if (!first_name || !last_name || first_name === undefined || last_name === undefined) {
                 return res.status(400).json({ message: "Bad Request - Missing Parameters" });
             }
         }
@@ -111,28 +111,22 @@ export class DxHDataService {
         try {
             asset = await this.assetrepository.getAssetByCode(asset_code);
             user = await this.userrepository.findUserInformation(clocknumber, '', asset[0].asset_id, 0);
-            const role = user[0].role;
-            if (role === 'Supervisor' || role === 'Administrator') {
-                if (dxh_data_id == undefined) {
-
-                    dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
-                    dxh_data_id = dxhData[0].dxhdata_id;
-                    if (clocknumber) {
-                        await this.dxhdatarepository.putSupervisorSignOffByClocknumber(dxh_data_id, clocknumber, timestamp);
-                    } else {
-                        await this.dxhdatarepository.putSupervisorSignOffByUsername(dxh_data_id, first_name, last_name, timestamp);
-                    }
+            if (dxh_data_id == undefined) {
+                dxhData = await this.dxhdatarepository.getDxHDataId(asset[0].asset_id, row_timestamp);
+                dxh_data_id = dxhData[0].dxhdata_id;
+                if (clocknumber) {
+                    await this.dxhdatarepository.putSupervisorSignOffByClocknumber(dxh_data_id, clocknumber, timestamp);
                 } else {
-                    if (clocknumber) {
-                        await this.dxhdatarepository.putSupervisorSignOffByClocknumber(dxh_data_id, clocknumber, timestamp);
-                    } else {
-                        await this.dxhdatarepository.putSupervisorSignOffByUsername(dxh_data_id, first_name, last_name, timestamp);
-                    }
+                    await this.dxhdatarepository.putSupervisorSignOffByUsername(dxh_data_id, first_name, last_name, timestamp);
                 }
-                return res.status(200).send('Message Entered Succesfully');
             } else {
-                return res.status(400).json({ message: "Bad Request - Unauthorized Role to SignOff" });
+                if (clocknumber) {
+                    await this.dxhdatarepository.putSupervisorSignOffByClocknumber(dxh_data_id, clocknumber, timestamp);
+                } else {
+                    await this.dxhdatarepository.putSupervisorSignOffByUsername(dxh_data_id, first_name, last_name, timestamp);
+                }
             }
+            return res.status(200).send('Message Entered Succesfully');
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }

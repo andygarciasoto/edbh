@@ -43,6 +43,7 @@ export class Step1 extends Component {
 	}
 
 	componentDidMount() {
+		const parent_asset_code = this.state.asset.parent_asset_code;
 		const { actions } = this.props;
 		return Promise.all([
 			actions.getWorkcells(this.props.user.site),
@@ -53,7 +54,7 @@ export class Step1 extends Component {
 			this.setState({
 				workcellData,
 				parentData,
-				parent_code: parentData[0] ? parentData[0].asset_code : ''
+				parent_code: parent_asset_code ? parent_asset_code : parentData[0] ? parentData[0].asset_code : ''
 			});
 		});
 	}

@@ -22,14 +22,15 @@ class UOMModal extends Component {
 			show: false,
 			showForm: true,
 			modalError: false,
-			validation: {}
+			validation: {},
+			messageTitle: ''
 		};
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (!_.isEqual(nextProps.uom, prevState.uom)) {
-			const name = nextProps.action === 'Edit' ? nextProps.uom.UOM_name : '';
-			const uom_id = nextProps.action === 'Edit' ? nextProps.uom.UOM_id : 0;
+			const name = nextProps.action === 'Update' ? nextProps.uom.UOM_name : '';
+			const uom_id = nextProps.action === 'Update' ? nextProps.uom.UOM_id : 0;
 			return {
 				uom: nextProps.uom,
 				uom_id: uom_id,
@@ -55,18 +56,19 @@ class UOMModal extends Component {
 
 	createUOM = (e) => {
 		e.preventDefault();
-		const { uom_id, code, name, description, status, decimals } = this.state;
+		const { uom_id, uom, name, description, status, decimals } = this.state;
 
 		const validation = generalValidationForm(this.state);
 
 		if (_.isEmpty(validation)) {
+			const messageTitle = this.props.action;
 			genericRequest('put', API, '/insert_uom', null, null, {
 				uom_id: uom_id,
-				uom_code: this.props.action === 'Edit' ? code : `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
+				uom_code: this.props.action === 'Update' ? uom.UOM_code : `${this.props.user.site_prefix}-${name}`.replace(/\s+/g, ''),
 				uom_name: name,
 				uom_description: description,
 				status: status,
-				decimals: parseInt(decimals, 10),
+				decimals: decimals,
 				site_id: this.props.user.site,
 			}).then(
 				() => {
@@ -74,12 +76,14 @@ class UOMModal extends Component {
 					this.props.handleClose();
 					this.setState({
 						show: true,
-						validation: {}
+						validation: {},
+						messageTitle
 					});
 				},
 				(error) => {
 					this.setState({
-						modalError: true
+						modalError: true,
+						messageTitle
 					});
 				}
 			);
@@ -96,7 +100,7 @@ class UOMModal extends Component {
 
 	render() {
 		const t = this.props.t;
-		const validation = this.state.validation;
+		const { validation, messageTitle } = this.state;
 		return (
 			<div>
 				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
@@ -172,12 +176,12 @@ class UOMModal extends Component {
 				</Modal>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Sucess</Modal.Title>
+						<Modal.Title>Success</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>UOM has been copied</Modal.Body>
+					<Modal.Body>UOM has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
@@ -186,11 +190,11 @@ class UOMModal extends Component {
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						UOM has not been copied
+						UOM has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}
 					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

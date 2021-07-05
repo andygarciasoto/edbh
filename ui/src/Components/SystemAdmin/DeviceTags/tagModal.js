@@ -80,7 +80,8 @@ class TagModal extends Component {
 			this.setState((state) => ({
 				assets,
 				asset: state.asset ? state.asset : (assets[0] ? assets[0].asset_id : 0),
-				uomData: response[2]
+				uomData: response[2],
+				uom_code: state.uom_code ? state.uom_code : (response[2][0] ? response[2][0].UOM_code : '') 
 			}));
 		});
 	}

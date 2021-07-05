@@ -20,14 +20,15 @@ class WorkcellModal extends Component {
 			show: false,
 			showForm: true,
 			modalError: false,
-			validation: {}
+			validation: {},
+			messageTitle: ''
 		};
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (!_.isEqual(nextProps.workcell, prevState.workcell)) {
-			const name = nextProps.action === 'Edit' ? nextProps.workcell.workcell_name : '';
-			const workcell_id = nextProps.action === 'Edit' ? nextProps.workcell.workcell_id : 0;
+			const name = nextProps.action === 'Update' ? nextProps.workcell.workcell_name : '';
+			const workcell_id = nextProps.action === 'Update' ? nextProps.workcell.workcell_id : 0;
 			return {
 				workcell: nextProps.workcell,
 				workcell_id: workcell_id,
@@ -57,6 +58,7 @@ class WorkcellModal extends Component {
 		const validation = generalValidationForm(this.state);
 
 		if (_.isEmpty(validation)) {
+			const messageTitle = this.props.action;
 			genericRequest('put', API, '/insert_workcell', null, null, {
 				workcell_id: workcell_id,
 				workcell_name: name,
@@ -69,12 +71,14 @@ class WorkcellModal extends Component {
 					this.props.handleClose();
 					this.setState({
 						show: true,
-						validation: {}
+						validation: {},
+						messageTitle
 					});
 				},
 				(error) => {
 					this.setState({
-						modalError: true
+						modalError: true,
+						messageTitle
 					});
 				}
 			);
@@ -91,7 +95,7 @@ class WorkcellModal extends Component {
 
 	render() {
 		const t = this.props.t;
-		const validation = this.state.validation;
+		const { validation, messageTitle } = this.state;
 		return (
 			<div>
 				<Modal show={this.props.isOpen} onHide={this.props.handleClose} centered>
@@ -152,12 +156,12 @@ class WorkcellModal extends Component {
 				</Modal>
 				<Modal show={this.state.show} onHide={this.closeModalMessage}>
 					<Modal.Header closeButton>
-						<Modal.Title>Sucess</Modal.Title>
+						<Modal.Title>Success</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Workcell has been Copied</Modal.Body>
+					<Modal.Body>Workcell has been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>
@@ -165,10 +169,10 @@ class WorkcellModal extends Component {
 					<Modal.Header closeButton>
 						<Modal.Title>Error</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Workcell has not been copied</Modal.Body>
+					<Modal.Body>Workcell has not been {messageTitle === 'Create' ? 'created' : (messageTitle === 'Update' ? 'updated' : 'copied')}</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={this.closeModalMessage}>
-							Close
+							{t('Close')}
 						</Button>
 					</Modal.Footer>
 				</Modal>

@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as DisplayActions from '../../../redux/actions/displayActions';
 import Table from 'react-bootstrap/Table';
-import EditDisplay from './editDisplay';
 import Filter from '../../CustomComponents/filter';
-import AddDisplay from './addDisplay';
 import DisplayModal from './displayModal';
 import FontAwesome from 'react-fontawesome';
 
@@ -14,9 +12,6 @@ class Display extends Component {
 		super(props);
 		this.state = {
 			DisplayData: [],
-			addDisplay: false,
-			editDisplay: false,
-			display_id: 0,
 			statusFilter: 'Active',
 			display: {},
 			action: '',
@@ -50,31 +45,6 @@ class Display extends Component {
 		})
 	}
 
-	showAddDisplay = () => {
-		this.setState({
-			addDisplay: true,
-		});
-	};
-
-	closeAddDisplay = () => {
-		this.setState({
-			addDisplay: false,
-		});
-	};
-
-	showEditDisplay = (display_id) => {
-		this.setState({
-			editDisplay: true,
-			display_id: display_id,
-		});
-	};
-
-	closeEditDisplay = () => {
-		this.setState({
-			editDisplay: false,
-		});
-	};
-
 	showDisplayModal = (display, action) => {
 		this.setState({
 			display,
@@ -105,32 +75,11 @@ class Display extends Component {
 					category={false}
 					type={false}
 					shifts={false}
-					onClick={() => this.showAddDisplay()}
+					onClick={() => this.showDisplayModal({}, 'Create')}
 					onClickFilter={this.applyFilter}
 					view={'Display'}
 					t={t}
 				/>
-				{this.state.addDisplay === true && (
-					<AddDisplay
-						user={this.props.user}
-						showForm={this.state.addDisplay}
-						t={t}
-						closeForm={this.closeAddDisplay}
-						action='Create'
-						Refresh={this.loadData}
-					/>
-				)}
-				{this.state.editDisplay === true && (
-					<EditDisplay
-						user={this.props.user}
-						showForm={this.state.editDisplay}
-						closeForm={this.closeEditDisplay}
-						display_id={this.state.display_id}
-						action='Edit'
-						Refresh={this.loadData}
-						t={t}
-					/>
-				)}
 				<DisplayModal
 					user={this.props.user}
 					isOpen={this.state.showDisplayModal}
@@ -156,7 +105,7 @@ class Display extends Component {
 								<td>{display.asset_code}</td>
 								<td>{display.status}</td>
 								<td>
-									<FontAwesome name='edit fa-2x' onClick={() => this.showEditDisplay(display.assetdisplaysystem_id)} />
+									<FontAwesome name='edit fa-2x' onClick={() => this.showDisplayModal(display, 'Update')} />
 									<FontAwesome name='copy fa-2x' onClick={() => this.showDisplayModal(display, 'Copy')} />
 								</td>
 							</tr>

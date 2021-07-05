@@ -84,13 +84,34 @@ class SignoffModal extends React.Component {
                 this.setState({
                     modal_loading_IsOpen: false
                 });
-                if (this.state.signOffRole === 'Supervisor' && res[0].role !== 'Supervisor' && res[0].role !== 'Administrator') {
-                    this.setState({
-                        modal_type: 'Error',
-                        modal_message: 'The user is not a Supervisor. Please Try again',
-                        modal_message_IsOpen: true
-                    });
-                    return;
+                if (this.state.signOffRole === 'Supervisor') {
+                    if (!_.isEmpty(this.props.escalation) && res[0].escalation_level) {
+                        if (res[0].escalation_level < this.props.escalation.escalation_level) {
+                            this.setState({
+                                signOffRole: 'Supervisor',
+                                modal_type: 'Error',
+                                modal_message: 'This user does not have the needed level of escalation. Please try with the next level.',
+                                modal_message_IsOpen: true
+                            });
+                            return;
+                        }
+                    } else if (!_.isEmpty(this.props.escalation)) {
+                        this.setState({
+                            signOffRole: 'Supervisor',
+                            modal_type: 'Error',
+                            modal_message: 'This user does not have the needed level of escalation. Please try with the next level.',
+                            modal_message_IsOpen: true
+                        });
+                        return;
+                    } else if (this.state.signOffRole === 'Supervisor' && res[0].role === 'Operator') {
+                        this.setState({
+                            signOffRole: 'Supervisor',
+                            modal_type: 'Error',
+                            modal_message: 'The user is not allowed to sign off. Please Try again.',
+                            modal_message_IsOpen: true
+                        });
+                        return;
+                    }
                 }
                 this.signOff(badge);
             }

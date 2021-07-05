@@ -147,7 +147,7 @@ const Filter = ({
             <Form.Group controlId="role" className="drop-status">
               <Form.Control as="select" size="sm" onChange={(event) => setEscalation(event.target.value)} custom>
                 <option>All</option>
-                <option>Site Manager</option>
+                <option>Front Line Manager</option>
                 <option>Value Stream Manager</option>
                 <option>Plant Manager</option>
               </Form.Control>
