@@ -1,5 +1,5 @@
 {
-    "loginPage": "https://euwdsrg02krsg01app01.azurewebsites.net/login",
+    "loginPage": "https://euwdsrg02krsg01app01.azurewebsites.net",
     "root": "https://euwdsrg02krsg01app01.azurewebsites.net",
     "api": "https://euwdsrg02krsg01app02.azurewebsites.net",
     "rollback": 1,

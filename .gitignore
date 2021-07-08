@@ -1,6 +1,7 @@
 ui/node_modules
 ui/build
 ui/.vscode
+ui/src/sass
 old_ui/node_modules
 old_ui/build
 old_ui/.vscode
