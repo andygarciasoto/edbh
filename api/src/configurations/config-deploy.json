@@ -8,7 +8,6 @@
     "service_name": "Dxh Service Dev API",
     "cors": ["http://localhost:8080", "http://localhost:3000"],
     "redirect_uri": "http://localhost:8080/auth/token",
-    "timezone": "MST",
     "URL": "http://localhost:3000",
     "badLogin": "http://localhost:3000?err=true",
     "badLoginUser": "http://localhost:3000/login?err=true",

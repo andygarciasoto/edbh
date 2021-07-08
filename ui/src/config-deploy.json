@@ -34,7 +34,7 @@
     "second_signoff_reminder": 5,
     "appInsightsKey": "650c5bc1-7545-4d77-a30e-bf58568aa682",
 
-    "loginPage": "https://euwdsrg02krsg01app01.azurewebsites.net",
+    "loginPage": "https://euwdsrg02krsg01app01.azurewebsites.net/login",
     "root": "https://euwdsrg02krsg01app01.azurewebsites.net",
     "api": "https://euwdsrg02krsg01app02.azurewebsites.net",
     "rollback": 1,
