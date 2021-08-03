@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import BarcodeReader from 'react-barcode-reader'
 import BlinkDots from '../Modal/BlinkDots';
+import { Row, Form, Button } from 'react-bootstrap';
 import ErrorModal from '../Common/MessageModal';
 import LoadingModal from '../Common/LoadingModal';
 import { AUTH } from '../../Utils/Constants';
@@ -48,7 +49,7 @@ class BarcodeScanner extends Component {
       result: 'Scanning',
       code: data,
     })
-    this.authorize(this.state.code);
+    this.authorize(data);
   }
 
   authorize(code) {
@@ -67,14 +68,18 @@ class BarcodeScanner extends Component {
   render() {
     return (
       <div id="barcodeScanner">
-        <BarcodeReader
-          id='barcodeScannerReader'
-          onError={this.handleError}
-          onScan={this.handleScan}
-          minLength={2}
-        />
-        <p style={{ display: 'inline' }} className="signin-result drop-shadow">{this.state.result}</p>&nbsp;<BlinkDots />
-
+        <Button size='lg' style={{ margin: '10px' }} variant="warning" onClick={() => {
+        this.handleScan("Operator");
+        }}>Operator</Button>
+        <Button size='lg' style={{ margin: '10px' }} variant="warning" onClick={() => {
+        this.handleScan("Supervisor");
+        }}
+        >Supervisor</Button>
+        <Button size='lg' style={{ margin: '10px' }} variant="warning"onClick={() => {
+        this.handleScan("Administrator");
+        }}
+        >Administrator</Button>
+        
         <ErrorModal
           isOpen={this.state.modal_error_IsOpen}
           onRequestClose={this.closeModal}

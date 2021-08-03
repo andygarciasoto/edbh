@@ -50,39 +50,29 @@ export class AuthService {
         }
 
         let role = responseUser.role;
-        if (role === 'Supervisor' || role === 'Administrator') {
-            localStorage.setItem('user_id', responseUser.id);
-            localStorage.setItem('user_badge', responseUser.badge);
-            localStorage.setItem('user_machine', machine);
-            localStorage.setItem('role', role);
-            localStorage.setItem('inactive_timeout_minutes', responseUser.inactive_timeout_minutes);
-            const url = `https://login.microsoftonline.com/${this.config.ad_authentication_section.tenant_id}/oauth2/authorize?client_id=${this.config.ad_authentication_section.client_id}&response_type=code&scope=openid&redirect_uri=${this.config.app_section.redirect_uri}`;
-            return res.redirect(302, url);
-        } else {
-            let claimsList = {
-                user: {
-                    iss: this.config.app_section.URL,
-                    sub: 'users/' + responseUser.badge,
-                    scope: role,
-                    user_id: responseUser.id,
-                    user_badge: responseUser.badge,
-                    user_machine: machine,
-                    assign_role: null
-                },
-            }
-            if (machine) {
-                let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
-                assetInformation = assetInformation[0];
-                if ((assetInformation.is_multiple || assetInformation.is_dynamic) && role === 'Operator') {
-                    this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
-                        'Check-In', 'Active', responseUser.site, 0, 0);
-                }
-            }
-            let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
-            jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
-            let token = jwt.compact();
-            return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
+        let claimsList = {
+            user: {
+                iss: this.config.app_section.URL,
+                sub: 'users/' + responseUser.badge,
+                scope: role,
+                user_id: responseUser.id,
+                user_badge: responseUser.badge,
+                user_machine: machine,
+                assign_role: null
+            },
         }
+        if (machine) {
+            let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
+            assetInformation = assetInformation[0];
+            if ((assetInformation.is_multiple || assetInformation.is_dynamic) && role === 'Operator') {
+                this.scanrepository.putScan(responseUser.badge, responseUser.badge, responseUser.first_name, responseUser.last_name, assetInformation.asset_id, responseUser.current_date_time,
+                    'Check-In', 'Active', responseUser.site, 0, 0);
+            }
+        }
+        let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
+        jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
+        let token = jwt.compact();
+        return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
     }
 
     public async processActiveDirectoryResponse(req: Request, res: Response) {
@@ -134,10 +124,10 @@ export class AuthService {
 
             if (machine && role === 'Supervisor') {
                 let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
-                assetInformation = assetInformation[0];    
+                assetInformation = assetInformation[0];
                 jsonwebtoken.assign_role = (assetInformation.is_multiple || assetInformation.is_dynamic) ? null : role;
             } else if (role === 'Supervisor') {
-                jsonwebtoken.assign_role = role; 
+                jsonwebtoken.assign_role = role;
             }
             let jwtx = nJwt.create(jsonwebtoken, config.authentication_section.signingKey);
             jwtx.setExpiration(new Date().getTime() + (expirationToken * 60000));
@@ -185,7 +175,7 @@ export class AuthService {
         }
 
         try {
-            if (claimsList.user && params.password === 'eyedbh2021') {
+            if (claimsList.user && params.password === 'parkerdxh2019') {
                 if (machine) {
                     let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                     assetInformation = assetInformation[0];
