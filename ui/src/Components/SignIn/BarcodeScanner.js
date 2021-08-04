@@ -53,7 +53,8 @@ class BarcodeScanner extends Component {
   }
 
   authorize(code) {
-    window.location.replace(`${AUTH}/badge?badge=${code}&st=${this.props.st}`);
+    const st = code == 'Operator' ? 'nsih' : this.props.st;
+    window.location.replace(`${AUTH}/badge?badge=${code}&st=${st}`);
   }
 
   handleError = (err) => {
@@ -75,11 +76,7 @@ class BarcodeScanner extends Component {
         this.handleScan("Supervisor");
         }}
         >Supervisor</Button>
-        <Button size='lg' style={{ margin: '10px' }} variant="warning"onClick={() => {
-        this.handleScan("Administrator");
-        }}
-        >Administrator</Button>
-        
+
         <ErrorModal
           isOpen={this.state.modal_error_IsOpen}
           onRequestClose={this.closeModal}
