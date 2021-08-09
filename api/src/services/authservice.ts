@@ -72,8 +72,9 @@ export class AuthService {
         let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
         jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
         let token = jwt.compact();
-        //let url = machine != '0' ? `?st=${machine}` + `#token=${token}` : `#token=${token}`;
-        return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
+        let url = params.st == 'null' || params.st == 'undefined' ? `#token=${token}` :
+        `?st=${machine}` + `#token=${token}`;
+        return res.redirect(302, this.config.app_section.loginURL + url);
     }
 
     public async processActiveDirectoryResponse(req: Request, res: Response) {
