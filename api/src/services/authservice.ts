@@ -35,7 +35,7 @@ export class AuthService {
         if (!params.badge) {
             return res.status(400).json({ message: "Bad Request - Missing Clock Number" });
         }
-        machine = params.st == 'null' || params.st == 'undefined' ? 0 : params.st;
+        machine = params.st == 'null' || params.st == 'undefined' ? '0' : params.st;
         let responseUser: any;
         try {
             responseUser = await this.userrepository.findUserInformation(params.badge, machine, 0, 0);
@@ -72,7 +72,8 @@ export class AuthService {
         let jwt = nJwt.create(claimsList.user, this.config.authentication_section.signingKey);
         jwt.setExpiration(new Date().getTime() + (responseUser.inactive_timeout_minutes * 60000));
         let token = jwt.compact();
-        return res.redirect(302, this.config.app_section.loginURL + `#token=${token}`);
+        let url = machine != '0' ? `?st=${machine}` + `#token=${token}` : `#token=${token}`;
+        return res.redirect(302, this.config.app_section.loginURL + url);
     }
 
     public async processActiveDirectoryResponse(req: Request, res: Response) {
