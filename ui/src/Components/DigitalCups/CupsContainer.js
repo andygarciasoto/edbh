@@ -34,7 +34,7 @@ class CupsContainer extends React.Component {
                             return (<Col key={'previous_hours_' + value.hour_interval + '_' + value.asset_id} className={value.background_color}></Col>)
                         })}
                     </Row>
-                    <Row className={'assetName ' + asset.background_color}>{this.props.t('Machine/Cell') + ': ' + asset.asset_name}</Row>
+                    <Row className={'assetName ' + asset.background_color}>{this.props.t(asset.asset_name}</Row>
                     <Row className='currentInformation'>{asset.summary_adjusted_actual + ' / ' + (asset.summary_target || 0)}</Row>
                 </Col>
             );

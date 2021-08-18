@@ -177,7 +177,7 @@ export class AuthService {
         }
 
         try {
-            if (claimsList.user && params.password === 'parkerdxh2019') {
+            if (claimsList.user && params.password === 'nsihedbh2021') {
                 if (machine) {
                     let assetInformation = await this.assetrepository.getAssetByAssetDisplaySystem(machine);
                     assetInformation = assetInformation[0];
