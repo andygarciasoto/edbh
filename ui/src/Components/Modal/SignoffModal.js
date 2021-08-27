@@ -69,7 +69,7 @@ class SignoffModal extends React.Component {
     handleScan = (badge) => {
         this.setState({ modal_validate_IsOpen: false, modal_loading_IsOpen: true }, async () => {
             const parameters = {
-                badge: badge ? badge : 'Supervisor',
+                badge: 'Supervisor',
                 site_id: this.props.user.site
             };
             let res = await getResponseFromGeneric('get', API, '/find_user_information', {}, parameters, {}) || [];
@@ -113,7 +113,7 @@ class SignoffModal extends React.Component {
                         return;
                     }
                 }
-                this.signOff(badge);
+                this.signOff('Supervisor');
             }
         });
     }
@@ -128,7 +128,7 @@ class SignoffModal extends React.Component {
             actual: rowData.actual || "signoff",
             setup_scrap: rowData.summary_setup_scrap || 'signoff',
             other_scrap: rowData.summary_other_scrap || 'signoff',
-            clocknumber: badge ? badge : 'Supervisor',
+            clocknumber: 'Supervisor',
             override: 0,
             asset_code: this.props.selectedAssetOption.asset_code,
             row_timestamp: formatDateWithTime(rowData ? rowData.started_on_chunck : this.state.row.started_on_chunck),
@@ -141,7 +141,7 @@ class SignoffModal extends React.Component {
                     dxhdata_id: rowData ? rowData.dxhdata_id : null,
                     asset_id: this.props.selectedAssetOption.asset_id,
                     sign_time: moment.tz(this.props.user.timezone).format('YYYY/MM/DD HH:mm:ss'),
-                    badge: badge ? badge : 'Supervisor',
+                    badge: 'Supervisor',
                     site_id: this.props.user.site
                 };
                 getResponseFromGeneric('put', API, '/escalation_events', null, null, body);
