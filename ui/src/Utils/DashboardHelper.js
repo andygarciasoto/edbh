@@ -301,7 +301,6 @@ const helpers = {
             Aggregated: a => this.renderSupervisorSignOffCell(state, a.subRows[0]._original, 'supervisor_signoff', ''),
             getProps: (state, rowInfo, column) => this.getStyle(false, 'center', rowInfo, column)
         });
-
         return { columns };
     },
 
@@ -342,21 +341,18 @@ const helpers = {
     },
 
     openModal(modalType, currentRow) {
-
         let newModalProps = {};
-
         if (validPermission(this.props.user, modalType, 'read')) {
             newModalProps['modal_' + modalType + '_IsOpen'] = false;
             newModalProps.currentRow = currentRow;
             if (modalType === 'order') {
                 newModalProps['modal_' + modalType + '_IsOpen'] = false;
             } else if (currentRow) {
-
                 switch (modalType) {
                     case 'manualentry':
                     case 'actual':
-                        newModalProps['modal_' + modalType + '_IsOpen'] = this.state.selectedMachineType !== 'Automated' || this.props.user.role === 'Administrator';
-                        break;
+                        newModalProps['modal_' + modalType + '_IsOpen'] = this.props.selectedAssetOption.automation_level === 'Partially_Automatic_Order' || 
+                        this.props.selectedAssetOption.automation_level === 'Manual' || this.props.user.role === 'Administrator' || this.props.user.role === 'Supervisor' ? true : false
                     case 'timelost':
                     case 'comments':
                     case 'scrap':
@@ -371,14 +367,11 @@ const helpers = {
                     default:
                         break;
                 }
-
                 newModalProps['isEditable'] = validPermission(this.props.user, modalType, 'write') &&
                     isFieldAllowed(this.props.user.role, currentRow, this.props.user.timezone) &&
                     currentRow.current_order_id;
                 this.setState(Object.assign(newModalProps));
-
             }
-
         } else {
             console.log('User can´t open this modal ' + modalType);
         }

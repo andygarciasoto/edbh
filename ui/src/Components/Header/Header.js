@@ -193,7 +193,6 @@ class Header extends React.Component {
         const selectionValue = this.state.selectedLevelDC.value;
         const selectedAssetOptions = selectionValue === 'Area' ? this.state.assetOptionsDC :
             (selectionValue === 'workcell_name' ? this.state.workcellOptionsDC : this.state.valueStreamOptionsDC);
-
         return (
             <Navbar expand="lg">
                 <Navbar.Brand><img src={logo} className="App-logo-header header-side" alt="logo" /></Navbar.Brand>

@@ -254,7 +254,6 @@ export class Step1 extends Component {
 								<option value='Automated'>Automated</option>
 								<option value='Manual'>Manual</option>
 								<option value='Partially_Automatic_Order'>Partially Automatic Order</option>
-								<option value='Partially_Manual_Automatic_Order'>Partially Manual Automatic Order</option>
 								<option value='Partially_Manual_Scan_Order'>Partially Manual Scan Order</option>
 							</Form.Control>
 						</Col>
