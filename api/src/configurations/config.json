@@ -2,23 +2,24 @@
     "sql_section": {
         "user": "eytech",
         "password": "?D;}yzpA@Z7xM.G9",
-        "server": "euwdsrg02kasqlsrv01.database.windows.net",
+        "server": "ETLABVMLAZIHSQ1",
         "database": "euwdsrg02kadb01"
     },
+
     "app_section": {
         "port": 8080,
         "prefix": "/",
-        "service_name": "eDBH Service NSIH API",
+        "service_name": "Day By Hour Innovation Hub API",
         "cors": [
-            "https://euwdsrg02krsg01app02.azurewebsites.net",
-            "https://euwdsrg02krsg01app01.azurewebsites.net"
+            "http://localhost:8080",
+            "http://localhost:3000"
         ],
-        "redirect_uri": "https://euwdsrg02krsg01app02.azurewebsites.net/auth/token",
+        "redirect_uri": "http://localhost:8080/auth/token",
         "timezone": "MST",
-        "URL": "https://euwdsrg02krsg01app01.azurewebsites.net",
-        "badLogin": "https://euwdsrg02krsg01app01.azurewebsites.net?err=true",
-        "badLoginUser": "https://euwdsrg02krsg01app01.azurewebsites.net/login?err=true",
-        "loginURL": "https://euwdsrg02krsg01app01.azurewebsites.net/dashboard"
+        "URL": "http://localhost:3000",
+        "badLogin": "http://localhost:3000?err=true",
+        "badLoginUser": "http://localhost:3000/login?err=true",
+        "loginURL": "http://localhost:3000/dashboard"
     },
     "authentication_section": {
         "signingKey": "JhbGciOiJSUzI1NiJ9"
